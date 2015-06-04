@@ -38,6 +38,9 @@ public interface OneSignalPlatform {
 	void DeleteTags(IList<string> keys);
 	void OnApplicationPause(bool paused);
 	void IdsAvailable();
+	void EnableInAppAlertNotification(bool enable);
+	void SetSubscription(bool enable);
+	void PostNotification(Dictionary<string, object> data);
 
 	void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived);
 }

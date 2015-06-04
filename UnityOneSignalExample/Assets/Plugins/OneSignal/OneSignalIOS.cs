@@ -58,6 +58,15 @@ public class OneSignalIOS : OneSignalPlatform {
 	extern static public void _idsAvailable();
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _enableInAppAlertNotification(bool enable);
+
+	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _setSubscription(bool enable);
+
+	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _postNotification(string json);
+
+	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _setLogLevel(int logLevel, int visualLogLevel);
 
 
@@ -91,6 +100,18 @@ public class OneSignalIOS : OneSignalPlatform {
 
 	public void IdsAvailable() {
 		_idsAvailable();
+	}
+
+	public void EnableInAppAlertNotification(bool enable) {
+		_enableInAppAlertNotification(enable);
+	}
+
+	public void SetSubscription(bool enable) {
+		_setSubscription(enable);
+	}
+
+	public void PostNotification(Dictionary<string, object> data) {
+		_postNotification(Json.Serialize(data));
 	}
 
 	public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {

@@ -72,6 +72,15 @@ class OneSignalWP : OneSignalPlatform {
         });
     }
 
+	// Not available the WP SDK.
+	public void EnableInAppAlertNotification(bool enable) { }
+
+	// Not available in WP SDK.
+	public void SetSubscription(bool enable) {}
+
+	// Not available in WP SDK.
+	public void PostNotification(Dictionary<string, object> data) { }
+
     // Doesn't apply to Windows Phone: The Callback is setup in the constructor so this is never called.
     public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {}
 

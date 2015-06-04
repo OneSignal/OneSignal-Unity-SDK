@@ -174,6 +174,28 @@ void _idsAvailable() {
     }];
 }
 
+void _enableInAppAlertNotification(BOOL enable) {
+    [oneSignal enableInAppAlertNotification:enable];
+}
+
+void _setSubscription(BOOL enable) {
+    [oneSignal setSubscription:enable];
+}
+
+void _postNotification(const char* jsonData) {
+    [oneSignal postNotificationWithJsonString:CreateNSString(jsonData)
+        onSuccess:^(NSDictionary* results) {
+            UnitySendMessage(unityListener, "onPostNotificationSuccess", dictionaryToJsonChar(results));
+        }
+        onFailure:^(NSError* error) {
+            if (error.userInfo && error.userInfo[@"returned"])
+                UnitySendMessage(unityListener, "onPostNotificationFailed", dictionaryToJsonChar(error.userInfo[@"returned"]));
+            else
+                UnitySendMessage(unityListener, "onPostNotificationFailed", "{\"error\": \"HTTP no response error\"}");
+        }];
+
+}
+
 void _setLogLevel(int logLevel, int visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
 }

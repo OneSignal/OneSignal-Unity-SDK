@@ -91,5 +91,21 @@ public class OneSignalAndroid : OneSignalPlatform {
 	public void EnableSound(bool enable) {
 		mOneSignal.Call("enableSound", enable);
 	}
+
+	public void EnableInAppAlertNotification(bool enable) {
+		mOneSignal.Call("enableInAppAlertNotification", enable);
+	}
+
+	public void EnableNotificationsWhenActive(bool enable) {
+		mOneSignal.Call("enableNotificationsWhenActive", enable);
+	}
+
+	public void SetSubscription(bool enable) {
+		mOneSignal.Call("setSubscription", enable);
+	}
+
+	public void PostNotification(Dictionary<string, object> data) {
+		mOneSignal.Call("postNotification", Json.Serialize(data));
+	}
 }
 #endif

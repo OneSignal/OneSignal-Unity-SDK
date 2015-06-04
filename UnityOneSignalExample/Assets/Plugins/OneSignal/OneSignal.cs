@@ -33,6 +33,10 @@
 #define ANDROID_ONLY
 #endif
 
+#if ONESIGNAL_PLATFORM && !UNITY_WP8
+#define SUPPORTS_LOGGING
+#endif
+
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,6 +53,9 @@ public class OneSignal : MonoBehaviour {
 	public delegate void IdsAvailable(string playerID, string pushToken);
 	public delegate void TagsReceived(Dictionary<string, object> tags);
 
+	public delegate void OnPostNotificationSuccess(Dictionary<string, object> response);
+	public delegate void OnPostNotificationFailure(Dictionary<string, object> response);
+
 	public static IdsAvailable idsAvailableDelegate = null;
 	public static TagsReceived tagsReceivedDelegate = null;
 
@@ -57,12 +64,16 @@ public class OneSignal : MonoBehaviour {
     }
 
 #if ONESIGNAL_PLATFORM
+	#if SUPPORTS_LOGGING
     private static LOG_LEVEL logLevel = LOG_LEVEL.INFO, visualLogLevel = LOG_LEVEL.NONE;
+	#endif
 
 	private static OneSignalPlatform oneSignalPlatform = null;
 	private static bool initialized = false;
 
 	internal static NotificationReceived notificationDelegate = null;
+	internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
+	internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
 
 	// Name of the GameObject that gets automaticly created in your game scene.
 	private const string gameObjectName = "OneSignalRuntimeObject_KEEP";
@@ -113,7 +124,7 @@ public class OneSignal : MonoBehaviour {
 	}
 
     public static void SetLogLevel(LOG_LEVEL inLogLevel, LOG_LEVEL inVisualLevel) {
-        #if ONESIGNAL_PLATFORM
+		#if SUPPORTS_LOGGING
             logLevel = inLogLevel; visualLogLevel = inVisualLevel;
         #endif
     }
@@ -202,6 +213,38 @@ public class OneSignal : MonoBehaviour {
 		#endif
 	}
 
+	public static void EnableNotificationsWhenActive(bool enable) {
+		#if ANDROID_ONLY
+			((OneSignalAndroid)oneSignalPlatform).EnableNotificationsWhenActive(enable);
+		#endif
+	}
+
+	public static void EnableInAppAlertNotification(bool enable) {
+		#if ONESIGNAL_PLATFORM
+			oneSignalPlatform.EnableInAppAlertNotification(enable);
+		#endif
+	}
+
+	public static void SetSubscription(bool enable) {
+		#if ONESIGNAL_PLATFORM
+			oneSignalPlatform.SetSubscription(enable);
+		#endif
+	}
+
+	public static void PostNotification(Dictionary<string, object> data) {
+		#if ONESIGNAL_PLATFORM
+			PostNotification(data, null, null);
+		#endif
+	}
+
+	public static void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess inOnPostNotificationSuccess, OnPostNotificationFailure inOnPostNotificationFailure) {
+		#if ONESIGNAL_PLATFORM
+			postNotificationSuccessDelegate = inOnPostNotificationSuccess;
+			postNotificationFailureDelegate = inOnPostNotificationFailure;
+			oneSignalPlatform.PostNotification(data);
+		#endif
+	}
+
 
 	/*** protected and private methods ****/
 	#if ONESIGNAL_PLATFORM
@@ -228,6 +271,24 @@ public class OneSignal : MonoBehaviour {
 		// Called automatically by Unity
 		void OnApplicationPause(bool paused) {
 			oneSignalPlatform.OnApplicationPause(paused);
+		}
+
+		// Called from the native SDK
+		private void onPostNotificationSuccess(string response) {
+			if (postNotificationSuccessDelegate != null) {
+				postNotificationSuccessDelegate(Json.Deserialize(response) as Dictionary<string, object>);
+				postNotificationFailureDelegate = null;
+				postNotificationSuccessDelegate = null;
+			}
+		}
+		
+		// Called from the native SDK
+		private void onPostNotificationFailed(string response) {
+			if (postNotificationFailureDelegate != null) {
+				postNotificationFailureDelegate(Json.Deserialize(response) as Dictionary<string, object>);
+				postNotificationFailureDelegate = null;
+				postNotificationSuccessDelegate = null;
+			}
 		}
 	#endif
 }
