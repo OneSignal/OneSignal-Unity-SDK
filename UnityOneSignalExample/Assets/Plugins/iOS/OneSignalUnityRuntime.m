@@ -113,6 +113,8 @@ void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL au
     if (oneSignal == nil) {
         NSString* appIdStr = (appId ? [NSString stringWithUTF8String: appId] : nil);
         
+        [OneSignal setValue:@"unity" forKey:@"mSDKType"];
+        
         oneSignal = [[OneSignal alloc] initWithLaunchOptions:launchOptions appId:appIdStr handleNotification:^(NSString* message, NSDictionary* additionalData, BOOL isActive) {
             launchDict = [[NSMutableDictionary alloc] initWithDictionary:additionalData];
             launchDict[@"isActive"] = [NSNumber numberWithBool:isActive];
