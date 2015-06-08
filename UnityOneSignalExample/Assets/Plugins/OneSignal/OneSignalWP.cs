@@ -34,9 +34,13 @@ using System.Collections.Generic;
 class OneSignalWP : OneSignalPlatform {
 
     public OneSignalWP(string appId) {
-        OneSignalSDK.OneSignal.Init(appId, (additionalData, isActive) => {
-            if (OneSignal.notificationDelegate != null)
-                OneSignal.notificationDelegate("", additionalData.ToDictionary(pair => pair.Key, pair=>(object)pair.Value), isActive);
+        OneSignalSDK.OneSignal.Init(appId, (message, inAdditionalData, isActive) => {
+            if (OneSignal.notificationDelegate != null) {
+				Dictionary<string, object> additionalData = null;
+				if (inAdditionalData != null)
+					additionalData = inAdditionalData.ToDictionary(pair => pair.Key, pair=>(object)pair.Value);
+				OneSignal.notificationDelegate(message, additionalData, isActive);
+			}
         });
     }
 
