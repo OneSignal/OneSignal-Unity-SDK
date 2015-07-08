@@ -6,7 +6,7 @@
           android:versionCode="1">
   <application>
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-    <activity android:name="com.onesignal.NotificationOpenedActivity"/>
+    <activity android:name="com.onesignal.NotificationOpenedActivity" android:theme="@android:style/Theme.NoDisplay"/>
     <service android:name="com.onesignal.GcmIntentService" />
   </application>
   
