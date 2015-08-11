@@ -25,72 +25,73 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_WP8 && !UNITY_EDITOR
 using UnityEngine;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-class OneSignalWP : OneSignalPlatform {
+#if UNITY_WP_8_1 && !UNITY_EDITOR
 
-    public OneSignalWP(string appId) {
-        OneSignalSDK.OneSignal.Init(appId, (message, inAdditionalData, isActive) => {
-            if (OneSignal.notificationDelegate != null) {
+public class OneSignalWPWNS : OneSignalPlatform {
+
+	public OneSignalWPWNS(string appId) {
+		OneSignalSDK_WP_WNS.ExternalInitUnity.Init(appId, (message, inAdditionalData, isActive) => {
+			if (OneSignal.notificationDelegate != null) {
 				Dictionary<string, object> additionalData = null;
 				if (inAdditionalData != null)
 					additionalData = inAdditionalData.ToDictionary(pair => pair.Key, pair=>(object)pair.Value);
 				OneSignal.notificationDelegate(message, additionalData, isActive);
 			}
-        });
-    }
-
-    public void SendTag(string tagName, string tagValue) {
-        OneSignalSDK.OneSignal.SendTag(tagName, tagValue);
-    }
-
+		});
+	}
+	
+	public void SendTag(string tagName, string tagValue) {
+		OneSignalSDK_WP_WNS.OneSignal.SendTag(tagName, tagValue);
+	}
+	
 	public void SendTags(IDictionary<string, string> tags) {
-		OneSignalSDK.OneSignal.SendTags(tags.ToDictionary(pair => pair.Key, pair=>(object)pair.Value));
+		OneSignalSDK_WP_WNS.OneSignal.SendTags(tags.ToDictionary(pair => pair.Key, pair=>(object)pair.Value));
 	}
-    
-    public void SendPurchase(double amount) {
-        OneSignalSDK.OneSignal.SendPurchase(amount);
-    }
-    
-    public void GetTags() {
-        OneSignalSDK.OneSignal.GetTags((tags) => {
-           OneSignal.tagsReceivedDelegate(tags.ToDictionary(pair => pair.Key, pair=>(object)pair.Value));
-        });
-    }
-
-    public void DeleteTag(string key) {
-        OneSignalSDK.OneSignal.DeleteTag(key);
-    }
-
+	
+	public void SendPurchase(double amount) {
+		OneSignalSDK_WP_WNS.OneSignal.SendPurchase(amount);
+	}
+	
+	public void GetTags() {
+		OneSignalSDK_WP_WNS.OneSignal.GetTags((tags) => {
+			OneSignal.tagsReceivedDelegate(tags.ToDictionary(pair => pair.Key, pair=>(object)pair.Value));
+		});
+	}
+	
+	public void DeleteTag(string key) {
+		OneSignalSDK_WP_WNS.OneSignal.DeleteTag(key);
+	}
+	
 	public void DeleteTags(IList<string> key) {
-		OneSignalSDK.OneSignal.DeleteTags(key);
+		OneSignalSDK_WP_WNS.OneSignal.DeleteTags(key);
 	}
-
-    public void IdsAvailable() {
-        OneSignalSDK.OneSignal.GetIdsAvailable((playerId, channelUri) => {
-            OneSignal.idsAvailableDelegate(playerId, channelUri);
-        });
-    }
-
+	
+	public void IdsAvailable() {
+		OneSignalSDK_WP_WNS.OneSignal.GetIdsAvailable((playerId, channelUri) => {
+			OneSignal.idsAvailableDelegate(playerId, channelUri);
+		});
+	}
+	
 	// Not available the WP SDK.
 	public void EnableInAppAlertNotification(bool enable) { }
-
+	
 	// Not available in WP SDK.
 	public void SetSubscription(bool enable) {}
-
+	
 	// Not available in WP SDK.
 	public void PostNotification(Dictionary<string, object> data) { }
-
-    // Doesn't apply to Windows Phone: The Callback is setup in the constructor so this is never called.
-    public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {}
-
-    public void OnApplicationPause(bool paused) { } // Doesn't apply to Windows Phone: The Native SDK auto handles this.
-    public void RegisterForPushNotifications() { } // Doesn't apply to Windows Phone: The Native SDK always registers.
-
-    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {} // The Native SDK does not implement this.
+	
+	// Doesn't apply to Windows Phone: The Callback is setup in the constructor so this is never called.
+	public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {}
+	
+	public void OnApplicationPause(bool paused) { } // Doesn't apply to Windows Phone: The Native SDK auto handles this.
+	public void RegisterForPushNotifications() { } // Doesn't apply to Windows Phone: The Native SDK always registers.
+	
+	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {} // The Native SDK does not implement this.
 }
 #endif

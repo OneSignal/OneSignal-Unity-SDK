@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8)
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8 || UNITY_WP_8_1)
 #define ONESIGNAL_PLATFORM
 #endif
 
@@ -33,7 +33,7 @@
 #define ANDROID_ONLY
 #endif
 
-#if ONESIGNAL_PLATFORM && !UNITY_WP8
+#if ONESIGNAL_PLATFORM && !UNITY_WP8 && !UNITY_WP_8_1
 #define SUPPORTS_LOGGING
 #endif
 
@@ -95,11 +95,13 @@ public class OneSignal : MonoBehaviour {
                 #elif UNITY_IPHONE
 					oneSignalPlatform = new OneSignalIOS(gameObjectName, appId, autoRegister, logLevel, visualLogLevel);
                 #elif UNITY_WP8
-					oneSignalPlatform = new OneSignalWP(appId);
+					oneSignalPlatform = new OneSignalWP80(appId);
+				#elif UNITY_WP_8_1
+					oneSignalPlatform = new OneSignalWPWNS(appId);
                 #endif
 				notificationDelegate = inNotificationDelegate;
 				
-                #if !UNITY_WP8
+				#if !UNITY_WP8 && !UNITY_WP_8_1
 					GameObject go = new GameObject(gameObjectName);
 					go.AddComponent<OneSignal>();
 					DontDestroyOnLoad(go);

@@ -301,11 +301,11 @@ PlayerSettings:
   metroPackageLogo180: 
   metroPackageLogo240: 
   metroPackageVersion: 
-  metroCertificatePath: 
+  metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: OneSignal
+  metroCertificateIssuer: OneSignal
+  metroCertificateNotAfter: 80f6110b15e3d101
   metroApplicationDescription: UnityGameThriveExample
   metroStoreTileLogo80: 
   metroStoreTileLogo: 
