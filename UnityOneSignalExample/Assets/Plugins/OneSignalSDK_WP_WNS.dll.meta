@@ -1,7 +1,5 @@
 fileFormatVersion: 2
 guid: 16b4e40c8a6ddfe459eb7ac6d4c25025
-timeCreated: 1437529136
-licenseType: Free
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
@@ -20,7 +18,7 @@ PluginImporter:
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
-        OS: Windows
+        OS: AnyOS
     Linux:
       enabled: 0
       settings:

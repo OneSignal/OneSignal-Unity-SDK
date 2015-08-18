@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: b98ebf660bb49f34db427f5dbb53695e
-timeCreated: 1437528951
-licenseType: Free
+guid: 8e2f6bddb5613eb488aa459dfd89a018
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
@@ -42,11 +40,11 @@ PluginImporter:
       settings:
         STV_MODEL: STANDARD_13
     WP8:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath: 
+        PlaceholderPath: Assets/Plugins/OneSignalSDK_WP80.dll
     Win:
       enabled: 0
       settings:
@@ -56,12 +54,12 @@ PluginImporter:
       settings:
         CPU: AnyCPU
     WindowsStoreApps:
-      enabled: 1
+      enabled: 0
       settings:
-        CPU: ARM
+        CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath: Assets/Plugins/OneSignalSDK_WP_WNS.dll
-        SDK: PhoneSDK81
+        PlaceholderPath: 
+        SDK: AnySDK
     iOS:
       enabled: 0
       settings:

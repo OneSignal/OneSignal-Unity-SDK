@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: a6b042ed17416684bb690127c0a13c73
-timeCreated: 1437531763
-licenseType: Free
+guid: 3b8ec580a0e7bde4c905642bbc8f52c0
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
@@ -58,7 +56,7 @@ PluginImporter:
     WindowsStoreApps:
       enabled: 1
       settings:
-        CPU: ARM
+        CPU: AnyCPU
         DontProcess: False
         PlaceholderPath: 
         SDK: PhoneSDK81

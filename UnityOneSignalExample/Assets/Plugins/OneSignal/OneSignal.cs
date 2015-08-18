@@ -175,7 +175,7 @@ public class OneSignal : MonoBehaviour {
 	// Call when the player has made an IAP purchase in your game so you can later send push notifications based on free or paid users.
 	public static void SendPurchase(double amount) {
 		#if UNITY_WP8 && !UNITY_EDITOR
-			((OneSignalWP)oneSignalPlatform).SendPurchase(amount);
+			((OneSignalWP80)oneSignalPlatform).SendPurchase(amount);
 		#endif
 	}
 

@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 class OneSignalWP80 : OneSignalPlatform {
 
-    public OneSignalWP(string appId) {
+    public OneSignalWP80(string appId) {
 		OneSignalSDK_WP80.OneSignal.Init(appId, (message, inAdditionalData, isActive) => {
             if (OneSignal.notificationDelegate != null) {
 				Dictionary<string, object> additionalData = null;

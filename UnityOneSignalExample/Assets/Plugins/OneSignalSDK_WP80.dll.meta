@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: ea181228db7d88b4f8acf5a6e8be7aaf
-timeCreated: 1428353727
-licenseType: Free
+guid: 4234c569babc22842b45b99a4c835951
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
@@ -16,7 +14,7 @@ PluginImporter:
       enabled: 0
       settings: {}
     Editor:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
@@ -37,12 +35,16 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
-    WP8:
-      enabled: 1
+    SamsungTV:
+      enabled: 0
       settings:
-        CPU: ARM
+        STV_MODEL: STANDARD_13
+    WP8:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath: Assets/Plugins/OneSignalSDK.dll
+        PlaceholderPath: 
     Win:
       enabled: 0
       settings:
