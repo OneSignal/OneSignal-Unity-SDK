@@ -42,7 +42,7 @@ typedef void (^OneSignalHandleNotificationBlock)(NSString* message, NSDictionary
 
 @property(nonatomic, readonly, copy) NSString* app_id;
 
-extern NSString* const VERSION;
+extern NSString* const ONESIGNAL_VERSION;
 
 typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
     ONE_S_LL_NONE, ONE_S_LL_FATAL, ONE_S_LL_ERROR, ONE_S_LL_WARN, ONE_S_LL_INFO, ONE_S_LL_DEBUG, ONE_S_LL_VERBOSE
@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions;
 
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions autoRegister:(BOOL)autoRegister;
+
+- (id)initWithLaunchOptions:(NSDictionary*)launchOptions appId:(NSString*)appId;
 
 - (id)initWithLaunchOptions:(NSDictionary*)launchOptions handleNotification:(OneSignalHandleNotificationBlock)callback;
 
