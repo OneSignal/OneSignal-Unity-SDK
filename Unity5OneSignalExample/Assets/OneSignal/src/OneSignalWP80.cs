@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2015 OneSignal
+ * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,6 +90,9 @@ class OneSignalWP80 : OneSignalPlatform {
 
     public void RegisterForPushNotifications() { } // Doesn't apply to Windows Phone: The Native SDK always registers.
 
-    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {} // The Native SDK does not implement this.
+    // The Native SDK does not implement these.
+    public void SetEmail(string email) { }
+    public void PromptLocation() { }
+    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {}
 }
 #endif

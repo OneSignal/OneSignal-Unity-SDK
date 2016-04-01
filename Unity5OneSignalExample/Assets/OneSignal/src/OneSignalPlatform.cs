@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2015 OneSignal
+ * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,16 +30,18 @@ using System.Collections.Generic;
 // Shared interface so OneSignal.cs can use each mobile platform in a generic way
 public interface OneSignalPlatform {
     void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel);
-	void RegisterForPushNotifications();
-	void SendTag(string tagName, string tagValue);
-	void SendTags(IDictionary<string, string> tags);
-	void GetTags();
-	void DeleteTag(string key);
-	void DeleteTags(IList<string> keys);
-	void IdsAvailable();
-	void EnableInAppAlertNotification(bool enable);
-	void SetSubscription(bool enable);
-	void PostNotification(Dictionary<string, object> data);
+    void RegisterForPushNotifications();
+    void SendTag(string tagName, string tagValue);
+    void SendTags(IDictionary<string, string> tags);
+    void GetTags();
+    void DeleteTag(string key);
+    void DeleteTags(IList<string> keys);
+    void IdsAvailable();
+    void EnableInAppAlertNotification(bool enable);
+    void SetSubscription(bool enable);
+    void PostNotification(Dictionary<string, object> data);
+    void SetEmail(string email);
+    void PromptLocation();
 
-	void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived);
+    void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived);
 }

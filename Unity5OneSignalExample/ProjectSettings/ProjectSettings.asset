@@ -68,6 +68,7 @@ PlayerSettings:
   n3dsEnableSharedListOpt: 1
   n3dsEnableVSync: 0
   uiUse16BitDepthBuffer: 0
+  ignoreAlphaClear: 0
   xboxOneResolution: 0
   ps3SplashScreen: {fileID: 0}
   videoMemoryForVertexBuffers: 0
@@ -97,7 +98,7 @@ PlayerSettings:
   virtualRealitySupported: 0
   productGUID: f32b3d226d3a9c64fa6ee7b4a12a6a34
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 10
+  AndroidMinSdkVersion: 22
   AndroidPreferredInstallLocation: 0
   aotOptions: 
   apiCompatibilityLevel: 2
@@ -133,6 +134,9 @@ PlayerSettings:
   iPadLandscapeSplashScreen: {fileID: 0}
   iPadHighResLandscapeSplashScreen: {fileID: 0}
   appleTVSplashScreen: {fileID: 0}
+  tvOSSmallIconLayers: []
+  tvOSLargeIconLayers: []
+  tvOSTopShelfImageLayers: []
   iOSLaunchScreenType: 0
   iOSLaunchScreenPortrait: {fileID: 0}
   iOSLaunchScreenLandscape: {fileID: 0}
@@ -170,68 +174,68 @@ PlayerSettings:
     m_Icons:
     - serializedVersion: 2
       m_Icon: {fileID: 0}
-      m_Width: 128
-      m_Height: 128
+      m_Width: 0
+      m_Height: 0
   - m_BuildTarget: Android
     m_Icons:
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: e9d226a10527f01469fa2f04bfe95b6a, type: 3}
-      m_Width: 192
-      m_Height: 192
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: 7bbe5e8893010b04990a37eecf1faf42, type: 3}
-      m_Width: 144
-      m_Height: 144
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: e222009feafb6524d898b6c75e77bf69, type: 3}
-      m_Width: 96
-      m_Height: 96
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: fb4207555f669bc4a85bbee65df0652c, type: 3}
-      m_Width: 72
-      m_Height: 72
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: dcb0b2e0ef7afe248b5603f1dea3d123, type: 3}
-      m_Width: 48
-      m_Height: 48
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 0}
-      m_Width: 36
-      m_Height: 36
+      m_Width: 0
+      m_Height: 0
   - m_BuildTarget: iPhone
     m_Icons:
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: d08d095ecc7b04a84bea60c3733abcdd, type: 3}
-      m_Width: 180
-      m_Height: 180
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: d2c06be6a010a4e3aa2da44ed9116c23, type: 3}
-      m_Width: 152
-      m_Height: 152
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: c94c2bd1303b749dfaeb59cbee4317a4, type: 3}
-      m_Width: 144
-      m_Height: 144
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: f00a1206de8d44d2a8f9affd980183ce, type: 3}
-      m_Width: 120
-      m_Height: 120
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: 87b1f818845334a409fa49f53374f329, type: 3}
-      m_Width: 114
-      m_Height: 114
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: ec7349c0aa7d448f28b2060b67218c43, type: 3}
-      m_Width: 76
-      m_Height: 76
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: 203522acc6dce4d7596c10709299cebf, type: 3}
-      m_Width: 72
-      m_Height: 72
+      m_Width: 0
+      m_Height: 0
     - serializedVersion: 2
       m_Icon: {fileID: 2800000, guid: 6ede91192c9704cbba3bef8d76e2ed6b, type: 3}
-      m_Width: 57
-      m_Height: 57
+      m_Width: 0
+      m_Height: 0
   m_BuildTargetBatching: []
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: WindowsStandaloneSupport

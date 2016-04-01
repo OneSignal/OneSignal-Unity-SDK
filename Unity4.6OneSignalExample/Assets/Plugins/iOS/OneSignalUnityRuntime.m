@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  * 
- * Copyright 2015 OneSignal
+ * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -196,6 +196,14 @@ void _postNotification(const char* jsonData) {
                 UnitySendMessage(unityListener, "onPostNotificationFailed", "{\"error\": \"HTTP no response error\"}");
         }];
 
+}
+
+void _setEmail(const char* email) {
+  [oneSignal setEmail:email];
+}
+
+void _promptLocation() {
+  [oneSignal promptLocation];
 }
 
 void _setLogLevel(int logLevel, int visualLogLevel) {

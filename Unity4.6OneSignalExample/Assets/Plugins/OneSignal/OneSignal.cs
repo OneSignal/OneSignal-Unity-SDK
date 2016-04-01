@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2015 OneSignal
+ * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -246,10 +246,22 @@ public class OneSignal : MonoBehaviour {
          oneSignalPlatform.PostNotification(data);
       #endif
    }
+   
+   public static void SetEmail(string email) {
+      #if ONESIGNAL_PLATFORM
+         oneSignalPlatform.SetEmail(email);
+      #endif
+   }
+
+    public void PromptLocation() {
+        #if ONESIGNAL_PLATFORM
+             oneSignalPlatform.PromptLocation();
+        #endif
+    }
 
 
-   /*** protected and private methods ****/
-   #if ONESIGNAL_PLATFORM
+    /*** protected and private methods ****/
+#if ONESIGNAL_PLATFORM
       // Called from the native SDK - Called when a push notification is open or app is running when one comes in.
       private void onPushNotificationReceived(string jsonString) {
          if (notificationDelegate != null)
@@ -289,5 +301,5 @@ public class OneSignal : MonoBehaviour {
             tempPostNotificationFailureDelegate(Json.Deserialize(response) as Dictionary<string, object>);
          }
       }
-   #endif
+#endif
 }

@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2015 OneSignal
+ * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,13 @@ public class OneSignalIOS : OneSignalPlatform {
 	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _postNotification(string json);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    extern static public void _setEmail(string email);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    extern static public void _promptLocation();
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _setLogLevel(int logLevel, int visualLogLevel);
 
 
@@ -114,7 +120,16 @@ public class OneSignalIOS : OneSignalPlatform {
 		_postNotification(Json.Serialize(data));
 	}
 
-	public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {
+
+    public void SetEmail(string email) {
+        _setEmail(email);
+    }
+
+    public void PromptLocation() {
+        _promptLocation();
+    }
+
+    public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {
 		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
 		string message = (string)(dict["alertMessage"]);

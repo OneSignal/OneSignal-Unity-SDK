@@ -18,4 +18,23 @@
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+  
+  <!-- START: ShortcutBadger -->
+  <!--for Samsung-->
+  <uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
+  <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
+
+  <!--for htc-->
+  <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
+  <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
+
+  <!--for sony-->
+  <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
+
+  <!--for apex-->
+  <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT"/>
+
+  <!--for solid-->
+  <uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE"/>
+  <!-- End: ShortcutBadger -->
 </manifest>

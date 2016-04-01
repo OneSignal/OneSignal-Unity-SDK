@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2015 OneSignal
+ * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -100,5 +100,11 @@ public class OneSignalAndroid : OneSignalPlatform {
 	public void PostNotification(Dictionary<string, object> data) {
 		mOneSignal.Call("postNotification", Json.Serialize(data));
 	}
+
+    public void SetEmail(string email) { }
+
+    public void PromptLocation() {
+        mOneSignal.Call("promptLocation");
+    }
 }
 #endif
