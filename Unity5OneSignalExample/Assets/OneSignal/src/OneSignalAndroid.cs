@@ -101,10 +101,12 @@ public class OneSignalAndroid : OneSignalPlatform {
 		mOneSignal.Call("postNotification", Json.Serialize(data));
 	}
 
-    public void SetEmail(string email) { }
+  public void SetEmail(string email) {
+    mOneSignal.Call("setEmail", email);
+  }
 
-    public void PromptLocation() {
-        mOneSignal.Call("promptLocation");
-    }
+  public void PromptLocation() {
+    mOneSignal.Call("promptLocation");
+  }
 }
 #endif

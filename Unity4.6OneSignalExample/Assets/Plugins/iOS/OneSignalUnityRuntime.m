@@ -199,7 +199,7 @@ void _postNotification(const char* jsonData) {
 }
 
 void _setEmail(const char* email) {
-  [oneSignal setEmail:email];
+  [oneSignal setEmail:[NSString stringWithUTF8String: email]];
 }
 
 void _promptLocation() {
