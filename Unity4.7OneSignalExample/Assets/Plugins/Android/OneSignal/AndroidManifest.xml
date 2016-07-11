@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.onesignal.onesignalsdk"
+          android:versionName="1.0"
+          android:versionCode="1">
+  
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  
+  <!-- START: ShortcutBadger -->
+  <!-- Samsung -->
+  <uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
+  <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
+
+  <!-- HTC -->
+  <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
+  <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
+
+  <!-- Sony -->
+  <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
+
+  <!-- Apex -->
+  <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT"/>
+
+  <!-- Solid -->
+  <uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE"/>
+  <!-- End: ShortcutBadger -->
+  
+  <application>
+    <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+    
+    <receiver android:name="com.onesignal.NotificationOpenedReceiver" />
+    <service android:name="com.onesignal.GcmIntentService" />
+    <service android:name="com.onesignal.SyncService" android:stopWithTask="false" />
+    <activity android:name="com.onesignal.PermissionsActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    <service android:name="com.onesignal.NotificationRestoreService" />
+    <receiver android:name="com.onesignal.BootUpReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        </intent-filter>
+    </receiver>
+    <receiver android:name="com.onesignal.UpgradeReceiver" >
+        <intent-filter>
+            <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+        </intent-filter>
+    </receiver>
+  </application>
+</manifest>
