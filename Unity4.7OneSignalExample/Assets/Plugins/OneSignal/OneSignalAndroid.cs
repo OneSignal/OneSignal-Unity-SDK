@@ -108,5 +108,9 @@ public class OneSignalAndroid : OneSignalPlatform {
   public void PromptLocation() {
     mOneSignal.Call("promptLocation");
   }
+  
+  public void ClearOneSignalNotifications() {
+    mOneSignal.Call("clearOneSignalNotifications");
+  }
 }
 #endif

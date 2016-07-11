@@ -220,6 +220,12 @@ public class OneSignal : MonoBehaviour {
          ((OneSignalAndroid)oneSignalPlatform).EnableNotificationsWhenActive(enable);
       #endif
    }
+   
+   public static void ClearOneSignalNotifications() {
+      #if ANDROID_ONLY
+         ((OneSignalAndroid)oneSignalPlatform).ClearOneSignalNotifications();
+      #endif
+   }
 
    public static void EnableInAppAlertNotification(bool enable) {
       #if ONESIGNAL_PLATFORM
