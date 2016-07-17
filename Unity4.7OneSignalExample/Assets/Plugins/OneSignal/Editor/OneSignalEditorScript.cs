@@ -1,4 +1,4 @@
-﻿#if UNITY_ANDROID
+﻿#if UNITY_ANDROID && UNITY_EDITOR
 using UnityEditor;
 using System.IO;
 using UnityEngine;
