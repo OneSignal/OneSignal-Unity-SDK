@@ -53,3 +53,11 @@ Assets/Root
 
 /iosbuild/
 /web/
+
+/Assets/Plugins/Android/play-services-*
+/Assets/Plugins/Android/support-v4-*
+/Assets/Plugins/Android/support-annotations-*.jar*
+
+/ProjectSettings/GoogleDependencyOneSignal.xml
+
+/Assets/Plugins/Android/OneSignalConfig/AndroidManifest.xml*
