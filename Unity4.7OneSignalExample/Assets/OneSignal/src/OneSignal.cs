@@ -97,7 +97,7 @@ public class OneSignal : MonoBehaviour {
             #elif UNITY_WP8
                oneSignalPlatform = new OneSignalWP80(appId);
             #elif UNITY_WP_8_1
-               oneSignalPlatform = new OneSignalWPWNS(appId);
+            oneSignalPlatform = new OneSignalWPWNS(appId);
             #endif
             notificationDelegate = inNotificationDelegate;
             
@@ -259,7 +259,7 @@ public class OneSignal : MonoBehaviour {
       #endif
    }
 
-    public void PromptLocation() {
+    public static void PromptLocation() {
         #if ONESIGNAL_PLATFORM
              oneSignalPlatform.PromptLocation();
         #endif
