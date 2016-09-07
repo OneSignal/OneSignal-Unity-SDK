@@ -45,17 +45,43 @@ public class GameControllerExample : MonoBehaviour {
       // Call before using any other methods on OneSignal.
       // Should only be called once when your app is loaded.
       // OneSignal.Init(OneSignal_AppId, GoogleProjectNumber, NotificationReceivedHandler(optional));
-      OneSignal.Init("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", "703322744261", HandleNotification);
+      OneSignal.Init("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", "703322744261", HandleNotificationReceived, HandleNotificationOpened, true, true, true);
 
       // Shows a Native iOS/Android alert dialog when the user is in your app when a notification comes in.
-      OneSignal.EnableInAppAlertNotification(true);
+      OneSignal.SetInFocusDisplaying(2);
    }
 
    // Gets called when the user opens the notification or gets one while in your app.
    // The name of the method can be anything as long as the signature matches.
    // Method must be static or this object should be marked as DontDestroyOnLoad
-   private static void HandleNotification(string message, Dictionary<string, object> additionalData, bool isActive) {
-      print("GameControllerExample:HandleNotification:message" + message);
+   private static void HandleNotificationReceived(Dictionary<string, object> notification) {
+
+      Dictionary<string, object> payload = (Dictionary<string, object>)notification["payload"];
+      Dictionary<string, object> additionalData = (Dictionary<string, object>)payload["additionalData"];
+      string message = (string)payload["body"];
+
+      print("GameControllerExample:HandleNotificationReceived: " + message);
+      extraMessage = "Notification received with text: " + message;
+
+      // When isActive is true this means the user is currently in your game.
+      // Use isActive and your own game logic so you don't interrupt the user with a popup or menu when they are in the middle of playing your game.
+      if (additionalData != null) {
+         if (additionalData.ContainsKey("discount")) {
+            extraMessage = (string)additionalData["discount"];
+            // Take user to your store.
+         }
+      }
+   }
+
+   public static void HandleNotificationOpened(Dictionary<string, object> result) {
+      Dictionary<string, object> notification = (Dictionary<string, object>)result["notification"];
+      Dictionary<string, object> payload = (Dictionary<string, object>)notification["payload"];
+      Dictionary<string, object> additionalData = (Dictionary<string, object>)payload["additionalData"];
+      string message = (string)payload["body"];
+      Dictionary<string, object> action = (Dictionary<string, object>)result["action"];
+      string actionSelected = (string)action["actionID"];
+
+      print("GameControllerExample:HandleNotificationOpened: " + message);
       extraMessage = "Notification opened with text: " + message;
 
       // When isActive is true this means the user is currently in your game.
@@ -65,12 +91,12 @@ public class GameControllerExample : MonoBehaviour {
             extraMessage = (string)additionalData["discount"];
             // Take user to your store.
          }
-         else if (additionalData.ContainsKey("actionSelected")) {
+      }
+      if (actionSelected != null) {
             // actionSelected equals the id on the button the user pressed.
             // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
-            extraMessage = "Pressed ButtonId: " + additionalData["actionSelected"];
+            extraMessage = "Pressed ButtonId: " + actionSelected;
          }
-      }
    }
 
    // Test Menu

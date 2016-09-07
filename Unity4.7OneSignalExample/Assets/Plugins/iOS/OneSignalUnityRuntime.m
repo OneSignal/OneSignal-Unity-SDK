@@ -34,10 +34,10 @@ NSString* CreateNSString(const char* string) {
     return [NSString stringWithUTF8String: string ? string : ""];
 }
 
-OneSignal* oneSignal;
 char* unityListener = nil;
 char* appId;
-NSMutableDictionary* launchDict;
+NSString* stringifiedNotificationOpened;
+NSString* stringifiedNotificationReceived;
 
 static Class getClassWithProtocolInHierarchy(Class searchClass, Protocol* protocolToFind) {
     if (!class_conformsToProtocol(searchClass, protocolToFind)) {
@@ -86,7 +86,7 @@ static Class delegateClass = nil;
 
 - (void) setOneSignalUnityDelegate:(id<UIApplicationDelegate>)delegate {
     if(delegateClass != nil)
-		return;
+        return;
     
     delegateClass = getClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
     
@@ -97,7 +97,7 @@ static Class delegateClass = nil;
 
 - (BOOL)oneSignalApplication:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
     if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey] != nil)
-        initOneSignalObject(launchOptions, nil, true);
+        initOneSignalObject(launchOptions, nil, YES, YES, YES);
     
     if ([self respondsToSelector:@selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
         return [self oneSignalApplication:application didFinishLaunchingWithOptions:launchOptions];
@@ -105,69 +105,90 @@ static Class delegateClass = nil;
     return YES;
 }
 
-void processNotificationOpened(NSDictionary* resultDictionary) {
-    UnitySendMessage(unityListener, "onPushNotificationReceived", dictionaryToJsonChar(resultDictionary));
+void processNotificationOpened(NSString* resultString) {
+    UnitySendMessage(unityListener, "onPushNotificationOpened", [resultString UTF8String]);
 }
 
-void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL autoRegister) {
-    if (oneSignal == nil) {
+void processNotificationReceived(NSString* resultString) {
+    UnitySendMessage(unityListener, "onPushNotificationReceived", [resultString UTF8String]);
+}
+
+void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL autoPrompt, BOOL inAppAlert, BOOL inAppLaunchURL) {
+    
+    static BOOL initialized = NO;
+    if(!initialized) {
+        
+        initialized = YES;
+    
         NSString* appIdStr = (appId ? [NSString stringWithUTF8String: appId] : nil);
         
         [OneSignal setValue:@"unity" forKey:@"mSDKType"];
         
-        oneSignal = [[OneSignal alloc] initWithLaunchOptions:launchOptions appId:appIdStr handleNotification:^(NSString* message, NSDictionary* additionalData, BOOL isActive) {
-            launchDict = [[NSMutableDictionary alloc] initWithDictionary:additionalData];
-            launchDict[@"isActive"] = [NSNumber numberWithBool:isActive];
-            launchDict[@"alertMessage"] = message;
+        [OneSignal initWithLaunchOptions:launchOptions appId:appIdStr
+            handleNotificationReceived:^(OSNotification *notification) {
+                stringifiedNotificationReceived = [notification stringify];
+                
+                if (unityListener)
+                    processNotificationReceived(stringifiedNotificationReceived);
+            }
+         
+            handleNotificationAction:^(OSNotificationOpenedResult * result) {
+            stringifiedNotificationOpened = [result stringify];
             
             if (unityListener)
-                processNotificationOpened(launchDict);
-        } autoRegister:autoRegister];
+                processNotificationOpened(stringifiedNotificationOpened);
+        } settings:@{ kOSSettingsKeyAutoPrompt : @(autoPrompt), kOSSettingsKeyInAppAlerts : @(inAppAlert), kOSSettingsKeyInAppLaunchURL : @(inAppLaunchURL) }];
+        
     }
+    
 }
 
-void _init(const char* listenerName, const char* appId, BOOL autoRegister, int logLevel, int visualLogLevel) {
+void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppAlerts, BOOL inAppLaunchURL, int logLevel, int visualLogLevel) {
+    
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
 
     unsigned long len = strlen(listenerName);
-	unityListener = malloc(len + 1);
-	strcpy(unityListener, listenerName);
+    unityListener = malloc(len + 1);
+    strcpy(unityListener, listenerName);
     
-    initOneSignalObject(nil, appId, autoRegister);
+    initOneSignalObject(nil, appId, autoPrompt, inAppAlerts, inAppLaunchURL);
     
-    if (launchDict)
-        processNotificationOpened(launchDict);
+    if (stringifiedNotificationOpened)
+        processNotificationOpened(stringifiedNotificationOpened);
+    
+    if (stringifiedNotificationReceived)
+        processNotificationReceived(stringifiedNotificationReceived);
 }
 
 
 void _registerForPushNotifications() {
-    [oneSignal registerForPushNotifications];
+    [OneSignal registerForPushNotifications];
 }
 
 void _sendTag(const char* tagName, const char* tagValue) {
-	[oneSignal sendTag:CreateNSString(tagName) value:CreateNSString(tagValue)];
+    [OneSignal sendTag:CreateNSString(tagName) value:CreateNSString(tagValue)];
 }
 
 void _sendTags(const char* tags) {
-    [oneSignal sendTagsWithJsonString:CreateNSString(tags)];
+    [OneSignal sendTagsWithJsonString:CreateNSString(tags)];
 }
 
 void _deleteTag(const char* key) {
-    [oneSignal deleteTag:CreateNSString(key)];
+    [OneSignal deleteTag:CreateNSString(key)];
 }
 
 void _deleteTags(const char* keys) {
-    [oneSignal deleteTagsWithJsonString:CreateNSString(keys)];
+    [OneSignal deleteTagsWithJsonString:CreateNSString(keys)];
 }
 
 void _getTags() {
-    [oneSignal getTags:^(NSDictionary* result) {
+    [OneSignal getTags:^(NSDictionary* result) {
         UnitySendMessage(unityListener, "onTagsReceived", dictionaryToJsonChar(result));
     }];
 }
 
 void _idsAvailable() {
-    [oneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
+    [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
         if(pushToken == nil)
             pushToken = @"";
         
@@ -176,16 +197,12 @@ void _idsAvailable() {
     }];
 }
 
-void _enableInAppAlertNotification(BOOL enable) {
-    [oneSignal enableInAppAlertNotification:enable];
-}
-
 void _setSubscription(BOOL enable) {
-    [oneSignal setSubscription:enable];
+    [OneSignal setSubscription:enable];
 }
 
 void _postNotification(const char* jsonData) {
-    [oneSignal postNotificationWithJsonString:CreateNSString(jsonData)
+    [OneSignal postNotificationWithJsonString:CreateNSString(jsonData)
         onSuccess:^(NSDictionary* results) {
             UnitySendMessage(unityListener, "onPostNotificationSuccess", dictionaryToJsonChar(results));
         }
@@ -198,12 +215,12 @@ void _postNotification(const char* jsonData) {
 
 }
 
-void _setEmail(const char* email) {
-  [oneSignal setEmail:[NSString stringWithUTF8String: email]];
+void _syncHashedEmail(const char* email) {
+  [OneSignal syncHashedEmail:[NSString stringWithUTF8String: email]];
 }
 
 void _promptLocation() {
-  [oneSignal promptLocation];
+  [OneSignal promptLocation];
 }
 
 void _setLogLevel(int logLevel, int visualLogLevel) {

@@ -44,11 +44,13 @@ using OneSignalPush.MiniJSON;
 
 public class OneSignal : MonoBehaviour {
 
-   // NotificationReceived - Delegate is called when a push notification is opened or one is received when the user is in your game.
-   // message        = The message text the use seen in the push notification.
-   // additionalData = Dictionary of key value pairs sent with the push notification.
-   // isActive       = True when the user was currently in your game when a notification was received.
-   public delegate void NotificationReceived(string message, Dictionary<string, object> additionalData, bool isActive);
+   // NotificationReceived - Delegate is called when a push notification is received when the user is in your game.
+   // notification = The Notification dictionary filled from a serialized native OSNotification object
+   public delegate void NotificationReceived(Dictionary<string, object> notification);
+
+   // NotificationOpened - Delegate is called when a push notification is opened.
+   // result = The Notification open result describing : 1. The notification opened 2. The action taken by the user
+   public delegate void NotificationOpened(Dictionary<string, object> result);
    
    public delegate void IdsAvailable(string playerID, string pushToken);
    public delegate void TagsReceived(Dictionary<string, object> tags);
@@ -71,7 +73,8 @@ public class OneSignal : MonoBehaviour {
    private static OneSignalPlatform oneSignalPlatform = null;
    private static bool initialized = false;
 
-   internal static NotificationReceived notificationDelegate = null;
+   internal static NotificationReceived notificationReceivedDelegate = null;
+   internal static NotificationOpened notificationOpenedDelegate = null;
    internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
    internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
 
@@ -81,26 +84,30 @@ public class OneSignal : MonoBehaviour {
 
    // Init - Only required method you call to setup OneSignal to recieve push notifications.
    //        Call this on the first scene that is loaded.
-   // appId                  = Your OneSignal AppId from onesignal.com
-   // googleProjectNumber    = Your Google Project Number that is only required for Android GCM pushes.
-   // inNotificationDelegate = Calls this delegate when a notification is opened or one is received when the user is in your game.
-   // autoRegister           = Set false to delay the iOS accept notification system prompt. Defaults true.
-   //                          You can then call RegisterForPushNotifications at a better point in your game to prompt them.
-   public static void Init(string appId, string googleProjectNumber, NotificationReceived inNotificationDelegate, bool autoRegister) {
+   // appId                            = Your OneSignal AppId from onesignal.com
+   // googleProjectNumber              = Your Google Project Number that is only required for Android GCM pushes.
+   // inNotificationReceivedDelegate   = Calls this delegate when a notification is received.
+   // inNotificationOpenedDelegate     = Calls this delegate when a push notification is opened.
+   // autoPrompt                       = Set false to delay the iOS accept notification system prompt. Defaults true.
+   //                                    You can then call RegisterForPushNotifications at a better point in your game to prompt them.
+   // inAppAlerts                      = (iOS) Set false to implement a custom display of a notification when received while the app is in focus.
+   // inAppLaunchURL                   = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
+   public static void Init(string appId, string googleProjectNumber, NotificationReceived inNotificationReceivedDelegate, NotificationOpened inNotificationOpenedDelegate, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURL) {
       #if !UNITY_EDITOR
          #if ONESIGNAL_PLATFORM
             if (initialized) return;
             #if UNITY_ANDROID
                oneSignalPlatform = new OneSignalAndroid(gameObjectName, googleProjectNumber, appId, logLevel, visualLogLevel);
             #elif UNITY_IPHONE
-               oneSignalPlatform = new OneSignalIOS(gameObjectName, appId, autoRegister, logLevel, visualLogLevel);
+               oneSignalPlatform = new OneSignalIOS(gameObjectName, appId, autoPrompt, inAppAlerts, inAppLaunchURL, logLevel, visualLogLevel);
             #elif UNITY_WP8
                oneSignalPlatform = new OneSignalWP80(appId);
             #elif UNITY_WP_8_1
                oneSignalPlatform = new OneSignalWPWNS(appId);
             #endif
-            notificationDelegate = inNotificationDelegate;
-            
+            notificationReceivedDelegate = inNotificationReceivedDelegate;
+            notificationOpenedDelegate = inNotificationOpenedDelegate;
+
             #if !UNITY_WP8 && !UNITY_WP_8_1
                GameObject go = new GameObject(gameObjectName);
                go.AddComponent<OneSignal>();
@@ -115,14 +122,14 @@ public class OneSignal : MonoBehaviour {
    }
 
    // Parameter defaulting split out into different methods so they are compatible with UnityScript (AKA Unity Javascript).
-   public static void Init(string appId, string googleProjectNumber, NotificationReceived inNotificationDelegate) {
-      Init(appId, googleProjectNumber, inNotificationDelegate, true);
+   public static void Init(string appId, string googleProjectNumber, NotificationOpened inNotificationOpenedDelegate) {
+      Init(appId, googleProjectNumber, null, inNotificationOpenedDelegate, true, true, true);
    }
    public static void Init(string appId, string googleProjectNumber) {
-      Init(appId, googleProjectNumber, null, true);
+      Init(appId, googleProjectNumber, null, null, true, true, true);
    }
    public static void Init(string appId) {
-      Init(appId, null, null, true);
+      Init(appId, null, null, null, true, true, true);
    }
 
     public static void SetLogLevel(LOG_LEVEL inLogLevel, LOG_LEVEL inVisualLevel) {
@@ -215,21 +222,15 @@ public class OneSignal : MonoBehaviour {
       #endif
    }
 
-   public static void EnableNotificationsWhenActive(bool enable) {
+   public static void SetInFocusDisplaying(int display) {
       #if ANDROID_ONLY
-         ((OneSignalAndroid)oneSignalPlatform).EnableNotificationsWhenActive(enable);
+         ((OneSignalAndroid)oneSignalPlatform).SetInFocusDisplaying(display);
       #endif
    }
    
    public static void ClearOneSignalNotifications() {
       #if ANDROID_ONLY
          ((OneSignalAndroid)oneSignalPlatform).ClearOneSignalNotifications();
-      #endif
-   }
-
-   public static void EnableInAppAlertNotification(bool enable) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.EnableInAppAlertNotification(enable);
       #endif
    }
 
@@ -253,9 +254,9 @@ public class OneSignal : MonoBehaviour {
       #endif
    }
    
-   public static void SetEmail(string email) {
+   public static void SyncHashedEmail(string email) {
       #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.SetEmail(email);
+         oneSignalPlatform.SyncHashedEmail(email);
       #endif
    }
 
@@ -268,10 +269,16 @@ public class OneSignal : MonoBehaviour {
 
     /*** protected and private methods ****/
 #if ONESIGNAL_PLATFORM
-      // Called from the native SDK - Called when a push notification is open or app is running when one comes in.
+      // Called from the native SDK - Called when a push notification received.
       private void onPushNotificationReceived(string jsonString) {
-         if (notificationDelegate != null)
-            oneSignalPlatform.FireNotificationReceivedEvent(jsonString, notificationDelegate);
+         if (notificationReceivedDelegate != null)
+            oneSignalPlatform.FireNotificationReceivedEvent(jsonString, notificationReceivedDelegate);
+      }
+
+      // Called from the native SDK - Called when a push notification is opened by the user
+      private void onPushNotificationOpened(string jsonString) {
+         if (notificationOpenedDelegate != null)
+            oneSignalPlatform.FireNotificationOpenedEvent(jsonString, notificationOpenedDelegate);
       }
       
       // Called from the native SDK - Called when device is registered with onesignal.com service or right after GetIdsAvailable
@@ -297,7 +304,7 @@ public class OneSignal : MonoBehaviour {
             tempPostNotificationSuccessDelegate(Json.Deserialize(response) as Dictionary<string, object>);
          }
       }
-      
+
       // Called from the native SDK
       private void onPostNotificationFailed(string response) {
          if (postNotificationFailureDelegate != null) {
