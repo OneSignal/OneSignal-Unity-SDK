@@ -61,9 +61,53 @@ public class OneSignal : MonoBehaviour {
    public static IdsAvailable idsAvailableDelegate = null;
    public static TagsReceived tagsReceivedDelegate = null;
 
-    public enum LOG_LEVEL {
+   public const string kOSSettingsAutoPrompt = "kOSSettingsAutoPrompt";
+   public const string kOSSettingsInAppAlerts = "kOSSettingsInAppAlerts";
+   public const string kOSSettingsInAppLaunchURL = "kOSSettingsInAppLaunchURL";
+
+   public enum LOG_LEVEL {
         NONE, FATAL, ERROR, WARN, INFO, DEBUG, VERBOSE
     }
+
+   public class UnityBuilder {
+      public string appID = null;
+      public string googleProjectNumber = null;
+      public Dictionary<string, bool> iOSSettings = null;
+      public NotificationReceived notificationReceivedDelegate = null;
+      public NotificationOpened notificationOpenedDelegate = null;
+
+      // inNotificationReceivedDelegate   = Calls this delegate when a notification is received.
+      public UnityBuilder HandleNotificationReceived(NotificationReceived inNotificationReceivedDelegate) {
+         notificationReceivedDelegate = inNotificationReceivedDelegate;
+         return this;
+      }
+
+      // inNotificationOpenedDelegate     = Calls this delegate when a push notification is opened.
+      public UnityBuilder HandleNotificationOpened(NotificationOpened inNotificationOpenedDelegate) {
+         notificationOpenedDelegate = inNotificationOpenedDelegate;;
+         return this;
+      }
+
+      // Pass one if the define kOSSettings strings as keys only. Only affects iOS platform.
+      // autoPrompt                       = Set false to delay the iOS accept notification system prompt. Defaults true.
+      //                                    You can then call RegisterForPushNotifications at a better point in your game to prompt them.
+      // inAppAlerts                      = (iOS) Set false to implement a custom display of a notification when received while the app is in focus.
+      // inAppLaunchURL                   = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
+      public UnityBuilder Settings(Dictionary<string, bool> settings) {
+         //bool autoPrompt, bool inAppAlerts, bool inAppLaunchURL
+         #if UNITY_IPHONE
+            iOSSettings = settings;
+         #endif
+         return this;
+      }
+
+      public void EndInit() {
+         OneSignal.Init();
+      }
+
+   }
+   internal static UnityBuilder builder = null;
+
 
 #if ONESIGNAL_PLATFORM
    #if SUPPORTS_LOGGING
@@ -73,8 +117,6 @@ public class OneSignal : MonoBehaviour {
    private static OneSignalPlatform oneSignalPlatform = null;
    private static bool initialized = false;
 
-   internal static NotificationReceived notificationReceivedDelegate = null;
-   internal static NotificationOpened notificationOpenedDelegate = null;
    internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
    internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
 
@@ -86,27 +128,40 @@ public class OneSignal : MonoBehaviour {
    //        Call this on the first scene that is loaded.
    // appId                            = Your OneSignal AppId from onesignal.com
    // googleProjectNumber              = Your Google Project Number that is only required for Android GCM pushes.
-   // inNotificationReceivedDelegate   = Calls this delegate when a notification is received.
-   // inNotificationOpenedDelegate     = Calls this delegate when a push notification is opened.
-   // autoPrompt                       = Set false to delay the iOS accept notification system prompt. Defaults true.
-   //                                    You can then call RegisterForPushNotifications at a better point in your game to prompt them.
-   // inAppAlerts                      = (iOS) Set false to implement a custom display of a notification when received while the app is in focus.
-   // inAppLaunchURL                   = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
-   public static void Init(string appId, string googleProjectNumber, NotificationReceived inNotificationReceivedDelegate, NotificationOpened inNotificationOpenedDelegate, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURL) {
+
+   public static OneSignal.UnityBuilder StartInit(string appID, string googleProjectNumber = null) {
+      if(builder == null)
+            builder = new UnityBuilder();
+      #if ONESIGNAL_PLATFORM
+         builder.appID = appID;
+         builder.googleProjectNumber = googleProjectNumber;
+      #endif
+      return builder;
+   }
+
+   private static void Init() {
       #if !UNITY_EDITOR
          #if ONESIGNAL_PLATFORM
-            if (initialized) return;
+            if (initialized == true || builder == null) return;
             #if UNITY_ANDROID
-               oneSignalPlatform = new OneSignalAndroid(gameObjectName, googleProjectNumber, appId, logLevel, visualLogLevel);
+               oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, logLevel, visualLogLevel);
             #elif UNITY_IPHONE
-               oneSignalPlatform = new OneSignalIOS(gameObjectName, appId, autoPrompt, inAppAlerts, inAppLaunchURL, logLevel, visualLogLevel);
+               //extract settinsp
+               bool autoPrompt = true, inAppAlerts = true, inAppLaunchURL = true;
+               if(builder.iOSSettings != null) {
+                  if(builder.iOSSettings.contains(kOSSettingsAutoPrompt))
+                     autoPrompt = builder.iOSSettings[kOSSettingsAutoPrompt];
+                  if(builder.iOSSettings.contains(kOSSettingsInAppAlerts))
+                     inAppAlerts = builder.iOSSettings[kOSSettingsInAppAlerts];
+                  if(builder.iOSSettings.contains(kOSSettingsInAppLaunchURL))
+                     inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
+               }
+               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, logLevel, visualLogLevel);
             #elif UNITY_WP8
-               oneSignalPlatform = new OneSignalWP80(appId);
+               oneSignalPlatform = new OneSignalWP80(builder.appID);
             #elif UNITY_WP_8_1
-               oneSignalPlatform = new OneSignalWPWNS(appId);
+               oneSignalPlatform = new OneSignalWPWNS(builder.appID);
             #endif
-            notificationReceivedDelegate = inNotificationReceivedDelegate;
-            notificationOpenedDelegate = inNotificationOpenedDelegate;
 
             #if !UNITY_WP8 && !UNITY_WP_8_1
                GameObject go = new GameObject(gameObjectName);
@@ -120,18 +175,7 @@ public class OneSignal : MonoBehaviour {
          print("Please run OneSignal on a device to see push notifications.");
       #endif
    }
-
-   // Parameter defaulting split out into different methods so they are compatible with UnityScript (AKA Unity Javascript).
-   public static void Init(string appId, string googleProjectNumber, NotificationOpened inNotificationOpenedDelegate) {
-      Init(appId, googleProjectNumber, null, inNotificationOpenedDelegate, true, true, true);
-   }
-   public static void Init(string appId, string googleProjectNumber) {
-      Init(appId, googleProjectNumber, null, null, true, true, true);
-   }
-   public static void Init(string appId) {
-      Init(appId, null, null, null, true, true, true);
-   }
-
+   
     public static void SetLogLevel(LOG_LEVEL inLogLevel, LOG_LEVEL inVisualLevel) {
       #if SUPPORTS_LOGGING
          logLevel = inLogLevel; visualLogLevel = inVisualLevel;
@@ -271,14 +315,14 @@ public class OneSignal : MonoBehaviour {
 #if ONESIGNAL_PLATFORM
       // Called from the native SDK - Called when a push notification received.
       private void onPushNotificationReceived(string jsonString) {
-         if (notificationReceivedDelegate != null)
-            oneSignalPlatform.FireNotificationReceivedEvent(jsonString, notificationReceivedDelegate);
+         if (builder.notificationReceivedDelegate != null)
+            oneSignalPlatform.FireNotificationReceivedEvent(jsonString, builder.notificationReceivedDelegate);
       }
 
       // Called from the native SDK - Called when a push notification is opened by the user
       private void onPushNotificationOpened(string jsonString) {
-         if (notificationOpenedDelegate != null)
-            oneSignalPlatform.FireNotificationOpenedEvent(jsonString, notificationOpenedDelegate);
+         if (builder.notificationOpenedDelegate != null)
+            oneSignalPlatform.FireNotificationOpenedEvent(jsonString, builder.notificationOpenedDelegate);
       }
       
       // Called from the native SDK - Called when device is registered with onesignal.com service or right after GetIdsAvailable
