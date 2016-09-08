@@ -1,6 +1,6 @@
 /**
  * Modified MIT License
- * 
+ *
  * Copyright 2016 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -9,13 +9,13 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * 1. The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * 2. All copies of substantial portions of the Software may only be used in connection
  * with services provided by OneSignal.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,8 +36,7 @@ NSString* CreateNSString(const char* string) {
 
 char* unityListener = nil;
 char* appId;
-NSString* stringifiedNotificationOpened;
-NSString* stringifiedNotificationReceived;
+OSNotificationOpenedResult* actionNotification;
 
 static Class getClassWithProtocolInHierarchy(Class searchClass, Protocol* protocolToFind) {
     if (!class_conformsToProtocol(searchClass, protocolToFind)) {
@@ -97,7 +96,7 @@ static Class delegateClass = nil;
 
 - (BOOL)oneSignalApplication:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
     if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey] != nil)
-        initOneSignalObject(launchOptions, nil, YES, YES, YES);
+        initOneSignalObject(launchOptions, nil, true, true, true);
     
     if ([self respondsToSelector:@selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
         return [self oneSignalApplication:application didFinishLaunchingWithOptions:launchOptions];
@@ -105,59 +104,45 @@ static Class delegateClass = nil;
     return YES;
 }
 
-void processNotificationOpened(NSString* resultString) {
-    UnitySendMessage(unityListener, "onPushNotificationOpened", [resultString UTF8String]);
+void processNotificationOpened(NSString* openString) {
+    UnitySendMessage(unityListener, "onPushNotificationOpened", [openString UTF8String]);
 }
 
-void processNotificationReceived(NSString* resultString) {
-    UnitySendMessage(unityListener, "onPushNotificationReceived", [resultString UTF8String]);
+void processNotificationReceived(NSString* notificationString) {
+    UnitySendMessage(unityListener, "onPushNotificationReceived", [notificationString UTF8String]);
 }
 
-void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL autoPrompt, BOOL inAppAlert, BOOL inAppLaunchURL) {
+void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL inAppAlerts, BOOL inAppLaunchURL, BOOL autoPrompt) {
     
-    static BOOL initialized = NO;
-    if(!initialized) {
-        
-        initialized = YES;
+    NSString* appIdStr = (appId ? [NSString stringWithUTF8String: appId] : nil);
     
-        NSString* appIdStr = (appId ? [NSString stringWithUTF8String: appId] : nil);
-        
-        [OneSignal setValue:@"unity" forKey:@"mSDKType"];
-        
-        [OneSignal initWithLaunchOptions:launchOptions appId:appIdStr
-            handleNotificationReceived:^(OSNotification *notification) {
-                stringifiedNotificationReceived = [notification stringify];
-                
-                if (unityListener)
-                    processNotificationReceived(stringifiedNotificationReceived);
-            }
-         
-            handleNotificationAction:^(OSNotificationOpenedResult * result) {
-            stringifiedNotificationOpened = [result stringify];
-            
-            if (unityListener)
-                processNotificationOpened(stringifiedNotificationOpened);
-        } settings:@{ kOSSettingsKeyAutoPrompt : @(autoPrompt), kOSSettingsKeyInAppAlerts : @(inAppAlert), kOSSettingsKeyInAppLaunchURL : @(inAppLaunchURL) }];
-        
+    [OneSignal setValue:@"unity" forKey:@"mSDKType"];
+    
+    [OneSignal initWithLaunchOptions:launchOptions appId:appIdStr handleNotificationReceived:^(OSNotification* notification) {
+        if (unityListener)
+            processNotificationReceived([notification stringify]);
     }
+            handleNotificationAction:^(OSNotificationOpenedResult* openResult) {
+                actionNotification = openResult;
+                if (unityListener)
+                    processNotificationOpened([openResult stringify]);
+            } settings:@{kOSSettingsKeyAutoPrompt : @(autoPrompt), kOSSettingsKeyInAppAlerts : @(inAppAlerts), kOSSettingsKeyInAppLaunchURL : @(inAppLaunchURL)}];
     
 }
 
-void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppAlerts, BOOL inAppLaunchURL, int logLevel, int visualLogLevel) {
+void _init(const char* listenerName, const char* appId, int logLevel, int visualLogLevel, BOOL inAppAlerts, BOOL inAppLaunchURL, BOOL autoPrompt) {
+    
     
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
-
+    
     unsigned long len = strlen(listenerName);
     unityListener = malloc(len + 1);
     strcpy(unityListener, listenerName);
     
-    initOneSignalObject(nil, appId, autoPrompt, inAppAlerts, inAppLaunchURL);
+    initOneSignalObject(nil, appId, inAppAlerts, inAppLaunchURL, autoPrompt);
     
-    if (stringifiedNotificationOpened)
-        processNotificationOpened(stringifiedNotificationOpened);
-    
-    if (stringifiedNotificationReceived)
-        processNotificationReceived(stringifiedNotificationReceived);
+    if (actionNotification)
+        processNotificationOpened([actionNotification stringify]);
 }
 
 
@@ -170,7 +155,16 @@ void _sendTag(const char* tagName, const char* tagValue) {
 }
 
 void _sendTags(const char* tags) {
-    [OneSignal sendTagsWithJsonString:CreateNSString(tags)];
+    
+    NSString * jsonString = CreateNSString(tags);
+    
+    NSError* jsonError;
+    
+    NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* keyValuePairs = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
+    if (jsonError == nil)
+        [OneSignal sendTags:keyValuePairs];
+    else {}
 }
 
 void _deleteTag(const char* key) {
@@ -178,7 +172,15 @@ void _deleteTag(const char* key) {
 }
 
 void _deleteTags(const char* keys) {
-    [OneSignal deleteTagsWithJsonString:CreateNSString(keys)];
+    NSString * jsonString = CreateNSString(keys);
+    
+    NSError* jsonError;
+    
+    NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSArray* kk = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+    if (jsonError == nil)
+        [OneSignal deleteTags:kk];
+    else { }
 }
 
 void _getTags() {
@@ -202,25 +204,28 @@ void _setSubscription(BOOL enable) {
 }
 
 void _postNotification(const char* jsonData) {
-    [OneSignal postNotificationWithJsonString:CreateNSString(jsonData)
-        onSuccess:^(NSDictionary* results) {
+    NSString * jsonString = CreateNSString(jsonData);
+    NSError* jsonError;
+    
+    NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* jsd = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
+    if (jsonError == nil)
+        [OneSignal postNotification:jsd onSuccess:^(NSDictionary* results) {
             UnitySendMessage(unityListener, "onPostNotificationSuccess", dictionaryToJsonChar(results));
-        }
-        onFailure:^(NSError* error) {
+        } onFailure:^(NSError* error) {
             if (error.userInfo && error.userInfo[@"returned"])
                 UnitySendMessage(unityListener, "onPostNotificationFailed", dictionaryToJsonChar(error.userInfo[@"returned"]));
             else
                 UnitySendMessage(unityListener, "onPostNotificationFailed", "{\"error\": \"HTTP no response error\"}");
         }];
-
 }
 
 void _syncHashedEmail(const char* email) {
-  [OneSignal syncHashedEmail:[NSString stringWithUTF8String: email]];
+    [OneSignal syncHashedEmail:[NSString stringWithUTF8String: email]];
 }
 
 void _promptLocation() {
-  [OneSignal promptLocation];
+    [OneSignal promptLocation];
 }
 
 void _setLogLevel(int logLevel, int visualLogLevel) {

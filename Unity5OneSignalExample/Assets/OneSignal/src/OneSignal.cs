@@ -146,14 +146,14 @@ public class OneSignal : MonoBehaviour {
             #if UNITY_ANDROID
                oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, logLevel, visualLogLevel);
             #elif UNITY_IPHONE
-               //extract settinsp
+               //extract settings
                bool autoPrompt = true, inAppAlerts = true, inAppLaunchURL = true;
                if(builder.iOSSettings != null) {
-                  if(builder.iOSSettings.contains(kOSSettingsAutoPrompt))
+                  if(builder.iOSSettings.ContainsKey(kOSSettingsAutoPrompt))
                      autoPrompt = builder.iOSSettings[kOSSettingsAutoPrompt];
-                  if(builder.iOSSettings.contains(kOSSettingsInAppAlerts))
+                  if(builder.iOSSettings.ContainsKey(kOSSettingsInAppAlerts))
                      inAppAlerts = builder.iOSSettings[kOSSettingsInAppAlerts];
-                  if(builder.iOSSettings.contains(kOSSettingsInAppLaunchURL))
+                  if(builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
                      inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
                }
                oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, logLevel, visualLogLevel);

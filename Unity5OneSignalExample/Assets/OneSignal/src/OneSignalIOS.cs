@@ -58,9 +58,6 @@ public class OneSignalIOS : OneSignalPlatform {
 	extern static public void _idsAvailable();
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _enableInAppAlertNotification(bool enable);
-
-	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _setSubscription(bool enable);
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]

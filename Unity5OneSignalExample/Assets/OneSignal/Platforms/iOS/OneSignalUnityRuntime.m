@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-#import <OneSignal/OneSignal.h>
+#import "OneSignal.h"
 #import <objc/runtime.h>
 
 @implementation UIApplication(OneSignalUnityPush)
