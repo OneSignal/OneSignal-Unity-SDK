@@ -39,7 +39,7 @@ public class OneSignalAndroid : OneSignalPlatform {
 	}
 
     public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-        mOneSignal.Call("setLogLevel", (int)logLevel, (int)logLevel);
+        mOneSignal.Call("setLogLevel", (int)logLevel, (int)visualLevel);
     }
 
 	public void SendTag(string tagName, string tagValue) {
@@ -66,13 +66,12 @@ public class OneSignalAndroid : OneSignalPlatform {
 		mOneSignal.Call("idsAvailable");
 	}
 	
-	public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {
-		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
-		Dictionary<string, object> additionalData = null;
-		if (dict.ContainsKey("custom"))
-			additionalData = dict["custom"] as Dictionary<string, object>;
+	public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {
+		notificationReceived(notification);
+	}
 
-		notificationReceived((string)(dict["alert"]), additionalData, (bool)dict["isActive"]);
+	public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {
+		notificationOpened(action);
 	}
 
 	public void RegisterForPushNotifications() { } // Doesn't apply to Android as the Native SDK always registers with GCM.
@@ -85,12 +84,8 @@ public class OneSignalAndroid : OneSignalPlatform {
 		mOneSignal.Call("enableSound", enable);
 	}
 
-	public void EnableInAppAlertNotification(bool enable) {
-		mOneSignal.Call("enableInAppAlertNotification", enable);
-	}
-
-	public void EnableNotificationsWhenActive(bool enable) {
-		mOneSignal.Call("enableNotificationsWhenActive", enable);
+	public void SetInFocusDisplaying(int display) {
+		mOneSignal.Call("setInFocusDisplaying", display);
 	}
 
 	public void SetSubscription(bool enable) {
@@ -101,8 +96,8 @@ public class OneSignalAndroid : OneSignalPlatform {
 		mOneSignal.Call("postNotification", Json.Serialize(data));
 	}
 
-  public void SetEmail(string email) {
-    mOneSignal.Call("setEmail", email);
+  public void SyncHashedEmail(string email) {
+    mOneSignal.Call("syncHashedEmail", email);
   }
 
   public void PromptLocation() {

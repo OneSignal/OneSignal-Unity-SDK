@@ -86,7 +86,8 @@ class OneSignalWP80 : OneSignalPlatform {
 	public void PostNotification(Dictionary<string, object> data) { }
 
     // Doesn't apply to Windows Phone: The Callback is setup in the constructor so this is never called.
-    public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {}
+    public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {}
+    public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {}
 
     public void RegisterForPushNotifications() { } // Doesn't apply to Windows Phone: The Native SDK always registers.
 

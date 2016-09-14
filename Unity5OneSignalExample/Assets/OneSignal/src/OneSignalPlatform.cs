@@ -37,11 +37,12 @@ public interface OneSignalPlatform {
     void DeleteTag(string key);
     void DeleteTags(IList<string> keys);
     void IdsAvailable();
-    void EnableInAppAlertNotification(bool enable);
+    void SetInFocusDisplaying(int display);
     void SetSubscription(bool enable);
     void PostNotification(Dictionary<string, object> data);
-    void SetEmail(string email);
+    void SyncHashedEmail(string email);
     void PromptLocation();
 
-    void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived);
+    void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived);
+    void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened);
 }

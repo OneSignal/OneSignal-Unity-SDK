@@ -34,7 +34,7 @@ using OneSignalPush.MiniJSON;
 public class OneSignalIOS : OneSignalPlatform {
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _init(string listenerName, string appId, bool autoRegister, int logLevel, int visualLogLevel);
+	extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURLs, int logLevel, int visualLogLevel);
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _registerForPushNotifications();
@@ -58,16 +58,13 @@ public class OneSignalIOS : OneSignalPlatform {
 	extern static public void _idsAvailable();
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _enableInAppAlertNotification(bool enable);
-
-	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _setSubscription(bool enable);
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _postNotification(string json);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
-    extern static public void _setEmail(string email);
+    extern static public void _syncHashedEmail(string email);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     extern static public void _promptLocation();
@@ -76,8 +73,8 @@ public class OneSignalIOS : OneSignalPlatform {
 	extern static public void _setLogLevel(int logLevel, int visualLogLevel);
 
 
-	public OneSignalIOS(string gameObjectName, string appId, bool autoRegister, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-	    _init(gameObjectName, appId, autoRegister, (int)logLevel, (int)visualLevel);
+	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURLs, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+	    _init(gameObjectName, appId, autoPrompt, inAppAlerts, inAppLaunchURLs, (int)logLevel, (int)visualLevel);
 	}
 
 	public void RegisterForPushNotifications() {
@@ -108,8 +105,7 @@ public class OneSignalIOS : OneSignalPlatform {
 		_idsAvailable();
 	}
 
-	public void EnableInAppAlertNotification(bool enable) {
-		_enableInAppAlertNotification(enable);
+	public void SetInFocusDisplaying(int display) { //do nothing. Android only
 	}
 
 	public void SetSubscription(bool enable) {
@@ -121,24 +117,20 @@ public class OneSignalIOS : OneSignalPlatform {
 	}
 
 
-    public void SetEmail(string email) {
-        _setEmail(email);
+    public void SyncHashedEmail(string email) {
+        _syncHashedEmail(email);
     }
 
     public void PromptLocation() {
         _promptLocation();
     }
 
-    public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {
-		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
+    public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {
+		notificationReceived(notification);
+	}
 
-		string message = (string)(dict["alertMessage"]);
-		dict.Remove("alertMessage");
-
-		bool isActive = (bool)dict["isActive"];
-		dict.Remove("isActive");
-
-		notificationReceived(message, dict, isActive);
+	public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {
+		notificationOpened(action);
 	}
 
 	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
