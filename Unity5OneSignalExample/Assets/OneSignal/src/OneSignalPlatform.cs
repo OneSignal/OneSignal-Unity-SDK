@@ -43,6 +43,6 @@ public interface OneSignalPlatform {
     void SyncHashedEmail(string email);
     void PromptLocation();
 
-    void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived);
-    void FireNotificationOpenedEvent(string jsonString, OneSignal.NotificationOpened notificationOpened);
+    void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived);
+    void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened);
 }

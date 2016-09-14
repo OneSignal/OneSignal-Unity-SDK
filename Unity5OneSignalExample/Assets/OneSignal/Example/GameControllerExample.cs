@@ -39,29 +39,29 @@ public class GameControllerExample : MonoBehaviour {
       extraMessage = null;
 
       // Enable line below to debug issues with setuping OneSignal. (logLevel, visualLogLevel)
-      //OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.INFO, OneSignal.LOG_LEVEL.INFO);
+      OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
 
       // The only required method you need to call to setup OneSignal to receive push notifications.
       // Call before using any other methods on OneSignal.
       // Should only be called once when your app is loaded.
       // OneSignal.Init(OneSignal_AppId, GoogleProjectNumber, NotificationReceivedHandler(optional));
-      OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", "703322744261")
+      OneSignal.StartInit("4ba9ec31-b65a-4f5f-b210-a5077a245b3d", "703322744261")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
                .EndInit();
 
       // Shows a Native iOS/Android alert dialog when the user is in your app when a notification comes in.
-      OneSignal.SetInFocusDisplaying(2);
+      OneSignal.SetInFocusDisplaying(1);
    }
 
    // Gets called when the user opens the notification or gets one while in your app.
    // The name of the method can be anything as long as the signature matches.
    // Method must be static or this object should be marked as DontDestroyOnLoad
-   private static void HandleNotificationReceived(Dictionary<string, object> notification) {
+   private static void HandleNotificationReceived(OSNotification notification) {
 
-      Dictionary<string, object> payload = (Dictionary<string, object>)notification["payload"];
-      Dictionary<string, object> additionalData = (Dictionary<string, object>)payload["additionalData"];
-      string message = (string)payload["body"];
+      OSNotificationPayload payload = notification.payload;
+      Dictionary<string, string> additionalData = payload.additionalData;
+      string message = payload.body;
 
       print("GameControllerExample:HandleNotificationReceived: " + message);
       extraMessage = "Notification received with text: " + message;
@@ -70,19 +70,17 @@ public class GameControllerExample : MonoBehaviour {
       // Use isActive and your own game logic so you don't interrupt the user with a popup or menu when they are in the middle of playing your game.
       if (additionalData != null) {
          if (additionalData.ContainsKey("discount")) {
-            extraMessage = (string)additionalData["discount"];
+            extraMessage = additionalData["discount"];
             // Take user to your store.
          }
       }
    }
 
-   public static void HandleNotificationOpened(Dictionary<string, object> result) {
-      Dictionary<string, object> notification = (Dictionary<string, object>)result["notification"];
-      Dictionary<string, object> payload = (Dictionary<string, object>)notification["payload"];
-      Dictionary<string, object> additionalData = (Dictionary<string, object>)payload["additionalData"];
-      string message = (string)payload["body"];
-      Dictionary<string, object> action = (Dictionary<string, object>)result["action"];
-      string actionSelected = (string)action["actionID"];
+   public static void HandleNotificationOpened(OSNotificationAction result) {
+      OSNotificationPayload payload = result.notification.payload;
+      Dictionary<string, string> additionalData = payload.additionalData;
+      string message = payload.body;
+      string actionID = result.actionID;
 
       print("GameControllerExample:HandleNotificationOpened: " + message);
       extraMessage = "Notification opened with text: " + message;
@@ -95,10 +93,10 @@ public class GameControllerExample : MonoBehaviour {
             // Take user to your store.
          }
       }
-      if (actionSelected != null) {
+      if (actionID != null) {
             // actionSelected equals the id on the button the user pressed.
             // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
-            extraMessage = "Pressed ButtonId: " + actionSelected;
+            extraMessage = "Pressed ButtonId: " + actionID;
          }
    }
 

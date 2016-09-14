@@ -130,7 +130,7 @@ void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL in
     
 }
 
-void _init(const char* listenerName, const char* appId, int logLevel, int visualLogLevel, BOOL inAppAlerts, BOOL inAppLaunchURL, BOOL autoPrompt) {
+void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppAlerts, BOOL inAppLaunchURL, int logLevel, int visualLogLevel) {
     
     
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];

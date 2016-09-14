@@ -66,14 +66,12 @@ public class OneSignalAndroid : OneSignalPlatform {
 		mOneSignal.Call("idsAvailable");
 	}
 	
-	public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {
-		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
-		notificationReceived(dict);
+	public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {
+		notificationReceived(notification);
 	}
 
-	public void FireNotificationOpenedEvent(string jsonString, OneSignal.NotificationOpened notificationOpened) {
-		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
-		notificationOpened(dict);
+	public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {
+		notificationOpened(action);
 	}
 
 	public void RegisterForPushNotifications() { } // Doesn't apply to Android as the Native SDK always registers with GCM.

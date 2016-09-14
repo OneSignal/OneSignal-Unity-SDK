@@ -125,14 +125,12 @@ public class OneSignalIOS : OneSignalPlatform {
         _promptLocation();
     }
 
-    public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {
-		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
-		notificationReceived(dict);
+    public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {
+		notificationReceived(notification);
 	}
 
-	public void FireNotificationOpenedEvent(string jsonString, OneSignal.NotificationOpened notificationOpened) {
-		var dict = Json.Deserialize(jsonString) as Dictionary<string, object>;
-		notificationOpened(dict);
+	public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {
+		notificationOpened(action);
 	}
 
 	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
