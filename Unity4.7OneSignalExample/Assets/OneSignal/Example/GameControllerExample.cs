@@ -50,7 +50,7 @@ public class GameControllerExample : MonoBehaviour {
                .HandleNotificationOpened(HandleNotificationOpened)
                .EndInit();
 
-      // Shows a Native iOS/Android alert dialog when the user is in your app when a notification comes in.
+      // Shows a Native Android alert dialog when the user is in your app when a notification comes in.
       OneSignal.SetInFocusDisplaying(1);
    }
 
@@ -65,15 +65,6 @@ public class GameControllerExample : MonoBehaviour {
 
       print("GameControllerExample:HandleNotificationReceived: " + message);
       extraMessage = "Notification received with text: " + message;
-
-      // When isActive is true this means the user is currently in your game.
-      // Use isActive and your own game logic so you don't interrupt the user with a popup or menu when they are in the middle of playing your game.
-      if (additionalData != null) {
-         if (additionalData.ContainsKey("discount")) {
-            extraMessage = additionalData["discount"];
-            // Take user to your store.
-         }
-      }
    }
 
    public static void HandleNotificationOpened(OSNotificationAction result) {
