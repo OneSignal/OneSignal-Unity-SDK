@@ -71,7 +71,7 @@ class OneSignalWP80 : OneSignalPlatform {
 	}
 
     public void IdsAvailable() {
-		OneSignalSDK_WP80.OneSignal.idsAvailable((playerId, channelUri) => {
+		OneSignalSDK_WP80.OneSignal.IdsAvailable((playerId, channelUri) => {
             OneSignal.idsAvailableDelegate(playerId, channelUri);
         });
     }

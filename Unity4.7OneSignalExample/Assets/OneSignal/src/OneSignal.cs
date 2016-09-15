@@ -98,13 +98,13 @@ public class OneSignal : MonoBehaviour {
    // result = The Notification open result describing : 1. The notification opened 2. The action taken by the user
    public delegate void NotificationOpened(OSNotificationOpenedResult result);
    
-   public delegate void IdsAvailable(string playerID, string pushToken);
+   public delegate void IdsAvailableCallback(string playerID, string pushToken);
    public delegate void TagsReceived(Dictionary<string, object> tags);
 
    public delegate void OnPostNotificationSuccess(Dictionary<string, object> response);
    public delegate void OnPostNotificationFailure(Dictionary<string, object> response);
 
-   public static IdsAvailable idsAvailableDelegate = null;
+   public static IdsAvailableCallback idsAvailableDelegate = null;
    public static TagsReceived tagsReceivedDelegate = null;
 
    public const string kOSSettingsAutoPrompt = "kOSSettingsAutoPrompt";
@@ -142,7 +142,6 @@ public class OneSignal : MonoBehaviour {
       // Pass one if the define kOSSettings strings as keys only. Only affects iOS platform.
       // autoPrompt                       = Set false to delay the iOS accept notification system prompt. Defaults true.
       //                                    You can then call RegisterForPushNotifications at a better point in your game to prompt them.
-      // inAppAlerts                      = (iOS) Set false to implement a custom display of a notification when received while the app is in focus.
       // inAppLaunchURL                   = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
       public UnityBuilder Settings(Dictionary<string, bool> settings) {
          //bool autoPrompt, bool inAppAlerts, bool inAppLaunchURL
@@ -289,7 +288,7 @@ public class OneSignal : MonoBehaviour {
 
    // Call this if you need the playerId and/or pushToken
    // NOTE: pushToken maybe null if notifications are not accepted or there is connectivity issues. 
-   public static void idsAvailable(IdsAvailable inIdsAvailableDelegate) {
+   public static void IdsAvailable(IdsAvailableCallback inIdsAvailableDelegate) {
       #if ONESIGNAL_PLATFORM
          idsAvailableDelegate = inIdsAvailableDelegate;
          oneSignalPlatform.IdsAvailable();
@@ -297,7 +296,7 @@ public class OneSignal : MonoBehaviour {
    }
 
    // Set OneSignal.idsAvailableDelegate before calling this method or use the method above.
-   public static void idsAvailable() {
+   public static void IdsAvailable() {
       #if ONESIGNAL_PLATFORM
          oneSignalPlatform.IdsAvailable();
       #endif
@@ -418,7 +417,7 @@ public class OneSignal : MonoBehaviour {
          }
       }
       
-      // Called from the native SDK - Called when device is registered with onesignal.com service or right after idsAvailable
+      // Called from the native SDK - Called when device is registered with onesignal.com service or right after IdsAvailable
       //                          if already registered.
       private void onIdsAvailable(string jsonString) {
          if (idsAvailableDelegate != null) {

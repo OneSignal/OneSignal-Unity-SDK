@@ -72,7 +72,7 @@ public class OneSignalWPWNS : OneSignalPlatform {
 	}
 	
 	public void IdsAvailable() {
-		OneSignalSDK_WP_WNS.OneSignal.idsAvailable((playerId, channelUri) => {
+		OneSignalSDK_WP_WNS.OneSignal.IdsAvailable((playerId, channelUri) => {
 			OneSignal.idsAvailableDelegate(playerId, channelUri);
 		});
 	}

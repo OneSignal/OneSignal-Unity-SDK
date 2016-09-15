@@ -50,8 +50,6 @@ public class GameControllerExample : MonoBehaviour {
                .HandleNotificationOpened(HandleNotificationOpened)
                .InFocusDisplaying(1)
                .EndInit();
-
-      // Shows a Native Android alert dialog when the user is in your app when a notification comes in.
    }
 
    // Gets called when the user opens the notification or gets one while in your app.
@@ -115,14 +113,14 @@ public class GameControllerExample : MonoBehaviour {
       }
 
       if (GUI.Button (new Rect (60, 170, 300, 60), "GetIds", customTextSize)) {
-            OneSignal.idsAvailable((userId, pushToken) => {
+            OneSignal.IdsAvailable((userId, pushToken) => {
             extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
          });
       }
 
       if (GUI.Button (new Rect (60, 260, 300, 60), "TestNotification", customTextSize)) {
          extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
-         OneSignal.idsAvailable((userId, pushToken) => {
+         OneSignal.IdsAvailable((userId, pushToken) => {
             if (pushToken != null) {
                // See http://documentation.onesignal.com/v2.0/docs/notifications-create-notification for a full list of options.
                // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
