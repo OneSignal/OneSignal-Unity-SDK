@@ -44,5 +44,5 @@ public interface OneSignalPlatform {
     void PromptLocation();
 
     void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived);
-    void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened);
+    void FireNotificationOpenedEvent(OSNotificationOpenedResult result, OneSignal.NotificationOpened notificationOpened);
 }

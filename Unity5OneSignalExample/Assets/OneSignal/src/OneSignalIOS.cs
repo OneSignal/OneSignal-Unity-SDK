@@ -129,8 +129,8 @@ public class OneSignalIOS : OneSignalPlatform {
 		notificationReceived(notification);
 	}
 
-	public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {
-		notificationOpened(action);
+	public void FireNotificationOpenedEvent(OSNotificationOpenedResult result, OneSignal.NotificationOpened notificationOpened) {
+		notificationOpened(result);
 	}
 
 	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {

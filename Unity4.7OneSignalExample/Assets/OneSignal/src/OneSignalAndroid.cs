@@ -34,8 +34,9 @@ using OneSignalPush.MiniJSON;
 public class OneSignalAndroid : OneSignalPlatform {
 	private static AndroidJavaObject mOneSignal = null;
 
-	public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+	public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, int displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
         mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", gameObjectName, googleProjectNumber, appId, (int)logLevel, (int)visualLevel);
+        setInFocusDisplaying(displayOption);
 	}
 
     public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
@@ -70,8 +71,8 @@ public class OneSignalAndroid : OneSignalPlatform {
 		notificationReceived(notification);
 	}
 
-	public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {
-		notificationOpened(action);
+	public void FireNotificationOpenedEvent(OSNotificationOpenedResult result, OneSignal.NotificationOpened notificationOpened) {
+		notificationOpened(result);
 	}
 
 	public void RegisterForPushNotifications() { } // Doesn't apply to Android as the Native SDK always registers with GCM.

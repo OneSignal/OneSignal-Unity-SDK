@@ -71,7 +71,7 @@ class OneSignalWP80 : OneSignalPlatform {
 	}
 
     public void IdsAvailable() {
-		OneSignalSDK_WP80.OneSignal.GetIdsAvailable((playerId, channelUri) => {
+		OneSignalSDK_WP80.OneSignal.idsAvailable((playerId, channelUri) => {
             OneSignal.idsAvailableDelegate(playerId, channelUri);
         });
     }
@@ -87,7 +87,7 @@ class OneSignalWP80 : OneSignalPlatform {
 
     // Doesn't apply to Windows Phone: The Callback is setup in the constructor so this is never called.
     public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {}
-    public void FireNotificationOpenedEvent(OSNotificationAction action, OneSignal.NotificationOpened notificationOpened) {}
+    public void FireNotificationOpenedEvent(OSNotificationOpenedResult result, OneSignal.NotificationOpened notificationOpened) {}
 
     public void RegisterForPushNotifications() { } // Doesn't apply to Windows Phone: The Native SDK always registers.
 

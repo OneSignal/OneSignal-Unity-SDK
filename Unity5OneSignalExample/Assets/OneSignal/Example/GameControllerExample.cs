@@ -48,10 +48,10 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.StartInit("4ba9ec31-b65a-4f5f-b210-a5077a245b3d", "703322744261")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
+               .InFocusDisplaying(1)
                .EndInit();
 
       // Shows a Native Android alert dialog when the user is in your app when a notification comes in.
-      OneSignal.SetInFocusDisplaying(1);
    }
 
    // Gets called when the user opens the notification or gets one while in your app.
@@ -67,11 +67,11 @@ public class GameControllerExample : MonoBehaviour {
       extraMessage = "Notification received with text: " + message;
    }
 
-   public static void HandleNotificationOpened(OSNotificationAction result) {
+   public static void HandleNotificationOpened(OSNotificationOpenedResult result) {
       OSNotificationPayload payload = result.notification.payload;
       Dictionary<string, string> additionalData = payload.additionalData;
       string message = payload.body;
-      string actionID = result.actionID;
+      string actionID = result.action.actionID;
 
       print("GameControllerExample:HandleNotificationOpened: " + message);
       extraMessage = "Notification opened with text: " + message;
@@ -115,14 +115,14 @@ public class GameControllerExample : MonoBehaviour {
       }
 
       if (GUI.Button (new Rect (60, 170, 300, 60), "GetIds", customTextSize)) {
-            OneSignal.GetIdsAvailable((userId, pushToken) => {
+            OneSignal.idsAvailable((userId, pushToken) => {
             extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
          });
       }
 
       if (GUI.Button (new Rect (60, 260, 300, 60), "TestNotification", customTextSize)) {
          extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
-         OneSignal.GetIdsAvailable((userId, pushToken) => {
+         OneSignal.idsAvailable((userId, pushToken) => {
             if (pushToken != null) {
                // See http://documentation.onesignal.com/v2.0/docs/notifications-create-notification for a full list of options.
                // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
