@@ -25,21 +25,20 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_ANDROID && UNITY_EDITOR
-using UnityEditor;
 using System.IO;
-using UnityEngine;
+using UnityEditor;
 
+#if UNITY_ANDROID && UNITY_EDITOR
 using Google.JarResolver;
 
 [InitializeOnLoad]
-public class OneSignalEditorScript {
+public class OneSignalEditorScriptAndroid {
   
    private static readonly string PluginName = "OneSignal";
    private static readonly string PLAY_SERVICES_VERSION = "9+";
    public static PlayServicesSupport svcSupport;
 
-   static OneSignalEditorScript () {
+   static OneSignalEditorScriptAndroid() {
       createOneSignalAndroidManifest();
       addGMSLibrary();
    }
@@ -81,6 +80,28 @@ public class OneSignalEditorScript {
       {
          streamWriter.Write(body);
       }
+   }
+}
+#endif
+
+#if UNITY_IPHONE && UNITY_EDITOR
+using UnityEditor.Callbacks;
+using UnityEditor.iOS.Xcode;
+
+[InitializeOnLoad]
+public class OneSignalEditorScriptiOS
+{
+   [PostProcessBuild(700)]
+   public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject) {
+      if (target != BuildTarget.iOS)
+         return;
+
+      string projectPath = pathToBuiltProject + "/Unity-iPhone.xcodeproj/project.pbxproj";
+      PBXProject pbxProject = new PBXProject();
+      pbxProject.ReadFromString(File.ReadAllText(projectPath));
+      string targetGUID = pbxProject.TargetGuidByName("Unity-iPhone");
+      pbxProject.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-ObjC");
+      File.WriteAllText(projectPath, pbxProject.WriteToString());
    }
 }
 #endif

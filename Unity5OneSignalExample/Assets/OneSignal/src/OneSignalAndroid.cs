@@ -27,14 +27,13 @@
 
 #if UNITY_ANDROID
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using OneSignalPush.MiniJSON;
 
 public class OneSignalAndroid : OneSignalPlatform {
    private static AndroidJavaObject mOneSignal = null;
 
-   public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, int displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+   public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
         mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", gameObjectName, googleProjectNumber, appId, (int)logLevel, (int)visualLevel);
         SetInFocusDisplaying(displayOption);
    }
@@ -66,14 +65,6 @@ public class OneSignalAndroid : OneSignalPlatform {
    public void IdsAvailable() {
       mOneSignal.Call("idsAvailable");
    }
-   
-   public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {
-      notificationReceived(notification);
-   }
-
-   public void FireNotificationOpenedEvent(OSNotificationOpenedResult result, OneSignal.NotificationOpened notificationOpened) {
-      notificationOpened(result);
-   }
 
    public void RegisterForPushNotifications() { } // Doesn't apply to Android as the Native SDK always registers with GCM.
 
@@ -85,8 +76,8 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("enableSound", enable);
    }
 
-   public void SetInFocusDisplaying(int display) {
-      mOneSignal.Call("setInFocusDisplaying", display);
+   public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display) {
+      mOneSignal.Call("setInFocusDisplaying", (int)display);
    }
 
    public void SetSubscription(bool enable) {

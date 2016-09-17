@@ -31,69 +31,72 @@ using System.Collections;
 using System.Collections.Generic;
 
 #if UNITY_WP_8_1 && !UNITY_EDITOR
-
 public class OneSignalWPWNS : OneSignalPlatform {
 
-	public OneSignalWPWNS(string appId) {
-		OneSignalSDK_WP_WNS.ExternalInitUnity.Init(appId, (message, inAdditionalData, isActive) => {
-			if (OneSignal.notificationDelegate != null) {
-				Dictionary<string, object> additionalData = null;
-				if (inAdditionalData != null)
-					additionalData = inAdditionalData.ToDictionary(pair => pair.Key, pair=>(object)pair.Value);
-				OneSignal.notificationDelegate(message, additionalData, isActive);
-			}
-		});
-	}
-	
-	public void SendTag(string tagName, string tagValue) {
-		OneSignalSDK_WP_WNS.OneSignal.SendTag(tagName, tagValue);
-	}
-	
-	public void SendTags(IDictionary<string, string> tags) {
-		OneSignalSDK_WP_WNS.OneSignal.SendTags(tags.ToDictionary(pair => pair.Key, pair=>(object)pair.Value));
-	}
-	
-	public void SendPurchase(double amount) {
-		OneSignalSDK_WP_WNS.OneSignal.SendPurchase(amount);
-	}
-	
-	public void GetTags() {
-		OneSignalSDK_WP_WNS.OneSignal.GetTags((tags) => {
-			OneSignal.tagsReceivedDelegate(tags.ToDictionary(pair => pair.Key, pair=>(object)pair.Value));
-		});
-	}
-	
-	public void DeleteTag(string key) {
-		OneSignalSDK_WP_WNS.OneSignal.DeleteTag(key);
-	}
-	
-	public void DeleteTags(IList<string> key) {
-		OneSignalSDK_WP_WNS.OneSignal.DeleteTags(key);
-	}
-	
-	public void IdsAvailable() {
-		OneSignalSDK_WP_WNS.OneSignal.IdsAvailable((playerId, channelUri) => {
-			OneSignal.idsAvailableDelegate(playerId, channelUri);
-		});
-	}
-	
-	// Not available the WP SDK.
-	public void EnableInAppAlertNotification(bool enable) { }
-	
-	// Not available in WP SDK.
-	public void SetSubscription(bool enable) {}
-	
-	// Not available in WP SDK.
-	public void PostNotification(Dictionary<string, object> data) { }
-	
-	// Doesn't apply to Windows Phone: The Callback is setup in the constructor so this is never called.
-	public void FireNotificationReceivedEvent(string jsonString, OneSignal.NotificationReceived notificationReceived) {}
-	
-	public void RegisterForPushNotifications() { } // Doesn't apply to Windows Phone: The Native SDK always registers.
+   public OneSignalWPWNS(string appId) {
+      OneSignalSDK_WP_WNS.ExternalInitUnity.Init(appId, (message, inAdditionalData, isActive) => {
+         if (OneSignal.builder != null && OneSignal.builder.notificationOpenedDelegate != null) {
+            Dictionary<string, string> additionalData = null;
+            if (inAdditionalData != null)
+               additionalData = inAdditionalData.ToDictionary(pair => pair.Key, pair => (string)pair.Value);
 
-    // The Native SDK does not implement these.
-    public void SetEmail(string email) { }
-    public void PromptLocation() { }
-	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {}
+            OSNotificationOpenedResult result = new OSNotificationOpenedResult();
+            result.action = new OSNotificationAction();
+            result.action.type = OSNotificationAction.ActionType.Opened;
+
+            result.notification = new OSNotification();
+            result.notification.shown = !isActive;
+
+            result.notification.payload = new OSNotificationPayload();
+            result.notification.payload.body = message;
+            result.notification.payload.additionalData = additionalData;
+
+            OneSignal.builder.notificationOpenedDelegate(result);
+         }
+      });
+   }
+   
+   public void SendTag(string tagName, string tagValue) {
+      OneSignalSDK_WP_WNS.OneSignal.SendTag(tagName, tagValue);
+   }
+   
+   public void SendTags(IDictionary<string, string> tags) {
+      OneSignalSDK_WP_WNS.OneSignal.SendTags(tags.ToDictionary(pair => pair.Key, pair => (object)pair.Value));
+   }
+   
+   public void SendPurchase(double amount) {
+      OneSignalSDK_WP_WNS.OneSignal.SendPurchase(amount);
+   }
+   
+   public void GetTags() {
+      OneSignalSDK_WP_WNS.OneSignal.GetTags((tags) => {
+         OneSignal.tagsReceivedDelegate(tags.ToDictionary(pair => pair.Key, pair => (object)pair.Value));
+      });
+   }
+   
+   public void DeleteTag(string key) {
+      OneSignalSDK_WP_WNS.OneSignal.DeleteTag(key);
+   }
+   
+   public void DeleteTags(IList<string> key) {
+      OneSignalSDK_WP_WNS.OneSignal.DeleteTags(key);
+   }
+   
+   public void IdsAvailable() {
+      OneSignalSDK_WP_WNS.OneSignal.GetIdsAvailable((playerId, channelUri) => {
+         OneSignal.idsAvailableDelegate(playerId, channelUri);
+      });
+   }
+   
+   // The following have not been implemented by the native WP8.1 SDK.
+   public void SetSubscription(bool enable) {}
+   public void PostNotification(Dictionary<string, object> data) { }
+   public void PromptLocation() {}
+   public void SyncHashedEmail(string email) {}
+   public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {}
+
+
+   // Doesn't apply to Windows Phone: The Native SDK always registers.
+   public void RegisterForPushNotifications() {}
 }
 #endif

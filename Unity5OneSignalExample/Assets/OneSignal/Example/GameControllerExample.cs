@@ -26,7 +26,6 @@
  */
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 using OneSignalPush.MiniJSON;
@@ -48,7 +47,7 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", "703322744261")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
-               .InFocusDisplaying(1) // None = 0, InAppAlert = 1, Notificaiton = 2
+               .InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                .EndInit();
    }
 
@@ -60,6 +59,7 @@ public class GameControllerExample : MonoBehaviour {
       string message = payload.body;
 
       print("GameControllerExample:HandleNotificationReceived: " + message);
+      print("displayType: " + notification.displayType);
       extraMessage = "Notification received with text: " + message;
    }
    

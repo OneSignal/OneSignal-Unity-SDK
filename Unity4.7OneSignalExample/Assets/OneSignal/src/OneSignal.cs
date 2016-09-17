@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP8 || UNITY_WP_8_1)
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP_8_1)
 #define ONESIGNAL_PLATFORM
 #endif
 
@@ -33,19 +33,14 @@
 #define ANDROID_ONLY
 #endif
 
- #if !UNITY_EDITOR && UNITY_IPHONE
-#define IOS_ONLY
-#endif
-
-#if ONESIGNAL_PLATFORM && !UNITY_WP8 && !UNITY_WP_8_1
+#if ONESIGNAL_PLATFORM && !UNITY_WP_8_1
 #define SUPPORTS_LOGGING
 #endif
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using OneSignalPush.MiniJSON;
-
+using System;
 
 public class OSNotificationPayload {
    public string notificationID;
@@ -70,17 +65,36 @@ public class OSNotificationPayload {
 }
 
 public class OSNotification {
-   public bool isInAppFocus;
+   public enum DisplayType {
+      // Notification shown in the notification shade.
+      Notification,
+
+      // Notification shown as an in app alert.
+      InAppAlert,
+
+      // Notification was silent and not displayed.
+      None
+   }
+
+   public bool isAppInFocus;
    public bool shown;
    public bool silentNotification;
    public int androidNotificationId;
-   public int displayType;
+   public DisplayType displayType;
    public OSNotificationPayload payload;
 }
 
 public class OSNotificationAction {
+   public enum ActionType {
+      // Notification was tapped on.
+      Opened,
+
+      // User tapped on an action from the notification.
+      ActionTaken
+   }
+
    public string actionID;
-   public int actionType;
+   public ActionType type;
 }
 
 public class OSNotificationOpenedResult {
@@ -111,14 +125,18 @@ public class OneSignal : MonoBehaviour {
    public const string kOSSettingsInAppLaunchURL = "kOSSettingsInAppLaunchURL";
 
    public enum LOG_LEVEL {
-        NONE, FATAL, ERROR, WARN, INFO, DEBUG, VERBOSE
-    }
+      NONE, FATAL, ERROR, WARN, INFO, DEBUG, VERBOSE
+   }
 
-   public class UnityBuilder {
+   public enum OSInFocusDisplayOption {
+      None, InAppAlert, Notification
+   }
+
+    public class UnityBuilder {
       public string appID = null;
       public string googleProjectNumber = null;
       public Dictionary<string, bool> iOSSettings = null;
-      public int displayOption = 1;
+      public OSInFocusDisplayOption displayOption = OSInFocusDisplayOption.InAppAlert;
       public NotificationReceived notificationReceivedDelegate = null;
       public NotificationOpened notificationOpenedDelegate = null;
 
@@ -134,7 +152,7 @@ public class OneSignal : MonoBehaviour {
          return this;
       }
 
-      public UnityBuilder InFocusDisplaying(int display) {
+      public UnityBuilder InFocusDisplaying(OSInFocusDisplayOption display) {
          displayOption = display;
          return this;
       }
@@ -165,7 +183,6 @@ public class OneSignal : MonoBehaviour {
    #endif
 
    private static OneSignalPlatform oneSignalPlatform = null;
-   private static bool initialized = false;
 
    internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
    internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
@@ -180,7 +197,7 @@ public class OneSignal : MonoBehaviour {
    // googleProjectNumber              = Your Google Project Number that is only required for Android GCM pushes.
 
    public static OneSignal.UnityBuilder StartInit(string appID, string googleProjectNumber = null) {
-      if(builder == null)
+      if (builder == null)
             builder = new UnityBuilder();
       #if ONESIGNAL_PLATFORM
          builder.appID = appID;
@@ -192,32 +209,32 @@ public class OneSignal : MonoBehaviour {
    private static void Init() {
       #if !UNITY_EDITOR
          #if ONESIGNAL_PLATFORM
-            if (initialized == true || builder == null) return;
+            if (oneSignalPlatform != null || builder == null) return;
             #if UNITY_ANDROID
                oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, builder.displayOption, logLevel, visualLogLevel);
             #elif UNITY_IPHONE
                //extract settings
-               bool autoPrompt = true, inAppAlerts = (builder.displayOption >= 1), inAppLaunchURL = true;
-               if(builder.iOSSettings != null) {
+               bool autoPrompt = true, inAppAlerts = true, inAppLaunchURL = true;
+
+               if (builder.displayOption == OSInFocusDisplayOption.None)
+                  inAppAlerts = false;
+
+               if (builder.iOSSettings != null) {
                   if(builder.iOSSettings.ContainsKey(kOSSettingsAutoPrompt))
                      autoPrompt = builder.iOSSettings[kOSSettingsAutoPrompt];
-                  if(builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
+                  if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
                      inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
                }
                oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, logLevel, visualLogLevel);
-            #elif UNITY_WP8
-               oneSignalPlatform = new OneSignalWP80(builder.appID);
             #elif UNITY_WP_8_1
                oneSignalPlatform = new OneSignalWPWNS(builder.appID);
             #endif
 
-            #if !UNITY_WP8 && !UNITY_WP_8_1
+            #if !UNITY_WP_8_1
                GameObject go = new GameObject(gameObjectName);
                go.AddComponent<OneSignal>();
                DontDestroyOnLoad(go);
             #endif
-            
-            initialized = true;
         #endif
       #else
          print("Please run OneSignal on a device to see push notifications.");
@@ -268,13 +285,6 @@ public class OneSignal : MonoBehaviour {
    public static void DeleteTags(IList<string> keys) {
       #if ONESIGNAL_PLATFORM
          oneSignalPlatform.DeleteTags(keys);
-      #endif
-   }
-
-   // Call when the player has made an IAP purchase in your game so you can later send push notifications based on free or paid users.
-   public static void SendPurchase(double amount) {
-      #if UNITY_WP8 && !UNITY_EDITOR
-         ((OneSignalWP80)oneSignalPlatform).SendPurchase(amount);
       #endif
    }
 
@@ -352,103 +362,104 @@ public class OneSignal : MonoBehaviour {
         #endif
     }
 
-    /*** protected and private methods ****/
+   /*** protected and private methods ****/
 #if ONESIGNAL_PLATFORM
 
-      private OSNotification stringToNotification(string jsonString) {
-            OSNotification notification = new OSNotification();
-            OSNotificationPayload payload = new OSNotificationPayload();
+   private OSNotification DictionaryToNotification(Dictionary<string, object> jsonObject) {
+      OSNotification notification = new OSNotification();
+      OSNotificationPayload payload = new OSNotificationPayload();
 
-            //Build OSNotification object from jsonString
-            Dictionary<string, object> jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
-            Dictionary<string, object> payloadObj = jsonObject["payload"] as Dictionary<string, object>;
-            if(payloadObj.ContainsKey("notificationID")) payload.notificationID = payloadObj["notificationID"] as string;
-            if(payloadObj.ContainsKey("sound")) payload.sound = payloadObj["sound"] as string;
-            if(payloadObj.ContainsKey("title")) payload.title = payloadObj["title"] as string;
-            if(payloadObj.ContainsKey("body")) payload.body = payloadObj["body"] as string;
-            if(payloadObj.ContainsKey("subtitle")) payload.subtitle = payloadObj["subtitle"] as string;
-            if(payloadObj.ContainsKey("launchURL")) payload.launchURL = payloadObj["launchURL"] as string;
-            if(payloadObj.ContainsKey("additionalData")) payload.additionalData = payloadObj["additionalData"] as Dictionary<string, string>;
-            if(payloadObj.ContainsKey("actionButtons")) payload.actionButtons = payloadObj["actionButtons"] as Dictionary<string, object>;
-            if(payloadObj.ContainsKey("contentAvailable")) payload.contentAvailable = (bool)payloadObj["contentAvailable"];
-            if(payloadObj.ContainsKey("badge")) payload.badge = (int)payloadObj["badge"];
-            if(payloadObj.ContainsKey("smallIcon")) payload.smallIcon = payloadObj["smallIcon"] as string;
-            if(payloadObj.ContainsKey("largeIcon")) payload.largeIcon = payloadObj["largeIcon"] as string;
-            if(payloadObj.ContainsKey("bigPicture")) payload.bigPicture = payloadObj["bigPicture"] as string;
-            if(payloadObj.ContainsKey("smallIconAccentColor")) payload.smallIconAccentColor = payloadObj["smallIconAccentColor"] as string;
-            if(payloadObj.ContainsKey("ledColor")) payload.ledColor = payloadObj["ledColor"] as string;
-            if(payloadObj.ContainsKey("lockScreenVisibility")) payload.lockScreenVisibility = (int)payloadObj["lockScreenVisibility"];
-            if(payloadObj.ContainsKey("groupKey")) payload.groupKey = payloadObj["groupKey"] as string;
-            if(payloadObj.ContainsKey("groupMessage")) payload.groupMessage = payloadObj["groupMessage"] as string;
-            if(payloadObj.ContainsKey("fromProjectNumber")) payload.fromProjectNumber = payloadObj["fromProjectNumber"] as string;
-            notification.payload = payload;
+      //Build OSNotification object from jsonString
+      var payloadObj = jsonObject["payload"] as Dictionary<string, object>;
+      if (payloadObj.ContainsKey("notificationID")) payload.notificationID = payloadObj["notificationID"] as string;
+      if (payloadObj.ContainsKey("sound")) payload.sound = payloadObj["sound"] as string;
+      if (payloadObj.ContainsKey("title")) payload.title = payloadObj["title"] as string;
+      if (payloadObj.ContainsKey("body")) payload.body = payloadObj["body"] as string;
+      if (payloadObj.ContainsKey("subtitle")) payload.subtitle = payloadObj["subtitle"] as string;
+      if (payloadObj.ContainsKey("launchURL")) payload.launchURL = payloadObj["launchURL"] as string;
+      if (payloadObj.ContainsKey("additionalData")) payload.additionalData = payloadObj["additionalData"] as Dictionary<string, string>;
+      if (payloadObj.ContainsKey("actionButtons")) payload.actionButtons = payloadObj["actionButtons"] as Dictionary<string, object>;
+      if (payloadObj.ContainsKey("contentAvailable")) payload.contentAvailable = (bool)payloadObj["contentAvailable"];
+      if (payloadObj.ContainsKey("badge")) payload.badge = (int)payloadObj["badge"];
+      if (payloadObj.ContainsKey("smallIcon")) payload.smallIcon = payloadObj["smallIcon"] as string;
+      if (payloadObj.ContainsKey("largeIcon")) payload.largeIcon = payloadObj["largeIcon"] as string;
+      if (payloadObj.ContainsKey("bigPicture")) payload.bigPicture = payloadObj["bigPicture"] as string;
+      if (payloadObj.ContainsKey("smallIconAccentColor")) payload.smallIconAccentColor = payloadObj["smallIconAccentColor"] as string;
+      if (payloadObj.ContainsKey("ledColor")) payload.ledColor = payloadObj["ledColor"] as string;
+      if (payloadObj.ContainsKey("lockScreenVisibility")) payload.lockScreenVisibility = Convert.ToInt32(payloadObj["lockScreenVisibility"]);
+      if (payloadObj.ContainsKey("groupKey")) payload.groupKey = payloadObj["groupKey"] as string;
+      if (payloadObj.ContainsKey("groupMessage")) payload.groupMessage = payloadObj["groupMessage"] as string;
+      if (payloadObj.ContainsKey("fromProjectNumber")) payload.fromProjectNumber = payloadObj["fromProjectNumber"] as string;
+      notification.payload = payload;
 
-            if(jsonObject.ContainsKey("isInAppFocus")) notification.isInAppFocus = (bool)jsonObject["isInAppFocus"];
-            if(jsonObject.ContainsKey("shown")) notification.shown = (bool)jsonObject["shown"];
-            if(jsonObject.ContainsKey("silentNotification")) notification.silentNotification = (bool)jsonObject["silentNotification"];
-            if(jsonObject.ContainsKey("androidNotificationId")) notification.androidNotificationId = (int)jsonObject["androidNotificationId"];
-            if(jsonObject.ContainsKey("displayType")) notification.displayType = (int)jsonObject["displayType"];
+      if (jsonObject.ContainsKey("isAppInFocus")) notification.isAppInFocus = (bool)jsonObject["isAppInFocus"];
+      if (jsonObject.ContainsKey("shown")) notification.shown = (bool)jsonObject["shown"];
+      if (jsonObject.ContainsKey("silentNotification")) notification.silentNotification = (bool)jsonObject["silentNotification"];
+      if (jsonObject.ContainsKey("androidNotificationId")) notification.androidNotificationId = Convert.ToInt32(jsonObject["androidNotificationId"]);
+      if (jsonObject.ContainsKey("displayType")) notification.displayType = (OSNotification.DisplayType)Convert.ToInt32(jsonObject["displayType"]);
 
-            return notification;
+      return notification;
+   }
+
+   // Called from the native SDK - Called when a push notification received.
+   private void onPushNotificationReceived(string jsonString) {
+      if (builder.notificationReceivedDelegate != null) {
+         var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
+         builder.notificationReceivedDelegate(DictionaryToNotification(jsonObject));
       }
+   }
 
-      // Called from the native SDK - Called when a push notification received.
-      private void onPushNotificationReceived(string jsonString) {
-         if (builder.notificationReceivedDelegate != null) {
-            oneSignalPlatform.FireNotificationReceivedEvent(stringToNotification(jsonString), builder.notificationReceivedDelegate);
-         }
+   // Called from the native SDK - Called when a push notification is opened by the user
+   private void onPushNotificationOpened(string jsonString) {
+      if (builder.notificationOpenedDelegate != null) {
+         Dictionary<string, object> jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
+
+         OSNotificationAction action = new OSNotificationAction();
+         if (jsonObject.ContainsKey("actionID")) action.actionID = jsonObject["actionID"] as string;
+         if (jsonObject.ContainsKey("type"))
+            action.type = (OSNotificationAction.ActionType)Convert.ToInt32(jsonObject["type"]);
+
+         OSNotificationOpenedResult result = new OSNotificationOpenedResult();
+         result.notification = DictionaryToNotification((Dictionary<string, object>)jsonObject["notification"]);
+         result.action = action;
+
+         builder.notificationOpenedDelegate(result);
       }
-
-      // Called from the native SDK - Called when a push notification is opened by the user
-      private void onPushNotificationOpened(string jsonString) {
-         if (builder.notificationOpenedDelegate != null) {
-
-            Dictionary<string, object> jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
-
-            OSNotificationAction action = new OSNotificationAction();
-            if(jsonObject.ContainsKey("actionID")) action.actionID = jsonObject["actionID"] as string;
-            if(jsonObject.ContainsKey("actionType")) action.actionType = (int)jsonObject["actionType"];
-
-            OSNotificationOpenedResult result = new OSNotificationOpenedResult();
-            result.notification = stringToNotification(jsonString);
-            result.action = action;
-
-            oneSignalPlatform.FireNotificationOpenedEvent(result, builder.notificationOpenedDelegate);
-         }
-      }
+   }
       
-      // Called from the native SDK - Called when device is registered with onesignal.com service or right after IdsAvailable
-      //                          if already registered.
-      private void onIdsAvailable(string jsonString) {
-         if (idsAvailableDelegate != null) {
-            var ids = Json.Deserialize(jsonString) as Dictionary<string, object>;
-            idsAvailableDelegate((string)ids["userId"], (string)ids["pushToken"]);
-         }
+   // Called from the native SDK - Called when device is registered with onesignal.com service or right after IdsAvailable
+   //                          if already registered.
+   private void onIdsAvailable(string jsonString) {
+      if (idsAvailableDelegate != null) {
+         var ids = Json.Deserialize(jsonString) as Dictionary<string, object>;
+         idsAvailableDelegate((string)ids["userId"], (string)ids["pushToken"]);
       }
+   }
 
-      // Called from the native SDK - Called After calling GetTags(...)
-      private void onTagsReceived(string jsonString) {
+   // Called from the native SDK - Called After calling GetTags(...)
+   private void onTagsReceived(string jsonString) {
+      if (tagsReceivedDelegate != null)
          tagsReceivedDelegate(Json.Deserialize(jsonString) as Dictionary<string, object>);
-      }
+   }
 
-      // Called from the native SDK
-      private void onPostNotificationSuccess(string response) {
-         if (postNotificationSuccessDelegate != null) {
-            OnPostNotificationSuccess tempPostNotificationSuccessDelegate = postNotificationSuccessDelegate;
-            postNotificationFailureDelegate = null;
-            postNotificationSuccessDelegate = null;
-            tempPostNotificationSuccessDelegate(Json.Deserialize(response) as Dictionary<string, object>);
-         }
+   // Called from the native SDK
+   private void onPostNotificationSuccess(string response) {
+      if (postNotificationSuccessDelegate != null) {
+         OnPostNotificationSuccess tempPostNotificationSuccessDelegate = postNotificationSuccessDelegate;
+         postNotificationFailureDelegate = null;
+         postNotificationSuccessDelegate = null;
+         tempPostNotificationSuccessDelegate(Json.Deserialize(response) as Dictionary<string, object>);
       }
+   }
 
-      // Called from the native SDK
-      private void onPostNotificationFailed(string response) {
-         if (postNotificationFailureDelegate != null) {
-            OnPostNotificationFailure tempPostNotificationFailureDelegate = postNotificationFailureDelegate;
-            postNotificationFailureDelegate = null;
-            postNotificationSuccessDelegate = null;
-            tempPostNotificationFailureDelegate(Json.Deserialize(response) as Dictionary<string, object>);
-         }
+   // Called from the native SDK
+   private void onPostNotificationFailed(string response) {
+      if (postNotificationFailureDelegate != null) {
+         OnPostNotificationFailure tempPostNotificationFailureDelegate = postNotificationFailureDelegate;
+         postNotificationFailureDelegate = null;
+         postNotificationSuccessDelegate = null;
+         tempPostNotificationFailureDelegate(Json.Deserialize(response) as Dictionary<string, object>);
       }
+   }
 #endif
 }
