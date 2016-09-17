@@ -105,9 +105,6 @@ public class OneSignalIOS : OneSignalPlatform {
 		_idsAvailable();
 	}
 
-	public void SetInFocusDisplaying(int display) { //do nothing. Android only
-	}
-
 	public void SetSubscription(bool enable) {
 		_setSubscription(enable);
 	}
@@ -124,14 +121,6 @@ public class OneSignalIOS : OneSignalPlatform {
     public void PromptLocation() {
         _promptLocation();
     }
-
-    public void FireNotificationReceivedEvent(OSNotification notification, OneSignal.NotificationReceived notificationReceived) {
-		notificationReceived(notification);
-	}
-
-	public void FireNotificationOpenedEvent(OSNotificationOpenedResult result, OneSignal.NotificationOpened notificationOpened) {
-		notificationOpened(result);
-	}
 
 	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
 		_setLogLevel((int)logLevel, (int)visualLevel);
