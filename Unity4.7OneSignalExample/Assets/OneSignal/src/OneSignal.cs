@@ -225,7 +225,7 @@ public class OneSignal : MonoBehaviour {
                   if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
                      inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
                }
-               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, logLevel, visualLogLevel);
+               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
             #elif UNITY_WP_8_1
                oneSignalPlatform = new OneSignalWPWNS(builder.appID);
             #endif
