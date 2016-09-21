@@ -73,8 +73,8 @@ public class OneSignalIOS : OneSignalPlatform {
 	extern static public void _setLogLevel(int logLevel, int visualLogLevel);
 
 
-	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURLs, int displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-	    _init(gameObjectName, appId, autoPrompt, inAppAlerts, inAppLaunchURLs, displayOption, (int)logLevel, (int)visualLevel);
+	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+	    _init(gameObjectName, appId, autoPrompt, inAppAlerts, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel);
 	}
 
 	public void RegisterForPushNotifications() {
