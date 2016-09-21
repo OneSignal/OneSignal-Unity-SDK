@@ -211,7 +211,7 @@ public class OneSignal : MonoBehaviour {
          #if ONESIGNAL_PLATFORM
             if (oneSignalPlatform != null || builder == null) return;
             #if UNITY_ANDROID
-               oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, (int)builder.displayOption, logLevel, visualLogLevel);
+               oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, builder.displayOption, logLevel, visualLogLevel);
             #elif UNITY_IPHONE
                //extract settings
                bool autoPrompt = true, inAppAlerts = true, inAppLaunchURL = true;
@@ -225,7 +225,7 @@ public class OneSignal : MonoBehaviour {
                   if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
                      inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
                }
-               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, (int)builder.displayOption, logLevel, visualLogLevel);
+               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
             #elif UNITY_WP_8_1
                oneSignalPlatform = new OneSignalWPWNS(builder.appID);
             #endif
