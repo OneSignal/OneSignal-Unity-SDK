@@ -83,25 +83,3 @@ public class OneSignalEditorScriptAndroid {
    }
 }
 #endif
-
-#if UNITY_IPHONE && UNITY_EDITOR
-using UnityEditor.Callbacks;
-using UnityEditor.iOS.Xcode;
-
-[InitializeOnLoad]
-public class OneSignalEditorScriptiOS
-{
-   [PostProcessBuild(700)]
-   public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject) {
-      if (target != BuildTarget.iOS)
-         return;
-
-      string projectPath = pathToBuiltProject + "/Unity-iPhone.xcodeproj/project.pbxproj";
-      PBXProject pbxProject = new PBXProject();
-      pbxProject.ReadFromString(File.ReadAllText(projectPath));
-      string targetGUID = pbxProject.TargetGuidByName("Unity-iPhone");
-      pbxProject.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-ObjC");
-      File.WriteAllText(projectPath, pbxProject.WriteToString());
-   }
-}
-#endif
