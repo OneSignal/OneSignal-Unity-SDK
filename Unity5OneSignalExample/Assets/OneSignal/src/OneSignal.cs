@@ -49,8 +49,8 @@ public class OSNotificationPayload {
    public string body;
    public string subtitle;
    public string launchURL;
-   public Dictionary<string, string> additionalData;
-   public Dictionary<string, object> actionButtons;
+	public Dictionary<string, object> additionalData;
+	public Dictionary<string, object> actionButtons;
    public bool contentAvailable;
    public int badge;
    public string smallIcon;
@@ -255,7 +255,7 @@ public class OneSignal : MonoBehaviour {
    }
 
    // Tag player with a key value pairs to later create segments on them at onesignal.com.
-   public static void SendTags(IDictionary<string, string> tags) {
+   public static void SendTags(Dictionary<string, string> tags) {
       #if ONESIGNAL_PLATFORM
          oneSignalPlatform.SendTags(tags);
       #endif
@@ -377,8 +377,8 @@ public class OneSignal : MonoBehaviour {
       if (payloadObj.ContainsKey("body")) payload.body = payloadObj["body"] as string;
       if (payloadObj.ContainsKey("subtitle")) payload.subtitle = payloadObj["subtitle"] as string;
       if (payloadObj.ContainsKey("launchURL")) payload.launchURL = payloadObj["launchURL"] as string;
-      if (payloadObj.ContainsKey("additionalData")) payload.additionalData = payloadObj["additionalData"] as Dictionary<string, string>;
-      if (payloadObj.ContainsKey("actionButtons")) payload.actionButtons = payloadObj["actionButtons"] as Dictionary<string, object>;
+		if (payloadObj.ContainsKey("additionalData")) payload.additionalData = Json.Deserialize(payloadObj["additionalData"] as string) as Dictionary<string, object>;
+		if (payloadObj.ContainsKey("actionButtons")) payload.actionButtons = Json.Deserialize(payloadObj["actionButtons"] as string) as Dictionary<string, object>;
       if (payloadObj.ContainsKey("contentAvailable")) payload.contentAvailable = (bool)payloadObj["contentAvailable"];
       if (payloadObj.ContainsKey("badge")) payload.badge = (int)payloadObj["badge"];
       if (payloadObj.ContainsKey("smallIcon")) payload.smallIcon = payloadObj["smallIcon"] as string;

@@ -44,7 +44,8 @@ public class GameControllerExample : MonoBehaviour {
       // Call before using any other methods on OneSignal.
       // Should only be called once when your app is loaded.
       // OneSignal.Init(OneSignal_AppId, GoogleProjectNumber);
-      OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba", "703322744261")
+      //b2f7f966-d8cc-11e4-bed1-df8f05be55ba
+		OneSignal.StartInit("4ba9ec31-b65a-4f5f-b210-a5077a245b3d", "703322744261")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
                .InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
@@ -68,7 +69,7 @@ public class GameControllerExample : MonoBehaviour {
    // Method must be static or this object should be marked as DontDestroyOnLoad
    public static void HandleNotificationOpened(OSNotificationOpenedResult result) {
       OSNotificationPayload payload = result.notification.payload;
-      Dictionary<string, string> additionalData = payload.additionalData;
+		Dictionary<string, object> additionalData = payload.additionalData;
       string message = payload.body;
       string actionID = result.action.actionID;
 
