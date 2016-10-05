@@ -378,7 +378,7 @@ public class OneSignal : MonoBehaviour {
       if (payloadObj.ContainsKey("subtitle")) payload.subtitle = payloadObj["subtitle"] as string;
       if (payloadObj.ContainsKey("launchURL")) payload.launchURL = payloadObj["launchURL"] as string;
       if (payloadObj.ContainsKey("additionalData")) {
-         if(payaoadObj["additionalData"] is string)
+         if(payloadObj["additionalData"] is string)
             payload.additionalData = Json.Deserialize(payloadObj["additionalData"] as string) as Dictionary<string, object>;
          else
             payload.additionalData = payloadObj["additionalData"] as Dictionary<string, object>;
