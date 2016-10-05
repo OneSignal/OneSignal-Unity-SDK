@@ -62,6 +62,13 @@ public class GameControllerExample : MonoBehaviour {
       print("GameControllerExample:HandleNotificationReceived: " + message);
       print("displayType: " + notification.displayType);
       extraMessage = "Notification received with text: " + message;
+
+	Dictionary<string, object> additionalData = payload.additionalData;
+	if (additionalData == null) 
+		Debug.Log ("[HandleNotificationReceived] Additional Data == null");
+	else
+			Debug.Log("[HandleNotificationReceived] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
+		
    }
    
    // Called when a notification is opened.
@@ -69,19 +76,18 @@ public class GameControllerExample : MonoBehaviour {
    // Method must be static or this object should be marked as DontDestroyOnLoad
    public static void HandleNotificationOpened(OSNotificationOpenedResult result) {
       OSNotificationPayload payload = result.notification.payload;
-		Dictionary<string, object> additionalData = payload.additionalData;
       string message = payload.body;
       string actionID = result.action.actionID;
 
       print("GameControllerExample:HandleNotificationOpened: " + message);
       extraMessage = "Notification opened with text: " + message;
       
-      if (additionalData != null) {
-         if (additionalData.ContainsKey("discount")) {
-            extraMessage = (string)additionalData["discount"];
-            // Take user to your store.
-         }
-      }
+      Dictionary<string, object> additionalData = payload.additionalData;
+      if (additionalData == null) 
+         Debug.Log ("[HandleNotificationOpened] Additional Data == null");
+      else
+         Debug.Log("[HandleNotificationOpened] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
+
       if (actionID != null) {
             // actionSelected equals the id on the button the user pressed.
             // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.

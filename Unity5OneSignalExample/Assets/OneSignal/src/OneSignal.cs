@@ -377,8 +377,16 @@ public class OneSignal : MonoBehaviour {
       if (payloadObj.ContainsKey("body")) payload.body = payloadObj["body"] as string;
       if (payloadObj.ContainsKey("subtitle")) payload.subtitle = payloadObj["subtitle"] as string;
       if (payloadObj.ContainsKey("launchURL")) payload.launchURL = payloadObj["launchURL"] as string;
-		if (payloadObj.ContainsKey("additionalData")) payload.additionalData = Json.Deserialize(payloadObj["additionalData"] as string) as Dictionary<string, object>;
-		if (payloadObj.ContainsKey("actionButtons")) payload.actionButtons = Json.Deserialize(payloadObj["actionButtons"] as string) as Dictionary<string, object>;
+	  if (payloadObj.ContainsKey("additionalData")) {
+			if(payloadObj["additionalData"] is string)
+				payload.additionalData = Json.Deserialize(payloadObj["additionalData"] as string) as Dictionary<string, object>;
+			else payload.additionalData = payloadObj["additionalData"] as Dictionary<string, object>;
+	  }
+	  if (payloadObj.ContainsKey("actionButtons")) {
+	 		if(payloadObj["actionButtons"] is string)
+				payload.actionButtons = Json.Deserialize(payloadObj["actionButtons"] as string) as Dictionary<string, object>;
+			else payload.actionButtons = payloadObj["actionButtons"] as Dictionary<string, object>;
+	  }
       if (payloadObj.ContainsKey("contentAvailable")) payload.contentAvailable = (bool)payloadObj["contentAvailable"];
       if (payloadObj.ContainsKey("badge")) payload.badge = (int)payloadObj["badge"];
       if (payloadObj.ContainsKey("smallIcon")) payload.smallIcon = payloadObj["smallIcon"] as string;
