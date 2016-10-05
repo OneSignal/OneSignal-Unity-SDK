@@ -63,12 +63,11 @@ public class GameControllerExample : MonoBehaviour {
       print("displayType: " + notification.displayType);
       extraMessage = "Notification received with text: " + message;
 
-	Dictionary<string, object> additionalData = payload.additionalData;
-	if (additionalData == null) 
-		Debug.Log ("[HandleNotificationReceived] Additional Data == null");
-	else
-			Debug.Log("[HandleNotificationReceived] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
-		
+   Dictionary<string, object> additionalData = payload.additionalData;
+   if (additionalData == null) 
+      Debug.Log ("[HandleNotificationReceived] Additional Data == null");
+   else
+      Debug.Log("[HandleNotificationReceived] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
    }
    
    // Called when a notification is opened.
