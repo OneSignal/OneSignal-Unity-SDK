@@ -34,7 +34,7 @@ using OneSignalPush.MiniJSON;
 public class OneSignalIOS : OneSignalPlatform {
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel);
+	extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel);
 
 	[System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public void _registerForPushNotifications();
@@ -73,8 +73,8 @@ public class OneSignalIOS : OneSignalPlatform {
 	extern static public void _setLogLevel(int logLevel, int visualLogLevel);
 
 
-	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppAlerts, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-	    _init(gameObjectName, appId, autoPrompt, inAppAlerts, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel);
+	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+	    _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel);
 	}
 
 	public void RegisterForPushNotifications() {

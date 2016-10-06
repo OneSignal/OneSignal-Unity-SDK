@@ -112,7 +112,7 @@ void processNotificationReceived(NSString* notificationString) {
     UnitySendMessage(unityListener, "onPushNotificationReceived", [notificationString UTF8String]);
 }
 
-void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL inAppAlerts, int displayOption, BOOL inAppLaunchURL, BOOL autoPrompt) {
+void initOneSignalObject(NSDictionary* launchOptions, const char* appId, int displayOption, BOOL inAppLaunchURL, BOOL autoPrompt) {
     
     NSString* appIdStr = (appId ? [NSString stringWithUTF8String: appId] : nil);
     
@@ -126,11 +126,11 @@ void initOneSignalObject(NSDictionary* launchOptions, const char* appId, BOOL in
                 actionNotification = openResult;
                 if (unityListener)
                     processNotificationOpened([openResult stringify]);
-            } settings:@{kOSSettingsKeyAutoPrompt : @(autoPrompt), kOSSettingsKeyInAppAlerts : @(inAppAlerts), kOSSettingsKeyInFocusDisplayOption : @(displayOption), kOSSettingsKeyInAppLaunchURL : @(inAppLaunchURL)}];
+            } settings:@{kOSSettingsKeyAutoPrompt : @(autoPrompt), kOSSettingsKeyInFocusDisplayOption : @(displayOption), kOSSettingsKeyInAppLaunchURL : @(inAppLaunchURL)}];
     
 }
 
-void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppAlerts, BOOL inAppLaunchURL, int displayOption, int logLevel, int visualLogLevel) {
+void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppLaunchURL, int displayOption, int logLevel, int visualLogLevel) {
     
     
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
@@ -139,7 +139,7 @@ void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL in
     unityListener = malloc(len + 1);
     strcpy(unityListener, listenerName);
     
-    initOneSignalObject(nil, appId, inAppAlerts, inAppLaunchURL, displayOption, autoPrompt);
+    initOneSignalObject(nil, appId, displayOption, inAppLaunchURL, autoPrompt);
     
     if (actionNotification)
         processNotificationOpened([actionNotification stringify]);

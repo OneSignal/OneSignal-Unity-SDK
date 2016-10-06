@@ -162,7 +162,7 @@ public class OneSignal : MonoBehaviour {
       //                                    You can then call RegisterForPushNotifications at a better point in your game to prompt them.
       // inAppLaunchURL                   = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
       public UnityBuilder Settings(Dictionary<string, bool> settings) {
-         //bool autoPrompt, bool inAppAlerts, bool inAppLaunchURL
+         //bool autoPrompt, bool inAppLaunchURL
          #if UNITY_IPHONE
             iOSSettings = settings;
          #endif
@@ -214,10 +214,7 @@ public class OneSignal : MonoBehaviour {
                oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, builder.displayOption, logLevel, visualLogLevel);
             #elif UNITY_IPHONE
                //extract settings
-               bool autoPrompt = true, inAppAlerts = true, inAppLaunchURL = true;
-
-               if (builder.displayOption == OSInFocusDisplayOption.None)
-                  inAppAlerts = false;
+               bool autoPrompt = true,inAppLaunchURL = true;
 
                if (builder.iOSSettings != null) {
                   if(builder.iOSSettings.ContainsKey(kOSSettingsAutoPrompt))
@@ -225,7 +222,7 @@ public class OneSignal : MonoBehaviour {
                   if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
                      inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
                }
-               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppAlerts, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
+               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
             #elif UNITY_WP_8_1
                oneSignalPlatform = new OneSignalWPWNS(builder.appID);
             #endif
