@@ -387,7 +387,7 @@ public class OneSignal : MonoBehaviour {
             payload.actionButtons = payloadObj["actionButtons"] as Dictionary<string, object>;
       }
       if (payloadObj.ContainsKey("contentAvailable")) payload.contentAvailable = (bool)payloadObj["contentAvailable"];
-      if (payloadObj.ContainsKey("badge")) payload.badge = (int)payloadObj["badge"];
+      if (payloadObj.ContainsKey("badge")) payload.badge = Convert.ToInt32(payloadObj["badge"]);
       if (payloadObj.ContainsKey("smallIcon")) payload.smallIcon = payloadObj["smallIcon"] as string;
       if (payloadObj.ContainsKey("largeIcon")) payload.largeIcon = payloadObj["largeIcon"] as string;
       if (payloadObj.ContainsKey("bigPicture")) payload.bigPicture = payloadObj["bigPicture"] as string;
