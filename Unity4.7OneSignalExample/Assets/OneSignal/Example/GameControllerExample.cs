@@ -43,9 +43,8 @@ public class GameControllerExample : MonoBehaviour {
       // The only required method you need to call to setup OneSignal to receive push notifications.
       // Call before using any other methods on OneSignal.
       // Should only be called once when your app is loaded.
-      // OneSignal.Init(OneSignal_AppId, GoogleProjectNumber);
-      //b2f7f966-d8cc-11e4-bed1-df8f05be55ba
-		OneSignal.StartInit("4ba9ec31-b65a-4f5f-b210-a5077a245b3d", "703322744261")
+      // OneSignal.Init(OneSignal_AppId);
+      OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
                .InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
