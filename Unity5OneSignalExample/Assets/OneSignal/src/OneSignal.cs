@@ -422,9 +422,14 @@ public class OneSignal : MonoBehaviour {
          Dictionary<string, object> jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
          OSNotificationAction action = new OSNotificationAction();
-         if (jsonObject.ContainsKey("actionID")) action.actionID = jsonObject["actionID"] as string;
-         if (jsonObject.ContainsKey("type"))
-            action.type = (OSNotificationAction.ActionType)Convert.ToInt32(jsonObject["type"]);
+         if (jsonObject.ContainsKey("action")) {
+            Dictionary<string, object> actionJsonObject = jsonObject["action"] as Dictionary<string, object>;
+            
+            if (actionJsonObject.ContainsKey("actionID"))
+               action.actionID = actionJsonObject["actionID"] as string;
+            if (actionJsonObject.ContainsKey("type"))
+               action.type = (OSNotificationAction.ActionType)Convert.ToInt32(actionJsonObject["type"]);
+         }
 
          OSNotificationOpenedResult result = new OSNotificationOpenedResult();
          result.notification = DictionaryToNotification((Dictionary<string, object>)jsonObject["notification"]);
