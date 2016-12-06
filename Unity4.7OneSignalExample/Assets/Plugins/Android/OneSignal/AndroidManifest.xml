@@ -29,6 +29,19 @@
 
   <!-- Solid -->
   <uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE"/>
+  
+  <!-- Huawei -->
+  <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE" />
+  <uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS" />
+  <uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS" />
+  
+  <!-- ZUK -->
+  <uses-permission android:name="android.permission.READ_APP_BADGE" />
+  
+  <!-- OPPO -->
+  <uses-permission android:name="com.oppo.launcher.permission.READ_SETTINGS" />
+  <uses-permission android:name="com.oppo.launcher.permission.WRITE_SETTINGS" />
+  
   <!-- End: ShortcutBadger -->
   
   <application>
