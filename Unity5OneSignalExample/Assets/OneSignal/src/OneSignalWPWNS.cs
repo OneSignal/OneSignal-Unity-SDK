@@ -36,9 +36,9 @@ public class OneSignalWPWNS : OneSignalPlatform {
    public OneSignalWPWNS(string appId) {
       OneSignalSDK_WP_WNS.ExternalInitUnity.Init(appId, (message, inAdditionalData, isActive) => {
          if (OneSignal.builder != null && OneSignal.builder.notificationOpenedDelegate != null) {
-            Dictionary<string, string> additionalData = null;
+            Dictionary<string, object> additionalData = null;
             if (inAdditionalData != null)
-               additionalData = inAdditionalData.ToDictionary(pair => pair.Key, pair => (string)pair.Value);
+               additionalData = inAdditionalData.ToDictionary(pair => pair.Key, pair => (object)pair.Value);
 
             OSNotificationOpenedResult result = new OSNotificationOpenedResult();
             result.action = new OSNotificationAction();
