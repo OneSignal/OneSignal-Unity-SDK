@@ -518,7 +518,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: OneSignal
   metroCertificateIssuer: OneSignal
-  metroCertificateNotAfter: 80f6110b15e3d101
+  metroCertificateNotAfter: 809d8e5add6ed301
   metroApplicationDescription: UnityGameThriveExample
   wsaImages: {}
   metroTileShortName: 
