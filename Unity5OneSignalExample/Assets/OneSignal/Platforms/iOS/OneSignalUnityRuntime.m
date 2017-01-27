@@ -223,7 +223,7 @@ void _promptLocation() {
     [OneSignal promptLocation];
 }
 
-void _setLogLevel(int logLevel, int visualLogLevel) {
+void _setOneSignalLogLevel(int logLevel, int visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
 }
 

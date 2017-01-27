@@ -70,7 +70,7 @@ public class OneSignalIOS : OneSignalPlatform {
     extern static public void _promptLocation();
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _setLogLevel(int logLevel, int visualLogLevel);
+	extern static public void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
 
 
 	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
