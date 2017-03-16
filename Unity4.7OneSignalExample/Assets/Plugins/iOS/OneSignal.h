@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,21 +28,18 @@
 /***
  
  ### Setting up the SDK ###
- Follow the documentation from https://documentation.onesignal.com/docs/installing-the-onesignal-ios-sdk to setup OneSignal in your app.
+ Follow the documentation from https://documentation.onesignal.com/docs/ios-sdk-setupto setup OneSignal in your app.
  
  ### API Reference ###
  Follow the documentation from https://documentation.onesignal.com/docs/ios-sdk-api for a detailed explanation of the API.
  
- ### FAQ & Troubleshoot ###
- FAQ: https://documentation.onesignal.com/docs/frequently-asked-questions-1
- Troubleshoot: https://documentation.onesignal.com/docs/common-problems-1
+ ### Troubleshoot ###
+ Follow the documentation from https://documentation.onesignal.com/docs/troubleshooting-ios to fix common problems.
  
- For help on how to upgrade your code from 1.* SDK to 2.*: https://documentation.onesignal.com/docs/upgrading-to-sdk-20
+ For help on how to upgrade your code from 1.* SDK to 2.*: https://documentation.onesignal.com/docs/upgrading-to-ios-sdk-20
  
  ### More ###
- iOS Configuration: https://documentation.onesignal.com/docs/generating-an-ios-push-certificate
- REST API: https://documentation.onesignal.com/docs/server-api-overview
- Create Notification API: https://documentation.onesignal.com/docs/notifications-create-notification
+ iOS Push Cert: https://documentation.onesignal.com/docs/generating-an-ios-push-certificate
  
 ***/
 
@@ -150,7 +147,7 @@ typedef OSNotificationDisplayType OSInFocusDisplayOption;
  requires remote-notification within UIBackgroundModes array of the Info.plist */
 @property(readonly, getter=isSilentNotification)BOOL silentNotification;
 
-/* iOS 10+: Indicates wether or not the received notification has mutableContent : 1 assigned to its payload
+/* iOS 10+: Indicates whether or not the received notification has mutableContent : 1 assigned to its payload
  Used for UNNotificationServiceExtension to launch extension.
 */
 #if XC8_AVAILABLE
@@ -177,7 +174,7 @@ typedef OSNotificationDisplayType OSInFocusDisplayOption;
 typedef void (^OSResultSuccessBlock)(NSDictionary* result);
 typedef void (^OSFailureBlock)(NSError* error);
 
-/*Block for notifying avalability of the User's ID and push token*/
+/*Block for notifying availability of the User's ID and push token*/
 typedef void (^OSIdsAvailableBlock)(NSString* userId, NSString* pushToken);
 
 /*Block for handling the reception of a remote notification */
@@ -186,9 +183,9 @@ typedef void (^OSHandleNotificationReceivedBlock)(OSNotification* notification);
 /*Block for handling a user reaction to a notification*/
 typedef void (^OSHandleNotificationActionBlock)(OSNotificationOpenedResult * result);
 
-/*Dictionary of keys to pass alongside the init serttings*/
+/*Dictionary of keys to pass alongside the init settings*/
     
-/*Let OneSignal directly promt for push notifications on init*/
+/*Let OneSignal directly prompt for push notifications on init*/
 extern NSString * const kOSSettingsKeyAutoPrompt;
     
 /*Enable the default in-app alerts*/
@@ -198,7 +195,7 @@ extern NSString * const kOSSettingsKeyInAppAlerts;
 extern NSString * const kOSSettingsKeyInAppLaunchURL;
 
 /* iOS10+ - 
- Set notificaion's in-focus display option.
+ Set notification's in-focus display option.
  Value must be an OSNotificationDisplayType enum
 */
 extern NSString * const kOSSettingsKeyInFocusDisplayOption;
@@ -274,5 +271,17 @@ typedef NS_ENUM(NSUInteger, ONE_S_LOG_LEVEL) {
 // - Sends the MD5 and SHA1 of the provided email
 // Optional method that sends us the user's email as an anonymized hash so that we can better target and personalize notifications sent to that user across their devices.
 + (void)syncHashedEmail:(NSString*)email;
+
+// Only used for wrapping SDKs, such as Unity, Cordova, Xamarin, etc.
++ (void)setMSDKType:(NSString*)type;
+
+
+#ifdef XC8_AVAILABLE
+// iOS 10 only
+// Process from Notification Service Extension.
+// Used for iOS Media Attachemtns and Action Buttons.
++ (UNMutableNotificationContent*)didReceiveNotificationExtensionRequest:(UNNotificationRequest *)request withMutableNotificationContent:(UNMutableNotificationContent*)replacementContent;
++ (UNMutableNotificationContent*)serviceExtensionTimeWillExpireRequest:(UNNotificationRequest *)request withMutableNotificationContent:(UNMutableNotificationContent*)replacementContent;
+#endif
 
 @end

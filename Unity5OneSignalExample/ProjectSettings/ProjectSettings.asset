@@ -506,7 +506,7 @@ PlayerSettings:
     Standalone: 0
     WP8: 2
     WebGL: 1
-    iOS: 0
+    iOS: 1
   incrementalIl2cppBuild:
     iOS: 1
   additionalIl2CppArgs: 

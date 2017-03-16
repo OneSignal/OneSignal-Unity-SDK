@@ -33,85 +33,85 @@ using OneSignalPush.MiniJSON;
 
 public class OneSignalIOS : OneSignalPlatform {
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _registerForPushNotifications();
-	
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _sendTag(string tagName, string tagValue);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _registerForPushNotifications();
+   
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _sendTag(string tagName, string tagValue);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _sendTags(string tags);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _sendTags(string tags);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _getTags();
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _getTags();
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _deleteTag(string key);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _deleteTag(string key);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _deleteTags(string keys);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _deleteTags(string keys);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _idsAvailable();
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _idsAvailable();
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _setSubscription(bool enable);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setSubscription(bool enable);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _postNotification(string json);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _postNotification(string json);
 
-    [System.Runtime.InteropServices.DllImport("__Internal")]
-    extern static public void _syncHashedEmail(string email);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _syncHashedEmail(string email);
 
-    [System.Runtime.InteropServices.DllImport("__Internal")]
-    extern static public void _promptLocation();
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _promptLocation();
 
-    [System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
 
 
-	public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-	    _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel);
-	}
+   public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+       _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel);
+   }
 
-	public void RegisterForPushNotifications() {
-		_registerForPushNotifications();
-	}
+   public void RegisterForPushNotifications() {
+      _registerForPushNotifications();
+   }
 
-	public void SendTag(string tagName, string tagValue) {
-		_sendTag(tagName, tagValue);
-	}
+   public void SendTag(string tagName, string tagValue) {
+      _sendTag(tagName, tagValue);
+   }
 
-	public void SendTags(IDictionary<string, string> tags) {
-		_sendTags(Json.Serialize(tags));
-	}
+   public void SendTags(IDictionary<string, string> tags) {
+      _sendTags(Json.Serialize(tags));
+   }
 
-	public void GetTags() {
-		_getTags();
-	}
+   public void GetTags() {
+      _getTags();
+   }
 
-	public void DeleteTag(string key) {
-		_deleteTag(key);
-	}
+   public void DeleteTag(string key) {
+      _deleteTag(key);
+   }
 
-	public void DeleteTags(IList<string> keys) {
-		_deleteTags(Json.Serialize(keys));
-	}
+   public void DeleteTags(IList<string> keys) {
+      _deleteTags(Json.Serialize(keys));
+   }
 
-	public void IdsAvailable() {
-		_idsAvailable();
-	}
+   public void IdsAvailable() {
+      _idsAvailable();
+   }
 
-	public void SetSubscription(bool enable) {
-		_setSubscription(enable);
-	}
+   public void SetSubscription(bool enable) {
+      _setSubscription(enable);
+   }
 
-	public void PostNotification(Dictionary<string, object> data) {
-		_postNotification(Json.Serialize(data));
-	}
+   public void PostNotification(Dictionary<string, object> data) {
+      _postNotification(Json.Serialize(data));
+   }
 
 
     public void SyncHashedEmail(string email) {
@@ -122,8 +122,8 @@ public class OneSignalIOS : OneSignalPlatform {
         _promptLocation();
     }
 
-	public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-		_setLogLevel((int)logLevel, (int)visualLevel);
-	}
+   public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+      _setOneSignalLogLevel((int)logLevel, (int)visualLevel);
+   }
 }
 #endif
