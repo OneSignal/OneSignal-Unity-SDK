@@ -25,18 +25,22 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.IO;
+
 using UnityEditor;
 
 #if UNITY_ANDROID && UNITY_EDITOR
-using Google.JarResolver;
+using System.Collections.Generic;
 
 [InitializeOnLoad]
-public class OneSignalEditorScriptAndroid {
-  
+public class OneSignalEditorScriptAndroid : AssetPostprocessor {
+
+   /// <summary>Instance of the PlayServicesSupport resolver</summary>
+   public static object svcSupport;
+
    private static readonly string PluginName = "OneSignal";
-   private static readonly string PLAY_SERVICES_VERSION = "9+";
-   public static PlayServicesSupport svcSupport;
+   private static readonly string PLAY_SERVICES_VERSION = "+";
 
    static OneSignalEditorScriptAndroid() {
       createOneSignalAndroidManifest();
@@ -44,12 +48,41 @@ public class OneSignalEditorScriptAndroid {
    }
 
    private static void addGMSLibrary() {
-      svcSupport = PlayServicesSupport.CreateInstance(PluginName,
-                                                      EditorPrefs.GetString("AndroidSdkRoot"),
-                                                      "ProjectSettings");
-      
-      svcSupport.DependOn("com.google.android.gms", "play-services-gcm", PLAY_SERVICES_VERSION);
-      svcSupport.DependOn("com.google.android.gms", "play-services-location", PLAY_SERVICES_VERSION);
+      Type playServicesSupport = Google.VersionHandler.FindClass(
+         "Google.JarResolver", "Google.JarResolver.PlayServicesSupport");
+      if (playServicesSupport == null)
+         return;
+
+      svcSupport = svcSupport ?? Google.VersionHandler.InvokeStaticMethod(
+        playServicesSupport, "CreateInstance",
+        new object[] {
+                PluginName,
+                EditorPrefs.GetString("AndroidSdkRoot"),
+                "ProjectSettings"
+        });
+
+      Google.VersionHandler.InvokeInstanceMethod(
+         svcSupport, "DependOn",
+         new object[] {
+            "com.google.android.gms",
+            "play-services-gcm",
+            PLAY_SERVICES_VERSION
+         },
+         namedArgs: new Dictionary<string, object>() {
+             {"packageIds", new string[] { "extra-google-m2repository" } }
+         });
+
+      Google.VersionHandler.InvokeInstanceMethod(
+         svcSupport, "DependOn",
+         new object[] {
+            "com.google.android.gms",
+            "play-services-location",
+            PLAY_SERVICES_VERSION
+         },
+         namedArgs: new Dictionary<string, object>() {
+             {"packageIds", new string[] { "extra-google-m2repository" } }
+         });
+
       // Adds play-services-base, play-services-basement, play-services-iid, and support-v4 will be automaticly added.
       // Also adds play-services-tasks but this isn't used by OneSignal, it just added as a depency from the above.
       
@@ -75,7 +108,11 @@ public class OneSignalEditorScriptAndroid {
       string body = streamReader.ReadToEnd();
       streamReader.Close();
 
-      body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
+      #if UNITY_4_7
+         body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
+      #else
+         body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
+      #endif
       using (var streamWriter = new StreamWriter(manifestFullPath, false))
       {
          streamWriter.Write(body);
