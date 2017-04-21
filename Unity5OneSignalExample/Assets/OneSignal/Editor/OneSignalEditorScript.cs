@@ -108,10 +108,10 @@ public class OneSignalEditorScriptAndroid : AssetPostprocessor {
       string body = streamReader.ReadToEnd();
       streamReader.Close();
 
-      #if UNITY_4_7
-         body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
-      #else
+      #if UNITY_5_6_OR_NEWER
          body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
+      #else
+         body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);     
       #endif
       using (var streamWriter = new StreamWriter(manifestFullPath, false))
       {
