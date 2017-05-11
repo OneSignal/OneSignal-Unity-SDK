@@ -25,6 +25,10 @@
  * THE SOFTWARE.
  */
 
+// TODO: Remove after testing
+#define ONESIGNAL_PLATFORM
+
+
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP_8_1)
 #define ONESIGNAL_PLATFORM
 #endif
@@ -102,6 +106,37 @@ public class OSNotificationOpenedResult {
    public OSNotification notification;
 }
 
+public enum OSNotificationPermission {
+   NotDetermined,
+   Authorized,
+   Denied
+}
+
+public class OSPermissionState {
+   public bool hasPrompted;
+   public OSNotificationPermission status;
+}
+
+public class OSPermissionStateChanges {
+   public OSPermissionState to, from;
+}
+
+
+public class OSSubscriptionState {
+   public bool userSubscriptionSetting;
+   public string userId;
+   public string pushToken;
+   public bool subscribed;
+}
+public class OSSubscriptionStateChanges {
+   public OSSubscriptionState to, from;
+}
+
+public class OSPermissionSubscriptionState {
+   public OSPermissionState permissionStatus;
+   public OSSubscriptionState subscriptionStatus;
+}
+
 public class OneSignal : MonoBehaviour {
 
    // NotificationReceived - Delegate is called when a push notification is received when the user is in your game.
@@ -111,7 +146,7 @@ public class OneSignal : MonoBehaviour {
    // NotificationOpened - Delegate is called when a push notification is opened.
    // result = The Notification open result describing : 1. The notification opened 2. The action taken by the user
    public delegate void NotificationOpened(OSNotificationOpenedResult result);
-   
+
    public delegate void IdsAvailableCallback(string playerID, string pushToken);
    public delegate void TagsReceived(Dictionary<string, object> tags);
 
@@ -120,6 +155,61 @@ public class OneSignal : MonoBehaviour {
 
    public static IdsAvailableCallback idsAvailableDelegate = null;
    public static TagsReceived tagsReceivedDelegate = null;
+
+
+   public delegate void PermissionObservable(OSPermissionStateChanges stateChanges);
+   private static PermissionObservable internalPermissionObserver;
+   public static event PermissionObservable permissionObserver {
+      add {
+         if (oneSignalPlatform != null) {
+            internalPermissionObserver += value;
+            addPermissionObserver();
+         }
+      }
+      remove {
+         if (oneSignalPlatform != null) {
+            internalPermissionObserver -= value;
+            if (addedPermissionObserver && internalPermissionObserver.GetInvocationList().Length == 0) {
+               addedPermissionObserver = false;
+               oneSignalPlatform.removePermissionObserver();
+            }
+         }
+      }
+   }
+
+   private static bool addedPermissionObserver;
+   private static void addPermissionObserver() {
+      if (!addedPermissionObserver && internalPermissionObserver != null && internalPermissionObserver.GetInvocationList().Length > 0) {
+         addedPermissionObserver = true;
+         oneSignalPlatform.addPermissionObserver();
+      }
+   }
+
+   public delegate void SubscriptionObservable(OSSubscriptionStateChanges stateChanges);
+   private static SubscriptionObservable internalSubscriptionObserver;
+   public static event SubscriptionObservable subscriptionObserver {
+      add {
+         if (oneSignalPlatform != null) {
+            internalSubscriptionObserver += value;
+            addSubscriptionObserver();
+         }
+      }
+      remove {
+         if (oneSignalPlatform != null) {
+            internalSubscriptionObserver -= value;
+            if (addedSubscriptionObserver && internalSubscriptionObserver.GetInvocationList().Length == 0)
+               oneSignalPlatform.removeSubscriptionObserver();
+         }
+      }
+   }
+
+   private static bool addedSubscriptionObserver;
+   private static void addSubscriptionObserver() {
+      if (!addedSubscriptionObserver && internalSubscriptionObserver != null && internalSubscriptionObserver.GetInvocationList().Length > 0) {
+         addedSubscriptionObserver = true;
+         oneSignalPlatform.addSubscriptionObserver();
+      }
+   }
 
    public const string kOSSettingsAutoPrompt = "kOSSettingsAutoPrompt";
    public const string kOSSettingsInAppLaunchURL = "kOSSettingsInAppLaunchURL";
@@ -132,11 +222,10 @@ public class OneSignal : MonoBehaviour {
       None, InAppAlert, Notification
    }
 
-    public class UnityBuilder {
+   public class UnityBuilder {
       public string appID = null;
       public string googleProjectNumber = null;
       public Dictionary<string, bool> iOSSettings = null;
-      public OSInFocusDisplayOption displayOption = OSInFocusDisplayOption.InAppAlert;
       public NotificationReceived notificationReceivedDelegate = null;
       public NotificationOpened notificationOpenedDelegate = null;
 
@@ -148,12 +237,12 @@ public class OneSignal : MonoBehaviour {
 
       // inNotificationOpenedDelegate     = Calls this delegate when a push notification is opened.
       public UnityBuilder HandleNotificationOpened(NotificationOpened inNotificationOpenedDelegate) {
-         notificationOpenedDelegate = inNotificationOpenedDelegate;;
+         notificationOpenedDelegate = inNotificationOpenedDelegate; ;
          return this;
       }
 
       public UnityBuilder InFocusDisplaying(OSInFocusDisplayOption display) {
-         displayOption = display;
+         inFocusDisplayType = display;
          return this;
       }
 
@@ -163,9 +252,9 @@ public class OneSignal : MonoBehaviour {
       // inAppLaunchURL                   = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
       public UnityBuilder Settings(Dictionary<string, bool> settings) {
          //bool autoPrompt, bool inAppLaunchURL
-         #if UNITY_IPHONE
+#if UNITY_IPHONE
             iOSSettings = settings;
-         #endif
+#endif
          return this;
       }
 
@@ -178,9 +267,9 @@ public class OneSignal : MonoBehaviour {
 
 
 #if ONESIGNAL_PLATFORM
-   #if SUPPORTS_LOGGING
-      private static LOG_LEVEL logLevel = LOG_LEVEL.INFO, visualLogLevel = LOG_LEVEL.NONE;
-   #endif
+#if SUPPORTS_LOGGING
+   private static LOG_LEVEL logLevel = LOG_LEVEL.INFO, visualLogLevel = LOG_LEVEL.NONE;
+#endif
 
    private static OneSignalPlatform oneSignalPlatform = null;
 
@@ -198,166 +287,208 @@ public class OneSignal : MonoBehaviour {
 
    public static OneSignal.UnityBuilder StartInit(string appID, string googleProjectNumber = null) {
       if (builder == null)
-            builder = new UnityBuilder();
-      #if ONESIGNAL_PLATFORM
-         builder.appID = appID;
-         builder.googleProjectNumber = googleProjectNumber;
-      #endif
+         builder = new UnityBuilder();
+#if ONESIGNAL_PLATFORM
+      builder.appID = appID;
+      builder.googleProjectNumber = googleProjectNumber;
+#endif
       return builder;
    }
 
    private static void Init() {
-      #if !UNITY_EDITOR
-         #if ONESIGNAL_PLATFORM
-            if (oneSignalPlatform != null || builder == null) return;
-            #if UNITY_ANDROID
-               oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, builder.displayOption, logLevel, visualLogLevel);
-            #elif UNITY_IPHONE
-               //extract settings
-               bool autoPrompt = true,inAppLaunchURL = true;
-
-               if (builder.iOSSettings != null) {
-                  if(builder.iOSSettings.ContainsKey(kOSSettingsAutoPrompt))
-                     autoPrompt = builder.iOSSettings[kOSSettingsAutoPrompt];
-                  if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
-                     inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
-               }
-               oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
-            #elif UNITY_WP_8_1
-               oneSignalPlatform = new OneSignalWPWNS(builder.appID);
-            #endif
-
-            #if !UNITY_WP_8_1
-               GameObject go = new GameObject(gameObjectName);
-               go.AddComponent<OneSignal>();
-               DontDestroyOnLoad(go);
-            #endif
-        #endif
+      #if UNITY_EDITOR
+         initUnityEditor();
       #else
-         print("Please run OneSignal on a device to see push notifications.");
+         initOneSignalPlatform();
       #endif
    }
-   
-    public static void SetLogLevel(LOG_LEVEL inLogLevel, LOG_LEVEL inVisualLevel) {
-      #if SUPPORTS_LOGGING
-         logLevel = inLogLevel; visualLogLevel = inVisualLevel;
-      #endif
-    }
+
+   private static void initOneSignalPlatform() {
+      if (oneSignalPlatform != null || builder == null)
+         return;
+      
+#if UNITY_ANDROID
+     initAndroid();
+#elif UNITY_IPHONE
+     initIOS();
+#elif UNITY_WP_8_1
+     initWP81();
+#endif
+     
+#if !UNITY_WP_8_1
+      GameObject go = new GameObject(gameObjectName);
+      go.AddComponent<OneSignal>();
+      DontDestroyOnLoad(go);
+#endif
+
+      addPermissionObserver();
+      addSubscriptionObserver();
+   }
+
+#if UNITY_ANDROID
+   private static void initAndroid() {
+      oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, inFocusDisplayType, logLevel, visualLogLevel);
+   }
+#endif
+
+#if UNITY_IPHONE
+   private static void initIOS() {
+      bool autoPrompt = true, inAppLaunchURL = true;
+
+      if (builder.iOSSettings != null) {
+         if (builder.iOSSettings.ContainsKey(kOSSettingsAutoPrompt))
+            autoPrompt = builder.iOSSettings[kOSSettingsAutoPrompt];
+         if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
+            inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
+      }
+      oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
+   }
+#endif
+
+#if UNITY_WP_8_1
+   private static void initWP81() {
+      oneSignalPlatform = new OneSignalWPWNS(builder.appID);
+   }
+#endif
+
+   private static void initUnityEditor() {
+      print("Please run OneSignal on a device to see push notifications.");
+   }
+
+   private static OSInFocusDisplayOption _inFocusDisplayType = OSInFocusDisplayOption.InAppAlert;
+   public static OSInFocusDisplayOption inFocusDisplayType {
+      get { return _inFocusDisplayType; }
+      set {
+         _inFocusDisplayType = value;
+         if (oneSignalPlatform != null)
+            oneSignalPlatform.SetInFocusDisplaying(_inFocusDisplayType);
+      }
+   }
+
+   public static void SetLogLevel(LOG_LEVEL inLogLevel, LOG_LEVEL inVisualLevel) {
+#if SUPPORTS_LOGGING
+      logLevel = inLogLevel; visualLogLevel = inVisualLevel;
+#endif
+   }
 
    // Tag player with a key value pair to later create segments on them at onesignal.com.
    public static void SendTag(string tagName, string tagValue) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.SendTag(tagName, tagValue);
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.SendTag(tagName, tagValue);
+#endif
    }
 
    // Tag player with a key value pairs to later create segments on them at onesignal.com.
    public static void SendTags(Dictionary<string, string> tags) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.SendTags(tags);
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.SendTags(tags);
+#endif
    }
 
    // Makes a request to onesignal.com to get current tags set on the player and then run the callback passed in.
    public static void GetTags(TagsReceived inTagsReceivedDelegate) {
-      #if ONESIGNAL_PLATFORM
-         tagsReceivedDelegate = inTagsReceivedDelegate;
-         oneSignalPlatform.GetTags();
-      #endif
+#if ONESIGNAL_PLATFORM
+      tagsReceivedDelegate = inTagsReceivedDelegate;
+      oneSignalPlatform.GetTags();
+#endif
    }
 
    // Set OneSignal.inTagsReceivedDelegate before calling this method or use the method above.
    public static void GetTags() {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.GetTags();
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.GetTags();
+#endif
    }
 
    public static void DeleteTag(string key) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.DeleteTag(key);
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.DeleteTag(key);
+#endif
    }
 
    public static void DeleteTags(IList<string> keys) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.DeleteTags(keys);
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.DeleteTags(keys);
+#endif
    }
 
    // Call this when you would like to prompt an iOS user accept push notifications with the default system prompt.
    // Only use if you passed false to autoRegister when calling Init.
    public static void RegisterForPushNotifications() {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.RegisterForPushNotifications();
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.RegisterForPushNotifications();
+#endif
    }
 
    // Call this if you need the playerId and/or pushToken
    // NOTE: pushToken maybe null if notifications are not accepted or there is connectivity issues. 
    public static void IdsAvailable(IdsAvailableCallback inIdsAvailableDelegate) {
-      #if ONESIGNAL_PLATFORM
-         idsAvailableDelegate = inIdsAvailableDelegate;
-         oneSignalPlatform.IdsAvailable();
-      #endif
+#if ONESIGNAL_PLATFORM
+      idsAvailableDelegate = inIdsAvailableDelegate;
+      oneSignalPlatform.IdsAvailable();
+#endif
    }
 
    // Set OneSignal.idsAvailableDelegate before calling this method or use the method above.
    public static void IdsAvailable() {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.IdsAvailable();
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.IdsAvailable();
+#endif
    }
 
    public static void EnableVibrate(bool enable) {
-      #if ANDROID_ONLY
+#if ANDROID_ONLY
          ((OneSignalAndroid)oneSignalPlatform).EnableVibrate(enable);
-      #endif
+#endif
    }
 
    public static void EnableSound(bool enable) {
-      #if ANDROID_ONLY
+#if ANDROID_ONLY
          ((OneSignalAndroid)oneSignalPlatform).EnableSound(enable);
-      #endif
+#endif
    }
-   
+
    public static void ClearOneSignalNotifications() {
-      #if ANDROID_ONLY
+#if ANDROID_ONLY
          ((OneSignalAndroid)oneSignalPlatform).ClearOneSignalNotifications();
-      #endif
+#endif
    }
 
    public static void SetSubscription(bool enable) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.SetSubscription(enable);
-      #endif
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.SetSubscription(enable);
+#endif
    }
 
    public static void PostNotification(Dictionary<string, object> data) {
-      #if ONESIGNAL_PLATFORM
-         PostNotification(data, null, null);
-      #endif
+#if ONESIGNAL_PLATFORM
+      PostNotification(data, null, null);
+#endif
    }
 
    public static void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess inOnPostNotificationSuccess, OnPostNotificationFailure inOnPostNotificationFailure) {
-      #if ONESIGNAL_PLATFORM
-         postNotificationSuccessDelegate = inOnPostNotificationSuccess;
-         postNotificationFailureDelegate = inOnPostNotificationFailure;
-         oneSignalPlatform.PostNotification(data);
-      #endif
-   }
-   
-   public static void SyncHashedEmail(string email) {
-      #if ONESIGNAL_PLATFORM
-         oneSignalPlatform.SyncHashedEmail(email);
-      #endif
+#if ONESIGNAL_PLATFORM
+      postNotificationSuccessDelegate = inOnPostNotificationSuccess;
+      postNotificationFailureDelegate = inOnPostNotificationFailure;
+      oneSignalPlatform.PostNotification(data);
+#endif
    }
 
-    public static void PromptLocation() {
-        #if ONESIGNAL_PLATFORM
-             oneSignalPlatform.PromptLocation();
-        #endif
-    }
+   public static void SyncHashedEmail(string email) {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.SyncHashedEmail(email);
+#endif
+   }
+
+   public static void PromptLocation() {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.PromptLocation();
+#endif
+   }
+
+   public static OSPermissionSubscriptionState GetPermissionSubscriptionState() {
+      return oneSignalPlatform.getPermissionSubscriptionState();
+   }
 
    /*** protected and private methods ****/
 #if ONESIGNAL_PLATFORM
@@ -473,5 +604,23 @@ public class OneSignal : MonoBehaviour {
          tempPostNotificationFailureDelegate(Json.Deserialize(response) as Dictionary<string, object>);
       }
    }
+
+   // Called from native SDK
+   private void onOSPermissionChanged(string stateChangesJSONString) {
+      OSPermissionStateChanges stateChanges = oneSignalPlatform.parseOSPermissionStateChanges(stateChangesJSONString);
+      internalPermissionObserver(stateChanges);
+   }
+
+   // Called from native SDK
+   private void onOSSubscriptionChanged(string stateChangesJSONString) {
+      OSSubscriptionStateChanges stateChanges = oneSignalPlatform.parseOSSubscriptionStateChanges(stateChangesJSONString);
+      internalSubscriptionObserver(stateChanges);
+   }
+
+   private void onGetPermissionSubscriptionState(string stateChangesJSONString) {
+      OSSubscriptionStateChanges stateChanges = oneSignalPlatform.parseOSSubscriptionStateChanges(stateChangesJSONString);
+      internalSubscriptionObserver(stateChanges);
+   }
+
 #endif
 }
