@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,18 +29,19 @@
 using UnityEngine;
 using System.Collections.Generic;
 using OneSignalPush.MiniJSON;
+using System;
 
 public class OneSignalAndroid : OneSignalPlatform {
    private static AndroidJavaObject mOneSignal = null;
 
    public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-        mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", gameObjectName, googleProjectNumber, appId, (int)logLevel, (int)visualLevel);
-        SetInFocusDisplaying(displayOption);
+      mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", gameObjectName, googleProjectNumber, appId, (int)logLevel, (int)visualLevel);
+      SetInFocusDisplaying(displayOption);
    }
 
-    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-        mOneSignal.Call("setLogLevel", (int)logLevel, (int)visualLevel);
-    }
+   public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+      mOneSignal.Call("setLogLevel", (int)logLevel, (int)visualLevel);
+   }
 
    public void SendTag(string tagName, string tagValue) {
       mOneSignal.Call("sendTag", tagName, tagValue);
@@ -67,7 +68,9 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("idsAvailable");
    }
 
-   public void RegisterForPushNotifications() { } // Doesn't apply to Android as the Native SDK always registers with GCM.
+   // Doesn't apply to Android, doesn't have a native permission prompt
+   public void RegisterForPushNotifications() { }
+   public void promptForPushNotificationsWithUserResponse() {}
 
    public void EnableVibrate(bool enable) {
       mOneSignal.Call("enableVibrate", enable);
@@ -89,16 +92,66 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("postNotification", Json.Serialize(data));
    }
 
-  public void SyncHashedEmail(string email) {
-    mOneSignal.Call("syncHashedEmail", email);
-  }
+   public void SyncHashedEmail(string email) {
+      mOneSignal.Call("syncHashedEmail", email);
+   }
 
-  public void PromptLocation() {
-    mOneSignal.Call("promptLocation");
-  }
-  
-  public void ClearOneSignalNotifications() {
-    mOneSignal.Call("clearOneSignalNotifications");
-  }
+   public void PromptLocation() {
+      mOneSignal.Call("promptLocation");
+   }
+
+   public void ClearOneSignalNotifications() {
+      mOneSignal.Call("clearOneSignalNotifications");
+   }
+
+   public void addPermissionObserver() {
+      mOneSignal.Call("addPermissionObserver");
+   }
+
+   public void removePermissionObserver() {
+      mOneSignal.Call("removePermissionObserver");
+   }
+
+   public void addSubscriptionObserver() {
+      mOneSignal.Call("addSubscriptionObserver");
+   }
+   public void removeSubscriptionObserver() {
+      mOneSignal.Call("removeSubscriptionObserver");
+   }
+   
+   public OSPermissionSubscriptionState getPermissionSubscriptionState() {
+      return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
+   }
+
+   public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
+      return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
+   }
+
+   public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
+      return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
+   }
+
+   public OSPermissionState parseOSPermissionState(object stateDict) {
+      var stateDictCasted = stateDict as Dictionary<string, object>;
+
+      var state = new OSPermissionState();
+      state.hasPrompted = true;
+      var toIsEnabled = Convert.ToBoolean(stateDictCasted["enabled"]);
+      state.status = toIsEnabled ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
+
+      return state;
+   }
+
+   public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
+      var stateDictCasted = stateDict as Dictionary<string, object>;
+
+      var state = new OSSubscriptionState();
+      state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
+      state.userSubscriptionSetting = Convert.ToBoolean(stateDictCasted["userSubscriptionSetting"]);
+      state.userId = stateDictCasted["userId"] as string;
+      state.pushToken = stateDictCasted["pushToken"] as string;
+
+      return state;
+   }
 }
 #endif

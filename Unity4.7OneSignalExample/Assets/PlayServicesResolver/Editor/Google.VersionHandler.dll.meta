@@ -1,11 +1,38 @@
 fileFormatVersion: 2
-guid: bc3a109aa3504ce8a6b1da942846de07
+guid: e2bc57234f904376a4a82c01f1ee14fc
 labels:
 - gvh
-- gvh_v1.2.16.0
 - gvh_teditor
-MonoAssemblyImporter:
-  serializedVersion: 1
+- gvh_v1.2.20.0
+timeCreated: 1473798236
+licenseType: Pro
+PluginImporter:
+  serializedVersion: 2
   iconMap: {}
   executionOrder: {}
+  isPreloaded: 0
+  isOverridable: 0
+  platformData:
+    data:
+      first:
+        Any: 
+      second:
+        enabled: 0
+        settings: {}
+    data:
+      first:
+        Editor: Editor
+      second:
+        enabled: 1
+        settings:
+          DefaultValueInitialized: true
+    data:
+      first:
+        Windows Store Apps: WindowsStoreApps
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 
