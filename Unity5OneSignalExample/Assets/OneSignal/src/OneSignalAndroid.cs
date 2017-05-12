@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -116,40 +116,20 @@ public class OneSignalAndroid : OneSignalPlatform {
    public void removeSubscriptionObserver() {
       mOneSignal.Call("removeSubscriptionObserver");
    }
-
+   
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
-      var jsonStr = mOneSignal.Call<string>("getPermissionSubscriptionState");
-
-      var stateDict = Json.Deserialize(jsonStr) as Dictionary<string, object>;
-
-      var state = new OSPermissionSubscriptionState();
-      state.permissionStatus = parseOSPermissionState(stateDict["permissionStatus"]);
-      state.subscriptionStatus = parseOSSubscriptionState(stateDict["subscriptionStatus"]);
-
-      return state;
+      return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
    }
 
-   public OSPermissionStateChanges parseOSPermissionStateChanges(string stateChangesJSONString) {
-      var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
-
-      var permissionStateChanges = new OSPermissionStateChanges();
-      permissionStateChanges.to = parseOSPermissionState(stateChangesJson["to"]);
-      permissionStateChanges.to = parseOSPermissionState(stateChangesJson["from"]);
-
-      return permissionStateChanges;
+   public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
+      return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
    }
 
-   public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string stateChangesJSONString) {
-      var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
-
-      var permissionStateChanges = new OSSubscriptionStateChanges();
-      permissionStateChanges.to = parseOSSubscriptionState(stateChangesJson["to"]);
-      permissionStateChanges.from = parseOSSubscriptionState(stateChangesJson["from"]);
-
-      return permissionStateChanges;
+   public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
+      return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
    }
 
-   private OSPermissionState parseOSPermissionState(object stateDict) {
+   public OSPermissionState parseOSPermissionState(object stateDict) {
       var stateDictCasted = stateDict as Dictionary<string, object>;
 
       var state = new OSPermissionState();
@@ -160,7 +140,7 @@ public class OneSignalAndroid : OneSignalPlatform {
       return state;
    }
 
-   private OSSubscriptionState parseOSSubscriptionState(object stateDict) {
+   public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
       var stateDictCasted = stateDict as Dictionary<string, object>;
 
       var state = new OSSubscriptionState();

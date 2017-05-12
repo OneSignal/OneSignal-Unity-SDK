@@ -31,6 +31,7 @@ using System.Collections.Generic;
 public interface OneSignalPlatform {
     void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel);
     void RegisterForPushNotifications();
+    void promptForPushNotificationsWithUserResponse();
     void SendTag(string tagName, string tagValue);
     void SendTags(IDictionary<string, string> tags);
     void GetTags();
@@ -50,6 +51,9 @@ public interface OneSignalPlatform {
     void removeSubscriptionObserver();
 
     OSPermissionSubscriptionState getPermissionSubscriptionState();
+
+    OSPermissionState parseOSPermissionState(object stateDict);
+    OSSubscriptionState parseOSSubscriptionState(object stateDict);
 
     OSPermissionStateChanges parseOSPermissionStateChanges(string stateChangesJSONString);
     OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string stateChangesJSONString);

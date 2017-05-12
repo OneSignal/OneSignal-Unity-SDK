@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -149,13 +149,14 @@ public class OneSignal : MonoBehaviour {
 
    public delegate void IdsAvailableCallback(string playerID, string pushToken);
    public delegate void TagsReceived(Dictionary<string, object> tags);
+   public delegate void PromptForPushNotificationsUserResponse(bool accepted);
 
    public delegate void OnPostNotificationSuccess(Dictionary<string, object> response);
    public delegate void OnPostNotificationFailure(Dictionary<string, object> response);
 
    public static IdsAvailableCallback idsAvailableDelegate = null;
    public static TagsReceived tagsReceivedDelegate = null;
-
+   private static PromptForPushNotificationsUserResponse notificationUserResponseDelegate;
 
    public delegate void PermissionObservable(OSPermissionStateChanges stateChanges);
    private static PermissionObservable internalPermissionObserver;
@@ -341,7 +342,7 @@ public class OneSignal : MonoBehaviour {
          if (builder.iOSSettings.ContainsKey(kOSSettingsInAppLaunchURL))
             inAppLaunchURL = builder.iOSSettings[kOSSettingsInAppLaunchURL];
       }
-      oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
+      oneSignalPlatform = new OneSignalIOS(gameObjectName, builder.appID, autoPrompt, inAppLaunchURL, inFocusDisplayType, logLevel, visualLogLevel);
    }
 #endif
 
@@ -417,6 +418,13 @@ public class OneSignal : MonoBehaviour {
    public static void RegisterForPushNotifications() {
 #if ONESIGNAL_PLATFORM
       oneSignalPlatform.RegisterForPushNotifications();
+#endif
+   }
+
+   public static void PromptForPushNotificationsWithUserResponse(PromptForPushNotificationsUserResponse inDelegate) {
+#if ONESIGNAL_PLATFORM
+      notificationUserResponseDelegate = inDelegate;
+      oneSignalPlatform.promptForPushNotificationsWithUserResponse();
 #endif
    }
 
@@ -617,9 +625,9 @@ public class OneSignal : MonoBehaviour {
       internalSubscriptionObserver(stateChanges);
    }
 
-   private void onGetPermissionSubscriptionState(string stateChangesJSONString) {
-      OSSubscriptionStateChanges stateChanges = oneSignalPlatform.parseOSSubscriptionStateChanges(stateChangesJSONString);
-      internalSubscriptionObserver(stateChanges);
+   // Called from native SDk
+   private void onPromptForPushNotificationsWithUserResponse(string accepted) {
+      notificationUserResponseDelegate(Convert.ToBoolean(accepted));
    }
 
 #endif
