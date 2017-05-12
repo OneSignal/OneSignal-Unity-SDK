@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  *
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,6 @@
 
 #import "OneSignal.h"
 #import <objc/runtime.h>
-
-@implementation UIApplication(OneSignalUnityPush)
 
 NSString* CreateNSString(const char* string) {
     return [NSString stringWithUTF8String: string ? string : ""];
@@ -73,9 +71,39 @@ const char* dictionaryToJsonChar(NSDictionary* dictionaryToConvert) {
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dictionaryToConvert options:0 error:nil];
     NSString* jsonRequestData = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    return [jsonRequestData UTF8String];
+    return jsonRequestData.UTF8String;
 }
 
+char* dictionaryToJsonNonConstChar(NSDictionary* dictionaryToConvert) {
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dictionaryToConvert options:0 error:nil];
+    NSString* jsonRequestData = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    char* dyStr = malloc(sizeof(char) * jsonRequestData.length);
+    strcpy(dyStr, jsonRequestData.UTF8String);
+    
+    return dyStr;
+}
+
+
+
+@interface OSUnityPermissionAndSubscriptionObserver : NSObject<OSPermissionObserver, OSSubscriptionObserver>
+- (void)onOSPermissionChanged:(OSPermissionStateChanges*)stateChanges;
+- (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges;
+@end
+
+@implementation OSUnityPermissionAndSubscriptionObserver
+- (void)onOSPermissionChanged:(OSPermissionStateChanges*)stateChanges {
+  UnitySendMessage(unityListener, "onOSPermissionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
+}
+
+- (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges {
+  UnitySendMessage(unityListener, "onOSSubscriptionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
+}
+@end
+
+static OSUnityPermissionAndSubscriptionObserver* osUnityObserver;
+
+@implementation UIApplication(OneSignalUnityPush)
 
 + (void)load {
     method_exchangeImplementations(class_getInstanceMethod(self, @selector(setDelegate:)), class_getInstanceMethod(self, @selector(setOneSignalUnityDelegate:)));
@@ -221,6 +249,40 @@ void _syncHashedEmail(const char* email) {
 
 void _promptLocation() {
     [OneSignal promptLocation];
+}
+
+void _setInFocusDisplayType(int type) {
+  OneSignal.inFocusDisplayType = type;
+}
+
+void _addPermissionObserver() {
+  if (!osUnityObserver)
+    osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
+  [OneSignal addPermissionObserver:osUnityObserver];
+}
+
+void _removePermissionObserver() {
+  [OneSignal removePermissionObserver:osUnityObserver];
+}
+
+void _addSubscriptionObserver() {
+  if (!osUnityObserver)
+    osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
+  [OneSignal addSubscriptionObserver:osUnityObserver];
+}
+
+void _removeSubscriptionObserver() {
+  [OneSignal removeSubscriptionObserver:osUnityObserver];
+}
+
+char* _getPermissionSubscriptionState() {
+  return dictionaryToJsonNonConstChar([[OneSignal getPermissionSubscriptionState] toDictionary]);
+}
+
+void _promptForPushNotificationsWithUserResponse() {
+  [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+      UnitySendMessage(unityListener, "onPromptForPushNotificationsWithUserResponse", (accepted ? @"true" : @"false").UTF8String);
+  }];
 }
 
 void _setOneSignalLogLevel(int logLevel, int visualLogLevel) {

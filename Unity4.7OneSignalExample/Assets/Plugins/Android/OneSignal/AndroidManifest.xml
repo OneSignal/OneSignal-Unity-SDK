@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.onesignal.onesignalsdk"
           android:versionName="1.0"
           android:versionCode="1">
+  
+  <!-- OneSignal SDK has runtime checks Android version. -->
+  <uses-sdk tools:overrideLibrary="android.support.customtabs"/>
   
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -53,7 +57,7 @@
     
     <receiver android:name="com.onesignal.NotificationOpenedReceiver" />
     <service android:name="com.onesignal.GcmIntentService" />
-    <service android:name="com.onesignal.SyncService" android:stopWithTask="false" />
+    <service android:name="com.onesignal.SyncService" />
     <activity android:name="com.onesignal.PermissionsActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     <service android:name="com.onesignal.NotificationRestoreService" />
     <receiver android:name="com.onesignal.BootUpReceiver">

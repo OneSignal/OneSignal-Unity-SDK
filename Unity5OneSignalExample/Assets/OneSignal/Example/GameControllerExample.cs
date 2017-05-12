@@ -29,6 +29,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 using OneSignalPush.MiniJSON;
+using System;
 
 public class GameControllerExample : MonoBehaviour {
 
@@ -47,8 +48,26 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
-               .InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+               //.InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                .EndInit();
+      
+      OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
+      OneSignal.permissionObserver += OneSignal_permissionObserver;
+      OneSignal.subscriptionObserver += OneSignal_subscriptionObserver;
+
+      var pushState = OneSignal.GetPermissionSubscriptionState();
+      Debug.Log("pushState.subscriptionStatus.subscribed : " + pushState.subscriptionStatus.subscribed);
+      Debug.Log("pushState.subscriptionStatus.userId : " + pushState.subscriptionStatus.userId);
+   }
+
+   private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
+      Debug.Log("stateChanges: " + stateChanges);
+      Debug.Log("stateChanges.to.userId: " + stateChanges.to.userId);
+      Debug.Log("stateChanges.to.subscribed: " + stateChanges.to.subscribed);
+   }
+
+   private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
+      Debug.Log("stateChanges.to.status: " + stateChanges.to.status);
    }
 
    // Called when your app is in focus and a notificaiton is recieved.

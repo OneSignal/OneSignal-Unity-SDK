@@ -1,7 +1,7 @@
 ﻿/**
  * Modified MIT License
  * 
- * Copyright 2016 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using OneSignalPush.MiniJSON;
+using System;
 
 public class OneSignalIOS : OneSignalPlatform {
 
@@ -68,6 +69,30 @@ public class OneSignalIOS : OneSignalPlatform {
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _promptLocation();
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setInFocusDisplayType(int type);
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _promptForPushNotificationsWithUserResponse();
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _addPermissionObserver();
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _removePermissionObserver();
+
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _addSubscriptionObserver();
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _removeSubscriptionObserver();
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public string _getPermissionSubscriptionState();
+
+
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
@@ -125,5 +150,64 @@ public class OneSignalIOS : OneSignalPlatform {
    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
       _setOneSignalLogLevel((int)logLevel, (int)visualLevel);
    }
+
+   public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display) {
+      _setInFocusDisplayType((int)display);
+   }
+
+   public void promptForPushNotificationsWithUserResponse() {
+      _promptForPushNotificationsWithUserResponse();
+   }
+
+   public void addPermissionObserver() {
+      _addPermissionObserver();
+   }
+
+   public void removePermissionObserver() {
+      _removePermissionObserver();
+   }
+
+   public void addSubscriptionObserver() {
+      _addSubscriptionObserver();
+   }
+
+   public void removeSubscriptionObserver() {
+      _removeSubscriptionObserver();
+   }
+
+   public OSPermissionSubscriptionState getPermissionSubscriptionState() {
+      return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, _getPermissionSubscriptionState());
+   }
+
+   public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
+      return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
+   }
+
+   public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
+      return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
+   }
+
+   public OSPermissionState parseOSPermissionState(object stateDict) {
+      var stateDictCasted = stateDict as Dictionary<string, object>;
+
+      var state = new OSPermissionState();
+      state.hasPrompted = Convert.ToBoolean(stateDictCasted["hasPrompted"]);
+      state.status = (OSNotificationPermission)Convert.ToInt32(stateDictCasted["status"]);
+
+      return state;
+   }
+
+   public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
+      var stateDictCasted = stateDict as Dictionary<string, object>;
+
+      var state = new OSSubscriptionState();
+      state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
+      state.userSubscriptionSetting = Convert.ToBoolean(stateDictCasted["userSubscriptionSetting"]);
+      state.userId = stateDictCasted["userId"] as string;
+      state.pushToken = stateDictCasted["pushToken"] as string;
+
+      return state;
+   }
+
 }
 #endif

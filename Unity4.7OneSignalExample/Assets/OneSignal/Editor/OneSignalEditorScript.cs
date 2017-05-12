@@ -40,7 +40,9 @@ public class OneSignalEditorScriptAndroid : AssetPostprocessor {
    public static object svcSupport;
 
    private static readonly string PluginName = "OneSignal";
-   private static readonly string PLAY_SERVICES_VERSION = "+";
+   // If you run into conflicts OneSignal supports back to version 9.0.0.
+   private static readonly string PLAY_SERVICES_VERSION = "10.0.+";
+   private static readonly string ANDROID_SUPPORT_VERSION = "24.0.+";
 
    static OneSignalEditorScriptAndroid() {
       createOneSignalAndroidManifest();
@@ -83,10 +85,22 @@ public class OneSignalEditorScriptAndroid : AssetPostprocessor {
              {"packageIds", new string[] { "extra-google-m2repository" } }
          });
 
+
+      Google.VersionHandler.InvokeInstanceMethod(
+         svcSupport, "DependOn",
+         new object[] {
+            "com.android.support",
+            "customtabs",
+            ANDROID_SUPPORT_VERSION
+         },
+         namedArgs: new Dictionary<string, object>() {
+             {"packageIds", new string[] { "extra-android-m2repository" } }
+         });
+
       // Adds play-services-base, play-services-basement, play-services-iid, and support-v4 will be automaticly added.
       // Also adds play-services-tasks but this isn't used by OneSignal, it just added as a depency from the above.
-      
-      
+
+
       // Setting 8.3+ does not work with unity-jar-resolver-1.2.0 and GooglePlayGamesPlugin-0.9.34.
       //   It creates conflicting aar files with mismatched version of 8.4 and 9.4
       // svcSupport.DependOn("com.google.android.gms", "play-services-gcm", "8.3+");
@@ -113,8 +127,7 @@ public class OneSignalEditorScriptAndroid : AssetPostprocessor {
       #else
          body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);     
       #endif
-      using (var streamWriter = new StreamWriter(manifestFullPath, false))
-      {
+      using (var streamWriter = new StreamWriter(manifestFullPath, false)) {
          streamWriter.Write(body);
       }
    }

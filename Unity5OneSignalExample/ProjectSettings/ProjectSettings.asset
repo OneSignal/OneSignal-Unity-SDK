@@ -161,7 +161,7 @@ PlayerSettings:
     serializedVersion: 2
     m_Bits: 238
   iPhoneSdkVersion: 988
-  iOSTargetOSVersionString: 6.0
+  iOSTargetOSVersionString: 7.0
   tvOSSdkVersion: 0
   tvOSRequireExtendedGameController: 0
   tvOSTargetOSVersionString: 9.0
@@ -646,7 +646,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: OneSignal
   metroCertificateIssuer: OneSignal
-  metroCertificateNotAfter: 809d8e5add6ed301
+  metroCertificateNotAfter: 80f52c14cbe9d301
   metroApplicationDescription: UnityGameThriveExample
   wsaImages: {}
   metroTileShortName: 
