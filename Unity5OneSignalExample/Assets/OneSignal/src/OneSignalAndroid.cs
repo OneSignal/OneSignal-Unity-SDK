@@ -68,7 +68,9 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("idsAvailable");
    }
 
-   public void RegisterForPushNotifications() { } // Doesn't apply to Android as the Native SDK always registers with GCM.
+   // Doesn't apply to Android, doesn't have a native permission prompt
+   public void RegisterForPushNotifications() { }
+   public void promptForPushNotificationsWithUserResponse() {}
 
    public void EnableVibrate(bool enable) {
       mOneSignal.Call("enableVibrate", enable);
