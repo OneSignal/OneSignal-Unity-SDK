@@ -495,7 +495,11 @@ public class OneSignal : MonoBehaviour {
    }
 
    public static OSPermissionSubscriptionState GetPermissionSubscriptionState() {
-      return oneSignalPlatform.getPermissionSubscriptionState();
+     #if ONESIGNAL_PLATFORM
+        return oneSignalPlatform.getPermissionSubscriptionState();
+     #else
+        return new OSPermissionSubscriptionState();
+     #endif
    }
 
    /*** protected and private methods ****/
