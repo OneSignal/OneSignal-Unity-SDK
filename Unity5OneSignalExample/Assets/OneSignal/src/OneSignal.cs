@@ -25,10 +25,6 @@
  * THE SOFTWARE.
  */
 
-// TODO: Remove after testing
-#define ONESIGNAL_PLATFORM
-
-
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE || UNITY_WP_8_1)
 #define ONESIGNAL_PLATFORM
 #endif
@@ -266,19 +262,18 @@ public class OneSignal : MonoBehaviour {
    }
    internal static UnityBuilder builder = null;
 
+   private static OneSignalPlatform oneSignalPlatform = null;
+   private const string gameObjectName = "OneSignalRuntimeObject_KEEP";
 
 #if ONESIGNAL_PLATFORM
 #if SUPPORTS_LOGGING
    private static LOG_LEVEL logLevel = LOG_LEVEL.INFO, visualLogLevel = LOG_LEVEL.NONE;
 #endif
 
-   private static OneSignalPlatform oneSignalPlatform = null;
-
    internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
    internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
 
    // Name of the GameObject that gets automaticly created in your game scene.
-   private const string gameObjectName = "OneSignalRuntimeObject_KEEP";
 #endif
 
    // Init - Only required method you call to setup OneSignal to recieve push notifications.
@@ -307,7 +302,7 @@ public class OneSignal : MonoBehaviour {
    private static void initOneSignalPlatform() {
       if (oneSignalPlatform != null || builder == null)
          return;
-      
+#if ONESIGNAL_PLATFORM
 #if UNITY_ANDROID
      initAndroid();
 #elif UNITY_IPHONE
@@ -321,12 +316,13 @@ public class OneSignal : MonoBehaviour {
       go.AddComponent<OneSignal>();
       DontDestroyOnLoad(go);
 #endif
+#endif
 
       addPermissionObserver();
       addSubscriptionObserver();
    }
 
-#if UNITY_ANDROID
+#if ONESIGNAL_PLATFORM && UNITY_ANDROID
    private static void initAndroid() {
       oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, inFocusDisplayType, logLevel, visualLogLevel);
    }
@@ -495,11 +491,14 @@ public class OneSignal : MonoBehaviour {
    }
 
    public static OSPermissionSubscriptionState GetPermissionSubscriptionState() {
-     #if ONESIGNAL_PLATFORM
-        return oneSignalPlatform.getPermissionSubscriptionState();
-     #else
-        return new OSPermissionSubscriptionState();
-     #endif
+#if ONESIGNAL_PLATFORM
+      return oneSignalPlatform.getPermissionSubscriptionState();
+#else
+      var state = new OSPermissionSubscriptionState();
+      state.permissionStatus = new OSPermissionState();
+      state.subscriptionStatus = new OSSubscriptionState();
+      return state;
+#endif
    }
 
    /*** protected and private methods ****/
