@@ -328,7 +328,7 @@ public class OneSignal : MonoBehaviour {
    }
 #endif
 
-#if UNITY_IPHONE
+#if ONESIGNAL_PLATFORM && UNITY_IPHONE
    private static void initIOS() {
       bool autoPrompt = true, inAppLaunchURL = true;
 
@@ -342,7 +342,7 @@ public class OneSignal : MonoBehaviour {
    }
 #endif
 
-#if UNITY_WP_8_1
+#if ONESIGNAL_PLATFORM && UNITY_WP_8_1
    private static void initWP81() {
       oneSignalPlatform = new OneSignalWPWNS(builder.appID);
    }
