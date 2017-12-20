@@ -44,7 +44,7 @@ class OneSignalPlatformHelper {
 
       var permissionStateChanges = new OSPermissionStateChanges();
       permissionStateChanges.to = platform.parseOSPermissionState(stateChangesJson["to"]);
-      permissionStateChanges.to = platform.parseOSPermissionState(stateChangesJson["from"]);
+      permissionStateChanges.from = platform.parseOSPermissionState(stateChangesJson["from"]);
 
       return permissionStateChanges;
    }
