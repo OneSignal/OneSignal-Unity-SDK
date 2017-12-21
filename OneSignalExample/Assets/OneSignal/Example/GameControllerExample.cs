@@ -67,6 +67,7 @@ public class GameControllerExample : MonoBehaviour {
    }
 
    private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
+	  Debug.Log("stateChanges.from.status: " + stateChanges.from.status);
       Debug.Log("stateChanges.to.status: " + stateChanges.to.status);
    }
 
