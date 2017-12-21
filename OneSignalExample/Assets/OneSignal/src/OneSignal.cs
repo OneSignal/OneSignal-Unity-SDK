@@ -104,8 +104,8 @@ public class OSNotificationOpenedResult {
 
 public enum OSNotificationPermission {
    NotDetermined,
-   Authorized,
-   Denied
+   Denied,
+   Authorized
 }
 
 public class OSPermissionState {
