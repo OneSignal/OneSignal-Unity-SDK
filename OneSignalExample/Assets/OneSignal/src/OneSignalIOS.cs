@@ -90,8 +90,16 @@ public class OneSignalIOS : OneSignalPlatform {
    extern static public void _removeSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
-   extern static public string _getPermissionSubscriptionState();
+	extern static public string _getPermissionSubscriptionState();
 
+	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _setEmail (string email, string emailAuthCode);
+
+	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _setUnauthenticatedEmail (string email);
+
+	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _logoutEmail();
 
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
@@ -174,6 +182,18 @@ public class OneSignalIOS : OneSignalPlatform {
    public void removeSubscriptionObserver() {
       _removeSubscriptionObserver();
    }
+
+	public void SetEmail(string email, string emailAuthCode) {
+		_setEmail (email, emailAuthCode);
+	}
+
+	public void SetEmail(string email) {
+		_setUnauthenticatedEmail (email);
+	}
+
+	public void LogoutEmail() {
+		_logoutEmail();
+	}
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
       return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, _getPermissionSubscriptionState());

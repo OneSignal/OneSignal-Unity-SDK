@@ -139,6 +139,13 @@ public class OneSignal : MonoBehaviour {
    // notification = The Notification dictionary filled from a serialized native OSNotification object
    public delegate void NotificationReceived(OSNotification notification);
 
+	public delegate void OnSetEmailSuccess();
+	public delegate void OnSetEmailFailure(Dictionary<string, object> error);
+
+	public delegate void OnLogoutEmailSuccess();
+	public delegate void OnLogoutEmailFailure(Dictionary<string, object> error);
+
+
    // NotificationOpened - Delegate is called when a push notification is opened.
    // result = The Notification open result describing : 1. The notification opened 2. The action taken by the user
    public delegate void NotificationOpened(OSNotificationOpenedResult result);
@@ -268,10 +275,16 @@ public class OneSignal : MonoBehaviour {
 #if ONESIGNAL_PLATFORM
 #if SUPPORTS_LOGGING
    private static LOG_LEVEL logLevel = LOG_LEVEL.INFO, visualLogLevel = LOG_LEVEL.NONE;
-#endif
+	#endif
 
-   internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
-   internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
+	internal static OnPostNotificationSuccess postNotificationSuccessDelegate = null;
+	internal static OnPostNotificationFailure postNotificationFailureDelegate = null;
+
+	internal static OnSetEmailSuccess setEmailSuccessDelegate = null;
+	internal static OnSetEmailFailure setEmailFailureDelegate = null;
+
+	internal static OnLogoutEmailSuccess logoutEmailSuccessDelegate = null;
+	internal static OnLogoutEmailFailure logoutEmailFailureDelegate = null;
 
    // Name of the GameObject that gets automaticly created in your game scene.
 #endif
@@ -440,6 +453,8 @@ public class OneSignal : MonoBehaviour {
 #endif
    }
 
+
+
    public static void EnableVibrate(bool enable) {
 #if ANDROID_ONLY
          ((OneSignalAndroid)oneSignalPlatform).EnableVibrate(enable);
@@ -469,6 +484,33 @@ public class OneSignal : MonoBehaviour {
       PostNotification(data, null, null);
 #endif
    }
+
+	public static void SetEmail(string email, OnSetEmailSuccess successDelegate, OnSetEmailFailure failureDelegate) {
+		#if ONESIGNAL_PLATFORM 
+		setEmailSuccessDelegate = successDelegate;
+		setEmailFailureDelegate = failureDelegate;
+
+		oneSignalPlatform.SetEmail(email);
+		#endif
+	}
+
+	public static void SetEmail(string email, string emailAuthToken, OnSetEmailSuccess successDelegate, OnSetEmailFailure failureDelegate) {
+		#if ONESIGNAL_PLATFORM 
+		setEmailSuccessDelegate = successDelegate;
+		setEmailFailureDelegate = failureDelegate;
+
+		oneSignalPlatform.SetEmail(email, emailAuthToken);
+		#endif
+	}
+
+	public static void LogoutEmail(OnLogoutEmailSuccess successDelegate, OnLogoutEmailFailure failureDelegate) {
+		#if ONESIGNAL_PLATFORM 
+		logoutEmailSuccessDelegate = successDelegate;
+		logoutEmailFailureDelegate = failureDelegate;
+
+		oneSignalPlatform.LogoutEmail();
+		#endif 
+	}
 
    public static void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess inOnPostNotificationSuccess, OnPostNotificationFailure inOnPostNotificationFailure) {
 #if ONESIGNAL_PLATFORM
@@ -604,7 +646,47 @@ public class OneSignal : MonoBehaviour {
          postNotificationSuccessDelegate = null;
          tempPostNotificationSuccessDelegate(Json.Deserialize(response) as Dictionary<string, object>);
       }
-   }
+	}
+
+	// Called from the native SDK
+	private void onSetEmailSuccess() {
+		if (setEmailSuccessDelegate != null) {
+			OnSetEmailSuccess tempSuccessDelegate = setEmailSuccessDelegate;
+			setEmailSuccessDelegate = null;
+			setEmailFailureDelegate = null;
+			tempSuccessDelegate();
+		}
+	}
+
+	// Called from the native SDK
+	private void onSetEmailFailure(string error) {
+		if (setEmailFailureDelegate != null) {
+			OnSetEmailFailure tempFailureDelegate = setEmailFailureDelegate;
+			setEmailFailureDelegate = null;
+			setEmailSuccessDelegate = null;
+			tempFailureDelegate(Json.Deserialize(error) as Dictionary<string, object>);
+		}
+	}
+
+	// Called from the native SDK
+	private void onLogoutEmailSuccess() {
+		if (logoutEmailSuccessDelegate != null) {
+			OnLogoutEmailSuccess tempSuccessDelegate = logoutEmailSuccessDelegate;
+			logoutEmailSuccessDelegate = null;
+			logoutEmailFailureDelegate = null;
+			tempSuccessDelegate();
+		}
+	}
+
+	// Called from the native SDK
+	private void onLogoutEmailFailure(string error) {
+		if (logoutEmailFailureDelegate != null) {
+			OnLogoutEmailFailure tempFailureDelegate = logoutEmailFailureDelegate;
+			logoutEmailFailureDelegate = null;
+			logoutEmailSuccessDelegate = null;
+			tempFailureDelegate(Json.Deserialize(error) as Dictionary<string, object>);
+		}
+	}
 
    // Called from the native SDK
    private void onPostNotificationFailed(string response) {

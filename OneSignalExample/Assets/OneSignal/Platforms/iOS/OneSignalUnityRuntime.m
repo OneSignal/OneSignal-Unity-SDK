@@ -289,4 +289,30 @@ void _setOneSignalLogLevel(int logLevel, int visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
 }
 
+// email
+
+void _setUnauthenticatedEmail(const char*email) {
+    [OneSignal setEmail:CreateNSString(email) withSuccess:^{
+        UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
+    } withFailure:^(NSError *error) {
+        UnitySendMessage(unityListener, "onSetEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+    }];
+}
+
+void _setEmail(const char *email, const char *emailAuthCode) {
+    [OneSignal setEmail:CreateNSString(email) withEmailAuthHashToken:CreateNSString(emailAuthCode) withSuccess:^{
+        UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
+    } withFailure:^(NSError *error) {
+        UnitySendMessage(unityListener, "onSetEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+    }];
+}
+
+void _logoutEmail() {
+    [OneSignal logoutEmailWithSuccess:^{
+        UnitySendMessage(unityListener, "onLogoutEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
+    } withFailure:^(NSError *error) {
+        UnitySendMessage(unityListener, "onLogoutEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+    }];
+}
+
 @end

@@ -43,6 +43,10 @@ public interface OneSignalPlatform {
     void SyncHashedEmail(string email);
     void PromptLocation();
 
+	void SetEmail (string email);
+	void SetEmail(string email, string emailAuthToken);
+	void LogoutEmail();
+
     void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display);
 
     void addPermissionObserver();

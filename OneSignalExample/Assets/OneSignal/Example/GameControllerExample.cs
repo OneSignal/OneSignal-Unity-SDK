@@ -111,7 +111,7 @@ public class GameControllerExample : MonoBehaviour {
             // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
             extraMessage = "Pressed ButtonId: " + actionID;
          }
-   }
+	}
 
    // Test Menu
    // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
@@ -122,9 +122,9 @@ public class GameControllerExample : MonoBehaviour {
       GUIStyle guiBoxStyle = new GUIStyle("box");
       guiBoxStyle.fontSize = 30;
 
-      GUI.Box(new Rect(10, 10, 390, 340), "Test Menu", guiBoxStyle);
+		GUI.Box(new Rect(10, 120, 420, 530), "Test Menu", guiBoxStyle);
 
-      if (GUI.Button (new Rect (60, 80, 300, 60), "SendTags", customTextSize)) {
+      if (GUI.Button (new Rect (60, 200, 300, 60), "SendTags", customTextSize)) {
          // You can tags users with key value pairs like this:
          OneSignal.SendTag("UnityTestKey", "TestValue");
          // Or use an IDictionary if you need to set more than one tag.
@@ -136,13 +136,13 @@ public class GameControllerExample : MonoBehaviour {
          // OneSignal.DeleteTags(new List<string>() {"UnityTestKey2", "UnityTestKey3" });
       }
 
-      if (GUI.Button (new Rect (60, 170, 300, 60), "GetIds", customTextSize)) {
+      if (GUI.Button (new Rect (60, 290, 300, 60), "GetIds", customTextSize)) {
             OneSignal.IdsAvailable((userId, pushToken) => {
             extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
          });
       }
 
-      if (GUI.Button (new Rect (60, 260, 300, 60), "TestNotification", customTextSize)) {
+      if (GUI.Button (new Rect (60, 380, 300, 60), "TestNotification", customTextSize)) {
          extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
          OneSignal.IdsAvailable((userId, pushToken) => {
             if (pushToken != null) {
@@ -169,10 +169,30 @@ public class GameControllerExample : MonoBehaviour {
          });
       }
 
+		if (GUI.Button (new Rect (60, 470, 300, 60), "SetEmail", customTextSize)) {
+			extraMessage = "Setting email to example@example.com";
+
+			OneSignal.SetEmail ("example@example.com", () => {
+				Debug.Log("Successfully set email");
+			}, (error) => {
+				Debug.Log("Encountered error setting email: " + Json.Serialize(error));
+			});
+		}
+
+		if (GUI.Button (new Rect (60, 560, 300, 60), "LogoutEmail", customTextSize)) {
+			extraMessage = "Logging Out of example@example.com";
+
+			OneSignal.LogoutEmail (() => {
+				Debug.Log("Successfully logged out of email");
+			}, (error) => {
+				Debug.Log("Encountered error logging out of email: " + Json.Serialize(error));
+			});
+		}
+
       if (extraMessage != null) {
          guiBoxStyle.alignment = TextAnchor.UpperLeft;
          guiBoxStyle.wordWrap = true;
-         GUI.Box (new Rect (10, 390, Screen.width - 20, Screen.height - 400), extraMessage, guiBoxStyle);
+         GUI.Box (new Rect (10, 700, Screen.width - 20, Screen.height - 740), extraMessage, guiBoxStyle);
       }
    }
 }
