@@ -486,30 +486,48 @@ public class OneSignal : MonoBehaviour {
    }
 
 	public static void SetEmail(string email, OnSetEmailSuccess successDelegate, OnSetEmailFailure failureDelegate) {
-		#if ONESIGNAL_PLATFORM 
+#if ONESIGNAL_PLATFORM 
 		setEmailSuccessDelegate = successDelegate;
 		setEmailFailureDelegate = failureDelegate;
 
 		oneSignalPlatform.SetEmail(email);
-		#endif
+#endif
 	}
 
 	public static void SetEmail(string email, string emailAuthToken, OnSetEmailSuccess successDelegate, OnSetEmailFailure failureDelegate) {
-		#if ONESIGNAL_PLATFORM 
+#if ONESIGNAL_PLATFORM 
 		setEmailSuccessDelegate = successDelegate;
 		setEmailFailureDelegate = failureDelegate;
 
 		oneSignalPlatform.SetEmail(email, emailAuthToken);
-		#endif
+#endif
 	}
 
 	public static void LogoutEmail(OnLogoutEmailSuccess successDelegate, OnLogoutEmailFailure failureDelegate) {
-		#if ONESIGNAL_PLATFORM 
+#if ONESIGNAL_PLATFORM 
 		logoutEmailSuccessDelegate = successDelegate;
 		logoutEmailFailureDelegate = failureDelegate;
 
 		oneSignalPlatform.LogoutEmail();
-		#endif 
+#endif 
+	}
+
+	public static void SetEmail(string email) {
+#if ONESIGNAL_PLATFORM
+		oneSignalPlatform.SetEmail(email);
+#endif
+	}
+
+	public static void SetEmail(string email, string emailAuthToken) {
+#if ONESIGNAL_PLATFORM 
+		oneSignalPlatform.SetEmail(email, emailAuthToken);
+#endif
+	}
+
+	public static void LogoutEmail() {
+#if ONESIGNAL_PLATFORM 
+		oneSignalPlatform.LogoutEmail();
+#endif
 	}
 
    public static void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess inOnPostNotificationSuccess, OnPostNotificationFailure inOnPostNotificationFailure) {

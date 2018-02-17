@@ -152,6 +152,21 @@ public class OneSignalAndroid : OneSignalPlatform {
       state.pushToken = stateDictCasted["pushToken"] as string;
 
       return state;
-   }
+	}
+
+	public void SetEmail(string email, string emailAuthCode) {
+		Debug.Log ("Setting email 1");
+		mOneSignal.Call("setEmail", email, emailAuthCode);
+	}
+
+	public void SetEmail(string email) {
+		Debug.Log ("Setting email 2");
+		mOneSignal.Call("setEmail", email, null);
+	}
+
+	public void LogoutEmail() {
+		Debug.Log ("Logging out of email");
+		mOneSignal.Call("logoutEmail");
+	}
 }
 #endif
