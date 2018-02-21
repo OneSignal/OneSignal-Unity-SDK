@@ -119,6 +119,14 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("removeSubscriptionObserver");
    }
    
+   public void addEmailSubscriptionObserver() {
+      mOneSignal.Call("addEmailSubscriptionObserver");
+   }
+
+	public void removeEmailSubscriptionObserver() {
+		mOneSignal.Call("removeEmailSubscriptionObserver");
+	}
+
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
       return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
    }
@@ -130,6 +138,10 @@ public class OneSignalAndroid : OneSignalPlatform {
    public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
       return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
    }
+
+	public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
+		return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
+	}
 
    public OSPermissionState parseOSPermissionState(object stateDict) {
       var stateDictCasted = stateDict as Dictionary<string, object>;
@@ -152,6 +164,17 @@ public class OneSignalAndroid : OneSignalPlatform {
       state.pushToken = stateDictCasted["pushToken"] as string;
 
       return state;
+	}
+
+	public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
+		var stateDictCasted = stateDict as Dictionary<string, object>;
+
+		var state = new OSEmailSubscriptionState ();
+		state.subscribed = Convert.ToBoolean (stateDictCasted ["subscribed"]);
+		state.emailUserId = stateDictCasted ["emailUserId"] as string;
+		state.emailAddress = stateDictCasted ["emailAddress"] as string;
+
+		return state;
 	}
 
 	public void SetEmail(string email, string emailAuthCode) {

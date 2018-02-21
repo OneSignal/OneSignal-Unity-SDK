@@ -128,9 +128,20 @@ public class OSSubscriptionStateChanges {
    public OSSubscriptionState to, from;
 }
 
+public class OSEmailSubscriptionState {
+	public string emailUserId;
+	public string emailAddress;
+	public bool subscribed;
+}
+
+public class OSEmailSubscriptionStateChanges {
+	public OSEmailSubscriptionState to, from;
+}
+
 public class OSPermissionSubscriptionState {
    public OSPermissionState permissionStatus;
    public OSSubscriptionState subscriptionStatus;
+   public OSEmailSubscriptionState emailSubscriptionStatus;
 }
 
 public class OneSignal : MonoBehaviour {
@@ -214,6 +225,32 @@ public class OneSignal : MonoBehaviour {
          oneSignalPlatform.addSubscriptionObserver();
       }
    }
+
+	public delegate void EmailSubscriptionObservable(OSEmailSubscriptionStateChanges stateChanges);
+	private static EmailSubscriptionObservable internalEmailSubscriptionObserver;
+	public static event EmailSubscriptionObservable emailSubscriptionObserver {
+		add {
+			if (oneSignalPlatform != null) {
+				internalEmailSubscriptionObserver += value;
+				addEmailSubscriptionObserver();
+			}
+		}
+		remove {
+			if (oneSignalPlatform != null) {
+				internalEmailSubscriptionObserver -= value;
+				if (addedEmailSubscriptionObserver && internalEmailSubscriptionObserver.GetInvocationList ().Length == 0)
+					oneSignalPlatform.removeEmailSubscriptionObserver();
+			}
+		}
+	}
+
+	private static bool addedEmailSubscriptionObserver;
+	private static void addEmailSubscriptionObserver() {
+		if (!addedEmailSubscriptionObserver && internalEmailSubscriptionObserver != null && internalEmailSubscriptionObserver.GetInvocationList ().Length > 0) {
+			addedEmailSubscriptionObserver = true;
+			oneSignalPlatform.addEmailSubscriptionObserver ();
+		}
+	}
 
    public const string kOSSettingsAutoPrompt = "kOSSettingsAutoPrompt";
    public const string kOSSettingsInAppLaunchURL = "kOSSettingsInAppLaunchURL";

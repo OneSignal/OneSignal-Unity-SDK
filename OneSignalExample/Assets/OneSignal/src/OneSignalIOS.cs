@@ -82,12 +82,17 @@ public class OneSignalIOS : OneSignalPlatform {
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _removePermissionObserver();
 
-
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _addSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _removeSubscriptionObserver();
+
+	[System.Runtime.InteropServices.DllImport("__Internal")]
+	extern static public void _addEmailSubscriptionObserver();
+
+	[System.Runtime.InteropServices.DllImport("__Internal")];
+	extern static public void _removeEmailSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
 	extern static public string _getPermissionSubscriptionState();
@@ -183,6 +188,14 @@ public class OneSignalIOS : OneSignalPlatform {
       _removeSubscriptionObserver();
    }
 
+	public void addEmailSubscriptionObserver() {
+		_addEmailSubscriptionObserver();
+	}
+
+	public void removeEmailSubscriptionObserver() {
+		_removeEmailSubscriptionObserver();
+	}
+
 	public void SetEmail(string email, string emailAuthCode) {
 		_setEmail (email, emailAuthCode);
 	}
@@ -228,6 +241,16 @@ public class OneSignalIOS : OneSignalPlatform {
 
       return state;
    }
+	
+	public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
+		var stateDictCasted = stateDict as Dictionary<string, object>;
+		
+		var state = new OSEmailSubscriptionState();
+		state.emailUserId = stateDictCasted["emailUserId"] as string;
+		state.emailAddress = stateDictCasted["emailAddress"] as string;
+		state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
 
+		return state;
+	}
 }
 #endif

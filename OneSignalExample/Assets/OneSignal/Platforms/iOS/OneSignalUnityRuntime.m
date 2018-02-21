@@ -89,6 +89,7 @@ char* dictionaryToJsonNonConstChar(NSDictionary* dictionaryToConvert) {
 @interface OSUnityPermissionAndSubscriptionObserver : NSObject<OSPermissionObserver, OSSubscriptionObserver>
 - (void)onOSPermissionChanged:(OSPermissionStateChanges*)stateChanges;
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges;
+- (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges *)stateChanges;
 @end
 
 @implementation OSUnityPermissionAndSubscriptionObserver
@@ -98,6 +99,10 @@ char* dictionaryToJsonNonConstChar(NSDictionary* dictionaryToConvert) {
 
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges {
   UnitySendMessage(unityListener, "onOSSubscriptionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
+}
+
+- (void)onOSEmailSubscriptionStateChanged:(OSEmailSubscriptionStateChanges *)stateChanges {
+    UnitySendMessage(unityListener, "onOSEmailSubscriptionStateChanged", dictionaryToJsonChar([stateChanges toDictionary]));
 }
 @end
 
@@ -273,6 +278,17 @@ void _addSubscriptionObserver() {
 
 void _removeSubscriptionObserver() {
   [OneSignal removeSubscriptionObserver:osUnityObserver];
+}
+
+void _addEmailSubscriptionObserver() {
+    if (!osUnityObserver)
+        osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
+    
+    [OneSignal addEmailSubscriptionObserver:osUnityObserver];
+}
+
+void _removeEmailSubscriptionObserver() {
+    [OneSignal removeEmailSubscriptionObserver:osUnityObserver];
 }
 
 char* _getPermissionSubscriptionState() {

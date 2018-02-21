@@ -53,12 +53,16 @@ public interface OneSignalPlatform {
     void removePermissionObserver();
     void addSubscriptionObserver();
     void removeSubscriptionObserver();
+	void addEmailSubscriptionObserver();
+	void removeEmailSubscriptionObserver();
 
     OSPermissionSubscriptionState getPermissionSubscriptionState();
 
     OSPermissionState parseOSPermissionState(object stateDict);
     OSSubscriptionState parseOSSubscriptionState(object stateDict);
+	OSEmailSubscriptionState parseOSEmailSubscriptionState (object stateDict);
 
     OSPermissionStateChanges parseOSPermissionStateChanges(string stateChangesJSONString);
     OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string stateChangesJSONString);
+	OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string stateChangesJSONString);
 }
