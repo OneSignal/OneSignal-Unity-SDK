@@ -60,14 +60,13 @@ class OneSignalPlatformHelper {
       return permissionStateChanges;
    }
 
-	internal static OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(OneSignalPlatform platform, string stateChangesJSONString) {
-		var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
+   internal static OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(OneSignalPlatform platform, string stateChangesJSONString) {
+      var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
 
-		var emailStateChanges = new OSEmailSubscriptionStateChanges();
-		emailStateChanges.to = platform.parseOSEmailSubscriptionState (stateChangesJson ["to"]);
-		emailStateChanges.from = platform.parseOSEmailSubscriptionState (stateChangesJson ["from"]);
+      var emailStateChanges = new OSEmailSubscriptionStateChanges();
+      emailStateChanges.to = platform.parseOSEmailSubscriptionState (stateChangesJson ["to"]);
+      emailStateChanges.from = platform.parseOSEmailSubscriptionState (stateChangesJson ["from"]);
 
-		return emailStateChanges;
-	}
-
+      return emailStateChanges;
+   }
 }

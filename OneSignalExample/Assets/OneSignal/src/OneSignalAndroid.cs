@@ -123,9 +123,9 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("addEmailSubscriptionObserver");
    }
 
-	public void removeEmailSubscriptionObserver() {
-		mOneSignal.Call("removeEmailSubscriptionObserver");
-	}
+   public void removeEmailSubscriptionObserver() {
+      mOneSignal.Call("removeEmailSubscriptionObserver");
+   }
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
       return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
@@ -139,9 +139,9 @@ public class OneSignalAndroid : OneSignalPlatform {
       return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
    }
 
-	public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
-		return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
-	}
+   public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
+      return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
+   }
 
    public OSPermissionState parseOSPermissionState(object stateDict) {
       var stateDictCasted = stateDict as Dictionary<string, object>;
@@ -166,30 +166,27 @@ public class OneSignalAndroid : OneSignalPlatform {
       return state;
 	}
 
-	public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
-		var stateDictCasted = stateDict as Dictionary<string, object>;
+   public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
+      var stateDictCasted = stateDict as Dictionary<string, object>;
 
-		var state = new OSEmailSubscriptionState ();
-		state.subscribed = Convert.ToBoolean (stateDictCasted ["subscribed"]);
-		state.emailUserId = stateDictCasted ["emailUserId"] as string;
-		state.emailAddress = stateDictCasted ["emailAddress"] as string;
+      var state = new OSEmailSubscriptionState ();
+      state.subscribed = Convert.ToBoolean (stateDictCasted ["subscribed"]);
+      state.emailUserId = stateDictCasted ["emailUserId"] as string;
+      state.emailAddress = stateDictCasted ["emailAddress"] as string;
 
-		return state;
-	}
+      return state;
+   }
 
-	public void SetEmail(string email, string emailAuthCode) {
-		Debug.Log ("Setting email 1");
-		mOneSignal.Call("setEmail", email, emailAuthCode);
-	}
+   public void SetEmail(string email, string emailAuthCode) {
+      mOneSignal.Call("setEmail", email, emailAuthCode);
+   }
 
-	public void SetEmail(string email) {
-		Debug.Log ("Setting email 2");
-		mOneSignal.Call("setEmail", email, null);
-	}
+   public void SetEmail(string email) {
+      mOneSignal.Call("setEmail", email, null);
+   }
 
-	public void LogoutEmail() {
-		Debug.Log ("Logging out of email");
-		mOneSignal.Call("logoutEmail");
-	}
+   public void LogoutEmail() {
+      mOneSignal.Call("logoutEmail");
+   }
 }
 #endif

@@ -39,7 +39,7 @@ public class OneSignalIOS : OneSignalPlatform {
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _registerForPushNotifications();
-   
+
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _sendTag(string tagName, string tagValue);
 
@@ -88,24 +88,23 @@ public class OneSignalIOS : OneSignalPlatform {
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _removeSubscriptionObserver();
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _addEmailSubscriptionObserver();
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _addEmailSubscriptionObserver();
 
-	[System.Runtime.InteropServices.DllImport("__Internal")];
-	extern static public void _removeEmailSubscriptionObserver();
+   [System.Runtime.InteropServices.DllImport("__Internal")];
+   extern static public void _removeEmailSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public string _getPermissionSubscriptionState();
+   extern static public string _getPermissionSubscriptionState();
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _setEmail (string email, string emailAuthCode);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setEmail (string email, string emailAuthCode);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _setUnauthenticatedEmail (string email);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setUnauthenticatedEmail (string email);
 
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _logoutEmail();
-
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _logoutEmail();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
@@ -188,25 +187,25 @@ public class OneSignalIOS : OneSignalPlatform {
       _removeSubscriptionObserver();
    }
 
-	public void addEmailSubscriptionObserver() {
-		_addEmailSubscriptionObserver();
-	}
+   public void addEmailSubscriptionObserver() {
+      _addEmailSubscriptionObserver();
+   }
 
-	public void removeEmailSubscriptionObserver() {
-		_removeEmailSubscriptionObserver();
-	}
+   public void removeEmailSubscriptionObserver() {
+      _removeEmailSubscriptionObserver();
+   }
 
-	public void SetEmail(string email, string emailAuthCode) {
-		_setEmail (email, emailAuthCode);
-	}
+   public void SetEmail(string email, string emailAuthCode) {
+      _setEmail (email, emailAuthCode);
+   }
 
-	public void SetEmail(string email) {
-		_setUnauthenticatedEmail (email);
-	}
+   public void SetEmail(string email) {
+      _setUnauthenticatedEmail (email);
+   }
 
-	public void LogoutEmail() {
-		_logoutEmail();
-	}
+   public void LogoutEmail() {
+      _logoutEmail();
+   }
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
       return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, _getPermissionSubscriptionState());
@@ -242,15 +241,15 @@ public class OneSignalIOS : OneSignalPlatform {
       return state;
    }
 	
-	public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
-		var stateDictCasted = stateDict as Dictionary<string, object>;
-		
-		var state = new OSEmailSubscriptionState();
-		state.emailUserId = stateDictCasted["emailUserId"] as string;
-		state.emailAddress = stateDictCasted["emailAddress"] as string;
-		state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
+   public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
+      var stateDictCasted = stateDict as Dictionary<string, object>;
 
-		return state;
-	}
+      var state = new OSEmailSubscriptionState();
+      state.emailUserId = stateDictCasted["emailUserId"] as string;
+      state.emailAddress = stateDictCasted["emailAddress"] as string;
+      state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
+
+      return state;
+   }
 }
 #endif
