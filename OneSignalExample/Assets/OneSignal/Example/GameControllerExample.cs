@@ -34,6 +34,7 @@ using System;
 public class GameControllerExample : MonoBehaviour {
 
    private static string extraMessage;
+   public string email = "Email Address";
 
    void Start () {
       extraMessage = null;
@@ -54,6 +55,7 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
       OneSignal.permissionObserver += OneSignal_permissionObserver;
       OneSignal.subscriptionObserver += OneSignal_subscriptionObserver;
+      OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
 
       var pushState = OneSignal.GetPermissionSubscriptionState();
       Debug.Log("pushState.subscriptionStatus.subscribed : " + pushState.subscriptionStatus.subscribed);
@@ -61,15 +63,20 @@ public class GameControllerExample : MonoBehaviour {
    }
 
    private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
-      Debug.Log("stateChanges: " + stateChanges);
-      Debug.Log("stateChanges.to.userId: " + stateChanges.to.userId);
-      Debug.Log("stateChanges.to.subscribed: " + stateChanges.to.subscribed);
+	  Debug.Log("SUBSCRIPTION stateChanges: " + stateChanges);
+	  Debug.Log("SUBSCRIPTION stateChanges.to.userId: " + stateChanges.to.userId);
+	  Debug.Log("SUBSCRIPTION stateChanges.to.subscribed: " + stateChanges.to.subscribed);
    }
 
-   private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
-	  Debug.Log("stateChanges.from.status: " + stateChanges.from.status);
-      Debug.Log("stateChanges.to.status: " + stateChanges.to.status);
+	private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
+	  Debug.Log("PERMISSION stateChanges.from.status: " + stateChanges.from.status);
+	  Debug.Log("PERMISSION stateChanges.to.status: " + stateChanges.to.status);
    }
+
+	private void OneSignal_emailSubscriptionObserver(OSEmailSubscriptionStateChanges stateChanges) {
+		Debug.Log("EMAIL stateChanges.from.status: " + stateChanges.from.emailUserId + ", " + stateChanges.from.emailAddress);
+		Debug.Log("EMAIL stateChanges.to.status: " + stateChanges.to.emailUserId + ", " + stateChanges.to.emailAddress);
+	}
 
    // Called when your app is in focus and a notificaiton is recieved.
    // The name of the method can be anything as long as the signature matches.
@@ -107,11 +114,11 @@ public class GameControllerExample : MonoBehaviour {
          Debug.Log("[HandleNotificationOpened] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
 
       if (actionID != null) {
-            // actionSelected equals the id on the button the user pressed.
-            // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
-            extraMessage = "Pressed ButtonId: " + actionID;
-         }
-   }
+         // actionSelected equals the id on the button the user pressed.
+         // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
+         extraMessage = "Pressed ButtonId: " + actionID;
+      }
+	}
 
    // Test Menu
    // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
@@ -122,9 +129,24 @@ public class GameControllerExample : MonoBehaviour {
       GUIStyle guiBoxStyle = new GUIStyle("box");
       guiBoxStyle.fontSize = 30;
 
-      GUI.Box(new Rect(10, 10, 390, 340), "Test Menu", guiBoxStyle);
+      GUIStyle textFieldStyle = new GUIStyle ("textField");
+      textFieldStyle.fontSize = 30;
 
-      if (GUI.Button (new Rect (60, 80, 300, 60), "SendTags", customTextSize)) {
+
+      float itemOriginX = 50.0f;
+      float itemWidth = Screen.width - 120.0f;
+      float boxWidth = Screen.width - 20.0f;
+      float boxOriginY = 120.0f;
+      float boxHeight = 630.0f;
+      float itemStartY = 200.0f;
+      float itemHeightOffset = 90.0f;
+      float itemHeight = 60.0f;
+
+      GUI.Box(new Rect(10, boxOriginY, boxWidth, boxHeight), "Test Menu", guiBoxStyle);
+
+      float count = 0.0f;
+
+      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SendTags", customTextSize)) {
          // You can tags users with key value pairs like this:
          OneSignal.SendTag("UnityTestKey", "TestValue");
          // Or use an IDictionary if you need to set more than one tag.
@@ -136,13 +158,18 @@ public class GameControllerExample : MonoBehaviour {
          // OneSignal.DeleteTags(new List<string>() {"UnityTestKey2", "UnityTestKey3" });
       }
 
-      if (GUI.Button (new Rect (60, 170, 300, 60), "GetIds", customTextSize)) {
-            OneSignal.IdsAvailable((userId, pushToken) => {
+      count++;
+
+      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "GetIds", customTextSize)) {
+         OneSignal.IdsAvailable((userId, pushToken) => {
             extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
          });
       }
 
-      if (GUI.Button (new Rect (60, 260, 300, 60), "TestNotification", customTextSize)) {
+
+      count++;
+
+      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "TestNotification", customTextSize)) {
          extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
          OneSignal.IdsAvailable((userId, pushToken) => {
             if (pushToken != null) {
@@ -158,21 +185,50 @@ public class GameControllerExample : MonoBehaviour {
                notification["send_after"] = System.DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U");
 
                extraMessage = "Posting test notification now.";
+
                OneSignal.PostNotification(notification, (responseSuccess) => {
                   extraMessage = "Notification posted successful! Delayed by about 30 secounds to give you time to press the home button to see a notification vs an in-app alert.\n" + Json.Serialize(responseSuccess);
                }, (responseFailure) => {
                   extraMessage = "Notification failed to post:\n" + Json.Serialize(responseFailure);
                });
-            }
-            else
+            } else {
                extraMessage = "ERROR: Device is not registered.";
+            }
+         });
+      }
+
+      count++;
+
+      email = GUI.TextField (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), email, customTextSize);
+
+      count++;
+
+      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetEmail", customTextSize)) {
+         extraMessage = "Setting email to " + email;
+
+         OneSignal.SetEmail (email, () => {
+            Debug.Log("Successfully set email");
+         }, (error) => {
+            Debug.Log("Encountered error setting email: " + Json.Serialize(error));
+         });
+      }
+
+      count++;
+
+      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "LogoutEmail", customTextSize)) {
+         extraMessage = "Logging Out of example@example.com";
+         
+         OneSignal.LogoutEmail (() => {
+            Debug.Log("Successfully logged out of email");
+         }, (error) => {
+            Debug.Log("Encountered error logging out of email: " + Json.Serialize(error));
          });
       }
 
       if (extraMessage != null) {
          guiBoxStyle.alignment = TextAnchor.UpperLeft;
          guiBoxStyle.wordWrap = true;
-         GUI.Box (new Rect (10, 390, Screen.width - 20, Screen.height - 400), extraMessage, guiBoxStyle);
+         GUI.Box (new Rect (10, boxOriginY + boxHeight + 20, Screen.width - 20, Screen.height - (boxOriginY + boxHeight + 40)), extraMessage, guiBoxStyle);
       }
    }
 }
