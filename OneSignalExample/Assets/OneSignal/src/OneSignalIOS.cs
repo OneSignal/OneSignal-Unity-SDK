@@ -89,9 +89,9 @@ public class OneSignalIOS : OneSignalPlatform {
    extern static public void _removeSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static public void _addEmailSubscriptionObserver();
-
-	[System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _addEmailSubscriptionObserver();
+   
+   [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _removeEmailSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
