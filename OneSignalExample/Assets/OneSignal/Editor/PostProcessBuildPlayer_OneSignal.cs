@@ -16,11 +16,15 @@ public struct framework {
 	}
 }
 
+/*
+	Adds required frameworks (currently just UserNotifications.framework) to the iOS project
+	To add further frameworks in the build process, just add a new framework to the Frameworks array
+*/
+
 public class PostBuildTrigger {
 
 	[PostProcessBuild]
 	public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject) {
-
 		LinkLibraries(target, pathToBuiltProject);
 	}
 
@@ -35,20 +39,14 @@ public class PostBuildTrigger {
 			string contents = File.ReadAllText(projectFile);
 
 			foreach (framework framework in frameworksToAdd) {
-				Debug.Log("Adding framework " + framework.name + " to project");
-
 				AddFrameworkToProject(framework, ref contents);
 			}
 
 			File.WriteAllText(projectFile, contents);
-
-			Debug.Log ("Saving file to disk " + projectFile + "\n\n" + contents);
 		}
 	}
 
 	public static void AddFrameworkToProject(framework framework, ref string contents) {
-		Debug.Log("Switching: \n " + "Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };" + " \nwith:\n" + "Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };\n\t\t" + framework.id + " /* " + framework.name + ".framework in Frameworks */ = {isa = PBXBuildFile; fileRef = " + framework.fileId + " /* " + framework.name + ".framework */; };");
-
 		contents = contents.Replace("Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };",
 			"Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };\n\t\t" + framework.id + " /* " + framework.name + ".framework in Frameworks */ = {isa = PBXBuildFile; fileRef = " + framework.fileId + " /* " + framework.name + ".framework */; };");
 		contents = contents.Replace("wnFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; };",
