@@ -31,21 +31,18 @@ public class PostBuildTrigger {
    }
 
    public static void LinkLibraries(BuildTarget target, string pathToBuiltProject) {
-      if(target == BuildTarget.iOS)
-      {
-         framework[] frameworksToAdd = new framework[1];
-
-         frameworksToAdd[0] = new framework("UserNotifications", "CAF63D112040CD8E00A651DC", "CAF63D102040CD8E00A651DC");
-
-         string projectFile = pathToBuiltProject + "/Unity-iPhone.xcodeproj/project.pbxproj";
-         string contents = File.ReadAllText(projectFile);
-
-         foreach (framework framework in frameworksToAdd) {
-            AddFrameworkToProject(framework, ref contents);
-         }
-
-         File.WriteAllText(projectFile, contents);
+      framework[] frameworksToAdd = new framework[1];
+      
+      frameworksToAdd[0] = new framework("UserNotifications", "CAF63D112040CD8E00A651DC", "CAF63D102040CD8E00A651DC");
+      
+      string projectFile = pathToBuiltProject + "/Unity-iPhone.xcodeproj/project.pbxproj";
+      string contents = File.ReadAllText(projectFile);
+      
+      foreach (framework framework in frameworksToAdd) {
+         AddFrameworkToProject(framework, ref contents);
       }
+
+      File.WriteAllText(projectFile, contents);
    }
 
    public static void AddFrameworkToProject(framework framework, ref string contents) {
