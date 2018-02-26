@@ -49,10 +49,15 @@ public class PostBuildTrigger {
    }
 
    public static void AddFrameworkToProject(framework framework, ref string contents) {
-      contents = contents.Replace("Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };", "Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };\n\t\t" + framework.id + " /* " + framework.name + ".framework in Frameworks */ = {isa = PBXBuildFile; fileRef = " + framework.fileId + " /* " + framework.name + ".framework */; };");
-      contents = contents.Replace("wnFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; };", "wnFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; };\n\t\t" + framework.fileId + " /* " + framework.name + ".framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = " + framework.name + ".framework; path = System/Library/Frameworks/" + framework.name + ".framework; sourceTree = SDKROOT; };");
-      contents = contents.Replace("1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,", framework.id + " /* " + framework.name + ".framework in Frameworks */,\n\t\t\t\t1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,");
-      contents = contents.Replace("1D30AB110D05D00D00671497 /* Foundation.framework */,", framework.fileId + " /* " + framework.name + ".framework */,\n\t\t\t\t1D30AB110D05D00D00671497 /* Foundation.framework */,");
+      string orientationSupport = "Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };";
+      string pbxFileReference = "wnFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; };";
+      string pbsFrameworksBuildPhase = "1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,";
+      string frameworksSection = "1D30AB110D05D00D00671497 /* Foundation.framework */,";
+      
+      contents = contents.Replace(orientationSupport, orientationSupport + "\n\t\t" + framework.id + " /* " + framework.name + ".framework in Frameworks */ = {isa = PBXBuildFile; fileRef = " + framework.fileId + " /* " + framework.name + ".framework */; };");
+      contents = contents.Replace(pbxFileReference, pbxFileReference + "\n\t\t" + framework.fileId + " /* " + framework.name + ".framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = " + framework.name + ".framework; path = System/Library/Frameworks/" + framework.name + ".framework; sourceTree = SDKROOT; };");
+      contents = contents.Replace(pbsFrameworksBuildPhase, framework.id + " /* " + framework.name + ".framework in Frameworks */,\n\t\t\t\t" + pbsFrameworksBuildPhase);
+      contents = contents.Replace(frameworksSection, framework.fileId + " /* " + framework.name + ".framework */,\n\t\t\t\t" + frameworksSection);
    }
 }
 
