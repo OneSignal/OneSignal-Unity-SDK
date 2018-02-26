@@ -90,8 +90,8 @@ public class OneSignalIOS : OneSignalPlatform {
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _addEmailSubscriptionObserver();
-
-   [System.Runtime.InteropServices.DllImport("__Internal")];
+   
+   [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _removeEmailSubscriptionObserver();
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
@@ -214,6 +214,10 @@ public class OneSignalIOS : OneSignalPlatform {
    public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
       return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
    }
+
+	public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
+		return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
+	}
 
    public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
       return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
