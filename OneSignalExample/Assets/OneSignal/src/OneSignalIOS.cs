@@ -248,10 +248,22 @@ public class OneSignalIOS : OneSignalPlatform {
    public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
       var stateDictCasted = stateDict as Dictionary<string, object>;
 
-      var state = new OSEmailSubscriptionState();
-      state.emailUserId = stateDictCasted["emailUserId"] as string;
-      state.emailAddress = stateDictCasted["emailAddress"] as string;
-      state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
+      var state = new OSEmailSubscriptionState ();
+
+      if (stateDictCasted.ContainsKey ("emailUserId")) {
+         state.emailUserId = stateDictCasted ["emailUserId"] as string;
+      } else {
+         state.emailUserId = "";
+      }
+
+      if (stateDictCasted.ContainsKey ("emailAddress")) {
+         state.emailAddress = stateDictCasted ["emailAddress"] as string;
+      } else {
+         state.emailAddress = "";
+      }
+         
+      
+      state.subscribed = stateDictCasted.ContainsKey("emailUserId") && stateDictCasted["emailUserId"] != null;
 
       return state;
    }

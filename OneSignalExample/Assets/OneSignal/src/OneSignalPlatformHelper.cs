@@ -35,7 +35,9 @@ class OneSignalPlatformHelper {
       var state = new OSPermissionSubscriptionState();
       state.permissionStatus = platform.parseOSPermissionState(stateDict["permissionStatus"]);
       state.subscriptionStatus = platform.parseOSSubscriptionState(stateDict["subscriptionStatus"]);
-	  state.emailSubscriptionStatus = platform.parseOSEmailSubscriptionState (stateDict ["emailSubscriptionStatus"]);
+
+      if (stateDict.ContainsKey("emailSubscriptionStatus"))
+         state.emailSubscriptionStatus = platform.parseOSEmailSubscriptionState (stateDict ["emailSubscriptionStatus"]);
       
 	  return state;
    }

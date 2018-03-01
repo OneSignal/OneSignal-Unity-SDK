@@ -161,7 +161,7 @@ PlayerSettings:
     Android: com.onesignal.example
     Standalone: unity.OneSignal.OneSignal Example
     Tizen: com.onesignal.example
-    iOS: com.onesignal.example
+    iOS: com.testapp.brad
     tvOS: com.onesignal.example
   buildNumber:
     iOS: 0
