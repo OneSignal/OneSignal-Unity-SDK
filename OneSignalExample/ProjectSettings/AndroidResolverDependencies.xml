@@ -1,9 +1,9 @@
 <dependencies>
   <packages>
-    <package>com.android.support:customtabs:+</package>
-    <package>com.android.support:support-v4:+</package>
-    <package>com.google.android.gms:play-services-gcm:+</package>
-    <package>com.google.android.gms:play-services-location:+</package>
+    <package>com.android.support:customtabs:[26.0.0, 27.2.0)</package>
+    <package>com.android.support:support-v4:[26.0.0, 27.2.0)</package>
+    <package>com.google.android.gms:play-services-gcm:[10.2.1, 11.9.0)</package>
+    <package>com.google.android.gms:play-services-location:[10.2.1, 11.9.0)</package>
   </packages>
   <files>
     <file>Assets/Plugins/Android/android.arch.core.common-1.1.0.jar</file>
