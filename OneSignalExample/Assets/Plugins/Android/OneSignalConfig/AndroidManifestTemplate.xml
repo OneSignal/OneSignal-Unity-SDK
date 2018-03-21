@@ -8,7 +8,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
     
-    <uses-sdk android:minSdkVersion="9" />
+    <uses-sdk android:minSdkVersion="15" />
     
     <permission android:name="${manifestApplicationId}.permission.C2D_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="${manifestApplicationId}.permission.C2D_MESSAGE" />
