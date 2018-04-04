@@ -42,7 +42,7 @@ public class BuildPostProcessor
 
          Directory.CreateDirectory (pathToNotificationService);
 
-         var plistPath = "Assets/OneSignal/Editor/Info.plist";
+         var plistPath = "Assets/OneSignal/Platforms/iOS/Info.plist";
 
          var notificationServicePlistPath = path + "/OneSignalNotificationExtensionService/Info.plist";
 
@@ -66,8 +66,8 @@ public class BuildPostProcessor
 
          notificationServicePlist.WriteToFile (notificationServicePlistPath);
 
-         FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Editor/NotificationService.h", path + "/OneSignalNotificationExtensionService/NotificationService.h");
-         FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Editor/NotificationService.m", path + "/OneSignalNotificationExtensionService/NotificationService.m");
+         FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/OneSignalNotificationExtensionService/NotificationService.h");
+         FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.m", path + "/OneSignalNotificationExtensionService/NotificationService.m");
 
          project.WriteToFile (projPath);
 
@@ -82,7 +82,6 @@ public class BuildPostProcessor
 
    // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
    public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
-
       //in order to find the fileRef, find the PBXBuildFile objects section of the PBXProject
       string splitString = " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = ";
       string[] splitComponents = contents.Split(new string[] {splitString}, StringSplitOptions.None);
