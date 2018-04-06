@@ -19,65 +19,62 @@ public class BuildPostProcessor
    [PostProcessBuildAttribute(1)]
    public static void OnPostProcessBuild(BuildTarget target, string path)
    {
-      if (target == BuildTarget.iOS)
-      {
-         string projectPath = PBXProject.GetPBXProjectPath(path);
-         PBXProject project = new PBXProject();
+      string projectPath = PBXProject.GetPBXProjectPath(path);
+      PBXProject project = new PBXProject();
 
-         // Read.
-         project.ReadFromString(File.ReadAllText(projectPath));
-         string targetName = PBXProject.GetUnityTargetName();
-         string targetGUID = project.TargetGuidByName(targetName);
+      // Read.
+      project.ReadFromString(File.ReadAllText(projectPath));
+      string targetName = PBXProject.GetUnityTargetName();
+      string targetGUID = project.TargetGuidByName(targetName);
 
-         project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
+      project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
 
-         // Write.
-         File.WriteAllText(projectPath, project.WriteToString());
+      // Write.
+      File.WriteAllText(projectPath, project.WriteToString());
 
-         var projPath = PBXProject.GetPBXProjectPath(path);
-         
-         project.ReadFromFile (projPath);
+      var projPath = PBXProject.GetPBXProjectPath(path);
+      
+      project.ReadFromFile (projPath);
 
-         var pathToNotificationService = path + "/OneSignalNotificationExtensionService";
+      var pathToNotificationService = path + "/OneSignalNotificationExtensionService";
 
-         Directory.CreateDirectory (pathToNotificationService);
+      Directory.CreateDirectory (pathToNotificationService);
 
-         var plistPath = "Assets/OneSignal/Platforms/iOS/Info.plist";
+      var plistPath = "Assets/OneSignal/Platforms/iOS/Info.plist";
 
-         var notificationServicePlistPath = path + "/OneSignalNotificationExtensionService/Info.plist";
+      var notificationServicePlistPath = path + "/OneSignalNotificationExtensionService/Info.plist";
 
-         PlistDocument notificationServicePlist = new PlistDocument();
-         notificationServicePlist.ReadFromFile (plistPath);
-         notificationServicePlist.root.SetString ("CFBundleShortVersionString", PlayerSettings.bundleVersion);
-         notificationServicePlist.root.SetString ("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString ());
+      PlistDocument notificationServicePlist = new PlistDocument();
+      notificationServicePlist.ReadFromFile (plistPath);
+      notificationServicePlist.root.SetString ("CFBundleShortVersionString", PlayerSettings.bundleVersion);
+      notificationServicePlist.root.SetString ("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString ());
 
-         var notificationServiceTarget = PBXProjectExtensions.AddAppExtension (project, targetGUID, "OneSignalNotificationExtensionService", PlayerSettings.GetApplicationIdentifier (BuildTargetGroup.iOS) + ".OneSignalNotificationExtensionService", notificationServicePlistPath);
+      var notificationServiceTarget = PBXProjectExtensions.AddAppExtension (project, targetGUID, "OneSignalNotificationExtensionService", PlayerSettings.GetApplicationIdentifier (BuildTargetGroup.iOS) + ".OneSignalNotificationExtensionService", notificationServicePlistPath);
 
-         project.AddFileToBuild (notificationServiceTarget, project.AddFile ("OneSignalNotificationExtensionService/NotificationService.h", "OneSignalNotificationExtensionService/NotificationService.h", PBXSourceTree.Source));
-         project.AddFileToBuild (notificationServiceTarget, project.AddFile ("OneSignalNotificationExtensionService/NotificationService.m", "OneSignalNotificationExtensionService/NotificationService.m", PBXSourceTree.Source));
+      project.AddFileToBuild (notificationServiceTarget, project.AddFile ("OneSignalNotificationExtensionService/NotificationService.h", "OneSignalNotificationExtensionService/NotificationService.h", PBXSourceTree.Source));
+      project.AddFileToBuild (notificationServiceTarget, project.AddFile ("OneSignalNotificationExtensionService/NotificationService.m", "OneSignalNotificationExtensionService/NotificationService.m", PBXSourceTree.Source));
 
-         project.AddFrameworkToProject (notificationServiceTarget, "NotificationCenter.framework", true);
-         project.AddFrameworkToProject (notificationServiceTarget, "UserNotifications.framework", true);
-         project.AddFrameworkToProject (notificationServiceTarget, "UIKit.framework", true);
-         project.AddFrameworkToProject (notificationServiceTarget, "SystemConfiguration.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "NotificationCenter.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "UserNotifications.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "UIKit.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "SystemConfiguration.framework", true);
 
-         project.SetBuildProperty (notificationServiceTarget, "ARCHS", "$(ARCHS_STANDARD)");
-         project.SetBuildProperty (notificationServiceTarget, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
+      project.SetBuildProperty (notificationServiceTarget, "ARCHS", "$(ARCHS_STANDARD)");
+      project.SetBuildProperty (notificationServiceTarget, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
-         notificationServicePlist.WriteToFile (notificationServicePlistPath);
+      notificationServicePlist.WriteToFile (notificationServicePlistPath);
 
-         FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/OneSignalNotificationExtensionService/NotificationService.h");
-         FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.m", path + "/OneSignalNotificationExtensionService/NotificationService.m");
+      FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/OneSignalNotificationExtensionService/NotificationService.h");
+      FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.m", path + "/OneSignalNotificationExtensionService/NotificationService.m");
 
-         project.WriteToFile (projPath);
+      project.WriteToFile (projPath);
 
-         string projectFile = path + "/Unity-iPhone.xcodeproj/project.pbxproj";
-         string contents = File.ReadAllText(projectFile);
+      string projectFile = path + "/Unity-iPhone.xcodeproj/project.pbxproj";
+      string contents = File.ReadAllText(projectFile);
 
-         InsertStaticFrameworkIntoTargetBuildPhaseFrameworks("libOneSignal", "CD84C25F20742FAB0035D524", notificationServiceTarget, ref contents, project);
+      InsertStaticFrameworkIntoTargetBuildPhaseFrameworks("libOneSignal", "CD84C25F20742FAB0035D524", notificationServiceTarget, ref contents, project);
 
-         File.WriteAllText(projectFile, contents);
-      }
+      File.WriteAllText(projectFile, contents);
    }
 
    // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
@@ -87,7 +84,8 @@ public class BuildPostProcessor
       string[] splitComponents = contents.Split(new string[] {splitString}, StringSplitOptions.None);
 
       if (splitComponents.Length < 2) {
-         Debug.Log ("COMPONENT NOT FOUND 1");
+         Debug.LogError ("(error 1) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
+         return;
       }
 
       string afterSplit = splitComponents[1];
@@ -111,7 +109,7 @@ public class BuildPostProcessor
       string[] components = contents.Split(new string[] { targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " }, StringSplitOptions.None);
 
       if (components.Length < 2) {
-         Debug.Log("COMPONENT NOT FOUND 2");
+         Debug.LogError("(error 2) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
          return;
       }
 
