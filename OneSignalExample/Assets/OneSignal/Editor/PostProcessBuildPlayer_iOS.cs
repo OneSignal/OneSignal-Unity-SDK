@@ -1,60 +1,138 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using System;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using System.Collections;
-using System.IO;
+using UnityEditor.iOS.Xcode;
+using UnityEditor.iOS.Xcode.Extensions;
+using System.Text;
+
+/*
+   Adds required frameworks to the iOS project, and adds the OneSignalNotificationServiceExtension
+   Also handles making sure both targets (app and extension service) have the correct dependencies
+*/
 
 #if UNITY_IPHONE && UNITY_EDITOR
 
-public struct framework {
-   public string name;
-   public string id;
-   public string fileId;
+public class BuildPostProcessor
+{
+   [PostProcessBuildAttribute(1)]
+   public static void OnPostProcessBuild(BuildTarget target, string path)
+   {
+      string projectPath = PBXProject.GetPBXProjectPath(path);
+      PBXProject project = new PBXProject();
 
-   public framework(string fName, string fId, string fFileid) {
-      name = fName;
-      id = fId;
-      fileId = fFileid;
-   }
-}
+      // Read.
+      project.ReadFromString(File.ReadAllText(projectPath));
+      string targetName = PBXProject.GetUnityTargetName();
+      string targetGUID = project.TargetGuidByName(targetName);
 
-/*
-   Adds required frameworks (currently just UserNotifications.framework) to the iOS project
-   To add further frameworks in the build process, just add a new framework to the Frameworks array
-*/
+      project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
 
-public class PostBuildTrigger {
+      // Write.
+      File.WriteAllText(projectPath, project.WriteToString());
 
-   [PostProcessBuild]
-   public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject) {
-      LinkLibraries(target, pathToBuiltProject);
-   }
-
-   public static void LinkLibraries(BuildTarget target, string pathToBuiltProject) {
-      framework[] frameworksToAdd = new framework[1];
+      var projPath = PBXProject.GetPBXProjectPath(path);
       
-      frameworksToAdd[0] = new framework("UserNotifications", "CAF63D112040CD8E00A651DC", "CAF63D102040CD8E00A651DC");
-      
-      string projectFile = pathToBuiltProject + "/Unity-iPhone.xcodeproj/project.pbxproj";
+      project.ReadFromFile (projPath);
+
+      var pathToNotificationService = path + "/OneSignalNotificationExtensionService";
+
+      Directory.CreateDirectory (pathToNotificationService);
+
+      var plistPath = "Assets/OneSignal/Platforms/iOS/Info.plist";
+
+      var notificationServicePlistPath = path + "/OneSignalNotificationExtensionService/Info.plist";
+
+      PlistDocument notificationServicePlist = new PlistDocument();
+      notificationServicePlist.ReadFromFile (plistPath);
+      notificationServicePlist.root.SetString ("CFBundleShortVersionString", PlayerSettings.bundleVersion);
+      notificationServicePlist.root.SetString ("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString ());
+
+      var notificationServiceTarget = PBXProjectExtensions.AddAppExtension (project, targetGUID, "OneSignalNotificationExtensionService", PlayerSettings.GetApplicationIdentifier (BuildTargetGroup.iOS) + ".OneSignalNotificationExtensionService", notificationServicePlistPath);
+
+      project.AddFileToBuild (notificationServiceTarget, project.AddFile ("OneSignalNotificationExtensionService/NotificationService.h", "OneSignalNotificationExtensionService/NotificationService.h", PBXSourceTree.Source));
+      project.AddFileToBuild (notificationServiceTarget, project.AddFile ("OneSignalNotificationExtensionService/NotificationService.m", "OneSignalNotificationExtensionService/NotificationService.m", PBXSourceTree.Source));
+
+      project.AddFrameworkToProject (notificationServiceTarget, "NotificationCenter.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "UserNotifications.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "UIKit.framework", true);
+      project.AddFrameworkToProject (notificationServiceTarget, "SystemConfiguration.framework", true);
+
+      project.SetBuildProperty (notificationServiceTarget, "ARCHS", "$(ARCHS_STANDARD)");
+      project.SetBuildProperty (notificationServiceTarget, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
+
+      notificationServicePlist.WriteToFile (notificationServicePlistPath);
+
+      FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/OneSignalNotificationExtensionService/NotificationService.h");
+      FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.m", path + "/OneSignalNotificationExtensionService/NotificationService.m");
+
+      project.WriteToFile (projPath);
+
+      string projectFile = path + "/Unity-iPhone.xcodeproj/project.pbxproj";
       string contents = File.ReadAllText(projectFile);
-      
-      foreach (framework framework in frameworksToAdd) {
-         AddFrameworkToProject(framework, ref contents);
-      }
+
+      InsertStaticFrameworkIntoTargetBuildPhaseFrameworks("libOneSignal", "CD84C25F20742FAB0035D524", notificationServiceTarget, ref contents, project);
 
       File.WriteAllText(projectFile, contents);
    }
 
-   public static void AddFrameworkToProject(framework framework, ref string contents) {
-      string orientationSupport = "Ref = 8AC71EC319E7FBA90027502F /* OrientationSupport.mm */; };";
-      string pbxFileReference = "wnFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; };";
-      string pbsFrameworksBuildPhase = "1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,";
-      string frameworksSection = "1D30AB110D05D00D00671497 /* Foundation.framework */,";
+   // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
+   public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
+      //in order to find the fileRef, find the PBXBuildFile objects section of the PBXProject
+      string splitString = " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = ";
+      string[] splitComponents = contents.Split(new string[] {splitString}, StringSplitOptions.None);
+
+      if (splitComponents.Length < 2) {
+         Debug.LogError ("(error 1) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
+         return;
+      }
+
+      string afterSplit = splitComponents[1];
+
+      //to get the fileRef of the static framework, read the last 24 characters of the beforeSplit string
+      StringBuilder fileRefBuilder = new StringBuilder();
+
+      for (int i = 0; i < 24; i++) {
+         fileRefBuilder.Append(afterSplit[i]);
+      }
+
+      string fileRef = fileRefBuilder.ToString();
+
+      project.AddFileToBuild(target, fileRef);
+
+      //add the framework as an additional object in PBXBuildFile objects
+      contents = contents.Replace("; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };", "; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };\n\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };");
+
+      //fild the build phase ID number
+      string targetBuildPhaseId = project.GetFrameworksBuildPhaseByTarget(target);
+      string[] components = contents.Split(new string[] { targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " }, StringSplitOptions.None);
+
+      if (components.Length < 2) {
+         Debug.LogError("(error 2) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
+         return;
+      }
+
+      string buildPhaseString = components[1];
+
+      StringBuilder replacer = new StringBuilder ();
       
-      contents = contents.Replace(orientationSupport, orientationSupport + "\n\t\t" + framework.id + " /* " + framework.name + ".framework in Frameworks */ = {isa = PBXBuildFile; fileRef = " + framework.fileId + " /* " + framework.name + ".framework */; };");
-      contents = contents.Replace(pbxFileReference, pbxFileReference + "\n\t\t" + framework.fileId + " /* " + framework.name + ".framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = " + framework.name + ".framework; path = System/Library/Frameworks/" + framework.name + ".framework; sourceTree = SDKROOT; };");
-      contents = contents.Replace(pbsFrameworksBuildPhase, framework.id + " /* " + framework.name + ".framework in Frameworks */,\n\t\t\t\t" + pbsFrameworksBuildPhase);
-      contents = contents.Replace(frameworksSection, framework.fileId + " /* " + framework.name + ".framework */,\n\t\t\t\t" + frameworksSection);
+      for (int i = 0; i < buildPhaseString.Length; i++) {
+         char seq = buildPhaseString [i];
+
+         if (char.IsNumber (seq)) {
+            replacer.Append (seq);
+         } else {
+            break;
+         }
+      }
+
+      // insert the framework into the PBXFrameworksBuildPhase 
+      string beginString = targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " + replacer.ToString() + ";\n\t\t\tfiles = (";
+      contents = contents.Replace(beginString, beginString + "\n" + "\t\t\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */,");
+
+      //add library search paths to add build configurations of the target
+      contents = contents.Replace ("PRODUCT_BUNDLE_IDENTIFIER = ", "LIBRARY_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"$(PROJECT_DIR)/Libraries/OneSignal/Platforms/iOS\",\n\t\t\t\t);\nPRODUCT_BUNDLE_IDENTIFIER = ");
    }
 }
 
