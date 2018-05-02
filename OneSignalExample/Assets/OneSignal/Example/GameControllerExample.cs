@@ -36,7 +36,7 @@ public class GameControllerExample : MonoBehaviour {
    private static string extraMessage;
    public string email = "Email Address";
 
-   private static bool requiresUserPrivacyConsent = true;
+   private static bool requiresUserPrivacyConsent = false;
 
    void Start () {
       extraMessage = null;
