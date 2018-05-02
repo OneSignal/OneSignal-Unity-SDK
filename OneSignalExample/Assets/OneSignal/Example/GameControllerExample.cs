@@ -36,14 +36,21 @@ public class GameControllerExample : MonoBehaviour {
    private static string extraMessage;
    public string email = "Email Address";
 
+   private static bool requiresUserPrivacyConsent = true;
+
    void Start () {
       extraMessage = null;
 
       // Enable line below to debug issues with setuping OneSignal. (logLevel, visualLogLevel)
       OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
 
+      // If you set to true, the user will have to provide consent
+      // using OneSignal.UserDidProvideConsent(true) before the
+      // SDK will initialize
+      OneSignal.SetRequiresUserPrivacyConsent(requiresUserPrivacyConsent);
+
       // The only required method you need to call to setup OneSignal to receive push notifications.
-      // Call before using any other methods on OneSignal.
+      // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
       // Should only be called once when your app is loaded.
       // OneSignal.Init(OneSignal_AppId);
       OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba")
@@ -58,8 +65,6 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
 
       var pushState = OneSignal.GetPermissionSubscriptionState();
-      Debug.Log("pushState.subscriptionStatus.subscribed : " + pushState.subscriptionStatus.subscribed);
-      Debug.Log("pushState.subscriptionStatus.userId : " + pushState.subscriptionStatus.userId);
    }
 
    private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
@@ -137,7 +142,7 @@ public class GameControllerExample : MonoBehaviour {
       float itemWidth = Screen.width - 120.0f;
       float boxWidth = Screen.width - 20.0f;
       float boxOriginY = 120.0f;
-      float boxHeight = 630.0f;
+      float boxHeight = requiresUserPrivacyConsent ? 720.0f : 630.0f;
       float itemStartY = 200.0f;
       float itemHeightOffset = 90.0f;
       float itemHeight = 60.0f;
@@ -223,6 +228,16 @@ public class GameControllerExample : MonoBehaviour {
          }, (error) => {
             Debug.Log("Encountered error logging out of email: " + Json.Serialize(error));
          });
+      }
+
+      if (requiresUserPrivacyConsent) {
+         count++;
+
+         if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), (OneSignal.UserProvidedConsent() ? "Revoke Privacy Consent" : "Provide Privacy Consent"), customTextSize)) {
+            extraMessage = "Providing user privacy consent";
+            
+            OneSignal.UserDidProvideConsent(!OneSignal.UserProvidedConsent());
+         }
       }
 
       if (extraMessage != null) {

@@ -165,7 +165,9 @@ void initOneSignalObject(NSDictionary* launchOptions, const char* appId, int dis
     
 }
 
-void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppLaunchURL, int displayOption, int logLevel, int visualLogLevel) {
+void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppLaunchURL, int displayOption, int logLevel, int visualLogLevel, bool requiresUserPrivacyConsent) {
+    [OneSignal setRequiresUserPrivacyConsent:requiresUserPrivacyConsent];
+    
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
     
     unsigned long len = strlen(listenerName);
@@ -329,6 +331,18 @@ void _logoutEmail() {
     } withFailure:^(NSError *error) {
         UnitySendMessage(unityListener, "onLogoutEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
     }];
+}
+
+void _userDidProvideConsent(bool consent) {
+    [OneSignal consentGranted:consent];
+}
+
+bool _userProvidedConsent() {
+    return ![OneSignal requiresUserPrivacyConsent];
+}
+
+void _setRequiresUserPrivacyConsent(bool required) {
+    [OneSignal setRequiresUserPrivacyConsent:required];
 }
 
 @end
