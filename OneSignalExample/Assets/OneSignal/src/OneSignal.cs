@@ -385,7 +385,7 @@ public class OneSignal : MonoBehaviour {
 
 #if ONESIGNAL_PLATFORM && UNITY_ANDROID
    private static void initAndroid() {
-      oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, inFocusDisplayType, logLevel, visualLogLevel);
+      oneSignalPlatform = new OneSignalAndroid(gameObjectName, builder.googleProjectNumber, builder.appID, inFocusDisplayType, logLevel, visualLogLevel, requiresUserConsent);
    }
 #endif
 
