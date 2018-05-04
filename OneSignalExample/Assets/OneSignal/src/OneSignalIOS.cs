@@ -35,7 +35,7 @@ using System;
 public class OneSignalIOS : OneSignalPlatform {
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
-   extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel);
+   extern static public void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel, bool requiresUserPrivacyConsent);
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _registerForPushNotifications();
@@ -109,9 +109,18 @@ public class OneSignalIOS : OneSignalPlatform {
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
 
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _userDidProvideConsent(bool consent);
 
-   public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-       _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel);
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public bool _userProvidedConsent();
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setRequiresUserPrivacyConsent(bool required);   
+
+
+   public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel, bool requiresUserPrivacyConsent) {
+       _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel, requiresUserPrivacyConsent);
    }
 
    public void RegisterForPushNotifications() {
@@ -205,6 +214,18 @@ public class OneSignalIOS : OneSignalPlatform {
 
    public void LogoutEmail() {
       _logoutEmail();
+   }
+
+   public void UserDidProvideConsent(bool consent) {
+      _userDidProvideConsent(consent);
+   }
+
+   public bool UserProvidedConsent() {
+      return _userProvidedConsent();
+   }
+
+   public void SetRequiresUserPrivacyConsent(bool required) {
+      _setRequiresUserPrivacyConsent(required);
    }
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {

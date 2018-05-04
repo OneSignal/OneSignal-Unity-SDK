@@ -49,6 +49,11 @@ public interface OneSignalPlatform {
 
    void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display);
 
+   void UserDidProvideConsent(bool consent);
+   bool UserProvidedConsent();
+   void SetRequiresUserPrivacyConsent(bool required);
+
+
    void addPermissionObserver();
    void removePermissionObserver();
    void addSubscriptionObserver();
