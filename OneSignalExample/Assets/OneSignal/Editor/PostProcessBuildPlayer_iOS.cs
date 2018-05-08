@@ -54,6 +54,10 @@ public class BuildPostProcessor
          project.AddFrameworkToProject (notificationServiceTarget, framework, true);
       }
 
+      //makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
+      project.SetBuildProperty(notificationServiceTarget, "TARGETED_DEVICE_FAMILY", "1,2");
+      project.SetBuildProperty(notificationServiceTarget, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
+
       project.SetBuildProperty (notificationServiceTarget, "ARCHS", "$(ARCHS_STANDARD)");
       project.SetBuildProperty (notificationServiceTarget, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
