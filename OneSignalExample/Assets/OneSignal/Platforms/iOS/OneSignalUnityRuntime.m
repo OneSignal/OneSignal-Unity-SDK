@@ -117,8 +117,10 @@ static OSUnityPermissionAndSubscriptionObserver* osUnityObserver;
 static Class delegateClass = nil;
 
 - (void) setOneSignalUnityDelegate:(id<UIApplicationDelegate>)delegate {
-    if(delegateClass != nil)
+    if(delegateClass) {
+        [self setOneSignalUnityDelegate:delegate];
         return;
+    }
     
     delegateClass = getClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
     
