@@ -43,6 +43,10 @@ public class OneSignalAndroid : OneSignalPlatform {
       mOneSignal.Call("setLogLevel", (int)logLevel, (int)visualLevel);
    }
 
+   public void SetLocationShared(bool shared) {
+      mOneSignal.Call("setLocationShared", shared);
+   }
+
    public void SendTag(string tagName, string tagValue) {
       mOneSignal.Call("sendTag", tagName, tagValue);
    }

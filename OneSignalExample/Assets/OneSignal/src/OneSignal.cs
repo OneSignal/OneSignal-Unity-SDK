@@ -429,6 +429,13 @@ public class OneSignal : MonoBehaviour {
 #endif
    }
 
+   public static void SetLocationShared(bool shared) {
+      Debug.Log ("Called OneSignal.cs SetLocationShared");
+      #if ONESIGNAL_PLATFORM
+         oneSignalPlatform.SetLocationShared(shared);
+      #endif
+   }
+
    // Tag player with a key value pair to later create segments on them at onesignal.com.
    public static void SendTag(string tagName, string tagValue) {
 #if ONESIGNAL_PLATFORM

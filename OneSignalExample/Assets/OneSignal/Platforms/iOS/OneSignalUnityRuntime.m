@@ -347,4 +347,8 @@ void _setRequiresUserPrivacyConsent(bool required) {
     [OneSignal setRequiresUserPrivacyConsent:required];
 }
 
+void _setLocationShared(bool shared) {
+    [OneSignal setLocationShared:shared];
+}
+
 @end
