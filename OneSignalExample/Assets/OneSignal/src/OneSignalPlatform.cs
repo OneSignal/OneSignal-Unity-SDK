@@ -42,6 +42,7 @@ public interface OneSignalPlatform {
    void PostNotification(Dictionary<string, object> data);
    void SyncHashedEmail(string email);
    void PromptLocation();
+   void SetLocationShared(bool shared);
 
    void SetEmail (string email);
    void SetEmail(string email, string emailAuthToken);
