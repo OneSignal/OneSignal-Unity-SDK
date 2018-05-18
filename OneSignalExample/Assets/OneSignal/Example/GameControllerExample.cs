@@ -53,7 +53,7 @@ public class GameControllerExample : MonoBehaviour {
       // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
       // Should only be called once when your app is loaded.
       // OneSignal.Init(OneSignal_AppId);
-      OneSignal.StartInit("b2f7f966-d8cc-11e4-bed1-df8f05be55ba")
+      OneSignal.StartInit("78e8aff3-7ce2-401f-9da0-2d41f287ebaf")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
                //.InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
