@@ -109,63 +109,67 @@
          File.WriteAllText(projectPath, project.WriteToString());
       }
 
-      // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
-      public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
-         //in order to find the fileRef, find the PBXBuildFile objects section of the PBXProject
-         string splitString = " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = ";
-         string[] splitComponents = contents.Split(new string[] {splitString}, StringSplitOptions.None);
+      #if UNITY_2017_1_OR_NEWER
+         
+         // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
+         public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
+            //in order to find the fileRef, find the PBXBuildFile objects section of the PBXProject
+            string splitString = " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = ";
+            string[] splitComponents = contents.Split(new string[] {splitString}, StringSplitOptions.None);
 
-         if (splitComponents.Length < 2) {
-            Debug.LogError ("(error 1) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
-            return;
-         }
-
-         string afterSplit = splitComponents[1];
-
-         //to get the fileRef of the static framework, read the last 24 characters of the beforeSplit string
-         StringBuilder fileRefBuilder = new StringBuilder();
-
-         for (int i = 0; i < 24; i++) {
-            fileRefBuilder.Append(afterSplit[i]);
-         }
-
-         string fileRef = fileRefBuilder.ToString();
-
-         project.AddFileToBuild(target, fileRef);
-
-         //add the framework as an additional object in PBXBuildFile objects
-         contents = contents.Replace("; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };", "; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };\n\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };");
-
-         //fild the build phase ID number
-         string targetBuildPhaseId = project.GetFrameworksBuildPhaseByTarget(target);
-         string[] components = contents.Split(new string[] { targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " }, StringSplitOptions.None);
-
-         if (components.Length < 2) {
-            Debug.LogError("(error 2) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
-            return;
-         }
-
-         string buildPhaseString = components[1];
-
-         StringBuilder replacer = new StringBuilder ();
-
-         for (int i = 0; i < buildPhaseString.Length; i++) {
-            char seq = buildPhaseString [i];
-
-            if (char.IsNumber (seq)) {
-               replacer.Append (seq);
-            } else {
-               break;
+            if (splitComponents.Length < 2) {
+               Debug.LogError ("(error 1) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
+               return;
             }
+
+            string afterSplit = splitComponents[1];
+
+            //to get the fileRef of the static framework, read the last 24 characters of the beforeSplit string
+            StringBuilder fileRefBuilder = new StringBuilder();
+
+            for (int i = 0; i < 24; i++) {
+               fileRefBuilder.Append(afterSplit[i]);
+            }
+
+            string fileRef = fileRefBuilder.ToString();
+
+            project.AddFileToBuild(target, fileRef);
+
+            //add the framework as an additional object in PBXBuildFile objects
+            contents = contents.Replace("; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };", "; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };\n\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };");
+
+            //fild the build phase ID number
+            string targetBuildPhaseId = project.GetFrameworksBuildPhaseByTarget(target);
+            string[] components = contents.Split(new string[] { targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " }, StringSplitOptions.None);
+
+            if (components.Length < 2) {
+               Debug.LogError("(error 2) OneSignal's Build Post Processor has encountered an error while attempting to add the Notification Extension Service to your project. Please create an issue on our OneSignal-Unity-SDK repo on GitHub.");
+               return;
+            }
+
+            string buildPhaseString = components[1];
+
+            StringBuilder replacer = new StringBuilder ();
+
+            for (int i = 0; i < buildPhaseString.Length; i++) {
+               char seq = buildPhaseString [i];
+
+               if (char.IsNumber (seq)) {
+                  replacer.Append (seq);
+               } else {
+                  break;
+               }
+            }
+
+            // insert the framework into the PBXFrameworksBuildPhase 
+            string beginString = targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " + replacer.ToString() + ";\n\t\t\tfiles = (";
+            contents = contents.Replace(beginString, beginString + "\n" + "\t\t\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */,");
+
+            //add library search paths to add build configurations of the target
+            contents = contents.Replace ("PRODUCT_BUNDLE_IDENTIFIER = ", "LIBRARY_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"$(PROJECT_DIR)/Libraries/OneSignal/Platforms/iOS\",\n\t\t\t\t);\nPRODUCT_BUNDLE_IDENTIFIER = ");
          }
 
-         // insert the framework into the PBXFrameworksBuildPhase 
-         string beginString = targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " + replacer.ToString() + ";\n\t\t\tfiles = (";
-         contents = contents.Replace(beginString, beginString + "\n" + "\t\t\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */,");
-
-         //add library search paths to add build configurations of the target
-         contents = contents.Replace ("PRODUCT_BUNDLE_IDENTIFIER = ", "LIBRARY_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"$(PROJECT_DIR)/Libraries/OneSignal/Platforms/iOS\",\n\t\t\t\t);\nPRODUCT_BUNDLE_IDENTIFIER = ");
-      }
+      #endif
    }
 
 #endif
