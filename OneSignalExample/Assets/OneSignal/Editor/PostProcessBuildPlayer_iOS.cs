@@ -32,7 +32,7 @@
          // UserNotifications.framework is required by libOneSignal.a
          project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
 
-         #if UNITY_2017_1_OR_NEWER
+         #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
 
             var extensionTargetName = "OneSignalNotificationServiceExtension";
             var pathToNotificationService = path + "/" + extensionTargetName;
@@ -109,7 +109,7 @@
          File.WriteAllText(projectPath, project.WriteToString());
       }
 
-      #if UNITY_2017_1_OR_NEWER
+      #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
          
          // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
          public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
