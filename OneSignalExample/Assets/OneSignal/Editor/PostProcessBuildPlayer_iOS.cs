@@ -1,4 +1,7 @@
-﻿#if UNITY_5_4_OR_NEWER && UNITY_IPHONE && UNITY_EDITOR
+﻿#define ADD_APP_GROUP
+//remove to prevent the addition of the app group
+
+#if UNITY_5_4_OR_NEWER && UNITY_IPHONE && UNITY_EDITOR
 
    using System.IO;
    using System;
@@ -93,6 +96,12 @@
 
          PlistDocument entitlements = new PlistDocument();
          entitlements.root.SetString("aps-environment", "development");
+         
+         #if !UNITY_CLOUD_BUILD && ADD_APP_GROUP
+            var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
+            groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
+         #endif
+
          entitlements.WriteToFile(entitlementPath);
 
          // Copy the entitlement file to the xcode project
