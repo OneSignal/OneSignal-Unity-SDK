@@ -1,4 +1,7 @@
-﻿#if UNITY_5_4_OR_NEWER && UNITY_IPHONE && UNITY_EDITOR
+﻿#define ADD_APP_GROUP
+//remove to prevent the addition of the app group
+
+#if UNITY_5_4_OR_NEWER && UNITY_IPHONE && UNITY_EDITOR
 
    using System.IO;
    using System;
@@ -32,7 +35,7 @@
          // UserNotifications.framework is required by libOneSignal.a
          project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
 
-         #if UNITY_2017_1_OR_NEWER
+         #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
 
             var extensionTargetName = "OneSignalNotificationServiceExtension";
             var pathToNotificationService = path + "/" + extensionTargetName;
@@ -93,6 +96,12 @@
 
          PlistDocument entitlements = new PlistDocument();
          entitlements.root.SetString("aps-environment", "development");
+         
+         #if !UNITY_CLOUD_BUILD && ADD_APP_GROUP
+            var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
+            groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
+         #endif
+
          entitlements.WriteToFile(entitlementPath);
 
          // Copy the entitlement file to the xcode project
@@ -109,7 +118,7 @@
          File.WriteAllText(projectPath, project.WriteToString());
       }
 
-      #if UNITY_2017_1_OR_NEWER
+      #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
          
          // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
          public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
