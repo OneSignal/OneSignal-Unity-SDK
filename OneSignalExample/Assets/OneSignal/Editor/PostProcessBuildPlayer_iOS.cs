@@ -40,9 +40,13 @@
             var extensionTargetName = "OneSignalNotificationServiceExtension";
             var pathToNotificationService = path + "/" + extensionTargetName;
 
-            Directory.CreateDirectory (pathToNotificationService);
-
             var notificationServicePlistPath = pathToNotificationService + "/Info.plist";
+            
+            //if this is a rebuild, we've already added the extension service, no need to run this script a second time
+            if (File.Exists(notificationServicePlistPath)) 
+               return;
+      
+            Directory.CreateDirectory(pathToNotificationService);
 
             PlistDocument notificationServicePlist = new PlistDocument();
             notificationServicePlist.ReadFromFile ("Assets/OneSignal/Platforms/iOS/Info.plist");
@@ -70,9 +74,10 @@
             project.SetBuildProperty (notificationServiceTarget, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
             notificationServicePlist.WriteToFile (notificationServicePlistPath);
-
-            FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/" + sourceDestination + ".h");
-            FileUtil.CopyFileOrDirectory ("Assets/OneSignal/Platforms/iOS/NotificationService.m", path + "/" + sourceDestination + ".m");
+            
+            foreach (string type in new string[] {"m", "h"}) 
+               if (!File.Exists(path + "/" + sourceDestination + "." + type))
+                  FileUtil.CopyFileOrDirectory("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/" + sourceDestination + "." + type);
 
             project.WriteToFile (projectPath);
 
