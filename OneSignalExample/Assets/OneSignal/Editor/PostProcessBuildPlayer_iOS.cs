@@ -11,7 +11,7 @@
    using UnityEditor.iOS.Xcode;
    using System.Text;
 
-   #if UNITY_2017_1_OR_NEWER
+   #if UNITY_2017_2_OR_NEWER
       using UnityEditor.iOS.Xcode.Extensions;
    #endif
 
@@ -36,10 +36,10 @@
 
          // UserNotifications.framework is required by libOneSignal.a
          project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
-      
-         #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
+        
+         #if UNITY_2017_2_OR_NEWER && !UNITY_CLOUD_BUILD
+           
             var platformsLocation = "Assets" + separator + "OneSignal" + separator + "Platforms" + separator;
-            
             var extensionTargetName = "OneSignalNotificationServiceExtension";
             var pathToNotificationService = path + separator + extensionTargetName;
 
@@ -126,7 +126,7 @@
          File.WriteAllText(projectPath, project.WriteToString());
       }
 
-      #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
+      #if UNITY_2017_2_OR_NEWER && !UNITY_CLOUD_BUILD
          
          // This function takes a static framework that is already linked to a different target in the project and links it to the specified target
          public static void InsertStaticFrameworkIntoTargetBuildPhaseFrameworks(string staticFrameworkName, string frameworkGuid, string target, ref string contents, PBXProject project) {
@@ -155,7 +155,7 @@
             //add the framework as an additional object in PBXBuildFile objects
             contents = contents.Replace("; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };", "; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };\n\t\t" + frameworkGuid + " /* " + staticFrameworkName + ".a in Frameworks */ = {isa = PBXBuildFile; fileRef = " + fileRef + " /* " + staticFrameworkName + ".a */; };");
 
-            //fild the build phase ID number
+            //find the build phase ID number
             string targetBuildPhaseId = project.GetFrameworksBuildPhaseByTarget(target);
             string[] components = contents.Split(new string[] { targetBuildPhaseId + " /* Frameworks */ = {\n\t\t\tisa = PBXFrameworksBuildPhase;\n\t\t\tbuildActionMask = " }, StringSplitOptions.None);
 
