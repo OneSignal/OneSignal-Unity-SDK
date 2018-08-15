@@ -25,6 +25,8 @@
       [PostProcessBuildAttribute(1)]
       public static void OnPostProcessBuild(BuildTarget target, string path)
       {
+         var separator = Path.DirectorySeparatorChar;
+         
          string projectPath = PBXProject.GetPBXProjectPath(path);
          PBXProject project = new PBXProject();
 
@@ -34,13 +36,14 @@
 
          // UserNotifications.framework is required by libOneSignal.a
          project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
-
+      
          #if UNITY_2017_1_OR_NEWER && !UNITY_CLOUD_BUILD
-
+            var platformsLocation = "Assets" + separator + "OneSignal" + separator + "Platforms" + separator;
+            
             var extensionTargetName = "OneSignalNotificationServiceExtension";
-            var pathToNotificationService = path + "/" + extensionTargetName;
+            var pathToNotificationService = path + separator + extensionTargetName;
 
-            var notificationServicePlistPath = pathToNotificationService + "/Info.plist";
+            var notificationServicePlistPath = pathToNotificationService + separator + "Info.plist";
       
             //if this is a rebuild, we've already added the extension service, no need to run this script a second time
             if (File.Exists(notificationServicePlistPath))
@@ -49,13 +52,13 @@
             Directory.CreateDirectory(pathToNotificationService);
 
             PlistDocument notificationServicePlist = new PlistDocument();
-            notificationServicePlist.ReadFromFile ("Assets/OneSignal/Platforms/iOS/Info.plist");
+            notificationServicePlist.ReadFromFile (platformsLocation + "iOS" + separator + "Info.plist");
             notificationServicePlist.root.SetString ("CFBundleShortVersionString", PlayerSettings.bundleVersion);
             notificationServicePlist.root.SetString ("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString ());
 
             var notificationServiceTarget = PBXProjectExtensions.AddAppExtension (project, targetGUID, extensionTargetName, PlayerSettings.GetApplicationIdentifier (BuildTargetGroup.iOS) + "." + extensionTargetName, notificationServicePlistPath);
 
-            var sourceDestination = extensionTargetName + "/NotificationService";
+            var sourceDestination = extensionTargetName + separator + "NotificationService";
 
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".h", sourceDestination + ".h", PBXSourceTree.Source));
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".m", sourceDestination + ".m", PBXSourceTree.Source));
@@ -76,8 +79,8 @@
             notificationServicePlist.WriteToFile (notificationServicePlistPath);
       
             foreach (string type in new string[] { "m", "h" })
-               if (!File.Exists(path + "/" + sourceDestination + "." + type))
-                  FileUtil.CopyFileOrDirectory("Assets/OneSignal/Platforms/iOS/NotificationService.h", path + "/" + sourceDestination + "." + type);
+               if (!File.Exists(path + separator + sourceDestination + "." + type))
+                  FileUtil.CopyFileOrDirectory(platformsLocation + "iOS" + separator + "NotificationService.h", path + separator + sourceDestination + "." + type);
 
             project.WriteToFile (projectPath);
 
@@ -97,7 +100,7 @@
 
          // enable the Notifications capability in the main app target
          project.ReadFromString(contents);
-         var entitlementPath = path + "/" + targetName + "/" + targetName + ".entitlements";
+         var entitlementPath = path + separator + targetName + separator + targetName + ".entitlements";
 
          PlistDocument entitlements = new PlistDocument();
          entitlements.root.SetString("aps-environment", "development");
@@ -112,7 +115,7 @@
          // Copy the entitlement file to the xcode project
          var entitlementFileName = Path.GetFileName(entitlementPath);
          var unityTarget = PBXProject.GetUnityTargetName();
-         var relativeDestination = unityTarget + "/" + entitlementFileName;
+         var relativeDestination = unityTarget + separator + entitlementFileName;
 
          // Add the pbx configs to include the entitlements files on the project
          project.AddFile(relativeDestination, entitlementFileName);
