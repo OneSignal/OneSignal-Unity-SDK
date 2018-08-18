@@ -97,12 +97,14 @@ public class OneSignalUpdateRequest : MonoBehaviour
          //since there was an error, we shouldn't attempt to serialize data from the request
          yield break;
       }
+      
+      var separator = Path.DirectorySeparatorChar;
 
       //parse JSON to extract the latest version
       var json = Json.Deserialize(request.downloadHandler.text) as System.Collections.Generic.Dictionary<string, object>;
 
       var latestVersionString = (json["tag_name"] as string);
-      var currentVersionString = File.ReadAllText("Assets/OneSignal/VERSION").Replace("\n", "");
+      var currentVersionString = File.ReadAllText("Assets" + separator + "OneSignal" + separator + "VERSION").Replace("\n", "");
 
       //remove . to convert "2.8.2" to "282" for example
       var latestVersion = int.Parse(latestVersionString.Replace(".", ""));
