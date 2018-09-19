@@ -80,7 +80,7 @@
       
             foreach (string type in new string[] { "m", "h" })
                if (!File.Exists(path + separator + sourceDestination + "." + type))
-                  FileUtil.CopyFileOrDirectory(platformsLocation + "iOS" + separator + "NotificationService.h", path + separator + sourceDestination + "." + type);
+                  FileUtil.CopyFileOrDirectory(platformsLocation + "iOS" + separator + "NotificationService." + type, path + separator + sourceDestination + "." + type);
 
             project.WriteToFile (projectPath);
 
