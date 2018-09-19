@@ -2,3 +2,4 @@ OneSignalExample/Assets/Plugins/**/*.aar
 OneSignalExample/Assets/Plugins/**/*.aar.meta
 OneSignalExample/Assets/Plugins/**/*.jar
 OneSignalExample/Assets/Plugins/**/*.jar.meta
+build.log

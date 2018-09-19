@@ -23,11 +23,10 @@ if [ ! -d $temp_location ]; then
    mkdir $temp_location
 fi
 
-#removed an unneeded Android manifest
-if [[ -e "$config_location/AndroidManifest.xml" ]]; then 
+# Removed generated Android manifest files
+if [[ -e "$config_location/AndroidManifest.xml" ]]; then
    rm $config_location/AndroidManifest.xml
 fi
-
 if [[ -e "$config_location/AndroidManifest.xml.meta" ]]; then 
    rm $config_location/AndroidManifest.xml.meta
 fi
@@ -48,12 +47,13 @@ mkdir $android_location
 mv $temp_location/OneSignalConfig $config_location
 mv $temp_location/OneSignalConfig.meta $config_location.meta
 
-error_code=0
-
-#create the .unitypackage
+# Create the .unitypackage
 echo "Creating unitypackage."
+# Setting standalone keeps AndroidManifest.xml from being regenerated
+#   buildTarget must be before exportPackage for this to work
 /Applications/Unity/Unity.app/Contents/MacOS/Unity \
    -batchMode \
+   -buildTarget standalone \
    -projectPath $project_path \
    -exportPackage Assets $package_name \
    -logFile $log_file \
