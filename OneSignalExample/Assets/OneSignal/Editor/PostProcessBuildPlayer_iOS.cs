@@ -58,7 +58,7 @@
 
             var notificationServiceTarget = PBXProjectExtensions.AddAppExtension (project, targetGUID, extensionTargetName, PlayerSettings.GetApplicationIdentifier (BuildTargetGroup.iOS) + "." + extensionTargetName, notificationServicePlistPath);
 
-            var sourceDestination = extensionTargetName + separator + "NotificationService";
+            var sourceDestination = extensionTargetName + "/NotificationService";
 
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".h", sourceDestination + ".h", PBXSourceTree.Source));
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".m", sourceDestination + ".m", PBXSourceTree.Source));
@@ -115,7 +115,7 @@
          // Copy the entitlement file to the xcode project
          var entitlementFileName = Path.GetFileName(entitlementPath);
          var unityTarget = PBXProject.GetUnityTargetName();
-         var relativeDestination = unityTarget + separator + entitlementFileName;
+         var relativeDestination = unityTarget + "/" + entitlementFileName;
 
          // Add the pbx configs to include the entitlements files on the project
          project.AddFile(relativeDestination, entitlementFileName);
