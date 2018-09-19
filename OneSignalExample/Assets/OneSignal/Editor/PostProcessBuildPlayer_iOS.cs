@@ -103,11 +103,19 @@
          var entitlementPath = path + separator + targetName + separator + targetName + ".entitlements";
 
          PlistDocument entitlements = new PlistDocument();
-         entitlements.root.SetString("aps-environment", "development");
+
+         if (File.Exists(entitlementPath))
+            entitlements.ReadFromFile(entitlementPath);
          
          #if !UNITY_CLOUD_BUILD && ADD_APP_GROUP
-            var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
-            groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
+            if (entitlements.root["aps-environment"] == null) {
+               entitlements.root.SetString("aps-environment", "development");
+            }
+
+            if (entitlements.root["com.apple.security.application-groups"] == null) {
+               var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
+               groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
+            }
          #endif
 
          entitlements.WriteToFile(entitlementPath);
