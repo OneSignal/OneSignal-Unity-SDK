@@ -58,7 +58,7 @@
 
             var notificationServiceTarget = PBXProjectExtensions.AddAppExtension (project, targetGUID, extensionTargetName, PlayerSettings.GetApplicationIdentifier (BuildTargetGroup.iOS) + "." + extensionTargetName, notificationServicePlistPath);
 
-            var sourceDestination = extensionTargetName + separator + "NotificationService";
+            var sourceDestination = extensionTargetName + "/NotificationService";
 
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".h", sourceDestination + ".h", PBXSourceTree.Source));
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".m", sourceDestination + ".m", PBXSourceTree.Source));
@@ -80,7 +80,7 @@
       
             foreach (string type in new string[] { "m", "h" })
                if (!File.Exists(path + separator + sourceDestination + "." + type))
-                  FileUtil.CopyFileOrDirectory(platformsLocation + "iOS" + separator + "NotificationService.h", path + separator + sourceDestination + "." + type);
+                  FileUtil.CopyFileOrDirectory(platformsLocation + "iOS" + separator + "NotificationService." + type, path + separator + sourceDestination + "." + type);
 
             project.WriteToFile (projectPath);
 
@@ -103,11 +103,19 @@
          var entitlementPath = path + separator + targetName + separator + targetName + ".entitlements";
 
          PlistDocument entitlements = new PlistDocument();
-         entitlements.root.SetString("aps-environment", "development");
+
+         if (File.Exists(entitlementPath))
+            entitlements.ReadFromFile(entitlementPath);
          
          #if !UNITY_CLOUD_BUILD && ADD_APP_GROUP
-            var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
-            groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
+            if (entitlements.root["aps-environment"] == null) {
+               entitlements.root.SetString("aps-environment", "development");
+            }
+
+            if (entitlements.root["com.apple.security.application-groups"] == null) {
+               var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
+               groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
+            }
          #endif
 
          entitlements.WriteToFile(entitlementPath);
@@ -115,7 +123,7 @@
          // Copy the entitlement file to the xcode project
          var entitlementFileName = Path.GetFileName(entitlementPath);
          var unityTarget = PBXProject.GetUnityTargetName();
-         var relativeDestination = unityTarget + separator + entitlementFileName;
+         var relativeDestination = unityTarget + "/" + entitlementFileName;
 
          // Add the pbx configs to include the entitlements files on the project
          project.AddFile(relativeDestination, entitlementFileName);
