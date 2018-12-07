@@ -35,6 +35,7 @@ public class GameControllerExample : MonoBehaviour {
 
    private static string extraMessage;
    public string email = "Email Address";
+   public string externalId = "External User ID";
 
    private static bool requiresUserPrivacyConsent = false;
 
@@ -134,7 +135,7 @@ public class GameControllerExample : MonoBehaviour {
       GUIStyle guiBoxStyle = new GUIStyle("box");
       guiBoxStyle.fontSize = 30;
 
-      GUIStyle textFieldStyle = new GUIStyle ("textField");
+      GUIStyle textFieldStyle = new GUIStyle("textField");
       textFieldStyle.fontSize = 30;
 
 
@@ -142,7 +143,7 @@ public class GameControllerExample : MonoBehaviour {
       float itemWidth = Screen.width - 120.0f;
       float boxWidth = Screen.width - 20.0f;
       float boxOriginY = 120.0f;
-      float boxHeight = requiresUserPrivacyConsent ? 720.0f : 630.0f;
+      float boxHeight = requiresUserPrivacyConsent ? 980.0f : 890.0f;
       float itemStartY = 200.0f;
       float itemHeightOffset = 90.0f;
       float itemHeight = 60.0f;
@@ -204,7 +205,7 @@ public class GameControllerExample : MonoBehaviour {
 
       count++;
 
-      email = GUI.TextField (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), email, customTextSize);
+      email = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), email, customTextSize);
 
       count++;
 
@@ -228,6 +229,28 @@ public class GameControllerExample : MonoBehaviour {
          }, (error) => {
             Debug.Log("Encountered error logging out of email: " + Json.Serialize(error));
          });
+      }
+
+      count++;
+
+      externalId = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), externalId, customTextSize);
+
+      count++;
+
+      if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetExternalId", customTextSize))
+      {
+         extraMessage = "Removing External User Id";
+
+         OneSignal.SetExternalUserId(externalId);
+      }
+
+      count++;
+
+      if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "RemoveExternalId", customTextSize))
+      {
+         extraMessage = "Removing External User Id";
+
+         OneSignal.RemoveExternalUserId();
       }
 
       if (requiresUserPrivacyConsent) {

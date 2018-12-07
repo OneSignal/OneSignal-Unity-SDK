@@ -351,4 +351,12 @@ void _setLocationShared(bool shared) {
     [OneSignal setLocationShared:shared];
 }
 
+void _setExternalUserId(const char *externalId) {
+    [OneSignal setExternalUserId:CreateNSString(externalId)];
+}
+
+void _removeExternalUserId() {
+    [OneSignal removeExternalUserId];
+}
+
 @end
