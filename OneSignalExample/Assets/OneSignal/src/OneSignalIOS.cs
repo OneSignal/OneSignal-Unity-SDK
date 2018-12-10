@@ -121,6 +121,13 @@ public class OneSignalIOS : OneSignalPlatform {
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _setLocationShared(bool enable);
 
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _setExternalUserId(string externalId);
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _removeExternalUserId();
+   
+
 
    public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel, bool requiresUserPrivacyConsent) {
        _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel, requiresUserPrivacyConsent);
@@ -233,6 +240,16 @@ public class OneSignalIOS : OneSignalPlatform {
 
    public void SetRequiresUserPrivacyConsent(bool required) {
       _setRequiresUserPrivacyConsent(required);
+   }
+
+   public void SetExternalUserId(string externalId)
+   {
+      _setExternalUserId(externalId);
+   }
+
+   public void RemoveExternalUserId()
+   {
+      _removeExternalUserId();
    }
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
