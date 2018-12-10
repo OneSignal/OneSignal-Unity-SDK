@@ -239,7 +239,7 @@ public class GameControllerExample : MonoBehaviour {
 
       if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetExternalId", customTextSize))
       {
-         extraMessage = "Removing External User Id";
+         extraMessage = "Setting External User Id";
 
          OneSignal.SetExternalUserId(externalId);
       }
