@@ -37,7 +37,7 @@ using System.Collections.Generic;
 public class OneSignalEditorScriptAndroid : AssetPostprocessor {
 
    static OneSignalEditorScriptAndroid() {
-      createOneSignalAndroidManifest();
+      EditorApplication.delayCall += createOneSignalAndroidManifest;
    }
    
    // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
@@ -46,19 +46,27 @@ public class OneSignalEditorScriptAndroid : AssetPostprocessor {
       string oneSignalConfigPath = "Assets/Plugins/Android/OneSignalConfig/";
       string manifestFullPath = oneSignalConfigPath + "AndroidManifest.xml";
 
-      File.Copy(oneSignalConfigPath + "AndroidManifestTemplate.xml", manifestFullPath, true);
+      string sourcePath = oneSignalConfigPath + "AndroidManifestTemplate.xml";
+      string destinationPath = manifestFullPath;
 
-      StreamReader streamReader = new StreamReader(manifestFullPath);
-      string body = streamReader.ReadToEnd();
-      streamReader.Close();
+      string sourceXml = File.ReadAllText(sourcePath);
 
       #if UNITY_5_6_OR_NEWER
-         body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
+      sourceXml = sourceXml.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
       #else
-         body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
+      sourceXml = sourceXml.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
       #endif
-      using (var streamWriter = new StreamWriter(manifestFullPath, false)) {
-         streamWriter.Write(body);
+
+      string destinationXml = File.ReadAllText(destinationPath);
+
+      if (sourceXml != destinationXml)
+      {
+         if (UnityEditor.VersionControl.Provider.isActive)
+         {
+             UnityEditor.VersionControl.Provider.Checkout(destinationPath, UnityEditor.VersionControl.CheckoutMode.Asset).Wait();
+         }
+
+         File.WriteAllText(destinationPath, sourceXml);
       }
    }
 }
