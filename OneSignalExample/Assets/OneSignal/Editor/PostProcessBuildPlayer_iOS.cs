@@ -44,14 +44,22 @@
             var pathToNotificationService = path + separator + extensionTargetName;
 
             var notificationServicePlistPath = pathToNotificationService + separator + "Info.plist";
-      
-            //if this is a rebuild, we've already added the extension service, no need to run this script a second time
-            if (File.Exists(notificationServicePlistPath))
-               return;
-      
-            Directory.CreateDirectory(pathToNotificationService);
 
             PlistDocument notificationServicePlist = new PlistDocument();
+
+            //if this is a rebuild, we've already added the extension service, no need to run this script a second time
+            if (File.Exists(notificationServicePlistPath))
+            {
+                // update version
+                notificationServicePlist.ReadFromFile(platformsLocation + "iOS" + separator + "Info.plist");
+                notificationServicePlist.root.SetString("CFBundleShortVersionString", PlayerSettings.bundleVersion);
+                notificationServicePlist.root.SetString("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString());
+                notificationServicePlist.WriteToFile(notificationServicePlistPath);
+                return;
+            }
+
+            Directory.CreateDirectory(pathToNotificationService);
+
             notificationServicePlist.ReadFromFile (platformsLocation + "iOS" + separator + "Info.plist");
             notificationServicePlist.root.SetString ("CFBundleShortVersionString", PlayerSettings.bundleVersion);
             notificationServicePlist.root.SetString ("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString ());
