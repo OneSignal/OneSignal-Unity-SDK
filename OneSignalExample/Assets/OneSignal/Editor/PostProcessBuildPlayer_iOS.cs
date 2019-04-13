@@ -107,11 +107,10 @@
          if (File.Exists(entitlementPath))
             entitlements.ReadFromFile(entitlementPath);
          
-         #if !UNITY_CLOUD_BUILD && ADD_APP_GROUP
-            if (entitlements.root["aps-environment"] == null) {
-               entitlements.root.SetString("aps-environment", "development");
-            }
+         if (entitlements.root["aps-environment"] == null)
+            entitlements.root.SetString("aps-environment", "development");
 
+         #if !UNITY_CLOUD_BUILD && ADD_APP_GROUP
             if (entitlements.root["com.apple.security.application-groups"] == null) {
                var groups = entitlements.root.CreateArray("com.apple.security.application-groups");
                groups.AddString("group." + PlayerSettings.applicationIdentifier + ".onesignal");
