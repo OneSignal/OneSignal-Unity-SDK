@@ -27,5 +27,5 @@ For account issues and support please contact OneSignal support from the [OneSig
 To make things easier, we have published a demo project in the `OneSignalExample/` folder of this repository.
 
 #### Supports:
-* iOS 7 - 11.3
-* Android 4.0.3 (API Level 15) through 8.1 (API Level 27), and derivatives such as Amazon ADM
+* iOS 7 - 12.2
+* Android 4.0.3 (API Level 15) through 9.0 (API Level 28), and derivatives such as Amazon ADM
