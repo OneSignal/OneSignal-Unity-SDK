@@ -212,5 +212,35 @@ public class OneSignalAndroid : OneSignalPlatform {
    public void LogoutEmail() {
       mOneSignal.Call("logoutEmail");
    }
+
+   public void AddTrigger(string key, object value) {
+      mOneSignal.Call("addTrigger", key, value.ToString());
+   }
+
+   public void AddTriggers(IDictionary<string, object> triggers) {
+      mOneSignal.Call("addTriggers", Json.Serialize(triggers));
+   }
+
+   public void RemoveTriggerForKey(string key) {
+      mOneSignal.Call("removeTriggerForKey", key);
+   }
+
+   public void RemoveTriggersForKeys(IList<string> keys) {
+      mOneSignal.Call("removeTriggersForKeys", Json.Serialize(keys));
+   }
+
+   public object GetTriggerValueForKey(string key) {
+      var valueJsonStr = mOneSignal.Call<string>("getTriggerValueForKey", key);
+      if (valueJsonStr == null)
+         return null;
+      var valueDict = Json.Deserialize(valueJsonStr) as Dictionary<string, object>;
+      if (valueDict.ContainsKey("value"))
+         return valueDict["value"];
+      return null;
+   }
+
+   public void PauseInAppMessages(bool pause) {
+      mOneSignal.Call("pauseInAppMessages", pause);
+   }
 }
 #endif

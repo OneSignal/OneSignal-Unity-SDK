@@ -312,5 +312,30 @@ public class OneSignalIOS : OneSignalPlatform {
 
       return state;
    }
+
+   public void AddTrigger(string key, object value) {
+      // Do nothing, In-App not available for iOS yet.
+   }
+
+   public void AddTriggers(IDictionary<string, object> triggers) {
+      // Do nothing, In-App not available for iOS yet.
+   }
+
+   public void RemoveTriggerForKey(string key) {
+      // Do nothing, In-App not available for iOS yet.
+   }
+
+   public void RemoveTriggersForKeys(IList<string> keys) {
+      // Do nothing, In-App not available for iOS yet.
+   }
+
+   public object GetTriggerValueForKey(string key) {
+      // Do nothing, In-App not available for iOS yet.
+      return null;
+   }
+
+   public void PauseInAppMessages(bool pause) {
+      // Do nothing, In-App not available for iOS yet.
+   }
 }
 #endif

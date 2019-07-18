@@ -54,10 +54,10 @@ public class GameControllerExample : MonoBehaviour {
       // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
       // Should only be called once when your app is loaded.
       // OneSignal.Init(OneSignal_AppId);
-      OneSignal.StartInit("78e8aff3-7ce2-401f-9da0-2d41f287ebaf")
+      OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
-               //.InFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+               .HandlerInAppMessageClicked(HandlerInAppMessageClicked)
                .EndInit();
       
       OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
@@ -66,6 +66,30 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
 
       var pushState = OneSignal.GetPermissionSubscriptionState();
+
+      OneSignalInAppMessageTriggerExamples();
+   }
+
+   // Examples of using OneSignal In-App Message triggers
+   private void OneSignalInAppMessageTriggerExamples() {
+      // Add a single trigger
+      OneSignal.AddTrigger("key", "value");
+
+      // Get the current value to a trigger by key
+      var triggerValue = OneSignal.GetTriggerValueForKey("key");
+
+      // Add multiple triggers
+      OneSignal.AddTriggers(new Dictionary<string, object>() { { "key1", "value1" }, { "key2", 2 } });
+
+      // Delete a trigger
+      OneSignal.RemoveTriggerForKey("key");
+
+      // Delete a list of triggers
+      OneSignal.RemoveTriggersForKeys(new List<string>() { "key1", "key2" });
+
+      // Temporarily puase In-App messages; If true is passed in.
+      // Great to ensure you never interrupt your user while they are in the middle of a match in your game.
+      OneSignal.PauseInAppMessages(false);
    }
 
    private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
@@ -125,6 +149,12 @@ public class GameControllerExample : MonoBehaviour {
          extraMessage = "Pressed ButtonId: " + actionID;
       }
 	}
+
+   public static void HandlerInAppMessageClicked(OSInAppMessageAction action) {
+      String logInAppClickEvent = "In-App Message opened with action.clickName " + action.clickName;
+      print(logInAppClickEvent);
+      extraMessage = logInAppClickEvent;
+   }
 
    // Test Menu
    // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
