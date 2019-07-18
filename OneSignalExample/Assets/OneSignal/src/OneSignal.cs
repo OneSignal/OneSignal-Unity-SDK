@@ -102,6 +102,13 @@ public class OSNotificationOpenedResult {
    public OSNotification notification;
 }
 
+public class OSInAppMessageAction {
+   public string clickName;
+   public string clickUrl;
+   public bool firstClick;
+   public bool closesMessage;
+}
+
 public enum OSNotificationPermission {
    NotDetermined,
    Denied,
@@ -160,6 +167,8 @@ public class OneSignal : MonoBehaviour {
    // NotificationOpened - Delegate is called when a push notification is opened.
    // result = The Notification open result describing : 1. The notification opened 2. The action taken by the user
    public delegate void NotificationOpened(OSNotificationOpenedResult result);
+
+   public delegate void InAppMessageClicked(OSInAppMessageAction action);
 
    public delegate void IdsAvailableCallback(string playerID, string pushToken);
    public delegate void TagsReceived(Dictionary<string, object> tags);
@@ -264,11 +273,12 @@ public class OneSignal : MonoBehaviour {
    }
 
    public class UnityBuilder {
-      public string appID = null;
-      public string googleProjectNumber = null;
-      public Dictionary<string, bool> iOSSettings = null;
-      public NotificationReceived notificationReceivedDelegate = null;
-      public NotificationOpened notificationOpenedDelegate = null;
+      public string appID;
+      public string googleProjectNumber;
+      public Dictionary<string, bool> iOSSettings;
+      public NotificationReceived notificationReceivedDelegate;
+      public NotificationOpened notificationOpenedDelegate;
+      public InAppMessageClicked inAppMessageClickHandlerDelegate;
 
       // inNotificationReceivedDelegate   = Calls this delegate when a notification is received.
       public UnityBuilder HandleNotificationReceived(NotificationReceived inNotificationReceivedDelegate) {
@@ -278,7 +288,13 @@ public class OneSignal : MonoBehaviour {
 
       // inNotificationOpenedDelegate     = Calls this delegate when a push notification is opened.
       public UnityBuilder HandleNotificationOpened(NotificationOpened inNotificationOpenedDelegate) {
-         notificationOpenedDelegate = inNotificationOpenedDelegate; ;
+         notificationOpenedDelegate = inNotificationOpenedDelegate;
+         return this;
+      }
+
+      // inInAppMessageClickHandlerDelegate = Calls this delegate when an In-App Message is opened.
+      public UnityBuilder HandlerInAppMessageClicked(InAppMessageClicked inInAppMessageClickedDelegate) {
+         inAppMessageClickHandlerDelegate = inInAppMessageClickedDelegate;
          return this;
       }
 
@@ -654,6 +670,44 @@ public class OneSignal : MonoBehaviour {
 #endif
    }
 
+   public static void AddTrigger(string key, object value) {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.AddTrigger(key, value);
+#endif
+   }
+
+   public static void AddTriggers(Dictionary<string, object> triggers) {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.AddTriggers(triggers);
+#endif
+   }
+   
+   public static void RemoveTriggerForKey(string key) {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.RemoveTriggerForKey(key);
+#endif
+   }
+
+   public static void RemoveTriggersForKeys(IList<string> keys) {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.RemoveTriggersForKeys(keys);
+#endif
+   }
+   
+   public static object GetTriggerValueForKey(string key) {
+#if ONESIGNAL_PLATFORM
+      return oneSignalPlatform.GetTriggerValueForKey(key);
+#else
+      return null;
+#endif
+   }
+
+   public static void PauseInAppMessages(bool pause) {
+#if ONESIGNAL_PLATFORM
+      oneSignalPlatform.PauseInAppMessages(pause);
+#endif
+   }
+
    /*** protected and private methods ****/
 #if ONESIGNAL_PLATFORM
 
@@ -829,6 +883,26 @@ public class OneSignal : MonoBehaviour {
    // Called from native SDk
    private void onPromptForPushNotificationsWithUserResponse(string accepted) {
       notificationUserResponseDelegate(Convert.ToBoolean(accepted));
+   }
+
+   // Called from native SDK
+   private void onInAppMessageClicked(string jsonString) {
+      if (builder.inAppMessageClickHandlerDelegate == null)
+         return;
+
+      var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
+
+      var action = new OSInAppMessageAction();
+      if (jsonObject.ContainsKey("click_name"))
+         action.clickName = jsonObject["click_name"] as String;
+      if (jsonObject.ContainsKey("click_url"))
+         action.clickUrl = jsonObject["click_url"] as String;
+      if (jsonObject.ContainsKey("closes_message"))
+         action.closesMessage = (bool)jsonObject["closes_message"];
+      if (jsonObject.ContainsKey("first_click"))
+         action.firstClick = (bool)jsonObject["first_click"];
+
+      builder.inAppMessageClickHandlerDelegate(action);
    }
 
 #endif

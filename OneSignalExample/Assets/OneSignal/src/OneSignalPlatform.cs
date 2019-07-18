@@ -66,6 +66,14 @@ public interface OneSignalPlatform {
 
    OSPermissionSubscriptionState getPermissionSubscriptionState();
 
+    // In-App Messaging
+   void AddTrigger(string key, object value);
+   void AddTriggers(IDictionary<string, object> triggers);
+   void RemoveTriggerForKey(string key);
+   void RemoveTriggersForKeys(IList<string> keys);
+   object GetTriggerValueForKey(string key);
+   void PauseInAppMessages(bool pause);
+
    OSPermissionState parseOSPermissionState(object stateDict);
    OSSubscriptionState parseOSSubscriptionState(object stateDict);
    OSEmailSubscriptionState parseOSEmailSubscriptionState (object stateDict);
