@@ -57,7 +57,7 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
                .HandleNotificationReceived(HandleNotificationReceived)
                .HandleNotificationOpened(HandleNotificationOpened)
-               .HandlerInAppMessageClicked(HandlerInAppMessageClicked)
+               .HandleInAppMessageClicked(HandlerInAppMessageClicked)
                .EndInit();
       
       OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
