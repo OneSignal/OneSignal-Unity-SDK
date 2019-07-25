@@ -293,7 +293,7 @@ public class OneSignal : MonoBehaviour {
       }
 
       // inInAppMessageClickHandlerDelegate = Calls this delegate when an In-App Message is opened.
-      public UnityBuilder HandlerInAppMessageClicked(InAppMessageClicked inInAppMessageClickedDelegate) {
+      public UnityBuilder HandleInAppMessageClicked(InAppMessageClicked inInAppMessageClickedDelegate) {
          inAppMessageClickHandlerDelegate = inInAppMessageClickedDelegate;
          return this;
       }
