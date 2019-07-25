@@ -51,7 +51,7 @@ mv $temp_location/OneSignalConfig.meta $config_location.meta
 echo "Creating unitypackage."
 # Setting standalone keeps AndroidManifest.xml from being regenerated
 #   buildTarget must be before exportPackage for this to work
-/Applications/Unity/Hub/Editor/2019.1.9f1/Unity.app/Contents/MacOS/Unity \
+/Applications/Unity/Hub/Editor/2019.1.11f1/Unity.app/Contents/MacOS/Unity \
    -batchMode \
    -buildTarget standalone \
    -projectPath $project_path \
