@@ -28,6 +28,16 @@
 #import "OneSignal.h"
 #import <objc/runtime.h>
 
+char* cStringCopy(const char* string) {
+    if (string == NULL)
+        return NULL;
+    
+    char* res = (char*)malloc(strlen(string) + 1);
+    strcpy(res, string);
+    
+    return res;
+}
+
 NSString* CreateNSString(const char* string) {
     return [NSString stringWithUTF8String: string ? string : ""];
 }
@@ -117,7 +127,7 @@ static OSUnityPermissionAndSubscriptionObserver* osUnityObserver;
 static Class delegateClass = nil;
 
 - (void) setOneSignalUnityDelegate:(id<UIApplicationDelegate>)delegate {
-    if(delegateClass) {
+    if (delegateClass) {
         [self setOneSignalUnityDelegate:delegate];
         return;
     }
@@ -146,6 +156,20 @@ void processNotificationReceived(NSString* notificationString) {
     UnitySendMessage(unityListener, "onPushNotificationReceived", [notificationString UTF8String]);
 }
 
+void processInAppMessageClicked(char* inAppMessageActionString) {
+    UnitySendMessage(unityListener, "onInAppMessageClicked", inAppMessageActionString);
+}
+
+char* createInAppMessageJsonString(OSInAppMessageAction* action) {
+    return cStringCopy(dictionaryToJsonChar(
+  @{
+    @"click_name" : action.clickName,
+    @"click_url" : action.clickUrl ? action.clickUrl.absoluteString : @"",
+    @"first_click" : @(action.firstClick),
+    @"closes_message" : @(action.closesMessage)
+    }));
+}
+
 void initOneSignalObject(NSDictionary* launchOptions, const char* appId, int displayOption, BOOL inAppLaunchURL, BOOL autoPrompt, BOOL fromColdStart) {
     
     NSString* appIdStr = (appId ? [NSString stringWithUTF8String: appId] : nil);
@@ -165,6 +189,9 @@ void initOneSignalObject(NSDictionary* launchOptions, const char* appId, int dis
                      kOSSettingsKeyInAppLaunchURL: @(inAppLaunchURL),
                      @"kOSSettingsKeyInOmitNoAppIdLogging": @(fromColdStart)}];
     
+    [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction* action) {
+        processInAppMessageClicked(createInAppMessageJsonString(action));
+    }];
 }
 
 void _init(const char* listenerName, const char* appId, BOOL autoPrompt, BOOL inAppLaunchURL, int displayOption, int logLevel, int visualLogLevel, bool requiresUserPrivacyConsent) {
@@ -192,13 +219,13 @@ void _sendTag(const char* tagName, const char* tagValue) {
 }
 
 void _sendTags(const char* tags) {
-    NSString * jsonString = CreateNSString(tags);
+    NSString* jsonString = CreateNSString(tags);
     
     NSError* jsonError;
     
     NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* keyValuePairs = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
-    if (jsonError == nil)
+    if (!jsonError)
         [OneSignal sendTags:keyValuePairs];
 }
 
@@ -207,13 +234,13 @@ void _deleteTag(const char* key) {
 }
 
 void _deleteTags(const char* keys) {
-    NSString * jsonString = CreateNSString(keys);
+    NSString* jsonString = CreateNSString(keys);
     
     NSError* jsonError;
     
     NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSArray* kk = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
-    if (jsonError == nil)
+    if (!jsonError)
         [OneSignal deleteTags:kk];
 }
 
@@ -225,7 +252,7 @@ void _getTags() {
 
 void _idsAvailable() {
     [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
-        if (pushToken == nil)
+        if (!pushToken)
             pushToken = @"";
         
         UnitySendMessage(unityListener, "onIdsAvailable",
@@ -238,12 +265,12 @@ void _setSubscription(BOOL enable) {
 }
 
 void _postNotification(const char* jsonData) {
-    NSString * jsonString = CreateNSString(jsonData);
+    NSString* jsonString = CreateNSString(jsonData);
     NSError* jsonError;
     
     NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* jsd = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
-    if (jsonError == nil)
+    if (!jsonError)
         [OneSignal postNotification:jsd onSuccess:^(NSDictionary* results) {
             UnitySendMessage(unityListener, "onPostNotificationSuccess", dictionaryToJsonChar(results));
         } onFailure:^(NSError* error) {
@@ -309,8 +336,6 @@ void _setOneSignalLogLevel(int logLevel, int visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
 }
 
-// email
-
 void _setUnauthenticatedEmail(const char*email) {
     [OneSignal setEmail:CreateNSString(email) withSuccess:^{
         UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
@@ -357,6 +382,43 @@ void _setExternalUserId(const char *externalId) {
 
 void _removeExternalUserId() {
     [OneSignal removeExternalUserId];
+}
+
+void _addTriggers(char *triggers) {
+    NSString* jsonString = CreateNSString(triggers);
+    
+    NSError* jsonError;
+    
+    NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* triggerKeyValuePairs = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
+    if (!jsonError)
+        [OneSignal addTriggers:triggerKeyValuePairs];
+}
+
+void _removeTriggerForKey(char *key) {
+    NSString* triggerKey = CreateNSString(key);
+    [OneSignal removeTriggerForKey:triggerKey];
+}
+
+void _removeTriggersForKeys(char *keys) {
+    NSString* jsonString = CreateNSString(keys);
+    
+    NSError* jsonError;
+    
+    NSData* data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSArray* triggerKeys = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+    if (!jsonError)
+        [OneSignal removeTriggersForKeys:triggerKeys];
+}
+
+char* _getTriggerValueForKey(char *key) {
+    NSString* triggerKey = CreateNSString(key);
+    NSDictionary* triggerValue = @{ @"value" : [OneSignal getTriggerValueForKey:triggerKey] };
+    return cStringCopy(dictionaryToJsonChar(triggerValue));
+}
+
+void _pauseInAppMessages(bool pause) {
+    [OneSignal pauseInAppMessages:pause];
 }
 
 @end

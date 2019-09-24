@@ -648,23 +648,20 @@ public class OneSignal : MonoBehaviour {
 #endif
    }
 
-   public static void SetRequiresUserPrivacyConsent(bool required)
-   {
+   public static void SetRequiresUserPrivacyConsent(bool required) {
 #if ONESIGNAL_PLATFORM
          OneSignal.requiresUserConsent = required;
 #endif
    }
 
 
-   public static void SetExternalUserId(string externalId)
-   {
+    public static void SetExternalUserId(string externalId) {
 #if ONESIGNAL_PLATFORM
       oneSignalPlatform.SetExternalUserId(externalId);
 #endif
    }
 
-   public static void RemoveExternalUserId()
-   {
+   public static void RemoveExternalUserId() {
 #if ONESIGNAL_PLATFORM
       oneSignalPlatform.RemoveExternalUserId();
 #endif

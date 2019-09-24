@@ -34,8 +34,11 @@
          string targetName = PBXProject.GetUnityTargetName();
          string targetGUID = project.TargetGuidByName(targetName);
 
-         // UserNotifications.framework is required by libOneSignal.a
-         project.AddFrameworkToProject(targetGUID, "UserNotifications.framework", false);
+         var frameworks = new string[] {"NotificationCenter.framework", "UserNotifications.framework", "UIKit.framework", "SystemConfiguration.framework", "CoreGraphics.framework", "WebKit.framework"};
+
+         foreach (string framework in frameworks) {
+            project.AddFrameworkToProject (targetGUID, framework, false);
+         }
         
          #if UNITY_2017_2_OR_NEWER && !UNITY_CLOUD_BUILD
            
@@ -62,8 +65,6 @@
 
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".h", sourceDestination + ".h", PBXSourceTree.Source));
             project.AddFileToBuild (notificationServiceTarget, project.AddFile (sourceDestination + ".m", sourceDestination + ".m", PBXSourceTree.Source));
-
-            var frameworks = new string[] {"NotificationCenter.framework", "UserNotifications.framework", "UIKit.framework", "SystemConfiguration.framework"};
 
             foreach (string framework in frameworks) {
                project.AddFrameworkToProject (notificationServiceTarget, framework, true);

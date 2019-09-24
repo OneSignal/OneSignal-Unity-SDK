@@ -126,11 +126,24 @@ public class OneSignalIOS : OneSignalPlatform {
 
    [System.Runtime.InteropServices.DllImport("__Internal")]
    extern static public void _removeExternalUserId();
-   
 
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _addTriggers(string triggers);
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _removeTriggerForKey(string key);
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _removeTriggersForKeys(string keys);
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public string _getTriggerValueForKey(string key);
+
+   [System.Runtime.InteropServices.DllImport("__Internal")]
+   extern static public void _pauseInAppMessages(bool pause);
 
    public OneSignalIOS(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchURLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel, bool requiresUserPrivacyConsent) {
-       _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel, requiresUserPrivacyConsent);
+      _init(gameObjectName, appId, autoPrompt, inAppLaunchURLs, (int)displayOption, (int)logLevel, (int)visualLevel, requiresUserPrivacyConsent);
    }
 
    public void SetLocationShared(bool shared) {
@@ -173,14 +186,13 @@ public class OneSignalIOS : OneSignalPlatform {
       _postNotification(Json.Serialize(data));
    }
 
+   public void SyncHashedEmail(string email) {
+      _syncHashedEmail(email);
+   }
 
-    public void SyncHashedEmail(string email) {
-        _syncHashedEmail(email);
-    }
-
-    public void PromptLocation() {
-        _promptLocation();
-    }
+   public void PromptLocation() {
+      _promptLocation();
+   }
 
    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
       _setOneSignalLogLevel((int)logLevel, (int)visualLevel);
@@ -242,14 +254,38 @@ public class OneSignalIOS : OneSignalPlatform {
       _setRequiresUserPrivacyConsent(required);
    }
 
-   public void SetExternalUserId(string externalId)
-   {
+   public void SetExternalUserId(string externalId) {
       _setExternalUserId(externalId);
    }
 
-   public void RemoveExternalUserId()
-   {
+   public void RemoveExternalUserId() {
       _removeExternalUserId();
+   }
+
+   public void AddTrigger(string key, object value){
+      IDictionary<string, object> trigger = new Dictionary<string, object>() { { key, value } };
+      _addTriggers(Json.Serialize(trigger));
+   }
+
+   public void AddTriggers(IDictionary<string, object> triggers) {
+      _addTriggers(Json.Serialize(triggers));
+   }
+
+   public void RemoveTriggerForKey(string key) {
+      _removeTriggerForKey(key);
+   }
+
+   public void RemoveTriggersForKeys(IList<string> keys) {
+      _removeTriggersForKeys(Json.Serialize(keys));
+   }
+
+   public object GetTriggerValueForKey(string key) {
+      Dictionary<string, object> triggerValue = Json.Deserialize(_getTriggerValueForKey(key)) as Dictionary<string, object>;
+      return triggerValue["value"];
+   }
+
+   public void PauseInAppMessages(bool pause) {
+      _pauseInAppMessages(pause);
    }
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
@@ -306,36 +342,11 @@ public class OneSignalIOS : OneSignalPlatform {
       } else {
          state.emailAddress = "";
       }
-         
-      
+
       state.subscribed = stateDictCasted.ContainsKey("emailUserId") && stateDictCasted["emailUserId"] != null;
 
       return state;
    }
 
-   public void AddTrigger(string key, object value) {
-      // Do nothing, In-App not available for iOS yet.
-   }
-
-   public void AddTriggers(IDictionary<string, object> triggers) {
-      // Do nothing, In-App not available for iOS yet.
-   }
-
-   public void RemoveTriggerForKey(string key) {
-      // Do nothing, In-App not available for iOS yet.
-   }
-
-   public void RemoveTriggersForKeys(IList<string> keys) {
-      // Do nothing, In-App not available for iOS yet.
-   }
-
-   public object GetTriggerValueForKey(string key) {
-      // Do nothing, In-App not available for iOS yet.
-      return null;
-   }
-
-   public void PauseInAppMessages(bool pause) {
-      // Do nothing, In-App not available for iOS yet.
-   }
 }
 #endif

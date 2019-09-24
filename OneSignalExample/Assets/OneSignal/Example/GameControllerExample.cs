@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Modified MIT License
  * 
  * Copyright 2016 OneSignal
@@ -76,7 +76,10 @@ public class GameControllerExample : MonoBehaviour {
       OneSignal.AddTrigger("key", "value");
 
       // Get the current value to a trigger by key
-      var triggerValue = OneSignal.GetTriggerValueForKey("key");
+      var triggerKey = "key";
+      var triggerValue = OneSignal.GetTriggerValueForKey(triggerKey);
+      String output = "Trigger key: " + triggerKey + " value: " + (String) triggerValue;
+      Console.WriteLine(output);
 
       // Add multiple triggers
       OneSignal.AddTriggers(new Dictionary<string, object>() { { "key1", "value1" }, { "key2", 2 } });
@@ -151,7 +154,12 @@ public class GameControllerExample : MonoBehaviour {
 	}
 
    public static void HandlerInAppMessageClicked(OSInAppMessageAction action) {
-      String logInAppClickEvent = "In-App Message opened with action.clickName " + action.clickName;
+      String logInAppClickEvent = "In-App Message Clicked: " +
+            "\nClick Name: " + action.clickName +
+            "\nClick Url: " + action.clickUrl +
+            "\nFirst Click: " + action.firstClick +
+            "\nCloses Message: " + action.closesMessage;
+
       print(logInAppClickEvent);
       extraMessage = logInAppClickEvent;
    }
