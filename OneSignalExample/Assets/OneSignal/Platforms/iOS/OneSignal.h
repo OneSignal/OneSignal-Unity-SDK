@@ -170,7 +170,7 @@ typedef NS_ENUM(NSUInteger, OSNotificationDisplayType) {
 /* Parses an APS push payload into a OSNotificationPayload object.
    Useful to call from your NotificationServiceExtension when the
       didReceiveNotificationRequest:withContentHandler: method fires. */
-+(instancetype)parseWithApns:(nonnull NSDictionary*)message;
++ (instancetype)parseWithApns:(nonnull NSDictionary*)message;
 
 @end
 
