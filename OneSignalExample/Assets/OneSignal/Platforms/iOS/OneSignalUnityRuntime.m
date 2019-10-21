@@ -28,7 +28,7 @@
 #import "OneSignal.h"
 #import <objc/runtime.h>
 
-char* cStringCopy(const char* string) {
+char* os_cStringCopy(const char* string) {
     if (string == NULL)
         return NULL;
     
@@ -161,7 +161,7 @@ void processInAppMessageClicked(char* inAppMessageActionString) {
 }
 
 char* createInAppMessageJsonString(OSInAppMessageAction* action) {
-    return cStringCopy(dictionaryToJsonChar(
+    return os_cStringCopy(dictionaryToJsonChar(
   @{
     @"click_name" : action.clickName,
     @"click_url" : action.clickUrl ? action.clickUrl.absoluteString : @"",
@@ -414,7 +414,7 @@ void _removeTriggersForKeys(char *keys) {
 char* _getTriggerValueForKey(char *key) {
     NSString* triggerKey = CreateNSString(key);
     NSDictionary* triggerValue = @{ @"value" : [OneSignal getTriggerValueForKey:triggerKey] };
-    return cStringCopy(dictionaryToJsonChar(triggerValue));
+    return os_cStringCopy(dictionaryToJsonChar(triggerValue));
 }
 
 void _pauseInAppMessages(bool pause) {
