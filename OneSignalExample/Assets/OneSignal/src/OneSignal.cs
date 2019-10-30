@@ -258,7 +258,7 @@ public class OneSignal : MonoBehaviour {
                 internalPermissionObserver -= value;
                 if (addedPermissionObserver && internalPermissionObserver.GetInvocationList().Length == 0) {
                     addedPermissionObserver = false;
-                    oneSignalPlatform.removePermissionObserver();
+                    oneSignalPlatform.RemovePermissionObserver();
                 }
             }
         }
@@ -268,7 +268,7 @@ public class OneSignal : MonoBehaviour {
     private static void addPermissionObserver() {
         if (!addedPermissionObserver && internalPermissionObserver != null && internalPermissionObserver.GetInvocationList().Length > 0) {
             addedPermissionObserver = true;
-            oneSignalPlatform.addPermissionObserver();
+            oneSignalPlatform.AddPermissionObserver();
         }
     }
 
@@ -285,7 +285,7 @@ public class OneSignal : MonoBehaviour {
             if (oneSignalPlatform != null) {
                 internalSubscriptionObserver -= value;
                 if (addedSubscriptionObserver && internalSubscriptionObserver.GetInvocationList().Length == 0)
-                    oneSignalPlatform.removeSubscriptionObserver();
+                    oneSignalPlatform.RemoveSubscriptionObserver();
             }
         }
     }
@@ -294,7 +294,7 @@ public class OneSignal : MonoBehaviour {
     private static void addSubscriptionObserver() {
         if (!addedSubscriptionObserver && internalSubscriptionObserver != null && internalSubscriptionObserver.GetInvocationList().Length > 0) {
             addedSubscriptionObserver = true;
-            oneSignalPlatform.addSubscriptionObserver();
+            oneSignalPlatform.AddSubscriptionObserver();
         }
     }
 
@@ -311,7 +311,7 @@ public class OneSignal : MonoBehaviour {
             if (oneSignalPlatform != null) {
                 internalEmailSubscriptionObserver -= value;
                 if (addedEmailSubscriptionObserver && internalEmailSubscriptionObserver.GetInvocationList().Length == 0)
-                    oneSignalPlatform.removeEmailSubscriptionObserver();
+                    oneSignalPlatform.RemoveEmailSubscriptionObserver();
             }
         }
     }
@@ -320,7 +320,7 @@ public class OneSignal : MonoBehaviour {
     private static void addEmailSubscriptionObserver() {
         if (!addedEmailSubscriptionObserver && internalEmailSubscriptionObserver != null && internalEmailSubscriptionObserver.GetInvocationList().Length > 0) {
             addedEmailSubscriptionObserver = true;
-            oneSignalPlatform.addEmailSubscriptionObserver();
+            oneSignalPlatform.AddEmailSubscriptionObserver();
         }
     }
 
@@ -561,7 +561,7 @@ public class OneSignal : MonoBehaviour {
     public static void PromptForPushNotificationsWithUserResponse(PromptForPushNotificationsUserResponse inDelegate) {
         #if ONESIGNAL_PLATFORM
             notificationUserResponseDelegate = inDelegate;
-            oneSignalPlatform.promptForPushNotificationsWithUserResponse();
+            oneSignalPlatform.PromptForPushNotificationsWithUserResponse();
         #endif
     }
 
@@ -693,7 +693,7 @@ public class OneSignal : MonoBehaviour {
 
     public static OSPermissionSubscriptionState GetPermissionSubscriptionState() {
         #if ONESIGNAL_PLATFORM
-            return oneSignalPlatform.getPermissionSubscriptionState();
+            return oneSignalPlatform.GetPermissionSubscriptionState();
         #else
             var state = new OSPermissionSubscriptionState();
             state.permissionStatus = new OSPermissionState();
@@ -805,10 +805,7 @@ public class OneSignal : MonoBehaviour {
 
     public static void SendOutcomeWithValue(string name, float value) {
         #if ONESIGNAL_PLATFORM
-            // TODO: Only implemented for Android currently
-            #if UNITY_ANDROID
-                oneSignalPlatform.SendOutcomeWithValue(null, name, value);
-            #endif
+            oneSignalPlatform.SendOutcomeWithValue(null, name, value);
         #endif
     }
 
@@ -1140,19 +1137,19 @@ public class OneSignal : MonoBehaviour {
 
         // Called from native SDK
         private void onOSPermissionChanged(string stateChangesJSONString) {
-            OSPermissionStateChanges stateChanges = oneSignalPlatform.parseOSPermissionStateChanges(stateChangesJSONString);
+            OSPermissionStateChanges stateChanges = oneSignalPlatform.ParseOSPermissionStateChanges(stateChangesJSONString);
             internalPermissionObserver(stateChanges);
         }
 
         // Called from native SDK
         private void onOSSubscriptionChanged(string stateChangesJSONString) {
-            OSSubscriptionStateChanges stateChanges = oneSignalPlatform.parseOSSubscriptionStateChanges(stateChangesJSONString);
+            OSSubscriptionStateChanges stateChanges = oneSignalPlatform.ParseOSSubscriptionStateChanges(stateChangesJSONString);
             internalSubscriptionObserver(stateChanges);
         }
 
         // Called from native SDK
 	    private void onOSEmailSubscriptionChanged(string stateChangesJSONString) {
-		    OSEmailSubscriptionStateChanges stateChanges = oneSignalPlatform.parseOSEmailSubscriptionStateChanges(stateChangesJSONString);
+		    OSEmailSubscriptionStateChanges stateChanges = oneSignalPlatform.ParseOSEmailSubscriptionStateChanges(stateChangesJSONString);
 		    internalEmailSubscriptionObserver(stateChanges);
 	    }
 

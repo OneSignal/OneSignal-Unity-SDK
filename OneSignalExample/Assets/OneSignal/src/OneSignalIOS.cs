@@ -211,31 +211,31 @@ public class OneSignalIOS : OneSignalPlatform {
         _setInFocusDisplayType((int) display);
     }
 
-    public void promptForPushNotificationsWithUserResponse() {
+    public void PromptForPushNotificationsWithUserResponse() {
        _promptForPushNotificationsWithUserResponse();
     }
 
-    public void addPermissionObserver() {
+    public void AddPermissionObserver() {
        _addPermissionObserver();
     }
 
-    public void removePermissionObserver() {
+    public void RemovePermissionObserver() {
        _removePermissionObserver();
     }
 
-    public void addSubscriptionObserver() {
+    public void AddSubscriptionObserver() {
        _addSubscriptionObserver();
     }
 
-    public void removeSubscriptionObserver() {
+    public void RemoveSubscriptionObserver() {
        _removeSubscriptionObserver();
     }
 
-    public void addEmailSubscriptionObserver() {
+    public void AddEmailSubscriptionObserver() {
        _addEmailSubscriptionObserver();
     }
 
-    public void removeEmailSubscriptionObserver() {
+    public void RemoveEmailSubscriptionObserver() {
        _removeEmailSubscriptionObserver();
     }
 
@@ -309,23 +309,23 @@ public class OneSignalIOS : OneSignalPlatform {
         _sendOutcomeWithValue(delegateId, name, value);
     }
 
-    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
-        return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, _getPermissionSubscriptionState());
+    public OSPermissionSubscriptionState GetPermissionSubscriptionState() {
+        return OneSignalPlatformHelper.ParsePermissionSubscriptionState(this, _getPermissionSubscriptionState());
     }
 
-    public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
-        return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
+    public OSPermissionStateChanges ParseOSPermissionStateChanges(string jsonStat) {
+        return OneSignalPlatformHelper.ParseOSPermissionStateChanges(this, jsonStat);
     }
 
-    public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
-        return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
+    public OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string jsonState) {
+        return OneSignalPlatformHelper.ParseOSEmailSubscriptionStateChanges (this, jsonState);
     }
 
-    public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
-        return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
+    public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string jsonStat) {
+        return OneSignalPlatformHelper.ParseOSSubscriptionStateChanges(this, jsonStat);
     }
 
-    public OSPermissionState parseOSPermissionState(object stateDict) {
+    public OSPermissionState ParseOSPermissionState(object stateDict) {
         var stateDictCasted = stateDict as Dictionary<string, object>;
 
         var state = new OSPermissionState();
@@ -335,7 +335,7 @@ public class OneSignalIOS : OneSignalPlatform {
         return state;
     }
 
-    public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
+    public OSSubscriptionState ParseOSSubscriptionState(object stateDict) {
         var stateDictCasted = stateDict as Dictionary<string, object>;
 
         var state = new OSSubscriptionState();
@@ -347,7 +347,7 @@ public class OneSignalIOS : OneSignalPlatform {
         return state;
     }
 
-    public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
+    public OSEmailSubscriptionState ParseOSEmailSubscriptionState(object stateDict) {
         var stateDictCasted = stateDict as Dictionary<string, object>;
 
         var state = new OSEmailSubscriptionState();

@@ -28,10 +28,11 @@
 using System.Collections.Generic;
 
 // Shared interface so OneSignal.cs can use each mobile platform in a generic way
-public interface OneSignalPlatform {
+public interface OneSignalPlatform
+{
     void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel);
     void RegisterForPushNotifications();
-    void promptForPushNotificationsWithUserResponse();
+    void PromptForPushNotificationsWithUserResponse();
 
     void SendTag(string tagName, string tagValue);
     void SendTags(IDictionary<string, string> tags);
@@ -62,14 +63,14 @@ public interface OneSignalPlatform {
     void SetExternalUserId(string externalId);
     void RemoveExternalUserId();
 
-    void addPermissionObserver();
-    void removePermissionObserver();
-    void addSubscriptionObserver();
-    void removeSubscriptionObserver();
-    void addEmailSubscriptionObserver();
-    void removeEmailSubscriptionObserver();
+    void AddPermissionObserver();
+    void RemovePermissionObserver();
+    void AddSubscriptionObserver();
+    void RemoveSubscriptionObserver();
+    void AddEmailSubscriptionObserver();
+    void RemoveEmailSubscriptionObserver();
 
-    OSPermissionSubscriptionState getPermissionSubscriptionState();
+    OSPermissionSubscriptionState GetPermissionSubscriptionState();
 
     // In-App Messaging
     void AddTrigger(string key, object value);
@@ -84,11 +85,11 @@ public interface OneSignalPlatform {
     void SendUniqueOutcome(string delegateId, string name);
     void SendOutcomeWithValue(string delegateId, string name, float value);
 
-    OSPermissionState parseOSPermissionState(object stateDict);
-    OSSubscriptionState parseOSSubscriptionState(object stateDict);
-    OSEmailSubscriptionState parseOSEmailSubscriptionState (object stateDict);
+    OSPermissionState ParseOSPermissionState(object stateDict);
+    OSSubscriptionState ParseOSSubscriptionState(object stateDict);
+    OSEmailSubscriptionState ParseOSEmailSubscriptionState(object stateDict);
 
-    OSPermissionStateChanges parseOSPermissionStateChanges(string stateChangesJSONString);
-    OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string stateChangesJSONString);
-    OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string stateChangesJSONString);
+    OSPermissionStateChanges ParseOSPermissionStateChanges(string stateChangesJSONString);
+    OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string stateChangesJSONString);
+    OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string stateChangesJSONString);
 }

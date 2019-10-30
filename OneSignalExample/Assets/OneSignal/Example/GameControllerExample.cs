@@ -39,7 +39,7 @@ public class GameControllerExample : MonoBehaviour {
 
     private static bool requiresUserPrivacyConsent = false;
 
-    void Start () {
+    void Start() {
         extraMessage = null;
 
         // Enable line below to debug issues with setuping OneSignal. (logLevel, visualLogLevel)
@@ -54,7 +54,7 @@ public class GameControllerExample : MonoBehaviour {
         // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
         // Should only be called once when your app is loaded.
         // OneSignal.Init(OneSignal_AppId);
-        OneSignal.StartInit("77e32082-ea27-42e3-a898-c72e141824ef")
+        OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
             .HandleNotificationReceived(HandleNotificationReceived)
             .HandleNotificationOpened(HandleNotificationOpened)
             .HandleInAppMessageClicked(HandlerInAppMessageClicked)
@@ -99,33 +99,29 @@ public class GameControllerExample : MonoBehaviour {
    private void OneSignalOutcomeEventsExamples() {
         OneSignal.SendOutcome("normal_1");
         OneSignal.SendOutcome("normal_2", (OSOutcomeEvent outcomeEvent) => {
-            Console.WriteLine(outcomeEvent.session + "\n" +
-                string.Join(", ", outcomeEvent.notificationIds) + "\n" +
-                outcomeEvent.name + "\n" +
-                outcomeEvent.timestamp + "\n" +
-                outcomeEvent.weight);
+            printOutcomeEvent(outcomeEvent);
         });
 
         OneSignal.SendUniqueOutcome("unique_1");
         OneSignal.SendUniqueOutcome("unique_2", (OSOutcomeEvent outcomeEvent) => {
-            Console.WriteLine(outcomeEvent.session + "\n" +
-                string.Join(", ", outcomeEvent.notificationIds) + "\n" +
-                outcomeEvent.name + "\n" +
-                outcomeEvent.timestamp + "\n" +
-                outcomeEvent.weight);
+            printOutcomeEvent(outcomeEvent);
         });
 
         OneSignal.SendOutcomeWithValue("value_1", 3.2f);
         OneSignal.SendOutcomeWithValue("value_2", 3.2f, (OSOutcomeEvent outcomeEvent) => {
-            Console.WriteLine(outcomeEvent.session + "\n" +
+            printOutcomeEvent(outcomeEvent);
+        });
+   }
+
+    private void printOutcomeEvent(OSOutcomeEvent outcomeEvent) {
+        Console.WriteLine(outcomeEvent.session + "\n" +
                 string.Join(", ", outcomeEvent.notificationIds) + "\n" +
                 outcomeEvent.name + "\n" +
                 outcomeEvent.timestamp + "\n" +
                 outcomeEvent.weight);
-        });
-   }
+    }
 
-   private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
+    private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
 	    Debug.Log("SUBSCRIPTION stateChanges: " + stateChanges);
 	    Debug.Log("SUBSCRIPTION stateChanges.to.userId: " + stateChanges.to.userId);
 	    Debug.Log("SUBSCRIPTION stateChanges.to.subscribed: " + stateChanges.to.subscribed);
@@ -196,7 +192,7 @@ public class GameControllerExample : MonoBehaviour {
 
     // Test Menu
     // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
-    void OnGUI () {
+    void OnGUI() {
         GUIStyle customTextSize = new GUIStyle("button");
         customTextSize.fontSize = 30;
 

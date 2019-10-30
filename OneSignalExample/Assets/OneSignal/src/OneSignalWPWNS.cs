@@ -95,12 +95,12 @@ public class OneSignalWPWNS : OneSignalPlatform {
    public void SyncHashedEmail(string email) {}
    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {}
    public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display) {}
-   public void addPermissionObserver() {}
-   public void removePermissionObserver() {}
-   public void addSubscriptionObserver() {}
-   public void removeSubscriptionObserver() {}
+   public void AddPermissionObserver() {}
+   public void RemovePermissionObserver() {}
+   public void AddSubscriptionObserver() {}
+   public void RemoveSubscriptionObserver() {}
 
-   public OSPermissionSubscriptionState getPermissionSubscriptionState() {
+   public OSPermissionSubscriptionState GetPermissionSubscriptionState() {
       var state = new OSPermissionSubscriptionState();
       state.permissionStatus = new OSPermissionState();
       state.subscriptionStatus = new OSSubscriptionState();
@@ -108,21 +108,21 @@ public class OneSignalWPWNS : OneSignalPlatform {
       return state;
    }
 
-   public OSPermissionState parseOSPermissionState(object stateDict) {
+   public OSPermissionState ParseOSPermissionState(object stateDict) {
       return new OSPermissionState();
    }
    
-   public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
+   public OSSubscriptionState ParseOSSubscriptionState(object stateDict) {
       return new OSSubscriptionState();
    }
 
-   public OSPermissionStateChanges parseOSPermissionStateChanges(string stateChangesJSONString) {
+   public OSPermissionStateChanges ParseOSPermissionStateChanges(string stateChangesJSONString) {
       var state = new OSPermissionStateChanges();
       state.to = new OSPermissionState();
       state.from = new OSPermissionState();
       return state;
    }
-   public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string stateChangesJSONString) {
+   public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string stateChangesJSONString) {
       var state = new OSSubscriptionStateChanges();
       state.to = new OSSubscriptionState();
       state.from = new OSSubscriptionState();
@@ -131,6 +131,6 @@ public class OneSignalWPWNS : OneSignalPlatform {
 
    // Doesn't apply to Windows Phone, doesn't have a native permission prompt
    public void RegisterForPushNotifications() {}
-   public void promptForPushNotificationsWithUserResponse() { }
+   public void PromptForPushNotificationsWithUserResponse() { }
 }
 #endif

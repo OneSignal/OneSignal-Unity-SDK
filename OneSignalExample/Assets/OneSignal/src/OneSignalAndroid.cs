@@ -72,8 +72,8 @@ public class OneSignalAndroid : OneSignalPlatform {
     }
 
     // Doesn't apply to Android, doesn't have a native permission prompt
-    public void RegisterForPushNotifications() { }
-    public void promptForPushNotificationsWithUserResponse() {}
+    public void RegisterForPushNotifications() {}
+    public void PromptForPushNotificationsWithUserResponse() {}
 
     public void EnableVibrate(bool enable) {
         mOneSignal.Call("enableVibrate", enable);
@@ -107,26 +107,26 @@ public class OneSignalAndroid : OneSignalPlatform {
         mOneSignal.Call("clearOneSignalNotifications");
     }
 
-    public void addPermissionObserver() {
+    public void AddPermissionObserver() {
         mOneSignal.Call("addPermissionObserver");
     }
 
-    public void removePermissionObserver() {
+    public void RemovePermissionObserver() {
         mOneSignal.Call("removePermissionObserver");
     }
 
-    public void addSubscriptionObserver() {
+    public void AddSubscriptionObserver() {
         mOneSignal.Call("addSubscriptionObserver");
     }
-    public void removeSubscriptionObserver() {
+    public void RemoveSubscriptionObserver() {
         mOneSignal.Call("removeSubscriptionObserver");
     }
    
-    public void addEmailSubscriptionObserver() {
+    public void AddEmailSubscriptionObserver() {
         mOneSignal.Call("addEmailSubscriptionObserver");
     }
 
-    public void removeEmailSubscriptionObserver() {
+    public void RemoveEmailSubscriptionObserver() {
         mOneSignal.Call("removeEmailSubscriptionObserver");
     }
 
@@ -150,23 +150,23 @@ public class OneSignalAndroid : OneSignalPlatform {
         mOneSignal.Call("removeExternalUserId");
     }
 
-    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
-        return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
+    public OSPermissionSubscriptionState GetPermissionSubscriptionState() {
+        return OneSignalPlatformHelper.ParsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
     }
 
-    public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
-        return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
+    public OSPermissionStateChanges ParseOSPermissionStateChanges(string jsonStat) {
+        return OneSignalPlatformHelper.ParseOSPermissionStateChanges(this, jsonStat);
     }
 
-    public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
-        return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
+    public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string jsonStat) {
+        return OneSignalPlatformHelper.ParseOSSubscriptionStateChanges(this, jsonStat);
     }
 
-    public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
-        return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
+    public OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string jsonState) {
+        return OneSignalPlatformHelper.ParseOSEmailSubscriptionStateChanges (this, jsonState);
     }
 
-    public OSPermissionState parseOSPermissionState(object stateDict) {
+    public OSPermissionState ParseOSPermissionState(object stateDict) {
         var stateDictCasted = stateDict as Dictionary<string, object>;
 
         var state = new OSPermissionState();
@@ -177,7 +177,7 @@ public class OneSignalAndroid : OneSignalPlatform {
         return state;
     }
 
-    public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
+    public OSSubscriptionState ParseOSSubscriptionState(object stateDict) {
         var stateDictCasted = stateDict as Dictionary<string, object>;
 
         var state = new OSSubscriptionState();
@@ -189,7 +189,7 @@ public class OneSignalAndroid : OneSignalPlatform {
         return state;
     }
 
-    public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
+    public OSEmailSubscriptionState ParseOSEmailSubscriptionState(object stateDict) {
         var stateDictCasted = stateDict as Dictionary<string, object>;
 
         var state = new OSEmailSubscriptionState ();
