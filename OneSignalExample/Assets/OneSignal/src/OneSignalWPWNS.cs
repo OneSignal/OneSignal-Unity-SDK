@@ -96,9 +96,9 @@ public class OneSignalWPWNS : OneSignalPlatform {
    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {}
    public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display) {}
    public void addPermissionObserver() {}
-   public void removePermissionObserver() { }
-   public void addSubscriptionObserver() { }
-   public void removeSubscriptionObserver() { }
+   public void removePermissionObserver() {}
+   public void addSubscriptionObserver() {}
+   public void removeSubscriptionObserver() {}
 
    public OSPermissionSubscriptionState getPermissionSubscriptionState() {
       var state = new OSPermissionSubscriptionState();
@@ -111,6 +111,7 @@ public class OneSignalWPWNS : OneSignalPlatform {
    public OSPermissionState parseOSPermissionState(object stateDict) {
       return new OSPermissionState();
    }
+   
    public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
       return new OSSubscriptionState();
    }
@@ -127,7 +128,6 @@ public class OneSignalWPWNS : OneSignalPlatform {
       state.from = new OSSubscriptionState();
       return state;
    }
-
 
    // Doesn't apply to Windows Phone, doesn't have a native permission prompt
    public void RegisterForPushNotifications() {}

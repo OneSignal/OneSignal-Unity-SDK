@@ -37,8 +37,8 @@ class OneSignalPlatformHelper {
       state.subscriptionStatus = platform.parseOSSubscriptionState(stateDict["subscriptionStatus"]);
 
       if (stateDict.ContainsKey("emailSubscriptionStatus"))
-         state.emailSubscriptionStatus = platform.parseOSEmailSubscriptionState (stateDict ["emailSubscriptionStatus"]);
-      
+         state.emailSubscriptionStatus = platform.parseOSEmailSubscriptionState(stateDict["emailSubscriptionStatus"]);
+
 	  return state;
    }
 
@@ -66,8 +66,8 @@ class OneSignalPlatformHelper {
       var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
 
       var emailStateChanges = new OSEmailSubscriptionStateChanges();
-      emailStateChanges.to = platform.parseOSEmailSubscriptionState (stateChangesJson ["to"]);
-      emailStateChanges.from = platform.parseOSEmailSubscriptionState (stateChangesJson ["from"]);
+      emailStateChanges.to = platform.parseOSEmailSubscriptionState(stateChangesJson["to"]);
+      emailStateChanges.from = platform.parseOSEmailSubscriptionState(stateChangesJson["from"]);
 
       return emailStateChanges;
    }
