@@ -29,6 +29,8 @@
     #define ONESIGNAL_PLATFORM
 #endif
 
+#define ONESIGNAL_PLATFORM
+
 #if !UNITY_EDITOR && UNITY_ANDROID
     #define ANDROID_ONLY
 #endif
@@ -1193,17 +1195,12 @@ public class OneSignal : MonoBehaviour {
 
         // Some functions have a 'success' and 'failure' delegates, so this validates nothing is missing the json response
         private bool isValidSuccessFailureDelegate(Dictionary<string, object> jsonObject) {
-            // Make sure 'delegate_id' 'success' and 'failure' exist
-            if (!jsonObject.ContainsKey("delegate_id")) {
+            if (!isValidDelegate(jsonObject))
                 return false;
-            } else {
-                var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-                if (!delegateId.ContainsKey("success") || !delegateId.ContainsKey("failure"))
-                    return false;
-            }
 
-            // Make sure 'response' exists
-            if (!jsonObject.ContainsKey("response") || jsonObject["response"] == null)
+            // Make sure success and failure delegate exist
+            var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
+            if (!delegateId.ContainsKey("success") || !delegateId.ContainsKey("failure"))
                 return false;
 
             return true;
