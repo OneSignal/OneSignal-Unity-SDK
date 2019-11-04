@@ -245,9 +245,7 @@ void _deleteTags(const char* keys) {
 }
 
 void _getTags(const char* delegate) {
-    NSString* delegateId = @"";
-    if (delegate)
-        delegateId = CreateNSString(delegate);
+    NSString* delegateId = CreateNSString(delegate);
     
     [OneSignal getTags:^(NSDictionary* result) {
         if (!result)
@@ -261,9 +259,7 @@ void _getTags(const char* delegate) {
 }
 
 void _idsAvailable(const char* delegate) {
-    NSString* delegateId = @"";
-    if (delegate)
-        delegateId = CreateNSString(delegate);
+    NSString* delegateId = CreateNSString(delegate);
     
     [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
         if (!userId)
@@ -284,13 +280,8 @@ void _setSubscription(BOOL enable) {
 }
 
 void _postNotification(const char* delegateSuccess, const char* delegateFailure, const char* jsonData) {
-    NSString* delegateIdSuccess = @"";
-    if (delegateSuccess)
-        delegateIdSuccess = CreateNSString(delegateSuccess);
-    
-    NSString* delegateIdFailure = @"";
-    if (delegateFailure)
-        delegateIdFailure = CreateNSString(delegateFailure);
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
     
     NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
     
@@ -372,13 +363,8 @@ void _setOneSignalLogLevel(int logLevel, int visualLogLevel) {
 }
 
 void _setUnauthenticatedEmail(const char* delegateSuccess, const char* delegateFailure, const char* email) {
-    NSString* delegateIdSuccess = @"";
-    if (delegateSuccess)
-        delegateIdSuccess = CreateNSString(delegateSuccess);
-    
-    NSString* delegateIdFailure = @"";
-    if (delegateFailure)
-        delegateIdFailure = CreateNSString(delegateFailure);
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
     
     NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
     
@@ -394,13 +380,8 @@ void _setUnauthenticatedEmail(const char* delegateSuccess, const char* delegateF
 }
 
 void _setEmail(const char* delegateSuccess, const char* delegateFailure, const char *email, const char *emailAuthCode) {
-    NSString* delegateIdSuccess = @"";
-    if (delegateSuccess)
-        delegateIdSuccess = CreateNSString(delegateSuccess);
-    
-    NSString* delegateIdFailure = @"";
-    if (delegateFailure)
-        delegateIdFailure = CreateNSString(delegateFailure);
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
     
     NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
     
@@ -416,13 +397,8 @@ void _setEmail(const char* delegateSuccess, const char* delegateFailure, const c
 }
 
 void _logoutEmail(const char* delegateSuccess, const char* delegateFailure) {
-    NSString* delegateIdSuccess = @"";
-    if (delegateSuccess)
-        delegateIdSuccess = CreateNSString(delegateSuccess);
-    
-    NSString* delegateIdFailure = @"";
-    if (delegateFailure)
-        delegateIdFailure = CreateNSString(delegateFailure);
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
     
     NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
     
@@ -499,27 +475,21 @@ void _pauseInAppMessages(bool pause) {
 }
 
 void _sendOutcome(const char* delegate, char* name) {
-    NSString* delegateId = @"";
-    if (delegate)
-        delegateId = CreateNSString(delegate);
+    NSString* delegateId = CreateNSString(delegate);
     
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendOutcome() not implemented for iOS yet!"];
     return;
 }
 
 void _sendUniqueOutcome(const char* delegate, char* name) {
-    NSString* delegateId = @"";
-    if (delegate)
-        delegateId = CreateNSString(delegate);
+    NSString* delegateId = CreateNSString(delegate);
     
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendUniqueOutcome() not implemented for iOS yet!"];
     return;
 }
 
 void _sendOutcomeWithValue(const char* delegate, char* name, float value) {
-    NSString* delegateId = @"";
-    if (delegate)
-        delegateId = CreateNSString(delegate);
+    NSString* delegateId = CreateNSString(delegate);
     
     [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendOutcomeWithValue() not implemented for iOS yet!"];
     return;

@@ -215,7 +215,7 @@ public class OSPermissionSubscriptionState {
 public class OneSignal : MonoBehaviour {
 
     // Dictionary of GUIDs and delegates to help control several delegates for the same public method call when they return from native SDKs
-    public static Dictionary<string, Delegate> delegates;
+    private static Dictionary<string, Delegate> delegates;
 
     // NotificationReceived - Delegate is called when a push notification is received when the user is in your game.
     // notification = The Notification dictionary filled from a serialized native OSNotification object
@@ -443,7 +443,7 @@ public class OneSignal : MonoBehaviour {
             #elif UNITY_WP_8_1
                 initWP81();
             #endif
-     
+
             #if !UNITY_WP_8_1
                 GameObject go = new GameObject(gameObjectName);
                 go.AddComponent<OneSignal>();
@@ -533,7 +533,7 @@ public class OneSignal : MonoBehaviour {
         #if ONESIGNAL_PLATFORM
             string delegateGuid = OneSignalUnityUtils.GetNewGuid();
             delegates.Add(delegateGuid, inTagsReceivedDelegate);
-            
+
             oneSignalPlatform.GetTags(delegateGuid);
         #endif
     }
@@ -573,7 +573,7 @@ public class OneSignal : MonoBehaviour {
     }
 
     // Call this if you need the playerId and/or pushToken
-    // NOTE: pushToken maybe null if notifications are not accepted or there is connectivity issues. 
+    // NOTE: pushToken maybe null if notifications are not accepted or there is connectivity issues.
     public static void IdsAvailable(IdsAvailableCallback inIdsAvailableDelegate) {
         #if ONESIGNAL_PLATFORM
             string delegateGuid = OneSignalUnityUtils.GetNewGuid();
@@ -626,7 +626,7 @@ public class OneSignal : MonoBehaviour {
     }
 
     public static void SetEmail(string email, string emailAuthToken) {
-        #if ONESIGNAL_PLATFORM 
+        #if ONESIGNAL_PLATFORM
             oneSignalPlatform.SetEmail(null, null, email, emailAuthToken);
         #endif
     }
@@ -644,7 +644,7 @@ public class OneSignal : MonoBehaviour {
     }
 
     public static void LogoutEmail() {
-        #if ONESIGNAL_PLATFORM 
+        #if ONESIGNAL_PLATFORM
             oneSignalPlatform.LogoutEmail(null, null);
         #endif
     }
@@ -658,7 +658,7 @@ public class OneSignal : MonoBehaviour {
             delegates.Add(delegateGuidFailure, failureDelegate);
 
             oneSignalPlatform.LogoutEmail(delegateGuidSuccess, delegateGuidFailure);
-        #endif 
+        #endif
     }
 
     public static void PostNotification(Dictionary<string, object> data) {
@@ -674,7 +674,7 @@ public class OneSignal : MonoBehaviour {
 
             delegates.Add(delegateGuidSuccess, inOnPostNotificationSuccess);
             delegates.Add(delegateGuidFailure, inOnPostNotificationFailure);
-            
+
             oneSignalPlatform.PostNotification(delegateGuidSuccess, delegateGuidFailure, data);
         #endif
     }
@@ -746,7 +746,7 @@ public class OneSignal : MonoBehaviour {
             oneSignalPlatform.AddTriggers(triggers);
         #endif
     }
-   
+
     public static void RemoveTriggerForKey(string key) {
         #if ONESIGNAL_PLATFORM
             oneSignalPlatform.RemoveTriggerForKey(key);
@@ -758,7 +758,7 @@ public class OneSignal : MonoBehaviour {
             oneSignalPlatform.RemoveTriggersForKeys(keys);
         #endif
     }
-   
+
     public static object GetTriggerValueForKey(string key) {
         #if ONESIGNAL_PLATFORM
             return oneSignalPlatform.GetTriggerValueForKey(key);
@@ -842,7 +842,7 @@ public class OneSignal : MonoBehaviour {
             if (payloadObj.ContainsKey("actionButtons")) {
                 if(payloadObj["actionButtons"] is string)
                     payload.actionButtons = Json.Deserialize(payloadObj["actionButtons"] as string) as Dictionary<string, object>;
-                else 
+                else
                     payload.actionButtons = payloadObj["actionButtons"] as Dictionary<string, object>;
             }
             if (payloadObj.ContainsKey("contentAvailable")) payload.contentAvailable = (bool)payloadObj["contentAvailable"];
@@ -883,7 +883,7 @@ public class OneSignal : MonoBehaviour {
                 OSNotificationAction action = new OSNotificationAction();
                 if (jsonObject.ContainsKey("action")) {
                     Dictionary<string, object> actionJsonObject = jsonObject["action"] as Dictionary<string, object>;
-            
+
                     if (actionJsonObject.ContainsKey("actionID"))
                         action.actionID = actionJsonObject["actionID"] as string;
                     if (actionJsonObject.ContainsKey("type"))
@@ -897,7 +897,7 @@ public class OneSignal : MonoBehaviour {
                 builder.notificationOpenedDelegate(result);
             }
         }
-      
+
         // Called from the native SDK - Called when device is registered with onesignal.com service or right after IdsAvailable
         //   if already registered.
         private void onIdsAvailable(string jsonString) {
@@ -908,15 +908,15 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!processDelegate(jsonObject))
+            if (!isValidDelegate(jsonObject))
                 return;
-            
-            string delegateId = jsonObject["delegate_id"] as string;
-            string response = jsonObject["response"] as string;
-            
+
+            var delegateId = jsonObject["delegate_id"] as string;
+            var response = jsonObject["response"] as string;
+
             var ids = Json.Deserialize(response) as Dictionary<string, object>;
-            string userId = ids["userId"] as string;
-            string pushToken = ids["pushToken"] as string;
+            var userId = ids["userId"] as string;
+            var pushToken = ids["pushToken"] as string;
 
             if (delegates.ContainsKey(delegateId)) {
                 var idsAvailableCallback = (IdsAvailableCallback) delegates[delegateId];
@@ -932,13 +932,13 @@ public class OneSignal : MonoBehaviour {
 
             // Break part the jsonString which might contain a 'delegate_id' and a 'response'
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
-            
+
             // Check if the delegate should be processed
-            if (!processDelegate(jsonObject))
+            if (!isValidDelegate(jsonObject))
                 return;
 
-            string delegateId = jsonObject["delegate_id"] as string;
-            string response = jsonObject["response"] as string;
+            var delegateId = jsonObject["delegate_id"] as string;
+            var response = jsonObject["response"] as string;
 
             var tags = Json.Deserialize(response) as Dictionary<string, object>;
 
@@ -958,14 +958,14 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!prcoessSuccessFailureDelegate(jsonObject))
+            if (!isValidSuccessFailureDelegate(jsonObject))
                 return;
 
             var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            string delegateIdSuccess = delegateId["success"] as string;
-            string delegateIdFailure = delegateId["failure"] as string; 
+            var delegateIdSuccess = delegateId["success"] as string;
+            var delegateIdFailure = delegateId["failure"] as string;
 
-            string response = jsonObject["response"] as string;
+            var response = jsonObject["response"] as string;
             var postNotificationDic = Json.Deserialize(response) as Dictionary<string, object>;
 
             if (delegates.ContainsKey(delegateIdSuccess)) {
@@ -985,14 +985,14 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!prcoessSuccessFailureDelegate(jsonObject))
+            if (!isValidSuccessFailureDelegate(jsonObject))
                 return;
 
             var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            string delegateIdSuccess = delegateId["success"] as string;
-            string delegateIdFailure = delegateId["failure"] as string; 
+            var delegateIdSuccess = delegateId["success"] as string;
+            var delegateIdFailure = delegateId["failure"] as string;
 
-            string response = jsonObject["response"] as string;
+            var response = jsonObject["response"] as string;
             var postNotificationDic = Json.Deserialize(response) as Dictionary<string, object>;
 
             if (delegates.ContainsKey(delegateIdFailure)) {
@@ -1012,14 +1012,14 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!prcoessSuccessFailureDelegate(jsonObject))
+            if (!isValidSuccessFailureDelegate(jsonObject))
                 return;
 
             var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            string delegateIdSuccess = delegateId["success"] as string;
-            string delegateIdFailure = delegateId["failure"] as string; 
+            var delegateIdSuccess = delegateId["success"] as string;
+            var delegateIdFailure = delegateId["failure"] as string;
 
-            string response = jsonObject["response"] as string;
+            var response = jsonObject["response"] as string;
 
             if (delegates.ContainsKey(delegateIdSuccess)) {
                 var setEmailSuccessDelegate = (OnSetEmailSuccess) delegates[delegateIdSuccess];
@@ -1038,14 +1038,14 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!prcoessSuccessFailureDelegate(jsonObject))
+            if (!isValidSuccessFailureDelegate(jsonObject))
                 return;
 
             var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            string delegateIdSuccess = delegateId["success"] as string;
-            string delegateIdFailure = delegateId["failure"] as string; 
+            var delegateIdSuccess = delegateId["success"] as string;
+            var delegateIdFailure = delegateId["failure"] as string;
 
-            string response = jsonObject["response"] as string;
+            var response = jsonObject["response"] as string;
             var failure = Json.Deserialize(response) as Dictionary<string, object>;
 
             if (delegates.ContainsKey(delegateIdFailure)) {
@@ -1065,14 +1065,14 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!prcoessSuccessFailureDelegate(jsonObject))
+            if (!isValidSuccessFailureDelegate(jsonObject))
                 return;
 
             var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            string delegateIdSuccess = delegateId["success"] as string;
-            string delegateIdFailure = delegateId["failure"] as string; 
+            var delegateIdSuccess = delegateId["success"] as string;
+            var delegateIdFailure = delegateId["failure"] as string;
 
-            string response = jsonObject["response"] as string;
+            var response = jsonObject["response"] as string;
 
             if (delegates.ContainsKey(delegateIdSuccess)) {
                 var logoutEmailSuccessDelegate = (OnLogoutEmailSuccess) delegates[delegateIdSuccess];
@@ -1091,14 +1091,14 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!prcoessSuccessFailureDelegate(jsonObject))
+            if (!isValidSuccessFailureDelegate(jsonObject))
                 return;
 
             var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            string delegateIdSuccess = delegateId["success"] as string;
-            string delegateIdFailure = delegateId["failure"] as string; 
+            var delegateIdSuccess = delegateId["success"] as string;
+            var delegateIdFailure = delegateId["failure"] as string;
 
-            string response = jsonObject["response"] as string;
+            var response = jsonObject["response"] as string;
             var failure = Json.Deserialize(response) as Dictionary<string, object>;
 
             if (delegates.ContainsKey(delegateIdFailure)) {
@@ -1118,11 +1118,11 @@ public class OneSignal : MonoBehaviour {
             var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
 
             // Check if the delegate should be processed
-            if (!processDelegate(jsonObject))
+            if (!isValidDelegate(jsonObject))
                 return;
 
-            string delegateId = jsonObject["delegate_id"] as string;
-            string response = jsonObject["response"] as string;
+            var delegateId = jsonObject["delegate_id"] as string;
+            var response = jsonObject["response"] as string;
 
             // Parse outcome json string and return it through the callback
             var outcomeObject = Json.Deserialize(response) as Dictionary<string, object>;
@@ -1179,8 +1179,8 @@ public class OneSignal : MonoBehaviour {
         }
 
         // Some functions have a single delegate, so this validates nothing is missing from the json response
-        private bool processDelegate(Dictionary<string, object> jsonObject) {
-            // Make sure 'delegate_id' exists 
+        private bool isValidDelegate(Dictionary<string, object> jsonObject) {
+            // Make sure 'delegate_id' exists
             if (!jsonObject.ContainsKey("delegate_id"))
                 return false;
 
@@ -1192,7 +1192,7 @@ public class OneSignal : MonoBehaviour {
         }
 
         // Some functions have a 'success' and 'failure' delegates, so this validates nothing is missing the json response
-        private bool prcoessSuccessFailureDelegate(Dictionary<string, object> jsonObject) {
+        private bool isValidSuccessFailureDelegate(Dictionary<string, object> jsonObject) {
             // Make sure 'delegate_id' 'success' and 'failure' exist
             if (!jsonObject.ContainsKey("delegate_id")) {
                 return false;
