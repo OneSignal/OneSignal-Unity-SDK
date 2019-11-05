@@ -32,215 +32,227 @@ using OneSignalPush.MiniJSON;
 using System;
 
 public class OneSignalAndroid : OneSignalPlatform {
-   private static AndroidJavaObject mOneSignal = null;
+    private static AndroidJavaObject mOneSignal = null;
 
-   public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel, bool requiresUserConsent) {
-      mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", gameObjectName, googleProjectNumber, appId, (int)logLevel, (int)visualLevel, requiresUserConsent);
-      SetInFocusDisplaying(displayOption);
-   }
+    public OneSignalAndroid(string gameObjectName, string googleProjectNumber, string appId, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel, bool requiresUserConsent) {
+        mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", gameObjectName, googleProjectNumber, appId, (int)logLevel, (int)visualLevel, requiresUserConsent);
+        SetInFocusDisplaying(displayOption);
+    }
 
-   public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
-      mOneSignal.Call("setLogLevel", (int)logLevel, (int)visualLevel);
-   }
+    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel) {
+        mOneSignal.Call("setLogLevel", (int)logLevel, (int)visualLevel);
+    }
 
-   public void SetLocationShared(bool shared) {
-      mOneSignal.Call("setLocationShared", shared);
-   }
+    public void SetLocationShared(bool shared) {
+        mOneSignal.Call("setLocationShared", shared);
+    }
 
-   public void SendTag(string tagName, string tagValue) {
-      mOneSignal.Call("sendTag", tagName, tagValue);
-   }
+    public void SendTag(string tagName, string tagValue) {
+        mOneSignal.Call("sendTag", tagName, tagValue);
+    }
 
-   public void SendTags(IDictionary<string, string> tags) {
-      mOneSignal.Call("sendTags", Json.Serialize(tags));
-   }
+    public void SendTags(IDictionary<string, string> tags) {
+        mOneSignal.Call("sendTags", Json.Serialize(tags));
+    }
 
-   public void GetTags() {
-      mOneSignal.Call("getTags");
-   }
+    public void GetTags(string delegateId) {
+        mOneSignal.Call("getTags", delegateId);
+    }
 
-   public void DeleteTag(string key) {
-      mOneSignal.Call("deleteTag", key);
-   }
+    public void DeleteTag(string key) {
+        mOneSignal.Call("deleteTag", key);
+    }
 
-   public void DeleteTags(IList<string> keys) {
-      mOneSignal.Call("deleteTags", Json.Serialize(keys));
-   }
+    public void DeleteTags(IList<string> keys) {
+        mOneSignal.Call("deleteTags", Json.Serialize(keys));
+    }
 
+    public void IdsAvailable(string delegateId) {
+        mOneSignal.Call("idsAvailable", delegateId);
+    }
 
-   public void IdsAvailable() {
-      mOneSignal.Call("idsAvailable");
-   }
+    // Doesn't apply to Android, doesn't have a native permission prompt
+    public void RegisterForPushNotifications() {}
+    public void PromptForPushNotificationsWithUserResponse() {}
 
-   // Doesn't apply to Android, doesn't have a native permission prompt
-   public void RegisterForPushNotifications() { }
-   public void promptForPushNotificationsWithUserResponse() {}
+    public void EnableVibrate(bool enable) {
+        mOneSignal.Call("enableVibrate", enable);
+    }
 
-   public void EnableVibrate(bool enable) {
-      mOneSignal.Call("enableVibrate", enable);
-   }
+    public void EnableSound(bool enable) {
+        mOneSignal.Call("enableSound", enable);
+    }
 
-   public void EnableSound(bool enable) {
-      mOneSignal.Call("enableSound", enable);
-   }
+    public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display) {
+        mOneSignal.Call("setInFocusDisplaying", (int)display);
+    }
 
-   public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display) {
-      mOneSignal.Call("setInFocusDisplaying", (int)display);
-   }
+    public void SetSubscription(bool enable) {
+        mOneSignal.Call("setSubscription", enable);
+    }
 
-   public void SetSubscription(bool enable) {
-      mOneSignal.Call("setSubscription", enable);
-   }
+    public void PostNotification(string delegateIdSuccess, string delegateIdFailure, Dictionary<string, object> data){
+        mOneSignal.Call("postNotification", delegateIdSuccess, delegateIdFailure, Json.Serialize(data));
+    }
 
-   public void PostNotification(Dictionary<string, object> data) {
-      mOneSignal.Call("postNotification", Json.Serialize(data));
-   }
+    public void SyncHashedEmail(string email) {
+        mOneSignal.Call("syncHashedEmail", email);
+    }
 
-   public void SyncHashedEmail(string email) {
-      mOneSignal.Call("syncHashedEmail", email);
-   }
+    public void PromptLocation() {
+        mOneSignal.Call("promptLocation");
+    }
 
-   public void PromptLocation() {
-      mOneSignal.Call("promptLocation");
-   }
+    public void ClearOneSignalNotifications() {
+        mOneSignal.Call("clearOneSignalNotifications");
+    }
 
-   public void ClearOneSignalNotifications() {
-      mOneSignal.Call("clearOneSignalNotifications");
-   }
+    public void AddPermissionObserver() {
+        mOneSignal.Call("addPermissionObserver");
+    }
 
-   public void addPermissionObserver() {
-      mOneSignal.Call("addPermissionObserver");
-   }
+    public void RemovePermissionObserver() {
+        mOneSignal.Call("removePermissionObserver");
+    }
 
-   public void removePermissionObserver() {
-      mOneSignal.Call("removePermissionObserver");
-   }
-
-   public void addSubscriptionObserver() {
-      mOneSignal.Call("addSubscriptionObserver");
-   }
-   public void removeSubscriptionObserver() {
-      mOneSignal.Call("removeSubscriptionObserver");
-   }
+    public void AddSubscriptionObserver() {
+        mOneSignal.Call("addSubscriptionObserver");
+    }
+    public void RemoveSubscriptionObserver() {
+        mOneSignal.Call("removeSubscriptionObserver");
+    }
    
-   public void addEmailSubscriptionObserver() {
-      mOneSignal.Call("addEmailSubscriptionObserver");
-   }
+    public void AddEmailSubscriptionObserver() {
+        mOneSignal.Call("addEmailSubscriptionObserver");
+    }
 
-   public void removeEmailSubscriptionObserver() {
-      mOneSignal.Call("removeEmailSubscriptionObserver");
-   }
+    public void RemoveEmailSubscriptionObserver() {
+        mOneSignal.Call("removeEmailSubscriptionObserver");
+    }
 
-   public void UserDidProvideConsent(bool consent) {
-      mOneSignal.Call("provideUserConsent", consent);
-   }
+    public void UserDidProvideConsent(bool consent) {
+        mOneSignal.Call("provideUserConsent", consent);
+    }
 
-   public bool UserProvidedConsent() {
-      return mOneSignal.Call<bool>("userProvidedPrivacyConsent");
-   }
+    public bool UserProvidedConsent() {
+        return mOneSignal.Call<bool>("userProvidedPrivacyConsent");
+    }
 
-   public void SetRequiresUserPrivacyConsent(bool required) {
-      mOneSignal.Call("setRequiresUserPrivacyConsent", required);
-   }
+    public void SetRequiresUserPrivacyConsent(bool required) {
+        mOneSignal.Call("setRequiresUserPrivacyConsent", required);
+    }
 
-   public void SetExternalUserId(string externalId) {
-      mOneSignal.Call("setExternalUserId", externalId);
-   }
+    public void SetExternalUserId(string externalId) {
+        mOneSignal.Call("setExternalUserId", externalId);
+    }
 
-   public void RemoveExternalUserId() {
-      mOneSignal.Call("removeExternalUserId");
-   }
+    public void RemoveExternalUserId() {
+        mOneSignal.Call("removeExternalUserId");
+    }
 
-   public OSPermissionSubscriptionState getPermissionSubscriptionState() {
-      return OneSignalPlatformHelper.parsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
-   }
+    public OSPermissionSubscriptionState GetPermissionSubscriptionState() {
+        return OneSignalPlatformHelper.ParsePermissionSubscriptionState(this, mOneSignal.Call<string>("getPermissionSubscriptionState"));
+    }
 
-   public OSPermissionStateChanges parseOSPermissionStateChanges(string jsonStat) {
-      return OneSignalPlatformHelper.parseOSPermissionStateChanges(this, jsonStat);
-   }
+    public OSPermissionStateChanges ParseOSPermissionStateChanges(string jsonStat) {
+        return OneSignalPlatformHelper.ParseOSPermissionStateChanges(this, jsonStat);
+    }
 
-   public OSSubscriptionStateChanges parseOSSubscriptionStateChanges(string jsonStat) {
-      return OneSignalPlatformHelper.parseOSSubscriptionStateChanges(this, jsonStat);
-   }
+    public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string jsonStat) {
+        return OneSignalPlatformHelper.ParseOSSubscriptionStateChanges(this, jsonStat);
+    }
 
-   public OSEmailSubscriptionStateChanges parseOSEmailSubscriptionStateChanges(string jsonState) {
-      return OneSignalPlatformHelper.parseOSEmailSubscriptionStateChanges (this, jsonState);
-   }
+    public OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string jsonState) {
+        return OneSignalPlatformHelper.ParseOSEmailSubscriptionStateChanges (this, jsonState);
+    }
 
-   public OSPermissionState parseOSPermissionState(object stateDict) {
-      var stateDictCasted = stateDict as Dictionary<string, object>;
+    public OSPermissionState ParseOSPermissionState(object stateDict) {
+        var stateDictCasted = stateDict as Dictionary<string, object>;
 
-      var state = new OSPermissionState();
-      state.hasPrompted = true;
-      var toIsEnabled = Convert.ToBoolean(stateDictCasted["enabled"]);
-      state.status = toIsEnabled ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
+        var state = new OSPermissionState();
+        state.hasPrompted = true;
+        var toIsEnabled = Convert.ToBoolean(stateDictCasted["enabled"]);
+        state.status = toIsEnabled ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
 
-      return state;
-   }
+        return state;
+    }
 
-   public OSSubscriptionState parseOSSubscriptionState(object stateDict) {
-      var stateDictCasted = stateDict as Dictionary<string, object>;
+    public OSSubscriptionState ParseOSSubscriptionState(object stateDict) {
+        var stateDictCasted = stateDict as Dictionary<string, object>;
 
-      var state = new OSSubscriptionState();
-      state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
-      state.userSubscriptionSetting = Convert.ToBoolean(stateDictCasted["userSubscriptionSetting"]);
-      state.userId = stateDictCasted["userId"] as string;
-      state.pushToken = stateDictCasted["pushToken"] as string;
+        var state = new OSSubscriptionState();
+        state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
+        state.userSubscriptionSetting = Convert.ToBoolean(stateDictCasted["userSubscriptionSetting"]);
+        state.userId = stateDictCasted["userId"] as string;
+        state.pushToken = stateDictCasted["pushToken"] as string;
 
-      return state;
-	}
+        return state;
+    }
 
-   public OSEmailSubscriptionState parseOSEmailSubscriptionState(object stateDict) {
-      var stateDictCasted = stateDict as Dictionary<string, object>;
+    public OSEmailSubscriptionState ParseOSEmailSubscriptionState(object stateDict) {
+        var stateDictCasted = stateDict as Dictionary<string, object>;
 
-      var state = new OSEmailSubscriptionState ();
-      state.subscribed = Convert.ToBoolean (stateDictCasted ["subscribed"]);
-      state.emailUserId = stateDictCasted ["emailUserId"] as string;
-      state.emailAddress = stateDictCasted ["emailAddress"] as string;
+        var state = new OSEmailSubscriptionState ();
+        state.subscribed = Convert.ToBoolean (stateDictCasted ["subscribed"]);
+        state.emailUserId = stateDictCasted ["emailUserId"] as string;
+        state.emailAddress = stateDictCasted ["emailAddress"] as string;
 
-      return state;
-   }
+        return state;
+    }
 
-   public void SetEmail(string email, string emailAuthCode) {
-      mOneSignal.Call("setEmail", email, emailAuthCode);
-   }
+    public void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email) {
+        mOneSignal.Call("setEmail", delegateIdSuccess, delegateIdFailure, email, null);
+    }
 
-   public void SetEmail(string email) {
-      mOneSignal.Call("setEmail", email, null);
-   }
+    public void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email, string emailAuthCode) {
+        mOneSignal.Call("setEmail", delegateIdSuccess, delegateIdFailure, email, emailAuthCode);
+    }
 
-   public void LogoutEmail() {
-      mOneSignal.Call("logoutEmail");
-   }
+    public void LogoutEmail(string delegateIdSuccess, string delegateIdFailure) {
+        mOneSignal.Call("logoutEmail", delegateIdSuccess, delegateIdFailure);
+    }
 
-   public void AddTrigger(string key, object value) {
-      mOneSignal.Call("addTrigger", key, value.ToString());
-   }
+    public void AddTrigger(string key, object value) {
+        mOneSignal.Call("addTrigger", key, value.ToString());
+    }
 
-   public void AddTriggers(IDictionary<string, object> triggers) {
-      mOneSignal.Call("addTriggers", Json.Serialize(triggers));
-   }
+    public void AddTriggers(IDictionary<string, object> triggers) {
+        mOneSignal.Call("addTriggers", Json.Serialize(triggers));
+    }
 
-   public void RemoveTriggerForKey(string key) {
-      mOneSignal.Call("removeTriggerForKey", key);
-   }
+    public void RemoveTriggerForKey(string key) {
+        mOneSignal.Call("removeTriggerForKey", key);
+    }
 
-   public void RemoveTriggersForKeys(IList<string> keys) {
-      mOneSignal.Call("removeTriggersForKeys", Json.Serialize(keys));
-   }
+    public void RemoveTriggersForKeys(IList<string> keys) {
+        mOneSignal.Call("removeTriggersForKeys", Json.Serialize(keys));
+    }
 
-   public object GetTriggerValueForKey(string key) {
-      var valueJsonStr = mOneSignal.Call<string>("getTriggerValueForKey", key);
-      if (valueJsonStr == null)
-         return null;
-      var valueDict = Json.Deserialize(valueJsonStr) as Dictionary<string, object>;
-      if (valueDict.ContainsKey("value"))
-         return valueDict["value"];
-      return null;
-   }
+    public object GetTriggerValueForKey(string key) {
+        var valueJsonStr = mOneSignal.Call<string>("getTriggerValueForKey", key);
+        if (valueJsonStr == null)
+            return null;
+        var valueDict = Json.Deserialize(valueJsonStr) as Dictionary<string, object>;
+        if (valueDict.ContainsKey("value"))
+            return valueDict["value"];
+        return null;
+    }
 
-   public void PauseInAppMessages(bool pause) {
-      mOneSignal.Call("pauseInAppMessages", pause);
-   }
+    public void PauseInAppMessages(bool pause) {
+        mOneSignal.Call("pauseInAppMessages", pause);
+    }
+
+    public void SendOutcome(string delegateId, string name) {
+        mOneSignal.Call("sendOutcome", delegateId, name);
+    }
+
+    public void SendUniqueOutcome(string delegateId, string name) {
+        mOneSignal.Call("sendUniqueOutcome", delegateId, name);
+    }
+
+    public void SendOutcomeWithValue(string delegateId, string name, float value) {
+        mOneSignal.Call("sendOutcomeWithValue", delegateId, name, value);
+    }
+
 }
 #endif

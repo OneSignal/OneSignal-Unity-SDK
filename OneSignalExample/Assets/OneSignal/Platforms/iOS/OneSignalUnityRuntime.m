@@ -30,7 +30,7 @@
 
 char* os_cStringCopy(const char* string) {
     if (string == NULL)
-        return NULL;
+    return NULL;
     
     char* res = (char*)malloc(strlen(string) + 1);
     strcpy(res, string);
@@ -94,9 +94,11 @@ char* dictionaryToJsonNonConstChar(NSDictionary* dictionaryToConvert) {
     return dyStr;
 }
 
+NSString* dictionaryToNSString(NSDictionary* dict) {
+    return CreateNSString(dictionaryToJsonChar(dict));
+}
 
-
-@interface OSUnityPermissionAndSubscriptionObserver : NSObject<OSPermissionObserver, OSSubscriptionObserver>
+@interface OSUnityPermissionAndSubscriptionObserver : NSObject<OSPermissionObserver, OSSubscriptionObserver, OSEmailSubscriptionObserver>
 - (void)onOSPermissionChanged:(OSPermissionStateChanges*)stateChanges;
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges;
 - (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges *)stateChanges;
@@ -104,15 +106,15 @@ char* dictionaryToJsonNonConstChar(NSDictionary* dictionaryToConvert) {
 
 @implementation OSUnityPermissionAndSubscriptionObserver
 - (void)onOSPermissionChanged:(OSPermissionStateChanges*)stateChanges {
-  UnitySendMessage(unityListener, "onOSPermissionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
+    UnitySendMessage(unityListener, "onOSPermissionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
 }
 
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges*)stateChanges {
-  UnitySendMessage(unityListener, "onOSSubscriptionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
+    UnitySendMessage(unityListener, "onOSSubscriptionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
 }
 
-- (void)onOSEmailSubscriptionStateChanged:(OSEmailSubscriptionStateChanges *)stateChanges {
-    UnitySendMessage(unityListener, "onOSEmailSubscriptionStateChanged", dictionaryToJsonChar([stateChanges toDictionary]));
+- (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges *)stateChanges {
+    UnitySendMessage(unityListener, "onOSEmailSubscriptionChanged", dictionaryToJsonChar([stateChanges toDictionary]));
 }
 @end
 
@@ -134,8 +136,7 @@ static Class delegateClass = nil;
     
     delegateClass = getClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
     
-    injectSelector(self.class, @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
-                   delegateClass, @selector(application:didFinishLaunchingWithOptions:));
+    injectSelector(self.class, @selector(oneSignalApplication:didFinishLaunchingWithOptions:), delegateClass, @selector(application:didFinishLaunchingWithOptions:));
     [self setOneSignalUnityDelegate:delegate];
 }
 
@@ -162,11 +163,11 @@ void processInAppMessageClicked(char* inAppMessageActionString) {
 
 char* createInAppMessageJsonString(OSInAppMessageAction* action) {
     return os_cStringCopy(dictionaryToJsonChar(
-  @{
-    @"click_name" : action.clickName,
-    @"click_url" : action.clickUrl ? action.clickUrl.absoluteString : @"",
-    @"first_click" : @(action.firstClick),
-    @"closes_message" : @(action.closesMessage)
+    @{
+        @"click_name" : action.clickName,
+        @"click_url" : action.clickUrl ? action.clickUrl.absoluteString : @"",
+        @"first_click" : @(action.firstClick),
+        @"closes_message" : @(action.closesMessage)
     }));
 }
 
@@ -177,17 +178,16 @@ void initOneSignalObject(NSDictionary* launchOptions, const char* appId, int dis
     [OneSignal setValue:@"unity" forKey:@"mSDKType"];
     
     [OneSignal initWithLaunchOptions:launchOptions appId:appIdStr handleNotificationReceived:^(OSNotification* notification) {
-          if (unityListener)
-              processNotificationReceived([notification stringify]);
-        }
-        handleNotificationAction:^(OSNotificationOpenedResult* openResult) {
-            actionNotification = openResult;
-            if (unityListener)
-                processNotificationOpened([openResult stringify]);
-        } settings:@{kOSSettingsKeyAutoPrompt: @(autoPrompt),
-                     kOSSettingsKeyInFocusDisplayOption: @(displayOption),
-                     kOSSettingsKeyInAppLaunchURL: @(inAppLaunchURL),
-                     @"kOSSettingsKeyInOmitNoAppIdLogging": @(fromColdStart)}];
+        if (unityListener)
+            processNotificationReceived([notification stringify]);
+    } handleNotificationAction:^(OSNotificationOpenedResult* openResult) {
+        actionNotification = openResult;
+        if (unityListener)
+            processNotificationOpened([openResult stringify]);
+    } settings:@{kOSSettingsKeyAutoPrompt: @(autoPrompt),
+                 kOSSettingsKeyInFocusDisplayOption: @(displayOption),
+                 kOSSettingsKeyInAppLaunchURL: @(inAppLaunchURL),
+                 @"kOSSettingsKeyInOmitNoAppIdLogging": @(fromColdStart)}];
     
     [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction* action) {
         processInAppMessageClicked(createInAppMessageJsonString(action));
@@ -244,19 +244,34 @@ void _deleteTags(const char* keys) {
         [OneSignal deleteTags:kk];
 }
 
-void _getTags() {
+void _getTags(const char* delegate) {
+    NSString* delegateId = CreateNSString(delegate);
+    
     [OneSignal getTags:^(NSDictionary* result) {
-        UnitySendMessage(unityListener, "onTagsReceived", dictionaryToJsonChar(result));
+        if (!result)
+            result = @{};
+        
+        NSString* response = dictionaryToNSString(result);
+        NSDictionary *data = @{ @"delegate_id" : delegateId, @"response" : response };
+        
+        UnitySendMessage(unityListener, "onTagsReceived", dictionaryToJsonChar(data));
     }];
 }
 
-void _idsAvailable() {
+void _idsAvailable(const char* delegate) {
+    NSString* delegateId = CreateNSString(delegate);
+    
     [OneSignal IdsAvailable:^(NSString* userId, NSString* pushToken) {
+        if (!userId)
+            userId = @"";
+            
         if (!pushToken)
             pushToken = @"";
         
-        UnitySendMessage(unityListener, "onIdsAvailable",
-                         dictionaryToJsonChar(@{@"userId" : userId, @"pushToken" : pushToken}));
+        NSString* response = dictionaryToNSString(@{ @"userId" : userId, @"pushToken" : pushToken });
+        NSDictionary* data = @{ @"delegate_id" : delegateId, @"response" : response };
+        
+        UnitySendMessage(unityListener, "onIdsAvailable", dictionaryToJsonChar(data));
     }];
 }
 
@@ -264,7 +279,12 @@ void _setSubscription(BOOL enable) {
     [OneSignal setSubscription:enable];
 }
 
-void _postNotification(const char* jsonData) {
+void _postNotification(const char* delegateSuccess, const char* delegateFailure, const char* jsonData) {
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
+    
+    NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
+    
     NSString* jsonString = CreateNSString(jsonData);
     NSError* jsonError;
     
@@ -272,10 +292,17 @@ void _postNotification(const char* jsonData) {
     NSDictionary* jsd = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
     if (!jsonError)
         [OneSignal postNotification:jsd onSuccess:^(NSDictionary* results) {
-            UnitySendMessage(unityListener, "onPostNotificationSuccess", dictionaryToJsonChar(results));
+            if (!results)
+                results = @{};
+            
+            NSString* response = dictionaryToNSString(results);
+            NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+            UnitySendMessage(unityListener, "onPostNotificationSuccess", dictionaryToJsonChar(data));
         } onFailure:^(NSError* error) {
-            NSString* parsedError = [OneSignal parseNSErrorAsJsonString:error];
-            UnitySendMessage(unityListener, "onPostNotificationFailed", [parsedError UTF8String]);
+            
+            NSString* response = CreateNSString([[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+            NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+            UnitySendMessage(unityListener, "onPostNotificationFailed", dictionaryToJsonChar(data));
         }];
 }
 
@@ -288,33 +315,32 @@ void _promptLocation() {
 }
 
 void _setInFocusDisplayType(int type) {
-  OneSignal.inFocusDisplayType = type;
+    OneSignal.inFocusDisplayType = type;
 }
 
 void _addPermissionObserver() {
-  if (!osUnityObserver)
-    osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
-  [OneSignal addPermissionObserver:osUnityObserver];
+    if (!osUnityObserver)
+        osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
+    [OneSignal addPermissionObserver:osUnityObserver];
 }
 
 void _removePermissionObserver() {
-  [OneSignal removePermissionObserver:osUnityObserver];
+    [OneSignal removePermissionObserver:osUnityObserver];
 }
 
 void _addSubscriptionObserver() {
-  if (!osUnityObserver)
-    osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
-  [OneSignal addSubscriptionObserver:osUnityObserver];
+    if (!osUnityObserver)
+        osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
+    [OneSignal addSubscriptionObserver:osUnityObserver];
 }
 
 void _removeSubscriptionObserver() {
-  [OneSignal removeSubscriptionObserver:osUnityObserver];
+    [OneSignal removeSubscriptionObserver:osUnityObserver];
 }
 
 void _addEmailSubscriptionObserver() {
     if (!osUnityObserver)
         osUnityObserver = [OSUnityPermissionAndSubscriptionObserver alloc];
-    
     [OneSignal addEmailSubscriptionObserver:osUnityObserver];
 }
 
@@ -323,40 +349,67 @@ void _removeEmailSubscriptionObserver() {
 }
 
 char* _getPermissionSubscriptionState() {
-  return dictionaryToJsonNonConstChar([[OneSignal getPermissionSubscriptionState] toDictionary]);
+    return dictionaryToJsonNonConstChar([[OneSignal getPermissionSubscriptionState] toDictionary]);
 }
 
 void _promptForPushNotificationsWithUserResponse() {
-  [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
-      UnitySendMessage(unityListener, "onPromptForPushNotificationsWithUserResponse", (accepted ? @"true" : @"false").UTF8String);
-  }];
+    [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
+        UnitySendMessage(unityListener, "onPromptForPushNotificationsWithUserResponse", (accepted ? @"true" : @"false").UTF8String);
+    }];
 }
 
 void _setOneSignalLogLevel(int logLevel, int visualLogLevel) {
     [OneSignal setLogLevel:logLevel visualLevel: visualLogLevel];
 }
 
-void _setUnauthenticatedEmail(const char*email) {
+void _setUnauthenticatedEmail(const char* delegateSuccess, const char* delegateFailure, const char* email) {
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
+    
+    NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
+    
     [OneSignal setEmail:CreateNSString(email) withSuccess:^{
-        UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
+        NSString* response = dictionaryToNSString(@{ @"status" : @"success" });
+        NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+        UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(data));
     } withFailure:^(NSError *error) {
-        UnitySendMessage(unityListener, "onSetEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+        NSString* response = CreateNSString([[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+        NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+        UnitySendMessage(unityListener, "onSetEmailFailure", dictionaryToJsonChar(data));
     }];
 }
 
-void _setEmail(const char *email, const char *emailAuthCode) {
+void _setEmail(const char* delegateSuccess, const char* delegateFailure, const char *email, const char *emailAuthCode) {
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
+    
+    NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
+    
     [OneSignal setEmail:CreateNSString(email) withEmailAuthHashToken:CreateNSString(emailAuthCode) withSuccess:^{
-        UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
+        NSString* response = dictionaryToNSString(@{ @"status" : @"success" });
+        NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+        UnitySendMessage(unityListener, "onSetEmailSuccess", dictionaryToJsonChar(data));
     } withFailure:^(NSError *error) {
-        UnitySendMessage(unityListener, "onSetEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+        NSString* response = CreateNSString([[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+        NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+        UnitySendMessage(unityListener, "onSetEmailFailure", dictionaryToJsonChar(data));
     }];
 }
 
-void _logoutEmail() {
+void _logoutEmail(const char* delegateSuccess, const char* delegateFailure) {
+    NSString* delegateIdSuccess = CreateNSString(delegateSuccess);
+    NSString* delegateIdFailure = CreateNSString(delegateFailure);
+    
+    NSString* delegate = dictionaryToNSString(@{ @"success" : delegateIdSuccess, @"failure" : delegateIdFailure });
+    
     [OneSignal logoutEmailWithSuccess:^{
-        UnitySendMessage(unityListener, "onLogoutEmailSuccess", dictionaryToJsonChar(@{@"status" : @"success"}));
+        NSString* response = dictionaryToNSString(@{ @"status" : @"success" });
+        NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+        UnitySendMessage(unityListener, "onLogoutEmailSuccess", dictionaryToJsonChar(data));
     } withFailure:^(NSError *error) {
-        UnitySendMessage(unityListener, "onLogoutEmailFailure", [[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+        NSString* response = CreateNSString([[OneSignal parseNSErrorAsJsonString:error] UTF8String]);
+        NSDictionary* data = @{ @"delegate_id" : delegate, @"response" : response };
+        UnitySendMessage(unityListener, "onLogoutEmailFailure", dictionaryToJsonChar(data));
     }];
 }
 
@@ -419,6 +472,27 @@ char* _getTriggerValueForKey(char *key) {
 
 void _pauseInAppMessages(bool pause) {
     [OneSignal pauseInAppMessages:pause];
+}
+
+void _sendOutcome(const char* delegate, char* name) {
+    NSString* delegateId = CreateNSString(delegate);
+    
+    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendOutcome() not implemented for iOS yet!"];
+    return;
+}
+
+void _sendUniqueOutcome(const char* delegate, char* name) {
+    NSString* delegateId = CreateNSString(delegate);
+    
+    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendUniqueOutcome() not implemented for iOS yet!"];
+    return;
+}
+
+void _sendOutcomeWithValue(const char* delegate, char* name, float value) {
+    NSString* delegateId = CreateNSString(delegate);
+    
+    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendOutcomeWithValue() not implemented for iOS yet!"];
+    return;
 }
 
 @end

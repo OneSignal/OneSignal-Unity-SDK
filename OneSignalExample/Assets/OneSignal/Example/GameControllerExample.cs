@@ -33,278 +33,301 @@ using System;
 
 public class GameControllerExample : MonoBehaviour {
 
-   private static string extraMessage;
-   public string email = "Email Address";
-   public string externalId = "External User ID";
+    private static string extraMessage;
+    public string email = "Email Address";
+    public string externalId = "External User ID";
 
-   private static bool requiresUserPrivacyConsent = false;
+    private static bool requiresUserPrivacyConsent = false;
 
-   void Start () {
-      extraMessage = null;
+    void Start() {
+        extraMessage = null;
 
-      // Enable line below to debug issues with setuping OneSignal. (logLevel, visualLogLevel)
-      OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+        // Enable line below to debug issues with setuping OneSignal. (logLevel, visualLogLevel)
+        OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
 
-      // If you set to true, the user will have to provide consent
-      // using OneSignal.UserDidProvideConsent(true) before the
-      // SDK will initialize
-      OneSignal.SetRequiresUserPrivacyConsent(requiresUserPrivacyConsent);
+        // If you set to true, the user will have to provide consent
+        // using OneSignal.UserDidProvideConsent(true) before the
+        // SDK will initialize
+        OneSignal.SetRequiresUserPrivacyConsent(requiresUserPrivacyConsent);
 
-      // The only required method you need to call to setup OneSignal to receive push notifications.
-      // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
-      // Should only be called once when your app is loaded.
-      // OneSignal.Init(OneSignal_AppId);
-      OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
-               .HandleNotificationReceived(HandleNotificationReceived)
-               .HandleNotificationOpened(HandleNotificationOpened)
-               .HandleInAppMessageClicked(HandlerInAppMessageClicked)
-               .EndInit();
+        // The only required method you need to call to setup OneSignal to receive push notifications.
+        // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
+        // Should only be called once when your app is loaded.
+        // OneSignal.Init(OneSignal_AppId);
+        OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
+            .HandleNotificationReceived(HandleNotificationReceived)
+            .HandleNotificationOpened(HandleNotificationOpened)
+            .HandleInAppMessageClicked(HandlerInAppMessageClicked)
+            .EndInit();
       
-      OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
-      OneSignal.permissionObserver += OneSignal_permissionObserver;
-      OneSignal.subscriptionObserver += OneSignal_subscriptionObserver;
-      OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
+        OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
+        OneSignal.permissionObserver += OneSignal_permissionObserver;
+        OneSignal.subscriptionObserver += OneSignal_subscriptionObserver;
+        OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
 
-      var pushState = OneSignal.GetPermissionSubscriptionState();
+        var pushState = OneSignal.GetPermissionSubscriptionState();
 
-      OneSignalInAppMessageTriggerExamples();
+        OneSignalInAppMessageTriggerExamples();
+        OneSignalOutcomeEventsExamples();
+    }
+
+    // Examples of using OneSignal In-App Message triggers
+    private void OneSignalInAppMessageTriggerExamples() {
+        // Add a single trigger
+        OneSignal.AddTrigger("key", "value");
+
+        // Get the current value to a trigger by key
+        var triggerKey = "key";
+        var triggerValue = OneSignal.GetTriggerValueForKey(triggerKey);
+        String output = "Trigger key: " + triggerKey + " value: " + (String) triggerValue;
+        Console.WriteLine(output);
+
+        // Add multiple triggers
+        OneSignal.AddTriggers(new Dictionary<string, object>() { { "key1", "value1" }, { "key2", 2 } });
+
+        // Delete a trigger
+        OneSignal.RemoveTriggerForKey("key");
+
+        // Delete a list of triggers
+        OneSignal.RemoveTriggersForKeys(new List<string>() { "key1", "key2" });
+
+        // Temporarily puase In-App messages; If true is passed in.
+        // Great to ensure you never interrupt your user while they are in the middle of a match in your game.
+        OneSignal.PauseInAppMessages(false);
    }
 
-   // Examples of using OneSignal In-App Message triggers
-   private void OneSignalInAppMessageTriggerExamples() {
-      // Add a single trigger
-      OneSignal.AddTrigger("key", "value");
+   private void OneSignalOutcomeEventsExamples() {
+        OneSignal.SendOutcome("normal_1");
+        OneSignal.SendOutcome("normal_2", (OSOutcomeEvent outcomeEvent) => {
+            printOutcomeEvent(outcomeEvent);
+        });
 
-      // Get the current value to a trigger by key
-      var triggerKey = "key";
-      var triggerValue = OneSignal.GetTriggerValueForKey(triggerKey);
-      String output = "Trigger key: " + triggerKey + " value: " + (String) triggerValue;
-      Console.WriteLine(output);
+        OneSignal.SendUniqueOutcome("unique_1");
+        OneSignal.SendUniqueOutcome("unique_2", (OSOutcomeEvent outcomeEvent) => {
+            printOutcomeEvent(outcomeEvent);
+        });
 
-      // Add multiple triggers
-      OneSignal.AddTriggers(new Dictionary<string, object>() { { "key1", "value1" }, { "key2", 2 } });
-
-      // Delete a trigger
-      OneSignal.RemoveTriggerForKey("key");
-
-      // Delete a list of triggers
-      OneSignal.RemoveTriggersForKeys(new List<string>() { "key1", "key2" });
-
-      // Temporarily puase In-App messages; If true is passed in.
-      // Great to ensure you never interrupt your user while they are in the middle of a match in your game.
-      OneSignal.PauseInAppMessages(false);
+        OneSignal.SendOutcomeWithValue("value_1", 3.2f);
+        OneSignal.SendOutcomeWithValue("value_2", 3.2f, (OSOutcomeEvent outcomeEvent) => {
+            printOutcomeEvent(outcomeEvent);
+        });
    }
 
-   private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
-	  Debug.Log("SUBSCRIPTION stateChanges: " + stateChanges);
-	  Debug.Log("SUBSCRIPTION stateChanges.to.userId: " + stateChanges.to.userId);
-	  Debug.Log("SUBSCRIPTION stateChanges.to.subscribed: " + stateChanges.to.subscribed);
+    private void printOutcomeEvent(OSOutcomeEvent outcomeEvent) {
+        Console.WriteLine(outcomeEvent.session + "\n" +
+                string.Join(", ", outcomeEvent.notificationIds) + "\n" +
+                outcomeEvent.name + "\n" +
+                outcomeEvent.timestamp + "\n" +
+                outcomeEvent.weight);
+    }
+
+    private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
+	    Debug.Log("SUBSCRIPTION stateChanges: " + stateChanges);
+	    Debug.Log("SUBSCRIPTION stateChanges.to.userId: " + stateChanges.to.userId);
+	    Debug.Log("SUBSCRIPTION stateChanges.to.subscribed: " + stateChanges.to.subscribed);
    }
 
-	private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
-	  Debug.Log("PERMISSION stateChanges.from.status: " + stateChanges.from.status);
-	  Debug.Log("PERMISSION stateChanges.to.status: " + stateChanges.to.status);
+   private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
+	    Debug.Log("PERMISSION stateChanges.from.status: " + stateChanges.from.status);
+	    Debug.Log("PERMISSION stateChanges.to.status: " + stateChanges.to.status);
    }
 
-	private void OneSignal_emailSubscriptionObserver(OSEmailSubscriptionStateChanges stateChanges) {
-		Debug.Log("EMAIL stateChanges.from.status: " + stateChanges.from.emailUserId + ", " + stateChanges.from.emailAddress);
-		Debug.Log("EMAIL stateChanges.to.status: " + stateChanges.to.emailUserId + ", " + stateChanges.to.emailAddress);
-	}
+    private void OneSignal_emailSubscriptionObserver(OSEmailSubscriptionStateChanges stateChanges) {
+	    Debug.Log("EMAIL stateChanges.from.status: " + stateChanges.from.emailUserId + ", " + stateChanges.from.emailAddress);
+	    Debug.Log("EMAIL stateChanges.to.status: " + stateChanges.to.emailUserId + ", " + stateChanges.to.emailAddress);
+    }
 
-   // Called when your app is in focus and a notificaiton is recieved.
-   // The name of the method can be anything as long as the signature matches.
-   // Method must be static or this object should be marked as DontDestroyOnLoad
-   private static void HandleNotificationReceived(OSNotification notification) {
-      OSNotificationPayload payload = notification.payload;
-      string message = payload.body;
+    // Called when your app is in focus and a notificaiton is recieved.
+    // The name of the method can be anything as long as the signature matches.
+    // Method must be static or this object should be marked as DontDestroyOnLoad
+    private static void HandleNotificationReceived(OSNotification notification) {
+        OSNotificationPayload payload = notification.payload;
+        string message = payload.body;
 
-      print("GameControllerExample:HandleNotificationReceived: " + message);
-      print("displayType: " + notification.displayType);
-      extraMessage = "Notification received with text: " + message;
+        print("GameControllerExample:HandleNotificationReceived: " + message);
+        print("displayType: " + notification.displayType);
+        extraMessage = "Notification received with text: " + message;
 
-   Dictionary<string, object> additionalData = payload.additionalData;
-   if (additionalData == null) 
-      Debug.Log ("[HandleNotificationReceived] Additional Data == null");
-   else
-      Debug.Log("[HandleNotificationReceived] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
-   }
-   
-   // Called when a notification is opened.
-   // The name of the method can be anything as long as the signature matches.
-   // Method must be static or this object should be marked as DontDestroyOnLoad
-   public static void HandleNotificationOpened(OSNotificationOpenedResult result) {
-      OSNotificationPayload payload = result.notification.payload;
-      string message = payload.body;
-      string actionID = result.action.actionID;
+        Dictionary<string, object> additionalData = payload.additionalData;
+        if (additionalData == null) 
+            Debug.Log ("[HandleNotificationReceived] Additional Data == null");
+        else
+            Debug.Log("[HandleNotificationReceived] message " + message + ", additionalData: " + Json.Serialize(additionalData) as string);
+    }
 
-      print("GameControllerExample:HandleNotificationOpened: " + message);
-      extraMessage = "Notification opened with text: " + message;
+    // Called when a notification is opened.
+    // The name of the method can be anything as long as the signature matches.
+    // Method must be static or this object should be marked as DontDestroyOnLoad
+    public static void HandleNotificationOpened(OSNotificationOpenedResult result) {
+        OSNotificationPayload payload = result.notification.payload;
+        string message = payload.body;
+        string actionID = result.action.actionID;
+
+        print("GameControllerExample:HandleNotificationOpened: " + message);
+        extraMessage = "Notification opened with text: " + message;
       
-      Dictionary<string, object> additionalData = payload.additionalData;
-      if (additionalData == null) 
-         Debug.Log ("[HandleNotificationOpened] Additional Data == null");
-      else
-         Debug.Log("[HandleNotificationOpened] message "+ message +", additionalData: "+ Json.Serialize(additionalData) as string);
+        Dictionary<string, object> additionalData = payload.additionalData;
+        if (additionalData == null) 
+            Debug.Log ("[HandleNotificationOpened] Additional Data == null");
+        else
+            Debug.Log("[HandleNotificationOpened] message " + message + ", additionalData: " + Json.Serialize(additionalData) as string);
 
-      if (actionID != null) {
-         // actionSelected equals the id on the button the user pressed.
-         // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
-         extraMessage = "Pressed ButtonId: " + actionID;
-      }
-	}
+        if (actionID != null) {
+            // actionSelected equals the id on the button the user pressed.
+            // actionSelected will equal "__DEFAULT__" when the notification itself was tapped when buttons were present.
+            extraMessage = "Pressed ButtonId: " + actionID;
+        }
+    }
 
-   public static void HandlerInAppMessageClicked(OSInAppMessageAction action) {
-      String logInAppClickEvent = "In-App Message Clicked: " +
+    public static void HandlerInAppMessageClicked(OSInAppMessageAction action) {
+        String logInAppClickEvent = "In-App Message Clicked: " +
             "\nClick Name: " + action.clickName +
             "\nClick Url: " + action.clickUrl +
             "\nFirst Click: " + action.firstClick +
             "\nCloses Message: " + action.closesMessage;
 
-      print(logInAppClickEvent);
-      extraMessage = logInAppClickEvent;
-   }
+        print(logInAppClickEvent);
+        extraMessage = logInAppClickEvent;
+    }
 
-   // Test Menu
-   // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
-   void OnGUI () {
-      GUIStyle customTextSize = new GUIStyle("button");
-      customTextSize.fontSize = 30;
+    // Test Menu
+    // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
+    void OnGUI() {
+        GUIStyle customTextSize = new GUIStyle("button");
+        customTextSize.fontSize = 30;
 
-      GUIStyle guiBoxStyle = new GUIStyle("box");
-      guiBoxStyle.fontSize = 30;
+        GUIStyle guiBoxStyle = new GUIStyle("box");
+        guiBoxStyle.fontSize = 30;
 
-      GUIStyle textFieldStyle = new GUIStyle("textField");
-      textFieldStyle.fontSize = 30;
-
-
-      float itemOriginX = 50.0f;
-      float itemWidth = Screen.width - 120.0f;
-      float boxWidth = Screen.width - 20.0f;
-      float boxOriginY = 120.0f;
-      float boxHeight = requiresUserPrivacyConsent ? 980.0f : 890.0f;
-      float itemStartY = 200.0f;
-      float itemHeightOffset = 90.0f;
-      float itemHeight = 60.0f;
-
-      GUI.Box(new Rect(10, boxOriginY, boxWidth, boxHeight), "Test Menu", guiBoxStyle);
-
-      float count = 0.0f;
-
-      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SendTags", customTextSize)) {
-         // You can tags users with key value pairs like this:
-         OneSignal.SendTag("UnityTestKey", "TestValue");
-         // Or use an IDictionary if you need to set more than one tag.
-         OneSignal.SendTags(new Dictionary<string, string>() { { "UnityTestKey2", "value2" }, { "UnityTestKey3", "value3" } });
-
-         // You can delete a single tag with it's key.
-         // OneSignal.DeleteTag("UnityTestKey");
-         // Or delete many with an IList.
-         // OneSignal.DeleteTags(new List<string>() {"UnityTestKey2", "UnityTestKey3" });
-      }
-
-      count++;
-
-      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "GetIds", customTextSize)) {
-         OneSignal.IdsAvailable((userId, pushToken) => {
-            extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
-         });
-      }
+        GUIStyle textFieldStyle = new GUIStyle("textField");
+        textFieldStyle.fontSize = 30;
 
 
-      count++;
+        float itemOriginX = 50.0f;
+        float itemWidth = Screen.width - 120.0f;
+        float boxWidth = Screen.width - 20.0f;
+        float boxOriginY = 120.0f;
+        float boxHeight = requiresUserPrivacyConsent ? 980.0f : 890.0f;
+        float itemStartY = 200.0f;
+        float itemHeightOffset = 90.0f;
+        float itemHeight = 60.0f;
 
-      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "TestNotification", customTextSize)) {
-         extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
-         OneSignal.IdsAvailable((userId, pushToken) => {
-            if (pushToken != null) {
-               // See http://documentation.onesignal.com/docs/notifications-create-notification for a full list of options.
-               // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
-               // If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
+        GUI.Box(new Rect(10, boxOriginY, boxWidth, boxHeight), "Test Menu", guiBoxStyle);
 
-               var notification = new Dictionary<string, object>();
-               notification["contents"] = new Dictionary<string, string>() { {"en", "Test Message"} };
-               // Send notification to this device.
-               notification["include_player_ids"] = new List<string>() { userId };
-               // Example of scheduling a notification in the future.
-               notification["send_after"] = System.DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U");
+        float count = 0.0f;
 
-               extraMessage = "Posting test notification now.";
+        if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SendTags", customTextSize)) {
+            // You can tags users with key value pairs like this:
+            OneSignal.SendTag("UnityTestKey", "TestValue");
+            // Or use an IDictionary if you need to set more than one tag.
+            OneSignal.SendTags(new Dictionary<string, string>() { { "UnityTestKey2", "value2" }, { "UnityTestKey3", "value3" } });
 
-               OneSignal.PostNotification(notification, (responseSuccess) => {
-                  extraMessage = "Notification posted successful! Delayed by about 30 secounds to give you time to press the home button to see a notification vs an in-app alert.\n" + Json.Serialize(responseSuccess);
-               }, (responseFailure) => {
-                  extraMessage = "Notification failed to post:\n" + Json.Serialize(responseFailure);
-               });
-            } else {
-               extraMessage = "ERROR: Device is not registered.";
-            }
-         });
-      }
+            // You can delete a single tag with it's key.
+            // OneSignal.DeleteTag("UnityTestKey");
+            // Or delete many with an IList.
+            // OneSignal.DeleteTags(new List<string>() {"UnityTestKey2", "UnityTestKey3" });
+        }
 
-      count++;
+        count++;
 
-      email = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), email, customTextSize);
+        if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "GetIds", customTextSize)) {
+            OneSignal.IdsAvailable((userId, pushToken) => {
+                extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
+            });
+        }
 
-      count++;
+        count++;
 
-      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetEmail", customTextSize)) {
-         extraMessage = "Setting email to " + email;
+        if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "TestNotification", customTextSize)) {
+            extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
+            OneSignal.IdsAvailable((userId, pushToken) => {
+                if (pushToken != null) {
+                    // See http://documentation.onesignal.com/docs/notifications-create-notification for a full list of options.
+                    // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
+                    // If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
 
-         OneSignal.SetEmail (email, () => {
-            Debug.Log("Successfully set email");
-         }, (error) => {
-            Debug.Log("Encountered error setting email: " + Json.Serialize(error));
-         });
-      }
+                    var notification = new Dictionary<string, object>();
+                    notification["contents"] = new Dictionary<string, string>() { {"en", "Test Message"} };
+                    // Send notification to this device.
+                    notification["include_player_ids"] = new List<string>() { userId };
+                    // Example of scheduling a notification in the future.
+                    //notification["send_after"] = System.DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U");
 
-      count++;
+                    extraMessage = "Posting test notification now.";
 
-      if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "LogoutEmail", customTextSize)) {
-         extraMessage = "Logging Out of example@example.com";
+                    OneSignal.PostNotification(notification, (responseSuccess) => {
+                        extraMessage = "Notification posted successful! Delayed by about 30 secounds to give you time to press the home button to see a notification vs an in-app alert.\n" + Json.Serialize(responseSuccess);
+                    }, (responseFailure) => {
+                        extraMessage = "Notification failed to post:\n" + Json.Serialize(responseFailure);
+                    });
+                } else {
+                    extraMessage = "ERROR: Device is not registered.";
+                }
+            });
+        }
+
+        count++;
+
+        email = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), email, customTextSize);
+
+        count++;
+
+        if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetEmail", customTextSize)) {
+            extraMessage = "Setting email to " + email;
+
+            OneSignal.SetEmail (email, () => {
+                Debug.Log("Successfully set email");
+            }, (error) => {
+                Debug.Log("Encountered error setting email: " + Json.Serialize(error));
+            });
+        }
+
+        count++;
+
+        if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "LogoutEmail", customTextSize)) {
+            extraMessage = "Logging Out of example@example.com";
          
-         OneSignal.LogoutEmail (() => {
-            Debug.Log("Successfully logged out of email");
-         }, (error) => {
-            Debug.Log("Encountered error logging out of email: " + Json.Serialize(error));
-         });
-      }
+            OneSignal.LogoutEmail (() => {
+                Debug.Log("Successfully logged out of email");
+            }, (error) => {
+                Debug.Log("Encountered error logging out of email: " + Json.Serialize(error));
+            });
+        }
 
-      count++;
+        count++;
 
-      externalId = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), externalId, customTextSize);
+        externalId = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), externalId, customTextSize);
 
-      count++;
+        count++;
 
-      if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetExternalId", customTextSize))
-      {
-         extraMessage = "Setting External User Id";
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetExternalId", customTextSize)) {
+            extraMessage = "Setting External User Id";
 
-         OneSignal.SetExternalUserId(externalId);
-      }
+            OneSignal.SetExternalUserId(externalId);
+        }
 
-      count++;
+        count++;
 
-      if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "RemoveExternalId", customTextSize))
-      {
-         extraMessage = "Removing External User Id";
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "RemoveExternalId", customTextSize)) {
+            extraMessage = "Removing External User Id";
 
-         OneSignal.RemoveExternalUserId();
-      }
+            OneSignal.RemoveExternalUserId();
+        }
 
-      if (requiresUserPrivacyConsent) {
-         count++;
+        if (requiresUserPrivacyConsent) {
+            count++;
 
-         if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), (OneSignal.UserProvidedConsent() ? "Revoke Privacy Consent" : "Provide Privacy Consent"), customTextSize)) {
-            extraMessage = "Providing user privacy consent";
+            if (GUI.Button (new Rect (itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), (OneSignal.UserProvidedConsent() ? "Revoke Privacy Consent" : "Provide Privacy Consent"), customTextSize)) {
+                extraMessage = "Providing user privacy consent";
             
-            OneSignal.UserDidProvideConsent(!OneSignal.UserProvidedConsent());
-         }
-      }
+                OneSignal.UserDidProvideConsent(!OneSignal.UserProvidedConsent());
+            }
+        }
 
-      if (extraMessage != null) {
-         guiBoxStyle.alignment = TextAnchor.UpperLeft;
-         guiBoxStyle.wordWrap = true;
-         GUI.Box (new Rect (10, boxOriginY + boxHeight + 20, Screen.width - 20, Screen.height - (boxOriginY + boxHeight + 40)), extraMessage, guiBoxStyle);
-      }
-   }
+        if (extraMessage != null) {
+            guiBoxStyle.alignment = TextAnchor.UpperLeft;
+            guiBoxStyle.wordWrap = true;
+            GUI.Box (new Rect (10, boxOriginY + boxHeight + 20, Screen.width - 20, Screen.height - (boxOriginY + boxHeight + 40)), extraMessage, guiBoxStyle);
+        }
+    }
 }
