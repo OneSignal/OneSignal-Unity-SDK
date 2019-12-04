@@ -29,6 +29,7 @@
     #define ONESIGNAL_PLATFORM
 #endif
 
+// TODO: Remove this when done
 #define ONESIGNAL_PLATFORM
 
 #if !UNITY_EDITOR && UNITY_ANDROID
@@ -133,11 +134,15 @@ public class OSOutcomeEvent {
             this.session = SessionFromString(outcomeObject["session"] as string);
 
         // notificationIds
-        if (outcomeObject.ContainsKey("notification_ids")) {
-            List<object> idObjects = outcomeObject["notification_ids"] as List<object>;
-            List<string> ids = new List<string>();
-            foreach (var id in idObjects)
-                ids.Add(id.ToString());
+        if (outcomeObject.ContainsKey("notification_ids"))
+        {
+            // TODO: Find out if there is a universal way to handle notification_ids
+            //List<object> idObjects = outcomeObject["notification_ids"] as List<object>;
+            //List<string> ids = new List<string>();
+            //foreach (var id in idObjects)
+            //    ids.Add(id.ToString());
+
+            List<string> ids = new List<string>{outcomeObject["notification_ids"] as string};
 
             this.notificationIds = ids;
         }
@@ -156,6 +161,8 @@ public class OSOutcomeEvent {
                 this.weight = (Int64) outcomeObject["weight"];
             if (outcomeObject["weight"] is Double)
                 this.weight = (Double) outcomeObject["weight"];
+            if (outcomeObject["weight"] is float)
+                this.weight = (float) outcomeObject["weight"];
         }
     }
 
