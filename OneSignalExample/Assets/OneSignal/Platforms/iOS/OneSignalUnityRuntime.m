@@ -476,23 +476,36 @@ void _pauseInAppMessages(bool pause) {
 
 void _sendOutcome(const char* delegate, char* name) {
     NSString* delegateId = CreateNSString(delegate);
+    NSString* outcomeName = CreateNSString(name);
     
-    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendOutcome() not implemented for iOS yet!"];
-    return;
+    [OneSignal sendOutcome:outcomeName onSuccess:^(OSOutcomeEvent *outcomeEvent) {
+        NSString* response = dictionaryToNSString(outcomeEvent.jsonRepresentation);
+        NSDictionary* data = @{ @"delegate_id" : delegateId, @"response" : response };
+        UnitySendMessage(unityListener, "onSendOutcomeSuccess", dictionaryToJsonChar(data));
+    }];
 }
 
 void _sendUniqueOutcome(const char* delegate, char* name) {
     NSString* delegateId = CreateNSString(delegate);
-    
-    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendUniqueOutcome() not implemented for iOS yet!"];
-    return;
+    NSString* outcomeName = CreateNSString(name);
+
+    [OneSignal sendUniqueOutcome:outcomeName onSuccess:^(OSOutcomeEvent *outcomeEvent) {
+        NSString* response = dictionaryToNSString(outcomeEvent.jsonRepresentation);
+        NSDictionary* data = @{ @"delegate_id" : delegateId, @"response" : response };
+        UnitySendMessage(unityListener, "onSendOutcomeSuccess", dictionaryToJsonChar(data));
+    }];
 }
 
 void _sendOutcomeWithValue(const char* delegate, char* name, float value) {
     NSString* delegateId = CreateNSString(delegate);
+    NSString* outcomeName = CreateNSString(name);
+    NSNumber* outcomeValue = [NSNumber numberWithFloat:value];
     
-    [OneSignal onesignal_Log:ONE_S_LL_VERBOSE message:@"Method sendOutcomeWithValue() not implemented for iOS yet!"];
-    return;
+    [OneSignal sendOutcomeWithValue:outcomeName value:outcomeValue onSuccess:^(OSOutcomeEvent *outcomeEvent) {
+        NSString* response = dictionaryToNSString(outcomeEvent.jsonRepresentation);
+        NSDictionary* data = @{ @"delegate_id" : delegateId, @"response" : response };
+        UnitySendMessage(unityListener, "onSendOutcomeSuccess", dictionaryToJsonChar(data));
+    }];
 }
 
 @end
