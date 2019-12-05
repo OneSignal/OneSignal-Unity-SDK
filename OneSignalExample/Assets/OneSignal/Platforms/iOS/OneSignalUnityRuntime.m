@@ -78,6 +78,9 @@ static void injectSelector(Class newClass, SEL newSel, Class addToClass, SEL mak
 }
 
 const char* dictionaryToJsonChar(NSDictionary* dictionaryToConvert) {
+    if (!dictionaryToConvert)
+        return [NSString new].UTF8String;
+    
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dictionaryToConvert options:0 error:nil];
     NSString* jsonRequestData = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     

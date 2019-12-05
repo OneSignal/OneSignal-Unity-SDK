@@ -29,9 +29,6 @@
     #define ONESIGNAL_PLATFORM
 #endif
 
-// TODO: Remove this when done
-#define ONESIGNAL_PLATFORM
-
 #if !UNITY_EDITOR && UNITY_ANDROID
     #define ANDROID_ONLY
 #endif
@@ -128,42 +125,41 @@ public class OSOutcomeEvent {
 
     public OSOutcomeEvent() {}
 
-    public OSOutcomeEvent(Dictionary<string, object> outcomeObject) {
+    public OSOutcomeEvent(Dictionary<string, object> outcomeDict) {
         // session
-        if (outcomeObject.ContainsKey("session"))
-            this.session = SessionFromString(outcomeObject["session"] as string);
+        if (outcomeDict.ContainsKey("session") && outcomeDict["session"] != null)
+            this.session = SessionFromString(outcomeDict["session"] as string);
 
-        // notificationIds
-        if (outcomeObject.ContainsKey("notification_ids"))
-        {
-            // TODO: Find out if there is a universal way to handle notification_ids
-            //List<object> idObjects = outcomeObject["notification_ids"] as List<object>;
-            //List<string> ids = new List<string>();
-            //foreach (var id in idObjects)
-            //    ids.Add(id.ToString());
+       // notificationIds
+         if (outcomeDict.ContainsKey("notification_ids") && outcomeDict["notification_ids"] != null)
+         {
+            List<string> notifications = new List<string>();
 
-            List<string> ids = new List<string>{outcomeObject["notification_ids"] as string};
+            if (outcomeDict["notification_ids"].GetType().Equals(typeof(string))) {
+               // notificationIds come over as a string of comma seperated string ids
+               notifications = new List<string>{ Convert.ToString(outcomeDict["notification_ids"] as string) };
+            }
+            else {
+               // notificationIds come over as a List<object> and should be parsed and appended to the List<string>
+               List<object> idObjects = outcomeDict["notification_ids"] as List<object>;
+               foreach (var id in idObjects)
+                  notifications.Add(id.ToString());
+            }
 
-            this.notificationIds = ids;
-        }
+            this.notificationIds = notifications;
+         }
 
         // id
-        if (outcomeObject.ContainsKey("id"))
-            this.name = outcomeObject["id"] as string;
+        if (outcomeDict.ContainsKey("id") && outcomeDict["id"] != null)
+            this.name = outcomeDict["id"] as string;
 
         // timestamp
-        if (outcomeObject.ContainsKey("timestamp"))
-            this.timestamp = (long) outcomeObject["timestamp"];
+        if (outcomeDict.ContainsKey("timestamp") && outcomeDict["timestamp"] != null)
+            this.timestamp = (long) outcomeDict["timestamp"];
 
         // weight
-        if (outcomeObject.ContainsKey("weight")) {
-            if (outcomeObject["weight"] is Int64)
-                this.weight = (Int64) outcomeObject["weight"];
-            if (outcomeObject["weight"] is Double)
-                this.weight = (Double) outcomeObject["weight"];
-            if (outcomeObject["weight"] is float)
-                this.weight = (float) outcomeObject["weight"];
-        }
+        if (outcomeDict.ContainsKey("weight") && outcomeDict["weight"] != null)
+            this.weight = double.Parse(Convert.ToString(outcomeDict["weight"]));
     }
 
     // Used by onSendOutcomeSuccess() to convert session string to OSSession
@@ -1132,6 +1128,9 @@ public class OneSignal : MonoBehaviour {
 
             var delegateId = jsonObject["delegate_id"] as string;
             var response = jsonObject["response"] as string;
+
+            if (string.IsNullOrEmpty(response))
+                return;
 
             // Parse outcome json string and return it through the callback
             var outcomeObject = Json.Deserialize(response) as Dictionary<string, object>;
