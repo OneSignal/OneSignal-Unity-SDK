@@ -1129,14 +1129,17 @@ public class OneSignal : MonoBehaviour {
             var delegateId = jsonObject["delegate_id"] as string;
             var response = jsonObject["response"] as string;
 
-            if (string.IsNullOrEmpty(response))
-                return;
+            OSOutcomeEvent outcomeEvent;
+            if (string.IsNullOrEmpty(response)) {
+                outcomeEvent = new OSOutcomeEvent();
+            }
+            else {
+                // Parse outcome json string and return it through the callback
+                var outcomeObject = Json.Deserialize(response) as Dictionary<string, object>;
+                outcomeEvent = new OSOutcomeEvent(outcomeObject);
+            }
 
-            // Parse outcome json string and return it through the callback
-            var outcomeObject = Json.Deserialize(response) as Dictionary<string, object>;
-            var outcomeEvent = new OSOutcomeEvent(outcomeObject);
-
-            if (delegates.ContainsKey(delegateId)) {
+            if (delegates.ContainsKey(delegateId) && delegates[delegateId] != null) {
                 var sendOutcomeSuccess = (OnSendOutcomeSuccess) delegates[delegateId];
                 delegates.Remove(delegateId);
                 sendOutcomeSuccess(outcomeEvent);
