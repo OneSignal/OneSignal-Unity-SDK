@@ -226,6 +226,10 @@ public class OneSignal : MonoBehaviour {
     // notification = The Notification dictionary filled from a serialized native OSNotification object
     public delegate void NotificationReceived(OSNotification notification);
 
+    // OnExternalUserIdUpdateCompletion - Delegate is called when exteranl user id for push or email channel is set or removed
+    // results - The dictionary payload containing the success status for the channels updating exteranl user id
+    public delegate void OnExternalUserIdUpdateCompletion(Dictionary<string, object> results);
+
     public delegate void OnSetEmailSuccess();
     public delegate void OnSetEmailFailure(Dictionary<string, object> error);
 
@@ -734,9 +738,29 @@ public class OneSignal : MonoBehaviour {
         #endif
     }
 
+    public static void SetExternalUserId(string externalId, OnExternalUserIdUpdateCompletion completion) {
+        #if ONESIGNAL_PLATFORM
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+
+            delegates.Add(delegateGuidCompletion, completion);
+
+            oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, externalId);
+        #endif
+    }
+
     public static void RemoveExternalUserId() {
         #if ONESIGNAL_PLATFORM
             oneSignalPlatform.RemoveExternalUserId();
+        #endif
+    }
+
+    public static void RemoveExternalUserId(OnExternalUserIdUpdateCompletion completion) {
+        #if ONESIGNAL_PLATFORM
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+
+            delegates.Add(delegateGuidCompletion, completion);
+
+            oneSignalPlatform.RemoveExternalUserId(delegateGuidCompletion);
         #endif
     }
 
