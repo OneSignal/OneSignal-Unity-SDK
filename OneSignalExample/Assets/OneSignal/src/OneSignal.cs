@@ -1033,6 +1033,31 @@ public class OneSignal : MonoBehaviour {
         }
 
         // Called from the native SDK
+        private void onExternalUserIdUpdateCompletion(string jsonString) {
+             if (string.IsNullOrEmpty(jsonString))
+                return;
+
+            // Break part the jsonString which might contain a 'delegate_id' and a 'response'
+            var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
+
+            // Check if the delegate should be processed
+            if (!isValidDelegate(jsonObject))
+                return;
+
+            var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
+            var delegateIdCompletion = delegateId["completion"] as string;
+
+            var response = jsonObject["response"] as string;
+            var results = Json.Deserialize(response) as Dictionary<string, object>;
+
+            if (delegates.ContainsKey(delegateIdCompletion)) {
+                var externalUserIdUpdateCompletionDelegate = (OnExternalUserIdUpdateCompletion) delegates[delegateIdCompletion];
+                delegates.Remove(delegateIdCompletion);
+                externalUserIdUpdateCompletionDelegate(results);
+            }
+        }
+
+        // Called from the native SDK
         private void onSetEmailSuccess(string jsonString) {
             if (string.IsNullOrEmpty(jsonString))
                 return;
