@@ -146,16 +146,16 @@ public class OneSignalAndroid : OneSignalPlatform {
         mOneSignal.Call("setExternalUserId", externalId);
     }
 
-    public void SetExternalUserId(string delegateIdCompletion, string externalId) {
-        mOneSignal.Call("setExternalUserId", delegateIdCompletion, externalId);
+    public void SetExternalUserId(string delegateId, string externalId) {
+        mOneSignal.Call("setExternalUserId", delegateId, externalId);
     }
 
     public void RemoveExternalUserId() {
         mOneSignal.Call("removeExternalUserId");
     }
 
-    public void RemoveExternalUserId(string delegateIdCompletion) {
-        mOneSignal.Call("removeExternalUserId", delegateIdCompletion);
+    public void RemoveExternalUserId(string delegateId) {
+        mOneSignal.Call("removeExternalUserId", delegateId);
     }
 
     public OSPermissionSubscriptionState GetPermissionSubscriptionState() {
