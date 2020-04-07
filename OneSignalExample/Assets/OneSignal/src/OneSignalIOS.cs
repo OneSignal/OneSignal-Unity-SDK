@@ -125,7 +125,13 @@ public class OneSignalIOS : OneSignalPlatform {
     extern static public void _setExternalUserId(string externalId);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
+    extern static public void _setExternalUserId(string delegateIdCompletion, string externalId);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
     extern static public void _removeExternalUserId();
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    extern static public void _removeExternalUserId(string delegateIdCompletion);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     extern static public void _addTriggers(string triggers);
@@ -267,8 +273,16 @@ public class OneSignalIOS : OneSignalPlatform {
         _setExternalUserId(externalId);
     }
 
+    public void SetExternalUserId(string delegateIdCompletion, string externalId) {
+        _setExternalUserId(delegateIdCompletion, externalId);
+    }
+
     public void RemoveExternalUserId() {
         _removeExternalUserId();
+    }
+
+    public void RemoveExternalUserId(string delegateIdCompletion) {
+        _removeExternalUserId(delegateIdCompletion);
     }
 
     public void AddTrigger(string key, object value) {
