@@ -122,13 +122,7 @@ public class OneSignalIOS : OneSignalPlatform {
     extern static public void _setLocationShared(bool enable);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
-    extern static public void _setExternalUserId(string externalId);
-
-    [System.Runtime.InteropServices.DllImport("__Internal")]
     extern static public void _setExternalUserId(string delegateId, string externalId);
-
-    [System.Runtime.InteropServices.DllImport("__Internal")]
-    extern static public void _removeExternalUserId();
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
     extern static public void _removeExternalUserId(string delegateId);
@@ -269,16 +263,8 @@ public class OneSignalIOS : OneSignalPlatform {
         _setRequiresUserPrivacyConsent(required);
     }
 
-    public void SetExternalUserId(string externalId) {
-        _setExternalUserId(externalId);
-    }
-
     public void SetExternalUserId(string delegateId, string externalId) {
         _setExternalUserId(delegateId, externalId);
-    }
-
-    public void RemoveExternalUserId() {
-        _removeExternalUserId();
     }
 
     public void RemoveExternalUserId(string delegateId) {

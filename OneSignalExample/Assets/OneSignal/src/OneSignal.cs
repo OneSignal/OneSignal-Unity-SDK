@@ -734,32 +734,30 @@ public class OneSignal : MonoBehaviour {
 
     public static void SetExternalUserId(string externalId) {
         #if ONESIGNAL_PLATFORM
-            oneSignalPlatform.SetExternalUserId(externalId);
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, externalId);
         #endif
     }
 
     public static void SetExternalUserId(string externalId, OnExternalUserIdUpdateCompletion completion) {
         #if ONESIGNAL_PLATFORM
             string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
-
             delegates.Add(delegateGuidCompletion, completion);
-
             oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, externalId);
         #endif
     }
 
     public static void RemoveExternalUserId() {
         #if ONESIGNAL_PLATFORM
-            oneSignalPlatform.RemoveExternalUserId();
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            oneSignalPlatform.RemoveExternalUserId(delegateGuidCompletion);
         #endif
     }
 
     public static void RemoveExternalUserId(OnExternalUserIdUpdateCompletion completion) {
         #if ONESIGNAL_PLATFORM
             string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
-
             delegates.Add(delegateGuidCompletion, completion);
-
             oneSignalPlatform.RemoveExternalUserId(delegateGuidCompletion);
         #endif
     }
@@ -1044,15 +1042,14 @@ public class OneSignal : MonoBehaviour {
             if (!isValidDelegate(jsonObject))
                 return;
 
-            var delegateId = Json.Deserialize(jsonObject["delegate_id"] as string) as Dictionary<string, object>;
-            var delegateIdCompletion = delegateId["completion"] as string;
+            var delegateId = jsonObject["delegate_id"] as string;
 
             var response = jsonObject["response"] as string;
             var results = Json.Deserialize(response) as Dictionary<string, object>;
 
-            if (delegates.ContainsKey(delegateIdCompletion)) {
-                var externalUserIdUpdateCompletionDelegate = (OnExternalUserIdUpdateCompletion) delegates[delegateIdCompletion];
-                delegates.Remove(delegateIdCompletion);
+            if (delegates.ContainsKey(delegateId)) {
+                var externalUserIdUpdateCompletionDelegate = (OnExternalUserIdUpdateCompletion) delegates[delegateId];
+                delegates.Remove(delegateId);
                 externalUserIdUpdateCompletionDelegate(results);
             }
         }

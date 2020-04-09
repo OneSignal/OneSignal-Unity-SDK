@@ -142,16 +142,8 @@ public class OneSignalAndroid : OneSignalPlatform {
         mOneSignal.Call("setRequiresUserPrivacyConsent", required);
     }
 
-    public void SetExternalUserId(string externalId) {
-        mOneSignal.Call("setExternalUserId", externalId);
-    }
-
     public void SetExternalUserId(string delegateId, string externalId) {
         mOneSignal.Call("setExternalUserId", delegateId, externalId);
-    }
-
-    public void RemoveExternalUserId() {
-        mOneSignal.Call("removeExternalUserId");
     }
 
     public void RemoveExternalUserId(string delegateId) {
