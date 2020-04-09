@@ -432,12 +432,22 @@ void _setLocationShared(bool shared) {
     [OneSignal setLocationShared:shared];
 }
 
-void _setExternalUserId(const char *externalId) {
-    [OneSignal setExternalUserId:CreateNSString(externalId)];
+void _setExternalUserId(const char* delegate, const char *externalId) {
+    NSString* delegateId = CreateNSString(delegate);
+    [OneSignal setExternalUserId:CreateNSString(externalId) withCompletion:^(NSDictionary *results) {
+        NSString* response = dictionaryToNSString(results);
+        NSDictionary* data = @{ @"delegate_id" : delegateId, @"response" : response };
+        UnitySendMessage(unityListener, "onExternalUserIdUpdateCompletion", dictionaryToJsonChar(data));
+    }];
 }
 
-void _removeExternalUserId() {
-    [OneSignal removeExternalUserId];
+void _removeExternalUserId(const char* delegate) {
+    NSString* delegateId = CreateNSString(delegate);
+    [OneSignal removeExternalUserId:^(NSDictionary *results) {
+        NSString* response = dictionaryToNSString(results);
+        NSDictionary* data = @{ @"delegate_id" : delegateId, @"response" : response };
+        UnitySendMessage(unityListener, "onExternalUserIdUpdateCompletion", dictionaryToJsonChar(data));
+    }];
 }
 
 void _addTriggers(char *triggers) {

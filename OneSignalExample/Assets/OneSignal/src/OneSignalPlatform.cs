@@ -59,8 +59,8 @@ public interface OneSignalPlatform {
     bool UserProvidedConsent();
     void SetRequiresUserPrivacyConsent(bool required);
 
-    void SetExternalUserId(string externalId);
-    void RemoveExternalUserId();
+    void SetExternalUserId(string delegateId, string externalId);
+    void RemoveExternalUserId(string delegateId);
 
     void AddPermissionObserver();
     void RemovePermissionObserver();

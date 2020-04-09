@@ -226,6 +226,10 @@ public class OneSignal : MonoBehaviour {
     // notification = The Notification dictionary filled from a serialized native OSNotification object
     public delegate void NotificationReceived(OSNotification notification);
 
+    // OnExternalUserIdUpdateCompletion - Delegate is called when exteranl user id for push or email channel is set or removed
+    // results - The dictionary payload containing the success status for the channels updating exteranl user id
+    public delegate void OnExternalUserIdUpdateCompletion(Dictionary<string, object> results);
+
     public delegate void OnSetEmailSuccess();
     public delegate void OnSetEmailFailure(Dictionary<string, object> error);
 
@@ -730,13 +734,31 @@ public class OneSignal : MonoBehaviour {
 
     public static void SetExternalUserId(string externalId) {
         #if ONESIGNAL_PLATFORM
-            oneSignalPlatform.SetExternalUserId(externalId);
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, externalId);
+        #endif
+    }
+
+    public static void SetExternalUserId(string externalId, OnExternalUserIdUpdateCompletion completion) {
+        #if ONESIGNAL_PLATFORM
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            delegates.Add(delegateGuidCompletion, completion);
+            oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, externalId);
         #endif
     }
 
     public static void RemoveExternalUserId() {
         #if ONESIGNAL_PLATFORM
-            oneSignalPlatform.RemoveExternalUserId();
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            oneSignalPlatform.RemoveExternalUserId(delegateGuidCompletion);
+        #endif
+    }
+
+    public static void RemoveExternalUserId(OnExternalUserIdUpdateCompletion completion) {
+        #if ONESIGNAL_PLATFORM
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            delegates.Add(delegateGuidCompletion, completion);
+            oneSignalPlatform.RemoveExternalUserId(delegateGuidCompletion);
         #endif
     }
 
@@ -1005,6 +1027,30 @@ public class OneSignal : MonoBehaviour {
                 delegates.Remove(delegateIdSuccess);
                 delegates.Remove(delegateIdFailure);
                 postNotificationFailureDelegate(postNotificationDic);
+            }
+        }
+
+        // Called from the native SDK
+        private void onExternalUserIdUpdateCompletion(string jsonString) {
+             if (string.IsNullOrEmpty(jsonString))
+                return;
+
+            // Break part the jsonString which might contain a 'delegate_id' and a 'response'
+            var jsonObject = Json.Deserialize(jsonString) as Dictionary<string, object>;
+
+            // Check if the delegate should be processed
+            if (!isValidDelegate(jsonObject))
+                return;
+
+            var delegateId = jsonObject["delegate_id"] as string;
+
+            var response = jsonObject["response"] as string;
+            var results = Json.Deserialize(response) as Dictionary<string, object>;
+
+            if (delegates.ContainsKey(delegateId)) {
+                var externalUserIdUpdateCompletionDelegate = (OnExternalUserIdUpdateCompletion) delegates[delegateId];
+                delegates.Remove(delegateId);
+                externalUserIdUpdateCompletionDelegate(results);
             }
         }
 
