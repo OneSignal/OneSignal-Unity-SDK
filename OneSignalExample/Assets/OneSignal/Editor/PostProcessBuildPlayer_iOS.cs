@@ -46,6 +46,7 @@
    {
       public static readonly string DEFAULT_PROJECT_TARGET_NAME = "Unity-iPhone";
       public static readonly string NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME = "OneSignalNotificationServiceExtension";
+      public static readonly string NOTIFICATION_SERVICE_EXTENSION_OBJECTIVEC_FILENAME = "NotificationService";
 
       private static readonly char DIR_CHAR = Path.DirectorySeparatorChar;
       public static readonly string OS_PLATFORM_LOCATION = "Assets" + DIR_CHAR + "OneSignal" + DIR_CHAR + "Platforms" + DIR_CHAR;
@@ -211,7 +212,7 @@
 
       private static void AddNotificationServiceExtension(PBXProject project, string path)
       {
-      #if UNITY_2017_2_OR_NEWER && !UNITY_CLOUD_BUILD
+#if UNITY_2017_2_OR_NEWER && !UNITY_CLOUD_BUILD
          var projectPath = PBXProject.GetPBXProjectPath(path);
          var mainTargetGUID = GetPBXProjectTargetGUID(project);
          var extensionTargetName = NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME;
@@ -231,9 +232,7 @@
             extensionTargetName + "/" + "Info.plist" // Unix path as it's used by Xcode
          );
 
-         var sourceDestination = extensionTargetName + "/NotificationService";
-         project.AddFileToBuild(extensionGUID, project.AddFile(sourceDestination + ".h", sourceDestination + ".h", PBXSourceTree.Source));
-         project.AddFileToBuild(extensionGUID, project.AddFile(sourceDestination + ".m", sourceDestination + ".m", PBXSourceTree.Source));
+         AddNotificationServiceSourceFilesToTarget(project, extensionGUID, path);
 
          foreach(var framework in FRAMEWORKS_TO_ADD) {
             project.AddFrameworkToProject(extensionGUID, framework, true);
@@ -245,10 +244,6 @@
 
          project.SetBuildProperty(extensionGUID, "ARCHS", "$(ARCHS_STANDARD)");
          project.SetBuildProperty(extensionGUID, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
-      
-         foreach(var type in new string[] { "m", "h" })
-            if (!File.Exists(path + DIR_CHAR + sourceDestination + "." + type))
-               FileUtil.CopyFileOrDirectory(OS_PLATFORM_LOCATION + "iOS" + DIR_CHAR + "NotificationService." + type, path + DIR_CHAR + sourceDestination + "." + type);
 
          project.AddBuildProperty(extensionGUID, "LIBRARY_SEARCH_PATHS", "$(PROJECT_DIR)/Libraries/OneSignal/Platforms/iOS");
          project.WriteToFile(projectPath);
@@ -268,8 +263,26 @@
             extensionTargetName,
             new HashSet<EntitlementOptions> { EntitlementOptions.AppGroups }
          );
-      #endif
+#endif
+   }
+
+   // Copies NotificationService.m and .h files into the OneSignalNotificationServiceExtension folder adds them to the Xcode target
+   private static void AddNotificationServiceSourceFilesToTarget(PBXProject project, string extensionGUID, string path)
+   {
+      var buildPhaseID = project.AddSourcesBuildPhase(extensionGUID);
+      foreach (var type in new string[] { "m", "h" }) {
+         var nativeFileName = NOTIFICATION_SERVICE_EXTENSION_OBJECTIVEC_FILENAME + "." + type;
+         var sourcePath = OS_PLATFORM_LOCATION + "iOS" + DIR_CHAR + nativeFileName;
+         var nativeFileRelativeDestination = NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME + "/" + nativeFileName;
+
+         var destPath = path + DIR_CHAR + nativeFileRelativeDestination;
+         if (!File.Exists(destPath))
+            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
+
+         var sourceFileGUID = project.AddFile(nativeFileRelativeDestination, nativeFileRelativeDestination, PBXSourceTree.Source);
+         project.AddFileToBuildSection(extensionGUID, buildPhaseID, sourceFileGUID);
       }
+   }
 
       // Create a .plist file for the NSE
       // NOTE: File in Xcode project is replaced everytime, never appends
