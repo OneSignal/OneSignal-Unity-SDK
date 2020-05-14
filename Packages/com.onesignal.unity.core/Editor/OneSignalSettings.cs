@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace OneSignalPush.Editor
         /// </summary>
         public const string SettingsLocation = "Assets/Plugins/OneSignal/Resources";
 
-        internal const string PluginName = "OneSignal";
+        internal const string ProductName = "OneSignal";
 
         /// <summary>
         /// Returns a singleton class instance
@@ -45,10 +46,14 @@ namespace OneSignalPush.Editor
             }
         }
 
-        internal void Save() => EditorUtility.SetDirty(Instance);
+        internal static void Save() => EditorUtility.SetDirty(Instance);
 
         void SaveToAssetDatabase()
         {
+            if (!Directory.Exists(SettingsLocation))
+            {
+                Directory.CreateDirectory(SettingsLocation);
+            }
             AssetDatabase.CreateAsset(this, $"{SettingsLocation}/{nameof(OneSignalSettings)}.asset");
         }
     }

@@ -4,17 +4,20 @@ using UnityEngine;
 
 namespace OneSignalPush.Editor.IMGUI
 {
-    public class SA_GuiBeginHorizontal : IDisposable
+    class GuiBeginHorizontal : IDisposable
     {
-        public SA_GuiBeginHorizontal(params GUILayoutOption[] layoutOptions) {
+        public GuiBeginHorizontal(params GUILayoutOption[] layoutOptions)
+        {
             EditorGUILayout.BeginHorizontal(layoutOptions);
         }
 
-        public SA_GuiBeginHorizontal(GUIStyle style, params GUILayoutOption[] layoutOptions) {
+        public GuiBeginHorizontal(GUIStyle style, params GUILayoutOption[] layoutOptions)
+        {
             EditorGUILayout.BeginHorizontal(style, layoutOptions);
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             EditorGUILayout.EndHorizontal();
         }
     }

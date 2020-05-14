@@ -1,85 +1,39 @@
-using System;
-using OneSignalPush.Editor.IMGUI;
 using UnityEditor;
 using UnityEngine;
 
 namespace OneSignalPush.Editor
 {
-    class OneSignalSettingsWindow : EditorWindow
+    class OneSignalSettingsWindow :  OneSignalBaseSettingsWindow<OneSignalSettingsWindow>
     {
+        const string k_SdkSetupUrl = "https://documentation.onesignal.com/docs/unity-sdk-setup";
         const string k_HeaderText = "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.";
 
-        [SerializeField]
-        HyperLabel m_DocumentationLink;
-
-        bool m_WindowInitialized;
-
-        void OnEnable()
+        protected override void OnAwake()
         {
-            wantsMouseMove = true;
-            wantsMouseEnterLeaveWindow = true;
-            titleContent = new GUIContent(OneSignalSettings.PluginName);
+            SetHeaderTitle(OneSignalSettings.ProductName);
+            SetHeaderDescription(k_HeaderText);
+            SetDocumentationUrl(k_SdkSetupUrl);
+            AddMenuItem("SETTINGS", CreateInstance<SettingsTab>());
+            AddMenuItem("ABOUT", CreateInstance<AboutTab>());
         }
 
-        void OnInit()
+        protected override void OnEnable()
         {
-            m_WindowInitialized = true;
-            m_DocumentationLink = new HyperLabel(new GUIContent("Go To Documentation"), EditorStyles.miniLabel);
-            m_DocumentationLink.SetMouseOverColor(OneSignalImguiStyles.SelectedElementColor);
+            base.OnEnable();
+            titleContent = new GUIContent(OneSignalSettings.ProductName);
         }
 
-        void OnGUI()
+        protected override void BeforeGUI()
         {
-            if(!m_WindowInitialized)
-                OnInit();
+            EditorGUI.BeginChangeCheck();
+        }
 
-            DrawToolbar();
-
-            EditorGUILayout.BeginVertical(OneSignalImguiStyles.SeparationStyle);
+        protected override void AfterGUI()
+        {
+            if(EditorGUI.EndChangeCheck())
             {
-                GUILayout.Space(20);
-                using (new SA_GuiBeginHorizontal())
-                {
-                    GUILayout.Space(OneSignalImguiStyles.ContentIndent);
-                    EditorGUILayout.LabelField(OneSignalSettings.PluginName, OneSignalImguiStyles.LabelHeaderStyle);
-                }
-
-                GUILayout.Space(8);
-
-                using (new SA_GuiBeginHorizontal())
-                {
-                    GUILayout.Space(OneSignalImguiStyles.ContentIndent);
-                    EditorGUILayout.LabelField(k_HeaderText, OneSignalImguiStyles.DescriptionLabelStyle);
-                }
-
-                GUILayout.Space(2);
+                OneSignalSettings.Save();
             }
-
-        }
-
-        void DrawToolbar() {
-            GUILayout.Space(2);
-            using (new SA_GuiBeginHorizontal()) {
-                DrawDocumentationLink();
-                EditorGUILayout.Space();
-            }
-            GUILayout.Space(5);
-        }
-
-        void DrawDocumentationLink() {
-            var width = m_DocumentationLink.CalcSize().x + 5f;
-            var clicked = m_DocumentationLink.Draw(GUILayout.Width(width));
-            if (clicked) {
-                //Application.OpenURL(m_documentationUrl);
-            }
-        }
-
-        public static void ShowTowardsInspector()
-        {
-            var inspectorType = Type.GetType("UnityEditor.InspectorWindow, UnityEditor.dll");
-            var window = GetWindow<OneSignalSettingsWindow>(inspectorType);
-            window.Show();
-            window.minSize = new Vector2(350, 100);
         }
     }
 }
