@@ -1,8 +1,11 @@
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+namespace OneSignalPush
 {
     /// <summary>
     /// OneSignal Project Config.
@@ -50,11 +53,13 @@ namespace OneSignalPush.Editor
 
         void SaveToAssetDatabase()
         {
+#if UNITY_EDITOR
             if (!Directory.Exists(SettingsLocation))
             {
                 Directory.CreateDirectory(SettingsLocation);
             }
             AssetDatabase.CreateAsset(this, $"{SettingsLocation}/{nameof(OneSignalSettings)}.asset");
+#endif
         }
     }
 }

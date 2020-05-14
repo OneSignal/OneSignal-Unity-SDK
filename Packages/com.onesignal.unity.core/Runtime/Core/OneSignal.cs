@@ -293,12 +293,23 @@ namespace OneSignalPush
         //        Call this on the first scene that is loaded.
         // appId = Your OneSignal AppId from onesignal.com
         // googleProjectNumber = Your Google Project Number that is only required for Android GCM pushes.
-        public static OneSignal.UnityBuilder StartInit(string appID, string googleProjectNumber = null)
+
+        public static UnityBuilder StartInit()
+        {
+            return StartInit(OneSignalSettings.Instance.ApplicationId);
+        }
+
+        public static UnityBuilder StartInit(string appId)
+        {
+            return StartInit(appId, null);
+        }
+
+        public static UnityBuilder StartInit(string appId, string googleProjectNumber)
         {
             if (builder == null)
                 builder = new UnityBuilder();
 #if ONESIGNAL_PLATFORM
-            builder.appID = appID;
+            builder.appID = appId;
             builder.googleProjectNumber = googleProjectNumber;
 #endif
             return builder;
