@@ -53,11 +53,5 @@ Packages/OneSignalExample/UserSettings
 #   but UDM4U will be adding Android dependencies into it.
 Packages/OneSignalExample/Assets/Plugins
 Packages/OneSignalExample/Assets/Plugins.meta
-
-
-
-
-
-
 Packages/com.onesignal.unity.android/Plugins/Android/OneSignalConfig/AndroidManifest.xml
 Packages/com.onesignal.unity.android/Plugins/Android/OneSignalConfig/AndroidManifest.xml.meta
