@@ -48,8 +48,6 @@ public class OneSignalEditorScriptAndroid
 
       bool manifestUpdated = false;
 
-      //Check if Google scope registry exists in manifest.
-      //Add new scope if we don't have one
       if (!mainManifest.IsRegistryExists(ScopeRegistriesConfig.GoogleScopeRegistryUrl))
       {
          mainManifest.AddScopeRegistry(ScopeRegistriesConfig.GoogleScopeRegistry);
@@ -64,21 +62,16 @@ public class OneSignalEditorScriptAndroid
       Manifest manifest = new Manifest(k_PackageManifestPath);
       manifest.Fetch();
 
-      //Check if we have com.google.external-dependency-manager dependency in manifest.
       if (!manifest.IsDependencyExists(ScopeRegistriesConfig.EDM4UName))
       {
-         //Add com.google.external-dependency-manager dependency if we don't have one
          manifest.AddDependency(ScopeRegistriesConfig.EDM4UName, ScopeRegistriesConfig.EDM4UVersion);
          manifestUpdated = true;
       }
       else
       {
-         //Ok, com.google.external-dependency-manager dependency exists in manifest file
-         //Need to check it's version
          Dependency foundationDependency = manifest.GetDependency(ScopeRegistriesConfig.EDM4UName);
          if (!foundationDependency.Version.Equals(ScopeRegistriesConfig.EDM4UVersion))
          {
-            //Set proper dependency version
             foundationDependency.SetVersion(ScopeRegistriesConfig.EDM4UVersion);
             manifestUpdated = true;
          }

@@ -4,7 +4,7 @@ using System.Linq;
 namespace OneSignalPush.Editor
 {
     /// <summary>
-    /// Representation of "scopeRegistries" entries of manifest file
+    /// Representation of "scopeRegistries" entry of the manifest file.
     /// </summary>
     class ScopeRegistry
     {
@@ -13,26 +13,26 @@ namespace OneSignalPush.Editor
         const string k_KeyScopes = "scopes";
 
         /// <summary>
-        /// Gets the name of current scope registry
+        /// Registry name.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Gets the url of current scope registry
+        /// Registry url.
         /// </summary>
         public string Url { get; }
 
         /// <summary>
-        /// Gets the scopes of current scope registry
+        /// Registry scopes.
         /// </summary>
         public HashSet<string> Scopes { get; }
 
         /// <summary>
-        /// Initializes a new instance of ScopeRegistry class with provided properties
+        /// Initializes a new instance of <see cref="ScopeRegistry"/> class with the provided properties.
         /// </summary>
-        /// <param name="name">Name of new scope registry</param>
-        /// <param name="url">Url of new scope registry</param>
-        /// <param name="scopes">Scopes of new scope registry</param>
+        /// <param name="name">Name of new scope registry.</param>
+        /// <param name="url">Url of new scope registry.</param>
+        /// <param name="scopes">Scopes of new scope registry.</param>
         public ScopeRegistry(string name, string url, HashSet<string> scopes)
         {
             Name = name;
@@ -41,11 +41,10 @@ namespace OneSignalPush.Editor
         }
 
         /// <summary>
-        /// Initializes a new instance of ScopeRegistry class with provided data
+        /// Initializes a new instance of <see cref="ScopeRegistry"/> class with the provided data.
         /// </summary>
-        /// <param name="dictionary">To fill this object. Must contain <see cref="k_KeyName">name</see>,
-        /// <see cref="k_KeyUrl">url</see> and <see cref="k_KeyScopes">scopes</see>
-        /// </param>
+        /// <param name="dictionary">Data to fill this object. Must contain <see cref="k_KeyName">name</see>,
+        /// <see cref="k_KeyUrl">url</see> and <see cref="k_KeyScopes">scopes</see>.</param>
         public ScopeRegistry(Dictionary<string, object> dictionary)
         {
             Name = (string) dictionary[k_KeyName];
@@ -59,19 +58,19 @@ namespace OneSignalPush.Editor
         }
 
         /// <summary>
-        /// Returns true if provided scope exists in current scope registry
+        /// Returns true if provided scope exists in current scope registry.
         /// </summary>
-        /// <param name="scope">string scope to check if exists in current scope registry</param>
-        /// <returns>True if this ScopeRegistry contains scope</returns>
+        /// <param name="scope">string scope to check if exists in this scope registry.</param>
+        /// <returns>'true' if this ScopeRegistry contains scope, `false` otherwise.</returns>
         public bool HasScope(string scope)
         {
             return Scopes.Contains(scope);
         }
 
         /// <summary>
-        /// Adds new scope to current scope registry
+        /// Adds scope.
         /// </summary>
-        /// <param name="scope">The scope to be added into scopes collection</param>
+        /// <param name="scope">A scope to add.</param>
         public void AddScope(string scope)
         {
             if (!HasScope(scope))
@@ -79,7 +78,7 @@ namespace OneSignalPush.Editor
         }
 
         /// <summary>
-        /// Generate a hash of this object excluding Name.
+        /// Generates a hash of this object data, excluding Name.
         /// </summary>
         /// <returns>Hash of this object.</returns>
         public override int GetHashCode() {
@@ -97,7 +96,7 @@ namespace OneSignalPush.Editor
         /// Method for matching entries, Name matching is not necessary.
         /// </summary>
         /// <param name="obj">Object to compare with.</param>
-        /// <returns>True if url and scopes match.</returns>
+        /// <returns>'true' if url and scopes match, 'false' otherwise.</returns>
         public override bool Equals(object obj)
         {
             return obj is ScopeRegistry other &&
