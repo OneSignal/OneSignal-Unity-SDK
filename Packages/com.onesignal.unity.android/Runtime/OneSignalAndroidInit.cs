@@ -7,7 +7,8 @@ namespace OneSignalPush.Android
         [RuntimeInitializeOnLoadMethod]
         public static void Init()
         {
-            OneSignal.RegisterPlatform(new OneSignalAndroid());
+            if(!Application.isEditor)
+                OneSignal.RegisterPlatform(new OneSignalAndroid());
         }
     }
 }

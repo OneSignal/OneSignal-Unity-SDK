@@ -317,6 +317,12 @@ namespace OneSignalPush
 
         private static void Init()
         {
+            if (Application.isEditor)
+            {
+                print("Please run OneSignal on a device to see push notifications.");
+                return;
+            }
+
             if (delegates == null)
                 delegates = new Dictionary<string, Delegate>();
 
@@ -333,13 +339,6 @@ namespace OneSignalPush
 
             addPermissionObserver();
             addSubscriptionObserver();
-/*
-
-#if UNITY_EDITOR
-            initUnityEditor();
-#else
-            initOneSignalPlatform();
-#endif*/
         }
 
         internal static void RegisterPlatform(IOneSignalPlatform platform)
@@ -351,11 +350,6 @@ namespace OneSignalPush
             oneSignalPlatform = platform;
         }
 
-
-        private static void initUnityEditor()
-        {
-            print("Please run OneSignal on a device to see push notifications.");
-        }
 
         private static OSInFocusDisplayOption _inFocusDisplayType = OSInFocusDisplayOption.InAppAlert;
 

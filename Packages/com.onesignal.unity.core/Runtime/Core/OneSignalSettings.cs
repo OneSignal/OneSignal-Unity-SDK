@@ -50,7 +50,9 @@ namespace OneSignalPush
             }
         }
 
+#if UNITY_EDITOR
         internal static void Save() => EditorUtility.SetDirty(Instance);
+#endif
 
         void SaveToAssetDatabase()
         {

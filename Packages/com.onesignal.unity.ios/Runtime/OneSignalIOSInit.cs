@@ -7,7 +7,8 @@ namespace OneSignalPush.IOS
         [RuntimeInitializeOnLoadMethod]
         public static void Init()
         {
-            OneSignal.RegisterPlatform(new OneSignalIOS());
+            if(!Application.isEditor)
+                OneSignal.RegisterPlatform(new OneSignalIOS());
         }
     }
 }
