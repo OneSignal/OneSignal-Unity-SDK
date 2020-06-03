@@ -1,17 +1,17 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     class OneSignalSettingsWindow :  OneSignalBaseSettingsWindow<OneSignalSettingsWindow>
     {
         const string k_SdkSetupUrl = "https://documentation.onesignal.com/docs/unity-sdk-setup";
-        const string k_HeaderText = "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.";
+        public const string HeaderText = "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.";
 
         protected override void OnAwake()
         {
             SetHeaderTitle(OneSignalSettings.ProductName);
-            SetHeaderDescription(k_HeaderText);
+            SetHeaderDescription(HeaderText);
             SetDocumentationUrl(k_SdkSetupUrl);
             AddMenuItem("SETTINGS", CreateInstance<SettingsTab>());
             AddMenuItem("ABOUT", CreateInstance<AboutTab>());

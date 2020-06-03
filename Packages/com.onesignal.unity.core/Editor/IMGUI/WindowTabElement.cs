@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace OneSignalPush.Editor.IMGUI
+namespace Com.OneSignal.Editor.IMGUI
 {
     abstract class WindowTabElement : ScriptableObject
     {

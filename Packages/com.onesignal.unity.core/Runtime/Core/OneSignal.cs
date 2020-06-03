@@ -36,10 +36,10 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using OneSignalPush.MiniJSON;
+using Com.OneSignal.MiniJSON;
 using System;
 
-namespace OneSignalPush
+namespace Com.OneSignal
 {
     public class OneSignal : MonoBehaviour
     {

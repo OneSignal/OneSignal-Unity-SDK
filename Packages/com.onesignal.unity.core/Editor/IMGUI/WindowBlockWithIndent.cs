@@ -2,13 +2,13 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor.IMGUI
+namespace Com.OneSignal.Editor.IMGUI
 {
     public class WindowBlockWithIndent : IDisposable
     {
         public WindowBlockWithIndent(GUIContent header)
         {
-            if(header.image != null)
+            if (header.image != null)
             {
                 header.text = " " + header.text;
             }
@@ -19,6 +19,7 @@ namespace OneSignalPush.Editor.IMGUI
                 GUILayout.Space(10);
                 EditorGUILayout.LabelField(header, OneSignalImguiStyles.ServiceBlockHeader);
             }
+
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
         }

@@ -1,5 +1,5 @@
 {
-    "name": "OneSignalPush",
+    "name": "Com.OneSignal",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": []

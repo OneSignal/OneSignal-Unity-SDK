@@ -29,12 +29,12 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using OneSignalPush.MiniJSON;
 using System.Collections;
+using Com.OneSignal.MiniJSON;
 
 #if !UNITY_CLOUD_BUILD && UNITY_EDITOR && UNITY_2017_1_OR_NEWER
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
    [InitializeOnLoad]
    public class OneSignalEditorCheckUpdateScript : AssetPostprocessor

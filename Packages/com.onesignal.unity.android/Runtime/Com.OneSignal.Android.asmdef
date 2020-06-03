@@ -1,12 +1,12 @@
 {
-    "name": "OneSignalPush.iOS",
+    "name": "Com.OneSignal.Android",
     "references": [
-        "OneSignalPush"
+        "Com.OneSignal"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
-        "Editor",
-        "iOS"
+        "Android",
+        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

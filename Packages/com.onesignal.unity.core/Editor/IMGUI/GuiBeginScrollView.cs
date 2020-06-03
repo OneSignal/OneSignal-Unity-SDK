@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace OneSignalPush.Editor.IMGUI
+namespace Com.OneSignal.Editor.IMGUI
 {
     class GuiBeginScrollView : IDisposable
-	{
+    {
         public GuiBeginScrollView(ref Vector2 scrollPosition)
         {
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);

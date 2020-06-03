@@ -1,8 +1,8 @@
-using OneSignalPush.Editor.IMGUI;
+using Com.OneSignal.Editor.IMGUI;
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     class SettingsTab : WindowTabElement
     {

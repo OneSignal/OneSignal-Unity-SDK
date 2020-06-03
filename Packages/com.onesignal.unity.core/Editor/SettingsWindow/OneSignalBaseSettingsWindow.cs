@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using OneSignalPush.Editor.IMGUI;
+using Com.OneSignal.Editor.IMGUI;
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     abstract class OneSignalBaseSettingsWindow<TWindow> : EditorWindow where TWindow : EditorWindow
     {

@@ -25,11 +25,10 @@
  * THE SOFTWARE.
  */
 
-
-using OneSignalPush.MiniJSON;
 using System.Collections.Generic;
+using Com.OneSignal.MiniJSON;
 
-namespace OneSignalPush
+namespace Com.OneSignal
 {
    class OneSignalPlatformHelper
    {

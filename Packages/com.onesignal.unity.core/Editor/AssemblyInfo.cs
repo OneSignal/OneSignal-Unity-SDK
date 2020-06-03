@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("OneSignalPush.Android.Editor")]
+[assembly: InternalsVisibleTo("Com.OneSignal.Android.Editor")]

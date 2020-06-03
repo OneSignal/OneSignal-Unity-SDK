@@ -1,17 +1,17 @@
 {
-    "name": "OneSignalPush.Android.Editor",
+    "name": "Com.OneSignal.iOS",
     "references": [
-        "OneSignalPush.Editor"
+        "Com.OneSignal"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "iOS"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }

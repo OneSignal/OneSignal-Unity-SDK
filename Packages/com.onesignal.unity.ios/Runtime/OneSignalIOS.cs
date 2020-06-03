@@ -27,10 +27,10 @@
 
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using OneSignalPush.MiniJSON;
 using System;
+using Com.OneSignal.MiniJSON;
 
-namespace OneSignalPush.IOS
+namespace Com.OneSignal.IOS
 {
     class OneSignalIOS : IOneSignalPlatform
     {

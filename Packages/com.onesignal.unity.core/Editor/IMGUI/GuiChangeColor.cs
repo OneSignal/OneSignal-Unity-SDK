@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace OneSignalPush.Editor.IMGUI
+namespace Com.OneSignal.Editor.IMGUI
 {
     class GuiChangeColor : IDisposable
     {

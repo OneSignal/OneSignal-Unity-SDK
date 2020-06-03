@@ -25,11 +25,10 @@
  * THE SOFTWARE.
  */
 
-
 using UnityEngine;
 using System.Collections.Generic;
-using OneSignalPush;
-using OneSignalPush.MiniJSON;
+using Com.OneSignal;
+using Com.OneSignal.MiniJSON;
 using System;
 
 public class GameControllerExample : MonoBehaviour {

@@ -28,9 +28,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using OneSignalPush.MiniJSON;
+using Com.OneSignal.MiniJSON;
 
-namespace OneSignalPush.Android
+namespace Com.OneSignal.Android
 {
     class OneSignalAndroid : IOneSignalPlatform
     {

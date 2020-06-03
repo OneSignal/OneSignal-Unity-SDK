@@ -2,19 +2,23 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor.IMGUI
+namespace Com.OneSignal.Editor.IMGUI
 {
     [Serializable]
     class HyperLabel : HyperButton
     {
-        [SerializeField] GUIContent m_Content;
-        [SerializeField] GUIStyle m_Style;
-        [SerializeField] GUIStyle m_MouseOverStyle;
+        [SerializeField]
+        GUIContent m_Content;
+        [SerializeField]
+        GUIStyle m_Style;
+        [SerializeField]
+        GUIStyle m_MouseOverStyle;
 
         public GUIContent Content => m_Content;
         public Color Color => m_Style.normal.textColor;
 
-        public HyperLabel(GUIContent content) : this(content, EditorStyles.label) {}
+        public HyperLabel(GUIContent content)
+            : this(content, EditorStyles.label) { }
 
         public HyperLabel(GUIContent content, GUIStyle style)
         {
@@ -27,7 +31,6 @@ namespace OneSignalPush.Editor.IMGUI
         {
             m_MouseOverStyle.normal.textColor = color;
         }
-
 
         protected override void OnNormal(params GUILayoutOption[] options)
         {
@@ -48,9 +51,9 @@ namespace OneSignalPush.Editor.IMGUI
             return m_Style.CalcSize(m_Content);
         }
 
-		public void SetStyle(GUIStyle style)
+        public void SetStyle(GUIStyle style)
         {
-			m_Style = new GUIStyle(style);
-		}
+            m_Style = new GUIStyle(style);
+        }
     }
 }

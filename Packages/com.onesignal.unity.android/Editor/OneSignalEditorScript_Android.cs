@@ -26,81 +26,91 @@
  */
 
 using System.IO;
-using OneSignalPush.Editor;
+using Com.OneSignal.Editor;
 using UnityEditor;
 
-[InitializeOnLoad]
-public class OneSignalEditorScriptAndroid
+namespace Com.OneSignal.Android.Editor
 {
-   const string k_AndroidConfigFolder = "Packages/com.onesignal.unity.android/Plugins/Android/OneSignalConfig";
-   const string k_PackageManifestPath = "Packages/com.onesignal.unity.android/package.json";
+    [InitializeOnLoad]
+    public class OneSignalEditorScriptAndroid
+    {
+        const string k_AndroidConfigFolder = "Packages/com.onesignal.unity.android/Plugins/Android/OneSignalConfig";
+        const string k_PackageManifestPath = "Packages/com.onesignal.unity.android/package.json";
 
-   static OneSignalEditorScriptAndroid()
-   {
-      CreateOneSignalAndroidManifest();
-      PackageManifestSanityCheck();
-   }
+        static OneSignalEditorScriptAndroid()
+        {
+            CreateOneSignalAndroidManifest();
+            PackageManifestSanityCheck();
+        }
 
-   static void PackageManifestSanityCheck()
-   {
-      Manifest mainManifest = new Manifest();
-      mainManifest.Fetch();
+        /// <summary>
+        /// We can't add EDM4UP into package.json before making sure that google scope registry if available for the project
+        /// The method will
+        ///  * Add Google scope registry to the project manifest.json if necessary
+        ///  * Will update or add configured version of `com.google.external-dependency-manager` dependency into package.json
+        /// </summary>
+        static void PackageManifestSanityCheck()
+        {
+            Manifest mainManifest = new Manifest();
+            mainManifest.Fetch();
 
-      bool manifestUpdated = false;
+            var manifestUpdated = false;
 
-      if (!mainManifest.IsRegistryExists(ScopeRegistriesConfig.GoogleScopeRegistryUrl))
-      {
-         mainManifest.AddScopeRegistry(ScopeRegistriesConfig.GoogleScopeRegistry);
-         manifestUpdated = true;
-      }
+            if (!mainManifest.IsRegistryExists(ScopeRegistriesConfig.GoogleScopeRegistryUrl))
+            {
+                mainManifest.AddScopeRegistry(ScopeRegistriesConfig.GoogleScopeRegistry);
+                manifestUpdated = true;
+            }
 
-      if (manifestUpdated)
-         mainManifest.ApplyChanges();
+            if (manifestUpdated)
+                mainManifest.ApplyChanges();
 
-      manifestUpdated = false;
+            manifestUpdated = false;
 
-      Manifest manifest = new Manifest(k_PackageManifestPath);
-      manifest.Fetch();
+            var manifest = new Manifest(k_PackageManifestPath);
+            manifest.Fetch();
 
-      if (!manifest.IsDependencyExists(ScopeRegistriesConfig.EDM4UName))
-      {
-         manifest.AddDependency(ScopeRegistriesConfig.EDM4UName, ScopeRegistriesConfig.EDM4UVersion);
-         manifestUpdated = true;
-      }
-      else
-      {
-         Dependency foundationDependency = manifest.GetDependency(ScopeRegistriesConfig.EDM4UName);
-         if (!foundationDependency.Version.Equals(ScopeRegistriesConfig.EDM4UVersion))
-         {
-            foundationDependency.SetVersion(ScopeRegistriesConfig.EDM4UVersion);
-            manifestUpdated = true;
-         }
-      }
+            if (!manifest.IsDependencyExists(ScopeRegistriesConfig.EDM4UName))
+            {
+                manifest.AddDependency(ScopeRegistriesConfig.EDM4UName, ScopeRegistriesConfig.EDM4UVersion);
+                manifestUpdated = true;
+            }
+            else
+            {
+                var EDM4UPackageDependency = manifest.GetDependency(ScopeRegistriesConfig.EDM4UName);
+                if (!EDM4UPackageDependency.Version.Equals(ScopeRegistriesConfig.EDM4UVersion))
+                {
+                    EDM4UPackageDependency.SetVersion(ScopeRegistriesConfig.EDM4UVersion);
+                    manifestUpdated = true;
+                }
+            }
 
-      if (manifestUpdated)
-         manifest.ApplyChanges();
-   }
+            if (manifestUpdated)
+                manifest.ApplyChanges();
+        }
 
-   // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
-   // then replace `${manifestApplicationId}` with current packagename in the Unity settings.
-   static void CreateOneSignalAndroidManifest()
-   {
-      var configFullPath  =  Path.GetFullPath($"{k_AndroidConfigFolder}");
-      var manifestPath =  Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
-      var manifestTemplatePath =  Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifestTemplate.xml");
+        // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
+        // then replace `${manifestApplicationId}` with current packagename in the Unity settings.
+        static void CreateOneSignalAndroidManifest()
+        {
+            var configFullPath = Path.GetFullPath($"{k_AndroidConfigFolder}");
+            var manifestPath = Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
+            var manifestTemplatePath = Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifestTemplate.xml");
 
-      File.Copy(manifestTemplatePath, manifestPath, true);
-      var streamReader = new StreamReader(manifestPath);
-      var body = streamReader.ReadToEnd();
-      streamReader.Close();
+            File.Copy(manifestTemplatePath, manifestPath, true);
+            var streamReader = new StreamReader(manifestPath);
+            var body = streamReader.ReadToEnd();
+            streamReader.Close();
 
-      #if UNITY_5_6_OR_NEWER
-         body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
-      #else
+#if UNITY_5_6_OR_NEWER
+            body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
+#else
          body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
-      #endif
-      using (var streamWriter = new StreamWriter(manifestPath, false)) {
-         streamWriter.Write(body);
-      }
-   }
+#endif
+            using (var streamWriter = new StreamWriter(manifestPath, false))
+            {
+                streamWriter.Write(body);
+            }
+        }
+    }
 }

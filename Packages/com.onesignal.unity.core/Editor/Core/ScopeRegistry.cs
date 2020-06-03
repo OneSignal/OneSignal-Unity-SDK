@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     /// <summary>
     /// Representation of "scopeRegistries" entry of the manifest file.

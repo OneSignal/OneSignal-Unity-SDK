@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OneSignalPush
+namespace Com.OneSignal
 {
     interface IOneSignalPlatform
     {

@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     static class OneSignalEditorMenu
     {

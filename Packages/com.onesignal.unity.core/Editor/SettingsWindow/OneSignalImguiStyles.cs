@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     static class OneSignalImguiStyles
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace OneSignalPush
+namespace Com.OneSignal
 {
     /// <summary>
     /// OneSignal Project Config.

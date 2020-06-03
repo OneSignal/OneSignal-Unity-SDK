@@ -1,7 +1,7 @@
 {
-    "name": "OneSignalPush.Editor",
+    "name": "Com.OneSignal.Android.Editor",
     "references": [
-        "OneSignalPush"
+        "Com.OneSignal.Editor"
     ],
     "includePlatforms": [
         "Editor"

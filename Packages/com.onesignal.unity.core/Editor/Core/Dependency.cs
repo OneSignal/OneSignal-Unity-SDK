@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OneSignalPush.Editor
+namespace Com.OneSignal.Editor
 {
     /// <summary>
     /// Representation of the manifest file "dependency" entry.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace OneSignalPush.Android
+namespace Com.OneSignal.Android
 {
     static class OneSignalIOSInit
     {
