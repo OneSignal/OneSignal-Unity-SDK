@@ -1250,7 +1250,7 @@ public class OneSignal : MonoBehaviour {
 
         // Some functions have a 'success' and 'failure' delegates, so this validates nothing is missing the json response
         private bool isValidSuccessFailureDelegate(Dictionary<string, object> jsonObject) {
-            if (!isValidDelegate(jsonObject))
+            if (jsonObject==null || !isValidDelegate(jsonObject) || !jsonObject.ContainsKey("delegate_id"))
                 return false;
 
             // Make sure success and failure delegate exist
