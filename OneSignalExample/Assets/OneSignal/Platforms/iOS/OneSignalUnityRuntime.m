@@ -167,7 +167,7 @@ void processInAppMessageClicked(char* inAppMessageActionString) {
 char* createInAppMessageJsonString(OSInAppMessageAction* action) {
     return os_cStringCopy(dictionaryToJsonChar(
     @{
-        @"click_name" : action.clickName,
+        @"click_name" : action.clickName ? action.clickName : @"",
         @"click_url" : action.clickUrl ? action.clickUrl.absoluteString : @"",
         @"first_click" : @(action.firstClick),
         @"closes_message" : @(action.closesMessage)
