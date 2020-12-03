@@ -229,6 +229,7 @@ public class OneSignal : MonoBehaviour {
     // OnExternalUserIdUpdateCompletion - Delegate is called when exteranl user id for push or email channel is set or removed
     // results - The dictionary payload containing the success status for the channels updating exteranl user id
     public delegate void OnExternalUserIdUpdateCompletion(Dictionary<string, object> results);
+    public delegate void OnExternalUserIdUpdateCompletionFailure(Dictionary<string, object> error);
 
     public delegate void OnSetEmailSuccess();
     public delegate void OnSetEmailFailure(Dictionary<string, object> error);
@@ -731,7 +732,6 @@ public class OneSignal : MonoBehaviour {
         #endif
     }
 
-
     public static void SetExternalUserId(string externalId) {
         #if ONESIGNAL_PLATFORM
             string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
@@ -744,6 +744,18 @@ public class OneSignal : MonoBehaviour {
             string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
             delegates.Add(delegateGuidCompletion, completion);
             oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, externalId);
+        #endif
+    }
+
+    public static void SetExternalUserId(string externalId, string authHashToken, OnExternalUserIdUpdateCompletion completion, OnExternalUserIdUpdateCompletionFailure completionFailure)
+    {
+        #if ONESIGNAL_PLATFORM
+            string delegateGuidCompletion = OneSignalUnityUtils.GetNewGuid();
+            string delegateGuidFailure = OneSignalUnityUtils.GetNewGuid();
+
+            delegates.Add(delegateGuidCompletion, completion);
+            delegates.Add(delegateGuidFailure, completionFailure);
+            oneSignalPlatform.SetExternalUserId(delegateGuidCompletion, delegateGuidFailure, externalId, authHashToken);
         #endif
     }
 

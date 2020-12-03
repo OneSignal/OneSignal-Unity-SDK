@@ -60,6 +60,7 @@ public interface OneSignalPlatform {
     void SetRequiresUserPrivacyConsent(bool required);
 
     void SetExternalUserId(string delegateId, string externalId);
+    void SetExternalUserId(string delegateId, string delegateIdFailure, string externalId, string externalIdAuthHash);
     void RemoveExternalUserId(string delegateId);
 
     void AddPermissionObserver();

@@ -100,6 +100,12 @@ public class GameControllerExample : MonoBehaviour {
         }
     }
 
+    private void OneSignalExternalUserIdCallbackFailure(Dictionary<string, object> error)
+    {
+        // The results will contain push and email success statuses
+        Console.WriteLine("External user id failed with error: " + Json.Serialize(error));
+    }
+
     // Examples of using OneSignal In-App Message triggers
     private void OneSignalInAppMessageTriggerExamples() {
         // Add a single trigger
@@ -330,7 +336,9 @@ public class GameControllerExample : MonoBehaviour {
         count++;
 
         if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetExternalId", customTextSize)) {
-            OneSignal.SetExternalUserId(externalId, OneSignalExternalUserIdCallback);
+            OneSignal.SetExternalUserId(externalId, OneSignalExternalUserIdCallback, OneSignalExternalUserIdCallbackFailure);
+            // Auth external id method
+            // OneSignal.SetExternalUserId(externalId, "your_auth_hash_token", OneSignalExternalUserIdCallback, OneSignalExternalUserIdCallbackFailure);
         }
 
         count++;

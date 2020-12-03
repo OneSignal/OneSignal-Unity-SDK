@@ -146,6 +146,11 @@ public class OneSignalAndroid : OneSignalPlatform {
         mOneSignal.Call("setExternalUserId", delegateId, externalId);
     }
 
+    public void SetExternalUserId(string delegateId, string delegateIdFailure, string externalId, string externalIdAuthHash)
+    {
+        mOneSignal.Call("setExternalUserId", delegateId, externalId, externalIdAuthHash);
+    }
+
     public void RemoveExternalUserId(string delegateId) {
         mOneSignal.Call("removeExternalUserId", delegateId);
     }
@@ -253,6 +258,5 @@ public class OneSignalAndroid : OneSignalPlatform {
     public void SendOutcomeWithValue(string delegateId, string name, float value) {
         mOneSignal.Call("sendOutcomeWithValue", delegateId, name, value);
     }
-
 }
 #endif
