@@ -125,6 +125,9 @@ public class OneSignalIOS : OneSignalPlatform {
     extern static public void _setExternalUserId(string delegateId, string externalId);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
+    extern static public void _setExternalUserIdWithAuthToken(string delegateId, string delegateIdFailure, string externalId, string authHashToken);
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
     extern static public void _removeExternalUserId(string delegateId);
 
     [System.Runtime.InteropServices.DllImport("__Internal")]
@@ -265,6 +268,10 @@ public class OneSignalIOS : OneSignalPlatform {
 
     public void SetExternalUserId(string delegateId, string externalId) {
         _setExternalUserId(delegateId, externalId);
+    }
+
+     public void SetExternalUserId(string delegateId, string delegateIdFailure, string externalId, string externalIdAuthHash) {
+        _setExternalUserIdWithAuthToken(delegateId, delegateIdFailure, externalId, externalIdAuthHash);
     }
 
     public void RemoveExternalUserId(string delegateId) {
