@@ -336,7 +336,7 @@ public class GameControllerExample : MonoBehaviour {
         count++;
 
         if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "SetExternalId", customTextSize)) {
-            OneSignal.SetExternalUserId(externalId, OneSignalExternalUserIdCallback, OneSignalExternalUserIdCallbackFailure);
+            OneSignal.SetExternalUserId(externalId, OneSignalExternalUserIdCallback);
             // Auth external id method
             // OneSignal.SetExternalUserId(externalId, "your_auth_hash_token", OneSignalExternalUserIdCallback, OneSignalExternalUserIdCallbackFailure);
         }
