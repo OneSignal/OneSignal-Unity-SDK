@@ -43,7 +43,7 @@ public class OneSignalEditorScriptAndroid : AssetPostprocessor {
    // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
    //   then replace `${manifestApplicationId}` with current packagename in the Unity settings.
    private static void createOneSignalAndroidManifest() {
-      string oneSignalConfigPath = "Assets/Plugins/Android/OneSignalConfig/";
+      string oneSignalConfigPath = "Assets/Plugins/Android/OneSignalConfig.plugin/";
       string manifestFullPath = oneSignalConfigPath + "AndroidManifest.xml";
 
       File.Copy(oneSignalConfigPath + "AndroidManifestTemplate.xml", manifestFullPath, true);
