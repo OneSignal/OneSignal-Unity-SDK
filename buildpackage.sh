@@ -17,7 +17,7 @@ temp_location=$(pwd)/onesignal_temp
 icons_location=$project_path/Assets/AppIcons
 icons_temp_location=$(pwd)/onesignal_temp/tempAppIcons
 android_location=$project_path/Assets/Plugins/Android
-config_location=$android_location/OneSignalConfig
+config_location=$android_location/OneSignalConfig.plugin
 package_manifest=$project_path/Packages/manifest.json
 temp_package_manifest=$temp_location/Packages/manifest.json
 
@@ -40,16 +40,16 @@ mv $icons_location.meta $icons_temp_location.meta
 # This removes any .aar files we don't want to bundle in our package
 
 # temporarily move some necessary files
-mv $config_location $temp_location/OneSignalConfig
-mv $config_location.meta $temp_location/OneSignalConfig.meta
+mv $config_location $temp_location/OneSignalConfig.plugin
+mv $config_location.meta $temp_location/OneSignalConfig.plugin.meta
 
 # get rid of a bunch of unnecessary files
 rm -r $android_location
 mkdir $android_location
 
 # put the config files back
-mv $temp_location/OneSignalConfig $config_location
-mv $temp_location/OneSignalConfig.meta $config_location.meta
+mv $temp_location/OneSignalConfig.plugin $config_location
+mv $temp_location/OneSignalConfig.plugin.meta $config_location.meta
 
 ## END - Clean Android files
 
