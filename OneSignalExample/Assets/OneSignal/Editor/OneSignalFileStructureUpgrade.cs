@@ -1,14 +1,10 @@
 #if UNITY_EDITOR
 
-using UnityEditor;
-using UnityEngine;
-
 // Add any files or folders that need to be rename, moved, or deleted in
 // as part of the process when updating this SDK.
-[InitializeOnLoad]
-public class OneSignalFileStructureUpgrade : AssetPostprocessor {
+internal class OneSignalFileStructureUpgrade {
 
-   static OneSignalFileStructureUpgrade() {
+   internal static void DoUpgrade() {
       UpgradeToSDKVersion2_13_3();
    }
 
