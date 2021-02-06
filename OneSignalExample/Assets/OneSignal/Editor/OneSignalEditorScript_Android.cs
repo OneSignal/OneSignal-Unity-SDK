@@ -33,17 +33,12 @@ using UnityEditor;
 #if UNITY_ANDROID && UNITY_EDITOR
 using System.Collections.Generic;
 
-[InitializeOnLoad]
-public class OneSignalEditorScriptAndroid : AssetPostprocessor {
+internal class OneSignalEditorScriptAndroid {
 
-   static OneSignalEditorScriptAndroid() {
-      createOneSignalAndroidManifest();
-   }
-   
    // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
    //   then replace `${manifestApplicationId}` with current packagename in the Unity settings.
-   private static void createOneSignalAndroidManifest() {
-      string oneSignalConfigPath = "Assets/Plugins/Android/OneSignalConfig.plugin/";
+   internal static void createOneSignalAndroidManifest() {
+      var oneSignalConfigPath = OneSignalFileLocator.GetOneSignalConfigFolderNameWithPath() + "/";
       string manifestFullPath = oneSignalConfigPath + "AndroidManifest.xml";
 
       File.Copy(oneSignalConfigPath + "AndroidManifestTemplate.xml", manifestFullPath, true);

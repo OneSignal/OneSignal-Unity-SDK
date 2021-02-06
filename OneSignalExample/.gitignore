@@ -61,4 +61,4 @@ Assets/Root
 
 /ProjectSettings/GoogleDependencyOneSignal.xml
 
-/Assets/Plugins/Android/OneSignalConfig/AndroidManifest.xml*
+**/OneSignalConfig.plugin/AndroidManifest.xml*
