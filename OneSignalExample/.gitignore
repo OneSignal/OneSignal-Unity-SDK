@@ -59,7 +59,6 @@ Assets/Root
 /Assets/Plugins/Android/customtabs-*
 /Assets/Plugins/Android/support-annotations-*.jar*
 
-/ProjectSettings/GoogleDependencyOneSignal.xml
 /ProjectSettings/AndroidResolverDependencies.xml
 
 **/OneSignalConfig.plugin/AndroidManifest.xml*
