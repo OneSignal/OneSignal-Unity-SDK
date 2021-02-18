@@ -404,6 +404,14 @@ public class OneSignal : MonoBehaviour {
 
     internal static UnityBuilder builder = null;
 
+    public static OneSignalPlatform Instance
+    {
+        get
+        {
+            return oneSignalPlatform;
+        }
+    }
+
     private static OneSignalPlatform oneSignalPlatform = null;
     private const string gameObjectName = "OneSignalRuntimeObject_KEEP";
 
