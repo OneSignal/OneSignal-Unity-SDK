@@ -79,7 +79,11 @@ public class OneSignalUpdateRequest : MonoBehaviour
 
       yield return request.SendWebRequest();
       
-      if (request.isNetworkError || request.isHttpError) {
+      var requestError =
+         request.result == UnityWebRequest.Result.ProtocolError ||
+         request.result == UnityWebRequest.Result.ConnectionError;
+      
+      if (requestError) {
          if (request.error != null) {
             Debug.LogError("OneSignal Update Checker encountered an unknown error");
          } else {
