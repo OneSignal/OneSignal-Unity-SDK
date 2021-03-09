@@ -1,7 +1,7 @@
 /**
  * Modified MIT License
  * 
- * Copyright 2016 OneSignal
+ * Copyright 2021 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ public class GameControllerExample : MonoBehaviour {
     void Start() {
         extraMessage = null;
 
-        // Enable line below to debug issues with setuping OneSignal. (logLevel, visualLogLevel)
+        // Enable line below to debug issues with OneSignal. (logLevel, visualLogLevel)
         OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
 
         // If you set to true, the user will have to provide consent
@@ -53,7 +53,6 @@ public class GameControllerExample : MonoBehaviour {
         // The only required method you need to call to setup OneSignal to receive push notifications.
         // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
         // Should only be called once when your app is loaded.
-        // OneSignal.Init(OneSignal_AppId);
         OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
             .HandleNotificationReceived(HandleNotificationReceived)
             .HandleNotificationOpened(HandleNotificationOpened)
@@ -61,6 +60,7 @@ public class GameControllerExample : MonoBehaviour {
             .EndInit();
       
         OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
+
         OneSignal.permissionObserver += OneSignal_permissionObserver;
         OneSignal.subscriptionObserver += OneSignal_subscriptionObserver;
         OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
@@ -126,7 +126,7 @@ public class GameControllerExample : MonoBehaviour {
         // Delete a list of triggers
         OneSignal.RemoveTriggersForKeys(new List<string>() { "key1", "key2" });
 
-        // Temporarily puase In-App messages; If true is passed in.
+        // Temporarily pause In-App messages; If true is passed in.
         // Great to ensure you never interrupt your user while they are in the middle of a match in your game.
         OneSignal.PauseInAppMessages(false);
    }
@@ -172,7 +172,7 @@ public class GameControllerExample : MonoBehaviour {
 	    Debug.Log("EMAIL stateChanges.to.status: " + stateChanges.to.emailUserId + ", " + stateChanges.to.emailAddress);
     }
 
-    // Called when your app is in focus and a notificaiton is recieved.
+    // Called when your app is in focus and a notification is received.
     // The name of the method can be anything as long as the signature matches.
     // Method must be static or this object should be marked as DontDestroyOnLoad
     private static void HandleNotificationReceived(OSNotification notification) {
@@ -277,7 +277,7 @@ public class GameControllerExample : MonoBehaviour {
             extraMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
             OneSignal.IdsAvailable((userId, pushToken) => {
                 if (pushToken != null) {
-                    // See http://documentation.onesignal.com/docs/notifications-create-notification for a full list of options.
+                    // See https://documentation.onesignal.com/reference/create-notification for a full list of options.
                     // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
                     // If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
 
@@ -291,7 +291,7 @@ public class GameControllerExample : MonoBehaviour {
                     extraMessage = "Posting test notification now.";
 
                     OneSignal.PostNotification(notification, (responseSuccess) => {
-                        extraMessage = "Notification posted successful! Delayed by about 30 secounds to give you time to press the home button to see a notification vs an in-app alert.\n" + Json.Serialize(responseSuccess);
+                        extraMessage = "Notification posted successful! Delayed by about 30 seconds to give you time to press the home button to see a notification vs an in-app alert.\n" + Json.Serialize(responseSuccess);
                     }, (responseFailure) => {
                         extraMessage = "Notification failed to post:\n" + Json.Serialize(responseFailure);
                     });
