@@ -24,7 +24,13 @@ jobs:
       
     # Publish to npm
     - run: npm publish OneSignalExample/Packages/com.onesignal.unity.core --access public
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        
     - run: npm publish OneSignalExample/Packages/com.onesignal.unity.android --access public
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    
     - run: npm publish OneSignalExample/Packages/com.onesignal.unity.ios --access public
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
