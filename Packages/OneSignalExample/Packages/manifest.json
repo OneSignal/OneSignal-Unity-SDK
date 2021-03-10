@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "com.onesignal.unity.android": "file:../../com.onesignal.unity.android",
+    "com.onesignal.unity.core": "file:../../com.onesignal.unity.core",
+    "com.onesignal.unity.ios": "file:../../com.onesignal.unity.ios",
+    "com.unity.package-manager-ui": "2.0.8",
+    "com.unity.modules.imgui": "1.0.0"
+  },
+  "testables": [
+    "com.onesignal.unity.core"
+  ],
+  "scopedRegistries": [
+    {
+      "name": "Game Package Registry by Google",
+      "url": "https://unityregistry-pa.googleapis.com",
+      "scopes": [
+        "com.google"
+      ]
+    },
+    {
+      "name": "npmjs",
+      "url": "https://registry.npmjs.org/",
+      "scopes": [
+        "com.onesignal.unity"
+      ]
+    }
+  ]
+}
