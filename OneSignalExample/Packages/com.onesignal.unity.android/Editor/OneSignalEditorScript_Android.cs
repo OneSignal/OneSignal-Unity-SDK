@@ -34,8 +34,8 @@ namespace Com.OneSignal.Android.Editor
     [InitializeOnLoad]
     public class OneSignalEditorScriptAndroid
     {
-        const string k_AndroidConfigFolder = "Packages/com.onesignal.unity.android/Plugins/Android/OneSignalConfig";
-        const string k_PackageManifestPath = "Packages/com.onesignal.unity.android/package.json";
+        static readonly string k_AndroidConfigFolder = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.unity.android/Plugins/Android/OneSignalConfig";
+        static readonly string k_PackageManifestPath = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.unity.android/package.json";
 
         static OneSignalEditorScriptAndroid()
         {
@@ -77,10 +77,10 @@ namespace Com.OneSignal.Android.Editor
             }
             else
             {
-                var EDM4UPackageDependency = manifest.GetDependency(ScopeRegistriesConfig.EDM4UName);
-                if (!EDM4UPackageDependency.Version.Equals(ScopeRegistriesConfig.EDM4UVersion))
+                var edm4UPackageDependency = manifest.GetDependency(ScopeRegistriesConfig.EDM4UName);
+                if (!edm4UPackageDependency.Version.Equals(ScopeRegistriesConfig.EDM4UVersion))
                 {
-                    EDM4UPackageDependency.SetVersion(ScopeRegistriesConfig.EDM4UVersion);
+                    edm4UPackageDependency.SetVersion(ScopeRegistriesConfig.EDM4UVersion);
                     manifestUpdated = true;
                 }
             }
@@ -101,12 +101,7 @@ namespace Com.OneSignal.Android.Editor
             var streamReader = new StreamReader(manifestPath);
             var body = streamReader.ReadToEnd();
             streamReader.Close();
-
-#if UNITY_5_6_OR_NEWER
             body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
-#else
-         body = body.Replace("${manifestApplicationId}", PlayerSettings.bundleIdentifier);
-#endif
             using (var streamWriter = new StreamWriter(manifestPath, false))
             {
                 streamWriter.Write(body);
