@@ -25,8 +25,6 @@
  * THE SOFTWARE.
  */
 
-using System;
-
 class OneSignalUnityUtils {
 
     public static string GetNewGuid() {

@@ -21,8 +21,7 @@ namespace Com.OneSignal.Editor
         protected override void OnEnable()
         {
             base.OnEnable();
-            var icon = Skin.SettingsWindowIcon;
-            titleContent = new GUIContent(OneSignalSettings.ProductName, icon);
+            titleContent = new GUIContent(OneSignalSettings.ProductName, Skin.SettingsWindowIcon);
         }
 
         protected override void BeforeGUI()
