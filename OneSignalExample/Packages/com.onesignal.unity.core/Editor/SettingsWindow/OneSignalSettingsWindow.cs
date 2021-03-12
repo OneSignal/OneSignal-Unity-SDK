@@ -1,3 +1,4 @@
+using StansAssets.AMM;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +21,8 @@ namespace Com.OneSignal.Editor
         protected override void OnEnable()
         {
             base.OnEnable();
-            titleContent = new GUIContent(OneSignalSettings.ProductName);
+            var icon = Skin.SettingsWindowIcon;
+            titleContent = new GUIContent(OneSignalSettings.ProductName, icon);
         }
 
         protected override void BeforeGUI()
