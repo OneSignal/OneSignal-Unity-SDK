@@ -36,7 +36,6 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using Com.OneSignal.MiniJSON;
 using System;
 
 namespace Com.OneSignal
