@@ -35,7 +35,8 @@ namespace Com.OneSignal.IOS
     class OneSignalIOS : IOneSignalPlatform
     {
         [DllImport("__Internal")]
-        static extern void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs, int displayOption, int logLevel, int visualLogLevel, bool requiresUserPrivacyConsent);
+        static extern void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchURLs,
+            int displayOption, int logLevel, int visualLogLevel, bool requiresUserPrivacyConsent);
 
         [DllImport("__Internal")]
         static extern void _registerForPushNotifications();
@@ -101,7 +102,8 @@ namespace Com.OneSignal.IOS
         static extern void _setUnauthenticatedEmail(string delegateIdSuccess, string delegateIdFailure, string email);
 
         [DllImport("__Internal")]
-        static extern void _setEmail(string delegateIdSuccess, string delegateIdFailure, string email, string emailAuthCode);
+        static extern void _setEmail(string delegateIdSuccess, string delegateIdFailure, string email,
+            string emailAuthCode);
 
         [DllImport("__Internal")]
         static extern void _logoutEmail(string delegateIdSuccess, string delegateIdFailure);
@@ -152,12 +154,12 @@ namespace Com.OneSignal.IOS
         static extern void _sendOutcomeWithValue(string delegateId, string name, float value);
 
 
-
         public void Init()
         {
             bool autoPrompt = true, inAppLaunchUrl = true;
 
-            if (OneSignal.builder.iOSSettings != null) {
+            if (OneSignal.builder.iOSSettings != null)
+            {
                 if (OneSignal.builder.iOSSettings.ContainsKey(OneSignal.kOSSettingsAutoPrompt))
                     autoPrompt = OneSignal.builder.iOSSettings[OneSignal.kOSSettingsAutoPrompt];
                 if (OneSignal.builder.iOSSettings.ContainsKey(OneSignal.kOSSettingsInAppLaunchURL))
@@ -169,9 +171,12 @@ namespace Com.OneSignal.IOS
                 OneSignal.logLevel, OneSignal.visualLogLevel, OneSignal.requiresUserConsent);
         }
 
-        public void Init(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchUrLs, OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel, bool requiresUserPrivacyConsent)
+        public void Init(string gameObjectName, string appId, bool autoPrompt, bool inAppLaunchUrLs,
+            OneSignal.OSInFocusDisplayOption displayOption, OneSignal.LOG_LEVEL logLevel,
+            OneSignal.LOG_LEVEL visualLevel, bool requiresUserPrivacyConsent)
         {
-            _init(gameObjectName, appId, autoPrompt, inAppLaunchUrLs, (int)displayOption, (int)logLevel, (int)visualLevel, requiresUserPrivacyConsent);
+            _init(gameObjectName, appId, autoPrompt, inAppLaunchUrLs, (int) displayOption, (int) logLevel,
+                (int) visualLevel, requiresUserPrivacyConsent);
         }
 
         public void SetLocationShared(bool shared)
@@ -219,7 +224,8 @@ namespace Com.OneSignal.IOS
             _setSubscription(enable);
         }
 
-        public void PostNotification(string delegateIdSuccess, string delegateIdFailure, Dictionary<string, object> data)
+        public void PostNotification(string delegateIdSuccess, string delegateIdFailure,
+            Dictionary<string, object> data)
         {
             _postNotification(delegateIdSuccess, delegateIdFailure, Json.Serialize(data));
         }
@@ -236,12 +242,12 @@ namespace Com.OneSignal.IOS
 
         public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel)
         {
-            _setOneSignalLogLevel((int)logLevel, (int)visualLevel);
+            _setOneSignalLogLevel((int) logLevel, (int) visualLevel);
         }
 
         public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display)
         {
-            _setInFocusDisplayType((int)display);
+            _setInFocusDisplayType((int) display);
         }
 
         public void PromptForPushNotificationsWithUserResponse()
@@ -321,7 +327,7 @@ namespace Com.OneSignal.IOS
 
         public void AddTrigger(string key, object value)
         {
-            IDictionary<string, object> trigger = new Dictionary<string, object>() { { key, value } };
+            IDictionary<string, object> trigger = new Dictionary<string, object>() {{key, value}};
             _addTriggers(Json.Serialize(trigger));
         }
 
@@ -342,7 +348,8 @@ namespace Com.OneSignal.IOS
 
         public object GetTriggerValueForKey(string key)
         {
-            Dictionary<string, object> triggerValue = Json.Deserialize(_getTriggerValueForKey(key)) as Dictionary<string, object>;
+            Dictionary<string, object> triggerValue =
+                Json.Deserialize(_getTriggerValueForKey(key)) as Dictionary<string, object>;
             return triggerValue["value"];
         }
 
@@ -381,6 +388,21 @@ namespace Com.OneSignal.IOS
             return OneSignalPlatformHelper.ParseOSEmailSubscriptionStateChanges(this, jsonState);
         }
 
+        public void EnableVibrate(bool enable)
+        {
+            // Not supported on iOS platform
+        }
+
+        public void EnableSound(bool enable)
+        {
+            // Not supported on iOS platform
+        }
+
+        public void ClearOneSignalNotifications()
+        {
+            // Not supported on iOS platform
+        }
+
         public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string jsonStat)
         {
             return OneSignalPlatformHelper.ParseOSSubscriptionStateChanges(this, jsonStat);
@@ -392,7 +414,7 @@ namespace Com.OneSignal.IOS
 
             var state = new OSPermissionState();
             state.hasPrompted = Convert.ToBoolean(stateDictCasted["hasPrompted"]);
-            state.status = (OSNotificationPermission)Convert.ToInt32(stateDictCasted["status"]);
+            state.status = (OSNotificationPermission) Convert.ToInt32(stateDictCasted["status"]);
 
             return state;
         }
@@ -440,5 +462,3 @@ namespace Com.OneSignal.IOS
         }
     }
 }
-
-

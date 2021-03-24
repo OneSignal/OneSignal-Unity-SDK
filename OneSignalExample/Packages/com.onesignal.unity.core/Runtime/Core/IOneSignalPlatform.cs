@@ -68,5 +68,10 @@ namespace Com.OneSignal
         OSPermissionStateChanges ParseOSPermissionStateChanges(string stateChangesJsonString);
         OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string stateChangesJsonString);
         OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string stateChangesJsonString);
+
+        // Currently only supported by Android
+        void EnableVibrate(bool enable);
+        void EnableSound(bool enable);
+        void ClearOneSignalNotifications();
     }
 }

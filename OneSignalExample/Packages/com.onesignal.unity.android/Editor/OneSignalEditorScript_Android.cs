@@ -34,8 +34,8 @@ namespace Com.OneSignal.Android.Editor
     [InitializeOnLoad]
     public class OneSignalEditorScriptAndroid
     {
-        static readonly string k_AndroidConfigFolder = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.unity.android/Plugins/Android/OneSignalConfig";
-        static readonly string k_PackageManifestPath = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.unity.android/package.json";
+        static readonly string k_AndroidConfigFolder = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/Plugins/Android/OneSignalConfig";
+        static readonly string k_PackageManifestPath = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/package.json";
 
         static OneSignalEditorScriptAndroid()
         {

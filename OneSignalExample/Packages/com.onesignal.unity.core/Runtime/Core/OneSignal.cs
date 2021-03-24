@@ -24,19 +24,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IPHONE)
     #define ONESIGNAL_PLATFORM
-#endif
-
-#if !UNITY_EDITOR && UNITY_ANDROID
-    #define ANDROID_ONLY
 #endif
 
 
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Com.OneSignal.MiniJSON;
 
 namespace Com.OneSignal
 {
@@ -463,22 +459,22 @@ namespace Com.OneSignal
 
         public static void EnableVibrate(bool enable)
         {
-#if ANDROID_ONLY
-            ((OneSignalAndroid) oneSignalPlatform).EnableVibrate(enable);
+#if ONESIGNAL_PLATFORM
+            oneSignalPlatform.EnableVibrate(enable);
 #endif
         }
 
         public static void EnableSound(bool enable)
         {
-#if ANDROID_ONLY
-            ((OneSignalAndroid) oneSignalPlatform).EnableSound(enable);
+#if ONESIGNAL_PLATFORM
+            oneSignalPlatform.EnableSound(enable);
 #endif
         }
 
         public static void ClearOneSignalNotifications()
         {
-#if ANDROID_ONLY
-            ((OneSignalAndroid) oneSignalPlatform).ClearOneSignalNotifications();
+#if ONESIGNAL_PLATFORM
+            oneSignalPlatform.ClearOneSignalNotifications();
 #endif
         }
 
