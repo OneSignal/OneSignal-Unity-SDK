@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Com.OneSignal
@@ -6,8 +7,21 @@ namespace Com.OneSignal
     {
         void Init();
 
+        /// <summary>
+        /// Enable logging to help debug OneSignal implementation.
+        /// </summary>
+        /// <param name="logLevel">Sets the logging level to print to the Android LogCat log or Xcode log.</param>
+        /// <param name="visualLevel">Sets the logging level to show as alert dialogs.</param>
         void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel);
         void RegisterForPushNotifications();
+
+        /// <summary>
+        /// Prompt the user for notification permissions.
+        /// Callback fires as soon as the user accepts or declines notifications.
+        /// Must set `kOSSettingsKeyAutoPrompt` to `false` when calling <see href="https://documentation.onesignal.com/docs/unity-sdk#initwithlaunchoptions">initWithLaunchOptions</see>.
+        ///
+        /// Recommended: Set to false and follow <see href="https://documentation.onesignal.com/docs/ios-push-opt-in-prompt">iOS Push Opt-In Prompt</see>.
+        /// </summary>
         void PromptForPushNotificationsWithUserResponse();
 
         void SendTag(string tagName, string tagValue);
@@ -30,6 +44,8 @@ namespace Com.OneSignal
         void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email, string emailAuthToken);
         void LogoutEmail(string delegateIdSuccess, string delegateIdFailure);
 
+
+        [Obsolete("Use the new setNotificationWillShowInForegroundHandler method.")]
         void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display);
 
         void UserDidProvideConsent(bool consent);
