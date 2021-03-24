@@ -10,3 +10,7 @@ OneSignalExample/Packages/manifest.json
 OneSignalExample/Packages/packages-lock.json
 
 **/Logs/*
+
+#Plugins folder will contain SKD serialized settings.
+OneSignalExample/Assets/Plugins/
+OneSignalExample/Assets/Plugins.meta
