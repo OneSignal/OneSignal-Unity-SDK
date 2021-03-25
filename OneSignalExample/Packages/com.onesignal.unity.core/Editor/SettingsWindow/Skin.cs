@@ -9,7 +9,7 @@ namespace Com.OneSignal.Editor
         static readonly Dictionary<string, Texture2D> s_Icons = new Dictionary<string, Texture2D>();
         public static Texture2D SettingsWindowIcon => GetTextureAtPath(IconsPath);
 
-        private static string IconsPath => "Packages/com.onesignal-test.unity.core/Editor/Icons/"
+        private static string IconsPath => $"Packages/{ScopeRegistriesConfig.OneSignalScope}/Editor/Icons/"
                                            + (EditorGUIUtility.isProSkin
                                                ? "icon_pro.png"
                                                : "icon_default.png" );
