@@ -71,16 +71,32 @@ namespace Com.OneSignal
         /// <param name="result">The Notification open result describing: 1. The notification opened 2. The action taken by the user. </param>
         public delegate void NotificationOpened(OSNotificationOpenedResult result);
 
+        /// <summary>
+        /// Sets a In App Message opened handler. The instance will be called when an In App Message action is tapped on.
+        /// </summary>
+        /// <param name="action">Instance to a class implementing this interference.</param>
         public delegate void InAppMessageClicked(OSInAppMessageAction action);
 
         public delegate void IdsAvailableCallback(string playerID, string pushToken);
 
+        /// <summary>
+        /// Delegate you can define to get the all the tags set on a player from onesignal.com.
+        /// </summary>
+        /// <param name="tags">Dictionary of key value pairs retrieved from the OneSignal server.</param>
         public delegate void TagsReceived(Dictionary<string, object> tags);
 
         public delegate void PromptForPushNotificationsUserResponse(bool accepted);
 
+        /// <summary>
+        /// Delegate fires when the notification was created on OneSignal's server.
+        /// </summary>
+        /// <param name="response">Json response from OneSignal's server.</param>
         public delegate void OnPostNotificationSuccess(Dictionary<string, object> response);
 
+        /// <summary>
+        /// Delegate fires when the notification failed to create.
+        /// </summary>
+        /// <param name="response">Json response from OneSignal's server.</param>
         public delegate void OnPostNotificationFailure(Dictionary<string, object> response);
 
         private static PromptForPushNotificationsUserResponse notificationUserResponseDelegate;
@@ -196,7 +212,13 @@ namespace Com.OneSignal
             }
         }
 
+        /// <summary>
+        /// Auto prompt user for notification permissions.
+        /// </summary>
         public const string kOSSettingsAutoPrompt = "kOSSettingsAutoPrompt";
+        /// <summary>
+        /// Launch notifications with a launch URL as an in app webview.
+        /// </summary>
         public const string kOSSettingsInAppLaunchURL = "kOSSettingsInAppLaunchURL";
 
         public enum LOG_LEVEL
@@ -219,15 +241,32 @@ namespace Com.OneSignal
 
         public class UnityBuilder
         {
+            /// <summary>
+            /// Your OneSignal AppId from onesignal.com
+            /// </summary>
             public string appID;
+            /// <summary>
+            /// Your Google Project Number that is only required for Android GCM pushes.
+            /// </summary>
             public string googleProjectNumber;
             public Dictionary<string, bool> iOSSettings;
+            /// <summary>
+            /// The delegate will be called when an In App Message action is received.
+            /// </summary>
             public NotificationReceived notificationReceivedDelegate;
+            /// <summary>
+            /// The delegate will be called when an In App Message action is opened.
+            /// </summary>
             public NotificationOpened notificationOpenedDelegate;
+            /// <summary>
+            /// The delegate will be called when an In App Message action is tapped on.
+            /// </summary>
             public InAppMessageClicked inAppMessageClickHandlerDelegate;
             
             /// <summary>
-            /// 
+            /// Builder Method.
+            /// Sets a In App Message opened handler. The instance will be called when an In App Message action is received.
+            /// Method must be static or this object should be marked as DontDestroyOnLoad.
             /// </summary>
             /// <param name="inNotificationReceivedDelegate">Calls this delegate when a notification is received.</param>
             /// <returns></returns>
@@ -238,7 +277,9 @@ namespace Com.OneSignal
             }
             
             /// <summary>
-            /// 
+            /// Builder Method.
+            /// Sets a In App Message opened handler. The instance will be called when an In App Message action is opened.
+            /// Method must be static or this object should be marked as DontDestroyOnLoad.
             /// </summary>
             /// <param name="inNotificationOpenedDelegate">Calls this delegate when a push notification is opened.</param>
             /// <returns></returns>
@@ -249,7 +290,9 @@ namespace Com.OneSignal
             }
             
             /// <summary>
-            /// 
+            /// Builder Method.
+            /// Sets a In App Message click handler. The instance will be called when an In App Message action is tapped on.
+            /// Method must be static or this object should be marked as DontDestroyOnLoad.
             /// </summary>
             /// <param name="inInAppMessageClickedDelegate">Calls this delegate when an In-App Message is opened.</param>
             /// <returns></returns>
@@ -275,7 +318,7 @@ namespace Com.OneSignal
             /// Pass one if the define kOSSettings strings as keys only. Only affects iOS platform.
             /// autoPrompt = Set false to delay the iOS accept notification system prompt. Defaults true.
             /// You can then call RegisterForPushNotifications at a better point in your game to prompt them.
-            /// inAppLaunchURL = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
+            /// inAppLaunchURL = (iOS) Set false to force a URL to launch through Safari instead of in-app webview.
             /// </summary>
             /// <param name="settings">Settings dictionary.</param>
             /// <returns></returns>
@@ -288,11 +331,21 @@ namespace Com.OneSignal
                 return this;
             }
 
+            /// <summary>
+            /// Must be called after 'StartInit' to complete initialization of OneSignal.
+            /// </summary>
             public void EndInit()
             {
                 Init();
             }
 
+            /// <summary>
+            /// Delays initialization of the SDK until the user provides privacy consent.
+            /// </summary>
+            /// <param name="required">
+            /// If you pass in 'true', your application will need to call provideConsent(true) before the OneSignal SDK gets fully initialized.
+            /// </param>
+            /// <returns></returns>
             public UnityBuilder SetRequiresUserPrivacyConsent(bool required)
             {
                 System.Diagnostics.Debug.WriteLine("Did call setRequiresUserPrivacyConsent in OneSignal.cs");
@@ -386,6 +439,9 @@ namespace Com.OneSignal
 
         private static OSInFocusDisplayOption _inFocusDisplayType = OSInFocusDisplayOption.InAppAlert;
 
+        /// <summary>
+        /// Setting to control how OneSignal notifications will be shown when one is received while your app is in focus.
+        /// </summary>
         public static OSInFocusDisplayOption inFocusDisplayType
         {
             get { return _inFocusDisplayType; }
@@ -463,6 +519,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Delete a Tag from current device record.
+        /// </summary>
         public static void DeleteTag(string key)
         {
 #if ONESIGNAL_PLATFORM
@@ -470,6 +529,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Delete multiple Tags from current device record.
+        /// </summary>
         public static void DeleteTags(IList<string> keys)
         {
 #if ONESIGNAL_PLATFORM
@@ -529,6 +591,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Android - When user receives notification, vibrate device less.
+        /// </summary>
         public static void EnableVibrate(bool enable)
         {
 #if ONESIGNAL_PLATFORM
@@ -536,6 +601,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Android - When user receives notification, do not play a sound
+        /// </summary>
         public static void EnableSound(bool enable)
         {
 #if ONESIGNAL_PLATFORM
@@ -543,6 +611,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Removes all OneSignal app notifications from the Notification Shade.
+        /// </summary>
         public static void ClearOneSignalNotifications()
         {
 #if ONESIGNAL_PLATFORM
@@ -550,6 +621,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Disable OneSignal from sending notifications to current device.
+        /// </summary>
         public static void SetSubscription(bool enable)
         {
 #if ONESIGNAL_PLATFORM
@@ -557,6 +631,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to set the user's email address with the OneSignal SDK. We offer several overloaded versions of this method.
+        /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
+        /// </summary>
         public static void SetEmail(string email)
         {
 #if ONESIGNAL_PLATFORM
@@ -564,6 +642,12 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to set the user's email address with the OneSignal SDK. We offer several overloaded versions of this method.
+        /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
+        /// </summary>
+        /// <param name="successDelegate">Delegate fires when the email was set on OneSignal's server.</param>
+        /// <param name="failureDelegate">Delegate fires when the email failed to be set.</param>
         public static void SetEmail(string email, OnSetEmailSuccess successDelegate, OnSetEmailFailure failureDelegate)
         {
 #if ONESIGNAL_PLATFORM
@@ -577,13 +661,31 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to set the user's email address with the OneSignal SDK. We offer several overloaded versions of this method.
+        /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
+        /// </summary>
+        /// <param name="emailAuthToken">
+        /// If you have a backend server, we strongly recommend using **Identity Verification** with your users.
+        /// Your backend can generate an email authentication token and send it to your app.
+        /// </param>
         public static void SetEmail(string email, string emailAuthToken)
         {
 #if ONESIGNAL_PLATFORM
             oneSignalPlatform.SetEmail(null, null, email, emailAuthToken);
 #endif
         }
-
+        
+        /// <summary>
+        /// Allows you to set the user's email address with the OneSignal SDK. We offer several overloaded versions of this method.
+        /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
+        /// </summary>
+        /// <param name="emailAuthToken">
+        /// If you have a backend server, we strongly recommend using **Identity Verification** with your users.
+        /// Your backend can generate an email authentication token and send it to your app.
+        /// </param>
+        /// <param name="successDelegate">Delegate fires when the email was set on OneSignal's server.</param>
+        /// <param name="failureDelegate">Delegate fires when the email failed to be set.</param>
         public static void SetEmail(string email, string emailAuthToken, OnSetEmailSuccess successDelegate, OnSetEmailFailure failureDelegate)
         {
 #if ONESIGNAL_PLATFORM
@@ -597,6 +699,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// If your app implements logout functionality, you can call logoutEmail to dissociate the email from the device
+        /// </summary>
         public static void LogoutEmail()
         {
 #if ONESIGNAL_PLATFORM
@@ -604,6 +709,11 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// If your app implements logout functionality, you can call logoutEmail to dissociate the email from the device
+        /// </summary>
+        /// <param name="successDelegate">Delegate fires when the email was set on OneSignal's server.</param>
+        /// <param name="failureDelegate">Delegate fires when the email failed to be set.</param>
         public static void LogoutEmail(OnLogoutEmailSuccess successDelegate, OnLogoutEmailFailure failureDelegate)
         {
 #if ONESIGNAL_PLATFORM
@@ -617,6 +727,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to send notifications from user to user or schedule ones in the future to be delivered to the current device.
+        /// </summary>
+        /// <param name="data">Dictionary of notification options, see our Create notification POST call for all options.</param>
         public static void PostNotification(Dictionary<string, object> data)
         {
 #if ONESIGNAL_PLATFORM
@@ -624,6 +738,12 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Send or schedule a notification to a OneSignal Player ID.
+        /// </summary>
+        /// <param name="data">Dictionary of notification options, see our **Create notification** POST call for all options.</param>
+        /// <param name="inOnPostNotificationSuccess">Delegate fires when the notification was created on OneSignal's server.</param>
+        /// <param name="inOnPostNotificationFailure">Delegate fires when the notification failed to create.</param>
         public static void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess inOnPostNotificationSuccess, OnPostNotificationFailure inOnPostNotificationFailure)
         {
 #if ONESIGNAL_PLATFORM
@@ -651,6 +771,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Get the current notification and permission state. Returns a OSPermissionSubscriptionState type.
+        /// </summary>
+        /// <returns></returns>
         public static OSPermissionSubscriptionState GetPermissionSubscriptionState()
         {
 #if ONESIGNAL_PLATFORM
