@@ -239,16 +239,26 @@ namespace Com.OneSignal
                 return this;
             }
 
+
+            /// <summary>
+            /// Setting to control how OneSignal notifications will be shown when one is received while your app is in focus.
+            /// </summary>
+            /// <param name="display">Display options.</param>
+            /// <returns></returns>
             public UnityBuilder InFocusDisplaying(OSInFocusDisplayOption display)
             {
                 inFocusDisplayType = display;
                 return this;
             }
 
-            // Pass one if the define kOSSettings strings as keys only. Only affects iOS platform.
-            // autoPrompt = Set false to delay the iOS accept notification system prompt. Defaults true.
-            //              You can then call RegisterForPushNotifications at a better point in your game to prompt them.
-            // inAppLaunchURL = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
+            /// <summary>
+            /// Pass one if the define kOSSettings strings as keys only. Only affects iOS platform.
+            /// autoPrompt = Set false to delay the iOS accept notification system prompt. Defaults true.
+            /// You can then call RegisterForPushNotifications at a better point in your game to prompt them.
+            /// inAppLaunchURL = (iOS) Set false to force a ULRL to launch through Safari instead of in-app webview.
+            /// </summary>
+            /// <param name="settings">Settings dictionary.</param>
+            /// <returns></returns>
             public UnityBuilder Settings(Dictionary<string, bool> settings)
             {
                 //bool autoPrompt, bool inAppLaunchURL
@@ -260,7 +270,7 @@ namespace Com.OneSignal
 
             public void EndInit()
             {
-                OneSignal.Init();
+                Init();
             }
 
             public UnityBuilder SetRequiresUserPrivacyConsent(bool required)
@@ -283,12 +293,12 @@ namespace Com.OneSignal
         internal static LOG_LEVEL logLevel = LOG_LEVEL.INFO, visualLogLevel = LOG_LEVEL.NONE;
         internal static bool requiresUserConsent = false;
 
-
-       // Init - Only required method you call to setup OneSignal to recieve push notifications.
-        //        Call this on the first scene that is loaded.
-        // appId = Your OneSignal AppId from onesignal.com
-        // googleProjectNumber = Your Google Project Number that is only required for Android GCM pushes.
-
+        /// <summary>
+        /// Init - Only required method you call to setup OneSignal to receive push notifications.
+        /// Call this on the first scene that is loaded.
+        /// appId = Your OneSignal AppId from onesignal.com
+        /// googleProjectNumber = Your Google Project Number that is only required for Android GCM pushes.
+        /// </summary>
         public static UnityBuilder StartInit()
         {
             return StartInit(OneSignalSettings.Instance.ApplicationId);
@@ -359,11 +369,20 @@ namespace Com.OneSignal
             }
         }
 
+        /// <summary>
+        /// Enable logging to help debug OneSignal implementation.
+        /// </summary>
+        /// <param name="inLogLevel">Sets the logging level to print to the Android LogCat log or Xcode log.</param>
+        /// <param name="inVisualLevel">Sets the logging level to show as alert dialogs.</param>
         public static void SetLogLevel(LOG_LEVEL inLogLevel, LOG_LEVEL inVisualLevel)
         {
             logLevel = inLogLevel; visualLogLevel = inVisualLevel;
         }
 
+        /// <summary>
+        /// Disable or enable location collection (defaults to enabled if your app has location permission).
+        /// **Note:** This method must be called before OneSignal `initWithLaunchOptions` on iOS.
+        /// </summary>
         public static void SetLocationShared(bool shared)
         {
             Debug.Log("Called OneSignal.cs SetLocationShared");
@@ -372,7 +391,9 @@ namespace Com.OneSignal
 #endif
         }
 
-        // Tag player with a key value pair to later create segments on them at onesignal.com.
+        /// <summary>
+        /// Tag player with a key value pair to later create segments on them at onesignal.com.
+        /// </summary>
         public static void SendTag(string tagName, string tagValue)
         {
 #if ONESIGNAL_PLATFORM
@@ -380,7 +401,10 @@ namespace Com.OneSignal
 #endif
         }
 
-        // Tag player with a key value pairs to later create segments on them at onesignal.com.
+        /// <summary>
+        /// Tag player with a key value pairs to later create segments on them at onesignal.com.
+        /// </summary>
+        /// <param name="tags">Tags dictionary.</param>
         public static void SendTags(Dictionary<string, string> tags)
         {
 #if ONESIGNAL_PLATFORM
@@ -388,6 +412,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Retrieve a list of tags that have been set on the player from the OneSignal server.
+        /// </summary>
         public static void GetTags()
         {
 #if ONESIGNAL_PLATFORM
@@ -395,7 +422,9 @@ namespace Com.OneSignal
 #endif
         }
 
-        // Makes a request to onesignal.com to get current tags set on the player and then run the callback passed in.
+        /// <summary>
+        /// Makes a request to onesignal.com to get current tags set on the player and then run the callback passed in.
+        /// </summary>
         public static void GetTags(TagsReceived inTagsReceivedDelegate)
         {
 #if ONESIGNAL_PLATFORM
@@ -420,8 +449,11 @@ namespace Com.OneSignal
 #endif
         }
 
-        // Call this when you would like to prompt an iOS user accept push notifications with the default system prompt.
-        // Only use if you passed false to autoRegister when calling Init.
+
+        /// <summary>
+        /// Call this when you would like to prompt an iOS user accept push notifications with the default system prompt.
+        /// Only use if you passed false to autoRegister when calling Init.
+        /// </summary>
         public static void RegisterForPushNotifications()
         {
 #if ONESIGNAL_PLATFORM
@@ -429,6 +461,13 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Prompt the user for notification permissions.
+        /// Callback fires as soon as the user accepts or declines notifications.
+        /// Must set `kOSSettingsKeyAutoPrompt` to `false` when calling <see href="https://documentation.onesignal.com/docs/unity-sdk#initwithlaunchoptions">initWithLaunchOptions</see>.
+        ///
+        /// Recommended: Set to false and follow <see href="https://documentation.onesignal.com/docs/ios-push-opt-in-prompt">iOS Push Opt-In Prompt</see>.
+        /// </summary>
         public static void PromptForPushNotificationsWithUserResponse(PromptForPushNotificationsUserResponse inDelegate)
         {
 #if ONESIGNAL_PLATFORM
