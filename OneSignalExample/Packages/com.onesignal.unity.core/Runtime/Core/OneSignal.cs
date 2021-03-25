@@ -38,15 +38,21 @@ namespace Com.OneSignal
 {
     public class OneSignal : MonoBehaviour
     {
-        // Dictionary of GUIDs and delegates to help control several delegates for the same public method call when they return from native SDKs
+        /// <summary>
+        /// Dictionary of GUIDs and delegates to help control several delegates for the same public method call when they return from native SDKs.
+        /// </summary>
         private static Dictionary<string, Delegate> delegates;
-
-        // NotificationReceived - Delegate is called when a push notification is received when the user is in your game.
-        // notification = The Notification dictionary filled from a serialized native OSNotification object
+        
+        /// <summary>
+        /// Delegate is called when a push notification is received when the user is in your game.
+        /// </summary>
+        /// <param name="notification"> The Notification dictionary filled from a serialized native OSNotification object </param>
         public delegate void NotificationReceived(OSNotification notification);
-
-        // OnExternalUserIdUpdateCompletion - Delegate is called when exteranl user id for push or email channel is set or removed
-        // results - The dictionary payload containing the success status for the channels updating exteranl user id
+        
+        /// <summary>
+        /// Delegate is called when external user id for push or email channel is set or removed.
+        /// </summary>
+        /// <param name="results">The dictionary payload containing the success status for the channels updating exteranl user id.</param>
         public delegate void OnExternalUserIdUpdateCompletion(Dictionary<string, object> results);
 
         public delegate void OnSetEmailSuccess();
@@ -58,9 +64,11 @@ namespace Com.OneSignal
         public delegate void OnLogoutEmailFailure(Dictionary<string, object> error);
 
         public delegate void OnSendOutcomeSuccess(OSOutcomeEvent outcomeEvent);
-
-        // NotificationOpened - Delegate is called when a push notification is opened.
-        // result = The Notification open result describing : 1. The notification opened 2. The action taken by the user
+        
+        /// <summary>
+        /// Delegate is called when a push notification is opened.
+        /// </summary>
+        /// <param name="result">The Notification open result describing: 1. The notification opened 2. The action taken by the user. </param>
         public delegate void NotificationOpened(OSNotificationOpenedResult result);
 
         public delegate void InAppMessageClicked(OSInAppMessageAction action);
@@ -217,22 +225,34 @@ namespace Com.OneSignal
             public NotificationReceived notificationReceivedDelegate;
             public NotificationOpened notificationOpenedDelegate;
             public InAppMessageClicked inAppMessageClickHandlerDelegate;
-
-            // inNotificationReceivedDelegate = Calls this delegate when a notification is received.
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="inNotificationReceivedDelegate">Calls this delegate when a notification is received.</param>
+            /// <returns></returns>
             public UnityBuilder HandleNotificationReceived(NotificationReceived inNotificationReceivedDelegate)
             {
                 notificationReceivedDelegate = inNotificationReceivedDelegate;
                 return this;
             }
-
-            // inNotificationOpenedDelegate = Calls this delegate when a push notification is opened.
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="inNotificationOpenedDelegate">Calls this delegate when a push notification is opened.</param>
+            /// <returns></returns>
             public UnityBuilder HandleNotificationOpened(NotificationOpened inNotificationOpenedDelegate)
             {
                 notificationOpenedDelegate = inNotificationOpenedDelegate;
                 return this;
             }
-
-            // inInAppMessageClickHandlerDelegate = Calls this delegate when an In-App Message is opened.
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="inInAppMessageClickedDelegate">Calls this delegate when an In-App Message is opened.</param>
+            /// <returns></returns>
             public UnityBuilder HandleInAppMessageClicked(InAppMessageClicked inInAppMessageClickedDelegate)
             {
                 inAppMessageClickHandlerDelegate = inInAppMessageClickedDelegate;
@@ -294,21 +314,29 @@ namespace Com.OneSignal
         internal static bool requiresUserConsent = false;
 
         /// <summary>
-        /// Init - Only required method you call to setup OneSignal to receive push notifications.
-        /// Call this on the first scene that is loaded.
-        /// appId = Your OneSignal AppId from onesignal.com
-        /// googleProjectNumber = Your Google Project Number that is only required for Android GCM pushes.
+        /// Call this on the first scene that is loaded. Only required method you call to setup OneSignal to receive push notifications.
         /// </summary>
         public static UnityBuilder StartInit()
         {
             return StartInit(OneSignalSettings.Instance.ApplicationId);
         }
 
+        /// <summary>
+        /// Call this on the first scene that is loaded. Only required method you call to setup OneSignal to receive push notifications.
+        /// </summary>
+        /// <param name="appId">Your OneSignal AppId from onesignal.com</param>
+        /// <returns></returns>
         public static UnityBuilder StartInit(string appId)
         {
             return StartInit(appId, null);
         }
 
+        /// <summary>
+        /// Call this on the first scene that is loaded. Only required method you call to setup OneSignal to receive push notifications.
+        /// </summary>
+        /// <param name="appId">Your OneSignal AppId from onesignal.com</param>
+        /// <param name="googleProjectNumber">Your Google Project Number that is only required for Android GCM pushes.</param>
+        /// <returns></returns>
         public static UnityBuilder StartInit(string appId, string googleProjectNumber)
         {
             if (builder == null)
@@ -475,17 +503,22 @@ namespace Com.OneSignal
             oneSignalPlatform.PromptForPushNotificationsWithUserResponse();
 #endif
         }
-
-        // Set OneSignal.idsAvailableDelegate before calling this method or use the method above.
+        
+        /// <summary>
+        /// <remarks> Set OneSignal.idsAvailableDelegate before calling this method or use the method above.</remarks>
+        /// </summary>
         public static void IdsAvailable()
         {
 #if ONESIGNAL_PLATFORM
             oneSignalPlatform.IdsAvailable(null);
 #endif
         }
-
-        // Call this if you need the playerId and/or pushToken
-        // NOTE: pushToken maybe null if notifications are not accepted or there is connectivity issues.
+        
+        /// <summary>
+        /// Call this if you need the playerId and/or pushToken
+        /// **NOTE:** pushToken maybe null if notifications are not accepted or there is connectivity issues.
+        /// </summary>
+        /// <param name="inIdsAvailableDelegate"></param>
         public static void IdsAvailable(IdsAvailableCallback inIdsAvailableDelegate)
         {
 #if ONESIGNAL_PLATFORM
