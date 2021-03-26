@@ -55,12 +55,24 @@ namespace Com.OneSignal
         /// <param name="results">The dictionary payload containing the success status for the channels updating exteranl user id.</param>
         public delegate void OnExternalUserIdUpdateCompletion(Dictionary<string, object> results);
 
+        /// <summary>
+        /// Delegate fires when the email was set on OneSignal's server.
+        /// </summary>
         public delegate void OnSetEmailSuccess();
 
+        /// <summary>
+        /// Delegate fires when the email failed to be set.
+        /// </summary>
         public delegate void OnSetEmailFailure(Dictionary<string, object> error);
 
+        /// <summary>
+        /// Delegate fires when the email was set on OneSignal's server.
+        /// </summary>
         public delegate void OnLogoutEmailSuccess();
 
+        /// <summary>
+        /// Delegate fires when the email failed to be set.
+        /// </summary>
         public delegate void OnLogoutEmailFailure(Dictionary<string, object> error);
 
         public delegate void OnSendOutcomeSuccess(OSOutcomeEvent outcomeEvent);
@@ -101,10 +113,16 @@ namespace Com.OneSignal
 
         private static PromptForPushNotificationsUserResponse notificationUserResponseDelegate;
 
+        /// <summary>
+        /// Delegate fires when a notification permission setting changes.
+        /// </summary>
         public delegate void PermissionObservable(OSPermissionStateChanges stateChanges);
 
         private static PermissionObservable internalPermissionObserver;
 
+        /// <summary>
+        /// The 'permissionObserver' event will be fired when a notification permission setting changes.
+        /// </summary>
         public static event PermissionObservable permissionObserver
         {
             add
@@ -140,10 +158,16 @@ namespace Com.OneSignal
             }
         }
 
+        /// <summary>
+        /// Delegate fires when a notification subscription property changes.
+        /// </summary>
         public delegate void SubscriptionObservable(OSSubscriptionStateChanges stateChanges);
 
         private static SubscriptionObservable internalSubscriptionObserver;
 
+        /// <summary>
+        /// The 'subscriptionObserver' event will be fired when a notification subscription property changes.
+        /// </summary>
         public static event SubscriptionObservable subscriptionObserver
         {
             add
@@ -176,10 +200,16 @@ namespace Com.OneSignal
             }
         }
 
+        /// <summary>
+        /// Delegate fires whenever the email subscription changes.
+        /// </summary>
         public delegate void EmailSubscriptionObservable(OSEmailSubscriptionStateChanges stateChanges);
 
         private static EmailSubscriptionObservable internalEmailSubscriptionObserver;
 
+        /// <summary>
+        /// Whenever the email subscription changes, this event will be fired.
+        /// </summary>
         public static event EmailSubscriptionObservable emailSubscriptionObserver
         {
             add
@@ -232,11 +262,17 @@ namespace Com.OneSignal
             VERBOSE
         }
 
+        /// <summary>
+        /// How the notification was displayed to the user.
+        /// </summary>
         public enum OSInFocusDisplayOption
         {
-            None,
-            InAppAlert,
-            Notification
+            /// <summary> No notification displayed </summary>
+            None = 0,
+            /// <summary> Default native alert shown. </summary>
+            InAppAlert = 1,
+            /// <summary> Notification Displayed </summary>
+            Notification = 2
         }
 
         public class UnityBuilder
@@ -666,7 +702,7 @@ namespace Com.OneSignal
         /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
         /// </summary>
         /// <param name="emailAuthToken">
-        /// If you have a backend server, we strongly recommend using **Identity Verification** with your users.
+        /// If you have a backend server, we strongly recommend using <see href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</see> with your users.
         /// Your backend can generate an email authentication token and send it to your app.
         /// </param>
         public static void SetEmail(string email, string emailAuthToken)
@@ -681,7 +717,7 @@ namespace Com.OneSignal
         /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
         /// </summary>
         /// <param name="emailAuthToken">
-        /// If you have a backend server, we strongly recommend using **Identity Verification** with your users.
+        /// If you have a backend server, we strongly recommend using <see href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</see> with your users.
         /// Your backend can generate an email authentication token and send it to your app.
         /// </param>
         /// <param name="successDelegate">Delegate fires when the email was set on OneSignal's server.</param>
@@ -730,7 +766,7 @@ namespace Com.OneSignal
         /// <summary>
         /// Allows you to send notifications from user to user or schedule ones in the future to be delivered to the current device.
         /// </summary>
-        /// <param name="data">Dictionary of notification options, see our Create notification POST call for all options.</param>
+        /// <param name="data">Dictionary of notification options, see our <see href="https://documentation.onesignal.com/reference/create-notification">Create notification</see> POST call for all options.</param>
         public static void PostNotification(Dictionary<string, object> data)
         {
 #if ONESIGNAL_PLATFORM
@@ -741,7 +777,7 @@ namespace Com.OneSignal
         /// <summary>
         /// Send or schedule a notification to a OneSignal Player ID.
         /// </summary>
-        /// <param name="data">Dictionary of notification options, see our **Create notification** POST call for all options.</param>
+        /// <param name="data">Dictionary of notification options, see our <see href="https://documentation.onesignal.com/reference/create-notification">Create notification</see> POST call for all options.</param>
         /// <param name="inOnPostNotificationSuccess">Delegate fires when the notification was created on OneSignal's server.</param>
         /// <param name="inOnPostNotificationFailure">Delegate fires when the notification failed to create.</param>
         public static void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess inOnPostNotificationSuccess, OnPostNotificationFailure inOnPostNotificationFailure)
@@ -787,6 +823,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Android, iOS - Provides privacy consent. OneSignal will remember the last answer
+        /// </summary>
         public static void UserDidProvideConsent(bool consent)
         {
 #if ONESIGNAL_PLATFORM
@@ -794,6 +833,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Returns a boolean indicating if the user has given privacy consent yet.
+        /// </summary>
         public static bool UserProvidedConsent()
         {
 #if ONESIGNAL_PLATFORM
@@ -803,6 +845,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to delay the initialization of the SDK until the user provides privacy consent.
+        /// The SDK will not be fully initialized until the 'UserDidProvideConsent(true)'
+        /// </summary>
         public static void SetRequiresUserPrivacyConsent(bool required)
         {
 #if ONESIGNAL_PLATFORM
@@ -810,7 +856,9 @@ namespace Com.OneSignal
 #endif
         }
 
-
+        /// <summary>
+        /// Allows you to use your own system's user ID's to send push notifications to your users. To tie a user to a given user ID, you can use this method.
+        /// </summary>
         public static void SetExternalUserId(string externalId)
         {
 #if ONESIGNAL_PLATFORM
@@ -819,6 +867,13 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to use your own system's user ID's to send push notifications to your users. To tie a user to a given user ID, you can use this method.
+        /// </summary>
+        /// <param name="completion">
+        /// The results will contain push and email success statuses.
+        /// Push can be expected in almost every situation with a success status, but as a pre-caution its good to verify it exists
+        /// </param>
         public static void SetExternalUserId(string externalId, OnExternalUserIdUpdateCompletion completion)
         {
 #if ONESIGNAL_PLATFORM
@@ -828,6 +883,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// If your user logs out of your app and you would like to disassociate their custom user ID from your system with their OneSignal user ID, you will want to call this method.
+        /// <remarks>Usually called after the user logs out of your app.</remarks>
+        /// </summary>
         public static void RemoveExternalUserId()
         {
 #if ONESIGNAL_PLATFORM
@@ -836,6 +895,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// If your user logs out of your app and you would like to disassociate their custom user ID from your system with their OneSignal user ID, you will want to call this method.
+        /// <remarks>Usually called after the user logs out of your app.</remarks>
+        /// </summary>
         public static void RemoveExternalUserId(OnExternalUserIdUpdateCompletion completion)
         {
 #if ONESIGNAL_PLATFORM
@@ -845,6 +908,11 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Add a trigger, may show an In-App Message if its triggers conditions were met.
+        /// </summary>
+        /// <param name="key">Key for the trigger.</param>
+        /// <param name="value">Value for the trigger. Object passed in will be converted to a string.</param>
         public static void AddTrigger(string key, object value)
         {
 #if ONESIGNAL_PLATFORM
@@ -852,6 +920,9 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to set multiple trigger key/value pairs simultaneously.
+        /// </summary>
         public static void AddTriggers(Dictionary<string, object> triggers)
         {
 #if ONESIGNAL_PLATFORM
@@ -859,6 +930,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Removes a single trigger for the given key. May show an In-App Message if its trigger conditions were met.
+        /// </summary>
+        /// <param name="key">Key for the trigger.</param>
         public static void RemoveTriggerForKey(string key)
         {
 #if ONESIGNAL_PLATFORM
@@ -866,6 +941,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Removes a list of triggers based on a collection of keys. May show an In-App Message if its trigger conditions were met.
+        /// </summary>
+        /// <param name="keys">Removes a collection of triggers from their keys.</param>
         public static void RemoveTriggersForKeys(IList<string> keys)
         {
 #if ONESIGNAL_PLATFORM
@@ -873,6 +952,11 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Gets a trigger value for a provided trigger key.
+        /// </summary>
+        /// <param name="key">Key for the trigger.</param>
+        /// <returns>Value if added with 'addTrigger', or null/nil (iOS) if never set.</returns>
         public static object GetTriggerValueForKey(string key)
         {
 #if ONESIGNAL_PLATFORM
@@ -882,6 +966,10 @@ namespace Com.OneSignal
 #endif
         }
 
+        /// <summary>
+        /// Allows you to temporarily pause all In-App Messages. You may want to do this while the user is engaged in an activity that you don't want a message to interrupt (such as watching a video).
+        /// </summary>
+        /// <param name="pause">To pause, set 'true'. To resume, set 'false'.</param>
         public static void PauseInAppMessages(bool pause)
         {
 #if ONESIGNAL_PLATFORM
