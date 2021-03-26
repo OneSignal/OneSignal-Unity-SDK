@@ -4,7 +4,7 @@ namespace Com.OneSignal.Editor
 {
     static class ScopeRegistriesConfig
     {
-        public static readonly string OneSignalScope = "com.onesignal-test.unity";
+        public static readonly string OneSignalScope = "com.onesignal.unity";
         public static readonly string EDM4UName = "com.google.external-dependency-manager";
         public static readonly string EDM4UVersion = "1.2.153";
 

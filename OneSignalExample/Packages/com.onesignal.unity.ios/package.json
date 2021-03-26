@@ -1,11 +1,11 @@
 {
-  "name": "com.onesignal-test.unity.ios",
+  "name": "com.onesignal.unity.ios",
   "displayName": "OneSignal - iOS",
-  "version": "0.0.5-preview",
+  "version": "0.0.1-preview",
   "unity": "2018.4",
    "description": "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.",
   "dependencies": {
-      "com.onesignal-test.unity.core": "0.0.4-preview"
+      "com.onesignal-test.unity.core": "0.0.1-preview"
   },
    "keywords": [
      "push-notifications",
