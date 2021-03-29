@@ -40,7 +40,7 @@ namespace Com.OneSignal.Android
         {
             s_OneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", OneSignal.GameObjectName,
                 OneSignal.builder.googleProjectNumber, OneSignal.builder.appID,
-                OneSignal.logLevel, OneSignal.visualLogLevel, OneSignal.requiresUserConsent);
+                (int)OneSignal.logLevel, (int)OneSignal.visualLogLevel, OneSignal.requiresUserConsent);
 
             SetInFocusDisplaying(OneSignal.inFocusDisplayType);
         }
