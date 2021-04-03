@@ -54,6 +54,11 @@ Assets/Root
 /iosbuild/
 /web/
 
-/ProjectSettings/AndroidResolverDependencies.xml
+/Assets/Plugins/Android/play-services-*
+/Assets/Plugins/Android/support-v4-*
+/Assets/Plugins/Android/customtabs-*
+/Assets/Plugins/Android/support-annotations-*.jar*
 
-**/OneSignalConfig.plugin/AndroidManifest.xml*
+/ProjectSettings/GoogleDependencyOneSignal.xml
+
+/Assets/Plugins/Android/OneSignalConfig/AndroidManifest.xml*
