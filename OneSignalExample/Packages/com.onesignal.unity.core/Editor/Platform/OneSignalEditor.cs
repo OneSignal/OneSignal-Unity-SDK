@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Com.OneSignal.Editor
 {
@@ -7,7 +6,7 @@ namespace Com.OneSignal.Editor
     {
         public void Init()
         {
-            Debug.Log("Please run OneSignal on a device to see push notifications.");
+            OneSignalPush.LogDebug("Please run OneSignal on a device to see push notifications.");
         }
 
         public void SetLogLevel(OneSignalPush.LOG_LEVEL logLevel, OneSignalPush.LOG_LEVEL visualLevel)

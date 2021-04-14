@@ -201,7 +201,7 @@ namespace Com.OneSignal
             WARN,
             INFO,
             DEBUG,
-            VERBOSE
+            VERBOSE,
         }
 
         public enum OSInFocusDisplayOption
@@ -282,30 +282,44 @@ namespace Com.OneSignal
 
         internal static bool requiresUserConsent = false;
 
-        // Name of the GameObject that gets automaticly created in your game scene.
-
-        // Init - Only required method you call to setup OneSignal to recieve push notifications.
-        //        Call this on the first scene that is loaded.
-        // appId = Your OneSignal AppId from onesignal.com
-        // googleProjectNumber = Your Google Project Number that is only required for Android GCM pushes.
-
-        public static UnityBuilder StartInit(string appID, string googleProjectNumber = null)
+        /// <summary>
+        /// Name of the GameObject that gets automatically created in your game scene.
+        /// Init - Only required method you call to setup OneSignal to receive push notifications.
+        ///        Call this on the first scene that is loaded.
+        ///
+        /// If you leave `appID` empty, an application id proved in the settings window will be used.
+        /// </summary>
+        /// <param name="appID">Your OneSignal AppId from onesignal.com</param>
+        /// <param name="googleProjectNumber">Your Google Project Number that is only required for Android GCM pushes.</param>
+        public static UnityBuilder StartInit(string appID = null, string googleProjectNumber = null)
         {
-            if (builder == null)
-                builder = new UnityBuilder();
-            builder.appID = appID;
-            builder.googleProjectNumber = googleProjectNumber;
+            builder ??= new UnityBuilder();
+            builder.appID = string.IsNullOrEmpty(appID)
+                ? OneSignalSettings.Instance.ApplicationId
+                : appID;
 
+            if (string.IsNullOrEmpty(builder.appID))
+                throw new ArgumentException("Application id can not be empty. " +
+                    "Provide validate app id via argument or settings window", nameof(appID));
+
+            builder.googleProjectNumber = googleProjectNumber;
             return builder;
         }
 
         internal static void RegisterPlatform(IOneSignalPlatform platform)
         {
-            Debug.Log("RegisterPlatform: " + platform);
             if (oneSignalPlatform != null)
                 throw new InvalidOperationException($"{nameof(oneSignalPlatform)} has already been initialized as {oneSignalPlatform}.");
 
             oneSignalPlatform = platform;
+        }
+
+        internal static void LogDebug(string message)
+        {
+            if (logLevel >= LOG_LEVEL.DEBUG)
+            {
+                Debug.Log($"{nameof(OneSignalPush)}: {message}");
+            }
         }
 
         static void Init()
@@ -319,6 +333,7 @@ namespace Com.OneSignal
             if (oneSignalPlatform == null)
                 throw new InvalidOperationException($"{Application.platform} platform is not supported by OneSignal.");
 
+            LogDebug($"Initializing {oneSignalPlatform} platform.");
             oneSignalPlatform.Init();
 
             if (!Application.isEditor)
@@ -353,7 +368,7 @@ namespace Com.OneSignal
 
         public static void SetLocationShared(bool shared)
         {
-            Debug.Log("Called OneSignal.cs SetLocationShared");
+            LogDebug("Called OneSignal.cs SetLocationShared");
             oneSignalPlatform.SetLocationShared(shared);
         }
 
