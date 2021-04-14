@@ -5,3 +5,5 @@ OneSignalExample/Packages/manifest.json
 packages-lock.json
 
 **/Logs/*
+OneSignalExample/Assets/Plugins
+OneSignalExample/Assets/Plugins.meta
