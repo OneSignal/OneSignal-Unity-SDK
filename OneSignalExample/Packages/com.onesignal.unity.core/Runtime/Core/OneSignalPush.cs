@@ -418,7 +418,7 @@ namespace Com.OneSignal
         /// <param name="googleProjectNumber">Your Google Project Number that is only required for Android GCM pushes.</param>
         public static UnityBuilder StartInit(string appID = null, string googleProjectNumber = null)
         {
-            builder ??= new UnityBuilder();
+            if (builder is null) builder = new UnityBuilder();
             builder.appID = string.IsNullOrEmpty(appID)
                 ? OneSignalSettings.Instance.ApplicationId
                 : appID;
