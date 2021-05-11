@@ -1,8 +1,3 @@
-OneSignalExample/Assets/Plugins/**/*.aar
-OneSignalExample/Assets/Plugins/**/*.aar.meta
-OneSignalExample/Assets/Plugins/**/*.jar
-OneSignalExample/Assets/Plugins/**/*.jar.meta
-
 # Normaly you do commit this file however since we
 #   always switch Unity versions and want to use
 #   the default packages and versions
@@ -10,3 +5,5 @@ OneSignalExample/Packages/manifest.json
 packages-lock.json
 
 **/Logs/*
+OneSignalExample/Assets/Plugins
+OneSignalExample/Assets/Plugins.meta
