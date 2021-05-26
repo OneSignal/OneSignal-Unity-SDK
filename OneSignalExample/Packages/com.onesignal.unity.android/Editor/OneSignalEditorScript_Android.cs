@@ -26,8 +26,10 @@
  */
 
 using System.IO;
+using System.Linq;
 using Com.OneSignal.Editor;
 using UnityEditor;
+using UnityEngine;
 
 namespace Com.OneSignal.Android.Editor
 {
@@ -35,64 +37,57 @@ namespace Com.OneSignal.Android.Editor
     public class OneSignalEditorScriptAndroid
     {
         static readonly string k_AndroidConfigFolder = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/Plugins/Android/OneSignalConfig.plugin";
-        static readonly string k_PackageManifestPath = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/package.json";
 
-        static OneSignalEditorScriptAndroid()
-        {
+        const string k_Edm4URepoOwner = "googlesamples";
+        const string k_Edm4URepoName = "unity-jar-resolver";
+
+        static readonly string[] k_KnownEdm4ULocations = {
+            "Assets/PlayServicesResolver",
+            "Assets/ExternalDependencyManager"
+        };
+
+        static OneSignalEditorScriptAndroid() {
             CreateOneSignalAndroidManifest();
-            PackageManifestSanityCheck();
+            InstallEdm4U();
         }
 
-        /// <summary>
-        /// We can't add EDM4UP into package.json before making sure that google scope registry if available for the project
-        /// The method will
-        ///  * Add Google scope registry to the project manifest.json if necessary
-        ///  * Will update or add configured version of `com.google.external-dependency-manager` dependency into package.json
-        /// </summary>
-        static void PackageManifestSanityCheck()
-        {
-            Manifest mainManifest = new Manifest();
-            mainManifest.Fetch();
-
-            var manifestUpdated = false;
-
-            if (!mainManifest.IsRegistryPresent(ScopeRegistriesConfig.GoogleScopeRegistryUrl))
-            {
-                mainManifest.AddScopeRegistry(ScopeRegistriesConfig.GoogleScopeRegistry);
-                manifestUpdated = true;
+        static void InstallEdm4U() {
+            // If Edm4U is already installed we would do nothing.
+            if (k_KnownEdm4ULocations.Any(AssetDatabase.IsValidFolder)) {
+                return;
             }
 
-            if (manifestUpdated)
-                mainManifest.ApplyChanges();
+            // Get Latest Release Tag
+            GitHubUtility.ListRepositoryTags(k_Edm4URepoOwner, k_Edm4URepoName, tags => {
+                var latestReleaseTag = tags.First().Name;
+                var latestReleaseTagNoVPrefix = latestReleaseTag.TrimStart('v');
+                var unityPackageUrl = GitHubUtility.GetRawFileUrl(k_Edm4URepoOwner,
+                    k_Edm4URepoName,
+                    latestReleaseTag,
+                    $"external-dependency-manager-{latestReleaseTagNoVPrefix}.unitypackage");
 
-            manifestUpdated = false;
+                var request = EditorWebRequest.Get(unityPackageUrl);
+                request.AddEditorProgressDialog("Downloading Google External Dependency Manager");
+                request.Send(unityRequest => {
+                    if (unityRequest.error != null) {
+                        EditorUtility.DisplayDialog("Package Download failed.", unityRequest.error, "Ok");
+                        return;
+                    }
 
-            var manifest = new Manifest(k_PackageManifestPath);
-            manifest.Fetch();
+                    //Asset folder name remove
+                    var projectPath = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
+                    var tmpPackageFile = projectPath + FileUtil.GetUniqueTempPathInProject() + ".unityPackage";
 
-            if (!manifest.IsDependencyPresent(ScopeRegistriesConfig.EDM4UName))
-            {
-                manifest.AddDependency(ScopeRegistriesConfig.EDM4UName, ScopeRegistriesConfig.EDM4UVersion);
-                manifestUpdated = true;
-            }
-            else
-            {
-                var edm4UPackageDependency = manifest.GetDependency(ScopeRegistriesConfig.EDM4UName);
-                if (!edm4UPackageDependency.Version.Equals(ScopeRegistriesConfig.EDM4UVersion))
-                {
-                    edm4UPackageDependency.SetVersion(ScopeRegistriesConfig.EDM4UVersion);
-                    manifestUpdated = true;
-                }
-            }
+                    File.WriteAllBytes(tmpPackageFile, unityRequest.downloadHandler.data);
 
-            if (manifestUpdated)
-                manifest.ApplyChanges();
+                    AssetDatabase.ImportPackage(tmpPackageFile, false);
+                });
+            });
         }
 
         // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
         // then replace `${manifestApplicationId}` with current packagename in the Unity settings.
-        static void CreateOneSignalAndroidManifest()
-        {
+        static void CreateOneSignalAndroidManifest() {
             var configFullPath = Path.GetFullPath($"{k_AndroidConfigFolder}");
             var manifestPath = Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
             var manifestTemplatePath = Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifestTemplate.xml");
@@ -102,8 +97,7 @@ namespace Com.OneSignal.Android.Editor
             var body = streamReader.ReadToEnd();
             streamReader.Close();
             body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
-            using (var streamWriter = new StreamWriter(manifestPath, false))
-            {
+            using (var streamWriter = new StreamWriter(manifestPath, false)) {
                 streamWriter.Write(body);
             }
         }
