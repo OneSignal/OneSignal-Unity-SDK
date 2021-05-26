@@ -7,7 +7,7 @@ namespace Com.OneSignal.Editor
     /// <summary>
     /// The EditorWebRequest is a wrapper around the `UnityWebRequest` that can work in Edit mode.
     /// </summary>
-    public class EditorWebRequest
+    class EditorWebRequest
     {
         Action<UnityWebRequest> m_OnComplete = null;
 
