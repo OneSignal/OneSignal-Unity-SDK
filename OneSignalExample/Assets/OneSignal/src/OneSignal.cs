@@ -404,7 +404,7 @@ public class OneSignal : MonoBehaviour {
 
     internal static UnityBuilder builder = null;
 
-    private static OneSignalPlatform oneSignalPlatform = null;
+    public static OneSignalPlatform oneSignalPlatform { get; private set; }
     private const string gameObjectName = "OneSignalRuntimeObject_KEEP";
 
     #if ONESIGNAL_PLATFORM
