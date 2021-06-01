@@ -26,9 +26,9 @@
  */
 
 using System.IO;
-using System.Linq;
 using Com.OneSignal.Editor;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
 
 namespace Com.OneSignal.Android.Editor
@@ -36,52 +36,47 @@ namespace Com.OneSignal.Android.Editor
     [InitializeOnLoad]
     public class OneSignalEditorScriptAndroid
     {
+        const string k_Edm4UVersion = "1.2.165";
         static readonly string k_AndroidConfigFolder = $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/Plugins/Android/OneSignalConfig.plugin";
-
-        const string k_Edm4URepoOwner = "googlesamples";
-        const string k_Edm4URepoName = "unity-jar-resolver";
-
-        static readonly string[] k_KnownEdm4ULocations = {
-            "Assets/PlayServicesResolver",
-            "Assets/ExternalDependencyManager"
-        };
+        static readonly string k_Edm4UPackageDownloadUrl = $"https://github.com/googlesamples/unity-jar-resolver/blob/v{k_Edm4UVersion}/external-dependency-manager-{k_Edm4UVersion}.unitypackage?raw=true";
 
         static OneSignalEditorScriptAndroid() {
             CreateOneSignalAndroidManifest();
             InstallEdm4U();
         }
 
+        static bool IsEdm4UInstalled() {
+            var precompiledAssemblies = CompilationPipeline.GetPrecompiledAssemblyNames();
+            foreach (var assemblyName in precompiledAssemblies) {
+                if (assemblyName.StartsWith("Google.JarResolver")) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         static void InstallEdm4U() {
             // If Edm4U is already installed we would do nothing.
-            if (k_KnownEdm4ULocations.Any(AssetDatabase.IsValidFolder)) {
+            if (IsEdm4UInstalled()) {
                 return;
             }
 
-            // Get Latest Release Tag
-            GitHubUtility.ListRepositoryTags(k_Edm4URepoOwner, k_Edm4URepoName, tags => {
-                var latestReleaseTag = tags.First().Name;
-                var latestReleaseTagNoVPrefix = latestReleaseTag.TrimStart('v');
-                var unityPackageUrl = GitHubUtility.GetRawFileUrl(k_Edm4URepoOwner,
-                    k_Edm4URepoName,
-                    latestReleaseTag,
-                    $"external-dependency-manager-{latestReleaseTagNoVPrefix}.unitypackage");
+            var request = EditorWebRequest.Get(k_Edm4UPackageDownloadUrl);
+            request.AddEditorProgressDialog("Downloading Google External Dependency Manager");
+            request.Send(unityRequest => {
+                if (unityRequest.error != null) {
+                    EditorUtility.DisplayDialog("Package Download failed.", unityRequest.error, "Ok");
+                    return;
+                }
 
-                var request = EditorWebRequest.Get(unityPackageUrl);
-                request.AddEditorProgressDialog("Downloading Google External Dependency Manager");
-                request.Send(unityRequest => {
-                    if (unityRequest.error != null) {
-                        EditorUtility.DisplayDialog("Package Download failed.", unityRequest.error, "Ok");
-                        return;
-                    }
+                //Asset folder name remove
+                var projectPath = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
+                var tmpPackageFile = projectPath + FileUtil.GetUniqueTempPathInProject() + ".unityPackage";
 
-                    //Asset folder name remove
-                    var projectPath = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
-                    var tmpPackageFile = projectPath + FileUtil.GetUniqueTempPathInProject() + ".unityPackage";
+                File.WriteAllBytes(tmpPackageFile, unityRequest.downloadHandler.data);
 
-                    File.WriteAllBytes(tmpPackageFile, unityRequest.downloadHandler.data);
-
-                    AssetDatabase.ImportPackage(tmpPackageFile, false);
-                });
+                AssetDatabase.ImportPackage(tmpPackageFile, false);
             });
         }
 
