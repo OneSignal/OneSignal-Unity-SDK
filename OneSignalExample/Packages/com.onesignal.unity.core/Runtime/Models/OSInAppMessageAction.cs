@@ -5,4 +5,3 @@ public class OSInAppMessageAction
     public bool firstClick;
     public bool closesMessage;
 }
-

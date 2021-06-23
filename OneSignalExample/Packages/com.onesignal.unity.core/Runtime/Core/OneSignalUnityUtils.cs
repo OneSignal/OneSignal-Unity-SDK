@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Modified MIT License
  *
  * Copyright 2019 OneSignal
@@ -25,13 +25,10 @@
  * THE SOFTWARE.
  */
 
-namespace Com.OneSignal
+static class OneSignalUnityUtils
 {
-    static class OneSignalUnityUtils
+    public static string GetNewGuid()
     {
-        public static string GetNewGuid()
-        {
-            return System.Guid.NewGuid().ToString();
-        }
+        return System.Guid.NewGuid().ToString();
     }
 }

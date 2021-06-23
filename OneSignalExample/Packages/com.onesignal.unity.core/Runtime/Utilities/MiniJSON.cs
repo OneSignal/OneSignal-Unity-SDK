@@ -26,6 +26,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,110 +36,121 @@ using System.Text;
 // Forked from  https://github.com/Jackyjjc/MiniJSON.cs
 // version: 6de00beb134bbab9d873033a48b32e4067ed0c25
 
-namespace Com.OneSignal.MiniJSON
+// Example usage:
+//
+//  using UnityEngine;
+//  using System.Collections;
+//  using System.Collections.Generic;
+//  using MiniJSON;
+//
+//  public class MiniJSONTest : MonoBehaviour {
+//      void Start () {
+//          var jsonString = "{ \"array\": [1.44,2,3], " +
+//                          "\"object\": {\"key1\":\"value1\", \"key2\":256}, " +
+//                          "\"string\": \"The quick brown fox \\\"jumps\\\" over the lazy dog \", " +
+//                          "\"unicode\": \"\\u3041 Men\u00fa sesi\u00f3n\", " +
+//                          "\"int\": 65536, " +
+//                          "\"float\": 3.1415926, " +
+//                          "\"bool\": true, " +
+//                          "\"null\": null }";
+//
+//          var dict = Json.Deserialize(jsonString) as Dictionary<string,object>;
+//
+//          Debug.Log("deserialized: " + dict.GetType());
+//          Debug.Log("dict['array'][0]: " + ((List<object>) dict["array"])[0]);
+//          Debug.Log("dict['string']: " + (string) dict["string"]);
+//          Debug.Log("dict['float']: " + (double) dict["float"]); // floats come out as doubles
+//          Debug.Log("dict['int']: " + (long) dict["int"]); // ints come out as longs
+//          Debug.Log("dict['unicode']: " + (string) dict["unicode"]);
+//
+//          var str = Json.Serialize(dict);
+//
+//          Debug.Log("serialized: " + str);
+//      }
+//  }
+
+/// <summary>
+/// This class encodes and decodes JSON strings.
+/// Spec. details, see http://www.json.org/
+///
+/// JSON uses Arrays and Objects. These correspond here to the datatypes IList and IDictionary.
+/// All numbers are parsed to doubles.
+/// </summary>
+public static class Json
 {
-    // Example usage:
-    //
-    //  using UnityEngine;
-    //  using System.Collections;
-    //  using System.Collections.Generic;
-    //  using MiniJSON;
-    //
-    //  public class MiniJSONTest : MonoBehaviour {
-    //      void Start () {
-    //          var jsonString = "{ \"array\": [1.44,2,3], " +
-    //                          "\"object\": {\"key1\":\"value1\", \"key2\":256}, " +
-    //                          "\"string\": \"The quick brown fox \\\"jumps\\\" over the lazy dog \", " +
-    //                          "\"unicode\": \"\\u3041 Men\u00fa sesi\u00f3n\", " +
-    //                          "\"int\": 65536, " +
-    //                          "\"float\": 3.1415926, " +
-    //                          "\"bool\": true, " +
-    //                          "\"null\": null }";
-    //
-    //          var dict = Json.Deserialize(jsonString) as Dictionary<string,object>;
-    //
-    //          Debug.Log("deserialized: " + dict.GetType());
-    //          Debug.Log("dict['array'][0]: " + ((List<object>) dict["array"])[0]);
-    //          Debug.Log("dict['string']: " + (string) dict["string"]);
-    //          Debug.Log("dict['float']: " + (double) dict["float"]); // floats come out as doubles
-    //          Debug.Log("dict['int']: " + (long) dict["int"]); // ints come out as longs
-    //          Debug.Log("dict['unicode']: " + (string) dict["unicode"]);
-    //
-    //          var str = Json.Serialize(dict);
-    //
-    //          Debug.Log("serialized: " + str);
-    //      }
-    //  }
-
     /// <summary>
-    /// This class encodes and decodes JSON strings.
-    /// Spec. details, see http://www.json.org/
-    ///
-    /// JSON uses Arrays and Objects. These correspond here to the datatypes IList and IDictionary.
-    /// All numbers are parsed to doubles.
+    /// Parses the string json into a value
     /// </summary>
-    public static class Json {
-        /// <summary>
-        /// Parses the string json into a value
-        /// </summary>
-        /// <param name="json">A JSON string.</param>
-        /// <returns>An List&lt;object&gt;, a Dictionary&lt;string, object&gt;, a double, an integer,a string, null, true, or false</returns>
-        public static object Deserialize(string json) {
-            // save the string for debug information
-            if (json == null) {
-                return null;
-            }
-
-            return Parser.Parse(json);
+    /// <param name="json">A JSON string.</param>
+    /// <returns>An List&lt;object&gt;, a Dictionary&lt;string, object&gt;, a double, an integer,a string, null, true, or false</returns>
+    public static object Deserialize(string json)
+    {
+        // save the string for debug information
+        if (json == null)
+        {
+            return null;
         }
 
-        sealed class Parser : IDisposable {
-            const string WORD_BREAK = "{}[],:\"";
+        return Parser.Parse(json);
+    }
 
-            public static bool IsWordBreak(char c) {
-                return Char.IsWhiteSpace(c) || WORD_BREAK.IndexOf(c) != -1;
+    sealed class Parser : IDisposable
+    {
+        const string WORD_BREAK = "{}[],:\"";
+
+        public static bool IsWordBreak(char c)
+        {
+            return Char.IsWhiteSpace(c) || WORD_BREAK.IndexOf(c) != -1;
+        }
+
+        enum TOKEN
+        {
+            NONE,
+            CURLY_OPEN,
+            CURLY_CLOSE,
+            SQUARED_OPEN,
+            SQUARED_CLOSE,
+            COLON,
+            COMMA,
+            STRING,
+            NUMBER,
+            TRUE,
+            FALSE,
+            NULL
+        };
+
+        StringReader json;
+
+        Parser(string jsonString)
+        {
+            json = new StringReader(jsonString);
+        }
+
+        public static object Parse(string jsonString)
+        {
+            using (var instance = new Parser(jsonString))
+            {
+                return instance.ParseValue();
             }
+        }
 
-            enum TOKEN {
-                NONE,
-                CURLY_OPEN,
-                CURLY_CLOSE,
-                SQUARED_OPEN,
-                SQUARED_CLOSE,
-                COLON,
-                COMMA,
-                STRING,
-                NUMBER,
-                TRUE,
-                FALSE,
-                NULL
-            };
+        public void Dispose()
+        {
+            json.Dispose();
+            json = null;
+        }
 
-            StringReader json;
+        Dictionary<string, object> ParseObject()
+        {
+            Dictionary<string, object> table = new Dictionary<string, object>();
 
-            Parser(string jsonString) {
-                json = new StringReader(jsonString);
-            }
+            // ditch opening brace
+            json.Read();
 
-            public static object Parse(string jsonString) {
-                using (var instance = new Parser(jsonString)) {
-                    return instance.ParseValue();
-                }
-            }
-
-            public void Dispose() {
-                json.Dispose();
-                json = null;
-            }
-
-            Dictionary<string, object> ParseObject() {
-                Dictionary<string, object> table = new Dictionary<string, object>();
-
-                // ditch opening brace
-                json.Read();
-
-                while (true) {
-                    switch (NextToken) {
+            while (true)
+            {
+                switch (NextToken)
+                {
                     case TOKEN.NONE:
                         return null;
                     case TOKEN.COMMA:
@@ -148,36 +160,42 @@ namespace Com.OneSignal.MiniJSON
                     default:
                         // name
                         string name = ParseString();
-                        if (name == null) {
+                        if (name == null)
+                        {
                             return null;
                         }
 
                         // :
-                        if (NextToken != TOKEN.COLON) {
+                        if (NextToken != TOKEN.COLON)
+                        {
                             return null;
                         }
+
                         // ditch the colon
                         json.Read();
 
                         // value
                         table[name] = ParseValue();
                         break;
-                    }
                 }
             }
+        }
 
-            List<object> ParseArray() {
-                List<object> array = new List<object>();
+        List<object> ParseArray()
+        {
+            List<object> array = new List<object>();
 
-                // ditch opening bracket
-                json.Read();
+            // ditch opening bracket
+            json.Read();
 
-                // [
-                var parsing = true;
-                while (parsing) {
-                    TOKEN nextToken = NextToken;
+            // [
+            var parsing = true;
+            while (parsing)
+            {
+                TOKEN nextToken = NextToken;
 
-                    switch (nextToken) {
+                switch (nextToken)
+                {
                     case TOKEN.NONE:
                         return null;
                     case TOKEN.COMMA:
@@ -190,19 +208,22 @@ namespace Com.OneSignal.MiniJSON
 
                         array.Add(value);
                         break;
-                    }
                 }
-
-                return array;
             }
 
-            object ParseValue() {
-                TOKEN nextToken = NextToken;
-                return ParseByToken(nextToken);
-            }
+            return array;
+        }
 
-            object ParseByToken(TOKEN token) {
-                switch (token) {
+        object ParseValue()
+        {
+            TOKEN nextToken = NextToken;
+            return ParseByToken(nextToken);
+        }
+
+        object ParseByToken(TOKEN token)
+        {
+            switch (token)
+            {
                 case TOKEN.STRING:
                     return ParseString();
                 case TOKEN.NUMBER:
@@ -219,140 +240,160 @@ namespace Com.OneSignal.MiniJSON
                     return null;
                 default:
                     return null;
-                }
             }
+        }
 
-            string ParseString() {
-                StringBuilder s = new StringBuilder();
-                char c;
+        string ParseString()
+        {
+            StringBuilder s = new StringBuilder();
+            char c;
 
-                // ditch opening quote
-                json.Read();
+            // ditch opening quote
+            json.Read();
 
-                bool parsing = true;
-                while (parsing) {
+            bool parsing = true;
+            while (parsing)
+            {
+                if (json.Peek() == -1)
+                {
+                    break;
+                }
 
-                    if (json.Peek() == -1) {
-                        break;
-                    }
-
-                    c = NextChar;
-                    switch (c) {
+                c = NextChar;
+                switch (c)
+                {
                     case '"':
                         parsing = false;
                         break;
                     case '\\':
-                        if (json.Peek() == -1) {
+                        if (json.Peek() == -1)
+                        {
                             parsing = false;
                             break;
                         }
 
                         c = NextChar;
-                        switch (c) {
-                        case '"':
-                        case '\\':
-                        case '/':
-                            s.Append(c);
-                            break;
-                        case 'b':
-                            s.Append('\b');
-                            break;
-                        case 'f':
-                            s.Append('\f');
-                            break;
-                        case 'n':
-                            s.Append('\n');
-                            break;
-                        case 'r':
-                            s.Append('\r');
-                            break;
-                        case 't':
-                            s.Append('\t');
-                            break;
-                        case 'u':
-                            var hex = new char[4];
+                        switch (c)
+                        {
+                            case '"':
+                            case '\\':
+                            case '/':
+                                s.Append(c);
+                                break;
+                            case 'b':
+                                s.Append('\b');
+                                break;
+                            case 'f':
+                                s.Append('\f');
+                                break;
+                            case 'n':
+                                s.Append('\n');
+                                break;
+                            case 'r':
+                                s.Append('\r');
+                                break;
+                            case 't':
+                                s.Append('\t');
+                                break;
+                            case 'u':
+                                var hex = new char[4];
 
-                            for (int i=0; i< 4; i++) {
-                                hex[i] = NextChar;
-                            }
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    hex[i] = NextChar;
+                                }
 
-                            s.Append((char) Convert.ToInt32(new string(hex), 16));
-                            break;
-                        default:
-                            s.Append(c);
-                            break;
+                                s.Append((char) Convert.ToInt32(new string(hex), 16));
+                                break;
+                            default:
+                                s.Append(c);
+                                break;
                         }
+
                         break;
                     default:
                         s.Append(c);
                         break;
-                    }
                 }
-
-                return s.ToString();
             }
 
-            object ParseNumber() {
-                string number = NextWord;
+            return s.ToString();
+        }
 
-                if (number.IndexOf('.') == -1 && number.IndexOf('E') == -1 && number.IndexOf('e') == -1) {
-                    long parsedInt;
-                    Int64.TryParse(number, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsedInt);
-                    return parsedInt;
-                }
+        object ParseNumber()
+        {
+            string number = NextWord;
 
-                double parsedDouble;
-                Double.TryParse(number, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsedDouble);
-                return parsedDouble;
+            if (number.IndexOf('.') == -1 && number.IndexOf('E') == -1 && number.IndexOf('e') == -1)
+            {
+                long parsedInt;
+                Int64.TryParse(number, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out parsedInt);
+                return parsedInt;
             }
 
-            void EatWhitespace() {
-                while (Char.IsWhiteSpace(PeekChar)) {
-                    json.Read();
+            double parsedDouble;
+            Double.TryParse(number, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out parsedDouble);
+            return parsedDouble;
+        }
 
-                    if (json.Peek() == -1) {
+        void EatWhitespace()
+        {
+            while (Char.IsWhiteSpace(PeekChar))
+            {
+                json.Read();
+
+                if (json.Peek() == -1)
+                {
+                    break;
+                }
+            }
+        }
+
+        char PeekChar
+        {
+            get { return Convert.ToChar(json.Peek()); }
+        }
+
+        char NextChar
+        {
+            get { return Convert.ToChar(json.Read()); }
+        }
+
+        string NextWord
+        {
+            get
+            {
+                StringBuilder word = new StringBuilder();
+
+                while (!IsWordBreak(PeekChar))
+                {
+                    word.Append(NextChar);
+
+                    if (json.Peek() == -1)
+                    {
                         break;
                     }
                 }
-            }
 
-            char PeekChar {
-                get {
-                    return Convert.ToChar(json.Peek());
+                return word.ToString();
+            }
+        }
+
+        TOKEN NextToken
+        {
+            get
+            {
+                EatWhitespace();
+
+                if (json.Peek() == -1)
+                {
+                    return TOKEN.NONE;
                 }
-            }
 
-            char NextChar {
-                get {
-                    return Convert.ToChar(json.Read());
-                }
-            }
-
-            string NextWord {
-                get {
-                    StringBuilder word = new StringBuilder();
-
-                    while (!IsWordBreak(PeekChar)) {
-                        word.Append(NextChar);
-
-                        if (json.Peek() == -1) {
-                            break;
-                        }
-                    }
-
-                    return word.ToString();
-                }
-            }
-
-            TOKEN NextToken {
-                get {
-                    EatWhitespace();
-
-                    if (json.Peek() == -1) {
-                        return TOKEN.NONE;
-                    }
-
-                    switch (PeekChar) {
+                switch (PeekChar)
+                {
                     case '{':
                         return TOKEN.CURLY_OPEN;
                     case '}':
@@ -383,7 +424,8 @@ namespace Com.OneSignal.MiniJSON
                     case '-':
                         return TOKEN.NUMBER;
                     default:
-                        switch (NextWord) {
+                        switch (NextWord)
+                        {
                             case "false":
                                 return TOKEN.FALSE;
                             case "true":
@@ -393,135 +435,167 @@ namespace Com.OneSignal.MiniJSON
                             default:
                                 return TOKEN.NONE;
                         }
-                    }
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Converts a IDictionary / IList object or a simple type (string, int, etc.) into a JSON string
-        /// </summary>
-        /// <param name="json">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
-        /// <param name="humanReadable">Whether output as human readable format with spaces and
-        /// indentations.</param>
-        /// <param name="indentSpaces">Number of spaces for each level of indentation.</param>
-        /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-        public static string Serialize(object obj,
-                                       bool humanReadable = false,
-                                       int indentSpaces = 2) {
-            return Serializer.MakeSerialization(obj, humanReadable, indentSpaces);
+    /// <summary>
+    /// Converts a IDictionary / IList object or a simple type (string, int, etc.) into a JSON string
+    /// </summary>
+    /// <param name="json">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
+    /// <param name="humanReadable">Whether output as human readable format with spaces and
+    /// indentations.</param>
+    /// <param name="indentSpaces">Number of spaces for each level of indentation.</param>
+    /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
+    public static string Serialize(object obj,
+        bool humanReadable = false,
+        int indentSpaces = 2)
+    {
+        return Serializer.MakeSerialization(obj, humanReadable, indentSpaces);
+    }
+
+    sealed class Serializer
+    {
+        readonly StringBuilder builder;
+        readonly bool humanReadable;
+        readonly int indentSpaces;
+        int indentLevel;
+
+        Serializer(bool humanReadable, int indentSpaces)
+        {
+            builder = new StringBuilder();
+            this.humanReadable = humanReadable;
+            this.indentSpaces = indentSpaces;
+            indentLevel = 0;
         }
 
-        sealed class Serializer {
-            readonly StringBuilder builder;
-            readonly bool humanReadable;
-            readonly int indentSpaces;
-            int indentLevel;
+        public static string MakeSerialization(object obj, bool humanReadable, int indentSpaces)
+        {
+            var instance = new Serializer(humanReadable, indentSpaces);
 
-            Serializer(bool humanReadable, int indentSpaces) {
-                builder = new StringBuilder();
-                this.humanReadable = humanReadable;
-                this.indentSpaces = indentSpaces;
-                indentLevel = 0;
+            instance.SerializeValue(obj);
+
+            return instance.builder.ToString();
+        }
+
+        void SerializeValue(object value)
+        {
+            IList asList;
+            IDictionary asDict;
+            string asStr;
+
+            if (value == null)
+            {
+                builder.Append("null");
             }
-
-            public static string MakeSerialization(object obj, bool humanReadable, int indentSpaces) {
-                var instance = new Serializer(humanReadable, indentSpaces);
-
-                instance.SerializeValue(obj);
-
-                return instance.builder.ToString();
+            else if ((asStr = value as string) != null)
+            {
+                SerializeString(asStr);
             }
+            else if (value is bool)
+            {
+                builder.Append((bool) value ? "true" : "false");
+            }
+            else if ((asList = value as IList) != null)
+            {
+                SerializeArray(asList);
+            }
+            else if ((asDict = value as IDictionary) != null)
+            {
+                SerializeObject(asDict);
+            }
+            else if (value is char)
+            {
+                SerializeString(new string((char) value, 1));
+            }
+            else
+            {
+                SerializeOther(value);
+            }
+        }
 
-            void SerializeValue(object value) {
-                IList asList;
-                IDictionary asDict;
-                string asStr;
+        void AppendNewLineFunc()
+        {
+            builder.AppendLine();
+            builder.Append(' ', indentSpaces * indentLevel);
+        }
 
-                if (value == null) {
-                    builder.Append("null");
-                } else if ((asStr = value as string) != null) {
-                    SerializeString(asStr);
-                } else if (value is bool) {
-                    builder.Append((bool) value ? "true" : "false");
-                } else if ((asList = value as IList) != null) {
-                    SerializeArray(asList);
-                } else if ((asDict = value as IDictionary) != null) {
-                    SerializeObject(asDict);
-                } else if (value is char) {
-                    SerializeString(new string((char) value, 1));
-                } else {
-                    SerializeOther(value);
+        void SerializeObject(IDictionary obj)
+        {
+            bool first = true;
+
+            builder.Append('{');
+            ++indentLevel;
+
+            foreach (object e in obj.Keys)
+            {
+                if (first)
+                {
+                    if (humanReadable) AppendNewLineFunc();
                 }
-            }
-
-            void AppendNewLineFunc() {
-                builder.AppendLine();
-                builder.Append(' ', indentSpaces * indentLevel);
-            }
-
-            void SerializeObject(IDictionary obj) {
-                bool first = true;
-
-                builder.Append('{');
-                ++indentLevel;
-
-                foreach (object e in obj.Keys) {
-                    if (first) {
-                        if (humanReadable) AppendNewLineFunc();
-                    } else {
-                        builder.Append(',');
-                        if (humanReadable) AppendNewLineFunc();
-                    }
-
-                    SerializeString(e.ToString());
-                    builder.Append(':');
-                    if (humanReadable) builder.Append(' ');
-
-                    SerializeValue(obj[e]);
-
-                    first = false;
-                }
-
-                --indentLevel;
-                if (humanReadable && obj.Count > 0) AppendNewLineFunc();
-
-                builder.Append('}');
-            }
-
-            void SerializeArray(IList anArray) {
-                builder.Append('[');
-                ++indentLevel;
-
-                bool first = true;
-
-                for (int i=0; i<anArray.Count; i++) {
-                    object obj = anArray[i];
-                    if (first) {
-                        if (humanReadable) AppendNewLineFunc();
-                    } else {
-                        builder.Append(',');
-                        if (humanReadable) AppendNewLineFunc();
-                    }
-
-                    SerializeValue(obj);
-
-                    first = false;
+                else
+                {
+                    builder.Append(',');
+                    if (humanReadable) AppendNewLineFunc();
                 }
 
-                --indentLevel;
-                if (humanReadable && anArray.Count > 0) AppendNewLineFunc();
+                SerializeString(e.ToString());
+                builder.Append(':');
+                if (humanReadable) builder.Append(' ');
 
-                builder.Append(']');
+                SerializeValue(obj[e]);
+
+                first = false;
             }
 
-            void SerializeString(string str) {
-                builder.Append('\"');
+            --indentLevel;
+            if (humanReadable && obj.Count > 0) AppendNewLineFunc();
 
-                char[] charArray = str.ToCharArray();
-                for (int i=0; i<charArray.Length; i++) {
-                    char c = charArray[i];
-                    switch (c) {
+            builder.Append('}');
+        }
+
+        void SerializeArray(IList anArray)
+        {
+            builder.Append('[');
+            ++indentLevel;
+
+            bool first = true;
+
+            for (int i = 0; i < anArray.Count; i++)
+            {
+                object obj = anArray[i];
+                if (first)
+                {
+                    if (humanReadable) AppendNewLineFunc();
+                }
+                else
+                {
+                    builder.Append(',');
+                    if (humanReadable) AppendNewLineFunc();
+                }
+
+                SerializeValue(obj);
+
+                first = false;
+            }
+
+            --indentLevel;
+            if (humanReadable && anArray.Count > 0) AppendNewLineFunc();
+
+            builder.Append(']');
+        }
+
+        void SerializeString(string str)
+        {
+            builder.Append('\"');
+
+            char[] charArray = str.ToCharArray();
+            for (int i = 0; i < charArray.Length; i++)
+            {
+                char c = charArray[i];
+                switch (c)
+                {
                     case '"':
                         builder.Append("\\\"");
                         break;
@@ -545,40 +619,52 @@ namespace Com.OneSignal.MiniJSON
                         break;
                     default:
                         int codepoint = Convert.ToInt32(c);
-                        if ((codepoint >= 32) && (codepoint <= 126)) {
+                        if ((codepoint >= 32) && (codepoint <= 126))
+                        {
                             builder.Append(c);
-                        } else {
+                        }
+                        else
+                        {
                             builder.Append("\\u");
                             builder.Append(codepoint.ToString("x4"));
                         }
-                        break;
-                    }
-                }
 
-                builder.Append('\"');
+                        break;
+                }
             }
 
-            void SerializeOther(object value) {
-                // NOTE: decimals lose precision during serialization.
-                // They always have, I'm just letting you know.
-                // Previously floats and doubles lost precision too.
-                if (value is float) {
-                    builder.Append(((float) value).ToString("R", System.Globalization.CultureInfo.InvariantCulture));
-                } else if (value is int
-                    || value is uint
-                    || value is long
-                    || value is sbyte
-                    || value is byte
-                    || value is short
-                    || value is ushort
-                    || value is ulong) {
-                    builder.Append(value);
-                } else if (value is double
-                    || value is decimal) {
-                    builder.Append(Convert.ToDouble(value).ToString("R", System.Globalization.CultureInfo.InvariantCulture));
-                } else {
-                    SerializeString(value.ToString());
-                }
+            builder.Append('\"');
+        }
+
+        void SerializeOther(object value)
+        {
+            // NOTE: decimals lose precision during serialization.
+            // They always have, I'm just letting you know.
+            // Previously floats and doubles lost precision too.
+            if (value is float)
+            {
+                builder.Append(((float) value).ToString("R", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else if (value is int
+                     || value is uint
+                     || value is long
+                     || value is sbyte
+                     || value is byte
+                     || value is short
+                     || value is ushort
+                     || value is ulong)
+            {
+                builder.Append(value);
+            }
+            else if (value is double
+                     || value is decimal)
+            {
+                builder.Append(Convert.ToDouble(value)
+                    .ToString("R", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                SerializeString(value.ToString());
             }
         }
     }

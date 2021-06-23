@@ -2,58 +2,55 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Com.OneSignal.Editor.IMGUI
+
+[Serializable]
+class HyperLabel : HyperButton
 {
-    [Serializable]
-    class HyperLabel : HyperButton
+    [SerializeField] GUIContent m_Content;
+    [SerializeField] GUIStyle m_Style;
+    [SerializeField] GUIStyle m_MouseOverStyle;
+
+    public GUIContent Content => m_Content;
+    public Color Color => m_Style.normal.textColor;
+
+    public HyperLabel(GUIContent content)
+        : this(content, EditorStyles.label)
     {
-        [SerializeField]
-        GUIContent m_Content;
-        [SerializeField]
-        GUIStyle m_Style;
-        [SerializeField]
-        GUIStyle m_MouseOverStyle;
+    }
 
-        public GUIContent Content => m_Content;
-        public Color Color => m_Style.normal.textColor;
+    public HyperLabel(GUIContent content, GUIStyle style)
+    {
+        m_Content = content;
+        m_Style = new GUIStyle(style);
+        m_MouseOverStyle = new GUIStyle(style);
+    }
 
-        public HyperLabel(GUIContent content)
-            : this(content, EditorStyles.label) { }
+    public void SetMouseOverColor(Color color)
+    {
+        m_MouseOverStyle.normal.textColor = color;
+    }
 
-        public HyperLabel(GUIContent content, GUIStyle style)
-        {
-            m_Content = content;
-            m_Style = new GUIStyle(style);
-            m_MouseOverStyle = new GUIStyle(style);
-        }
+    protected override void OnNormal(params GUILayoutOption[] options)
+    {
+        EditorGUILayout.LabelField(m_Content, m_Style, options);
+    }
 
-        public void SetMouseOverColor(Color color)
-        {
-            m_MouseOverStyle.normal.textColor = color;
-        }
+    protected override void OnMouseOver(params GUILayoutOption[] options)
+    {
+        var c = GUI.color;
+        GUI.color = m_MouseOverStyle.normal.textColor;
 
-        protected override void OnNormal(params GUILayoutOption[] options)
-        {
-            EditorGUILayout.LabelField(m_Content, m_Style, options);
-        }
+        EditorGUILayout.LabelField(m_Content, m_MouseOverStyle, options);
+        GUI.color = c;
+    }
 
-        protected override void OnMouseOver(params GUILayoutOption[] options)
-        {
-            var c = GUI.color;
-            GUI.color = m_MouseOverStyle.normal.textColor;
+    public Vector2 CalcSize()
+    {
+        return m_Style.CalcSize(m_Content);
+    }
 
-            EditorGUILayout.LabelField(m_Content, m_MouseOverStyle, options);
-            GUI.color = c;
-        }
-
-        public Vector2 CalcSize()
-        {
-            return m_Style.CalcSize(m_Content);
-        }
-
-        public void SetStyle(GUIStyle style)
-        {
-            m_Style = new GUIStyle(style);
-        }
+    public void SetStyle(GUIStyle style)
+    {
+        m_Style = new GUIStyle(style);
     }
 }

@@ -26,57 +26,58 @@
  */
 
 using System.Collections.Generic;
-using Com.OneSignal.MiniJSON;
 
-namespace Com.OneSignal
+static class OneSignalPlatformHelper
 {
-    static class OneSignalPlatformHelper
+    internal static OSPermissionSubscriptionState ParsePermissionSubscriptionState(IOneSignalPlatform platform,
+        string jsonStr)
     {
-        internal static OSPermissionSubscriptionState ParsePermissionSubscriptionState(IOneSignalPlatform platform, string jsonStr)
-        {
-            var stateDict = Json.Deserialize(jsonStr) as Dictionary<string, object>;
+        var stateDict = Json.Deserialize(jsonStr) as Dictionary<string, object>;
 
-            var state = new OSPermissionSubscriptionState();
-            state.permissionStatus = platform.ParseOSPermissionState(stateDict["permissionStatus"]);
-            state.subscriptionStatus = platform.ParseOSSubscriptionState(stateDict["subscriptionStatus"]);
+        var state = new OSPermissionSubscriptionState();
+        state.permissionStatus = platform.ParseOSPermissionState(stateDict["permissionStatus"]);
+        state.subscriptionStatus = platform.ParseOSSubscriptionState(stateDict["subscriptionStatus"]);
 
-            if (stateDict.ContainsKey("emailSubscriptionStatus"))
-                state.emailSubscriptionStatus = platform.ParseOSEmailSubscriptionState(stateDict["emailSubscriptionStatus"]);
+        if (stateDict.ContainsKey("emailSubscriptionStatus"))
+            state.emailSubscriptionStatus =
+                platform.ParseOSEmailSubscriptionState(stateDict["emailSubscriptionStatus"]);
 
-            return state;
-        }
+        return state;
+    }
 
-        internal static OSPermissionStateChanges ParseOSPermissionStateChanges(IOneSignalPlatform platform, string stateChangesJSONString)
-        {
-            var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
+    internal static OSPermissionStateChanges ParseOSPermissionStateChanges(IOneSignalPlatform platform,
+        string stateChangesJSONString)
+    {
+        var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
 
-            var permissionStateChanges = new OSPermissionStateChanges();
-            permissionStateChanges.to = platform.ParseOSPermissionState(stateChangesJson["to"]);
-            permissionStateChanges.from = platform.ParseOSPermissionState(stateChangesJson["from"]);
+        var permissionStateChanges = new OSPermissionStateChanges();
+        permissionStateChanges.to = platform.ParseOSPermissionState(stateChangesJson["to"]);
+        permissionStateChanges.from = platform.ParseOSPermissionState(stateChangesJson["from"]);
 
-            return permissionStateChanges;
-        }
+        return permissionStateChanges;
+    }
 
-        internal static OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(IOneSignalPlatform platform, string stateChangesJSONString)
-        {
-            var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
+    internal static OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(IOneSignalPlatform platform,
+        string stateChangesJSONString)
+    {
+        var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
 
-            var permissionStateChanges = new OSSubscriptionStateChanges();
-            permissionStateChanges.to = platform.ParseOSSubscriptionState(stateChangesJson["to"]);
-            permissionStateChanges.from = platform.ParseOSSubscriptionState(stateChangesJson["from"]);
+        var permissionStateChanges = new OSSubscriptionStateChanges();
+        permissionStateChanges.to = platform.ParseOSSubscriptionState(stateChangesJson["to"]);
+        permissionStateChanges.from = platform.ParseOSSubscriptionState(stateChangesJson["from"]);
 
-            return permissionStateChanges;
-        }
+        return permissionStateChanges;
+    }
 
-        internal static OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(IOneSignalPlatform platform, string stateChangesJSONString)
-        {
-            var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
+    internal static OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(IOneSignalPlatform platform,
+        string stateChangesJSONString)
+    {
+        var stateChangesJson = Json.Deserialize(stateChangesJSONString) as Dictionary<string, object>;
 
-            var emailStateChanges = new OSEmailSubscriptionStateChanges();
-            emailStateChanges.to = platform.ParseOSEmailSubscriptionState(stateChangesJson["to"]);
-            emailStateChanges.from = platform.ParseOSEmailSubscriptionState(stateChangesJson["from"]);
+        var emailStateChanges = new OSEmailSubscriptionStateChanges();
+        emailStateChanges.to = platform.ParseOSEmailSubscriptionState(stateChangesJson["to"]);
+        emailStateChanges.from = platform.ParseOSEmailSubscriptionState(stateChangesJson["from"]);
 
-            return emailStateChanges;
-        }
+        return emailStateChanges;
     }
 }

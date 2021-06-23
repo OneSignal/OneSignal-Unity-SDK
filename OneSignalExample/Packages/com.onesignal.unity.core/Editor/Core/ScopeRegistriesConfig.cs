@@ -1,7 +1,4 @@
-﻿namespace Com.OneSignal.Editor
+﻿static class ScopeRegistriesConfig
 {
-    static class ScopeRegistriesConfig
-    {
-        public static readonly string OneSignalScope = "com.onesignal.unity";
-    }
+    public static readonly string OneSignalScope = "com.onesignal.unity";
 }

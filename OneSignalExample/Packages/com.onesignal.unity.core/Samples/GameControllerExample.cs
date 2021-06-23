@@ -29,8 +29,6 @@ using UnityEngine;
 using System.Collections.Generic;
 
 using System;
-using Com.OneSignal;
-using Com.OneSignal.MiniJSON;
 
 public class GameControllerExample : MonoBehaviour {
 

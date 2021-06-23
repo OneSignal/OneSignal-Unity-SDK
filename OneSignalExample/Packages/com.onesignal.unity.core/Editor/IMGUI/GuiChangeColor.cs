@@ -1,28 +1,25 @@
 using System;
 using UnityEngine;
 
-namespace Com.OneSignal.Editor.IMGUI
+class GuiChangeColor : IDisposable
 {
-    class GuiChangeColor : IDisposable
+    Color PreviousColor { get; }
+
+    public GuiChangeColor(string htmlColor)
     {
-        Color PreviousColor { get; }
+        PreviousColor = GUI.color;
+        ColorUtility.TryParseHtmlString(htmlColor, out var color);
+        GUI.color = color;
+    }
 
-        public GuiChangeColor(string htmlColor)
-        {
-            PreviousColor = GUI.color;
-            ColorUtility.TryParseHtmlString(htmlColor, out var color);
-            GUI.color = color;
-        }
+    public GuiChangeColor(Color newColor)
+    {
+        PreviousColor = GUI.color;
+        GUI.color = newColor;
+    }
 
-        public GuiChangeColor(Color newColor)
-        {
-            PreviousColor = GUI.color;
-            GUI.color = newColor;
-        }
-
-        public void Dispose()
-        {
-            GUI.color = PreviousColor;
-        }
+    public void Dispose()
+    {
+        GUI.color = PreviousColor;
     }
 }

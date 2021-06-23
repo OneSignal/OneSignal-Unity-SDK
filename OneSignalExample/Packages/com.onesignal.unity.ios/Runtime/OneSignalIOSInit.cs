@@ -1,14 +1,12 @@
 using UnityEngine;
 
-namespace Com.OneSignal.IOS
+
+static class OneSignalIOSInit
 {
-    static class OneSignalIOSInit
+    [RuntimeInitializeOnLoadMethod]
+    public static void Init()
     {
-        [RuntimeInitializeOnLoadMethod]
-        public static void Init()
-        {
-            if(!Application.isEditor)
-                OneSignalPush.RegisterPlatform(new OneSignalIOS());
-        }
+        if (!Application.isEditor)
+            OneSignal.RegisterPlatform(new OneSignalIOS());
     }
 }

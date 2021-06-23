@@ -1,14 +1,10 @@
 using UnityEngine;
 
-namespace Com.OneSignal.Editor
+static class OneSignalEditorInit
 {
-    static class OneSignalEditorInit
+    [RuntimeInitializeOnLoadMethod]
+    public static void Init()
     {
-        [RuntimeInitializeOnLoadMethod]
-        public static void Init()
-        {
-            OneSignalPush.RegisterPlatform(new OneSignalEditor());
-
-        }
+        OneSignal.RegisterPlatform(new OneSignalEditor());
     }
 }
