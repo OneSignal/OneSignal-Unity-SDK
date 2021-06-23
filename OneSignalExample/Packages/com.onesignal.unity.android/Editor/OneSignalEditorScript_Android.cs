@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Modified MIT License
  *
  * Copyright 2018 OneSignal
@@ -48,7 +48,7 @@ namespace Com.OneSignal.Android.Editor
         static bool IsEdm4UInstalled() {
             var precompiledAssemblies = CompilationPipeline.GetPrecompiledAssemblyNames();
             foreach (var assemblyName in precompiledAssemblies) {
-                if (assemblyName.StartsWith("Google.JarResolver")) {
+                if (assemblyName.StartsWith("Google.VersionHandler")) {
                     return true;
                 }
             }
