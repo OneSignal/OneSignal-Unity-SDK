@@ -37,7 +37,7 @@ public class OneSignalEditorScriptAndroid
     const string k_Edm4UVersion = "1.2.165";
 
     static readonly string k_AndroidConfigFolder =
-        $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/Plugins/Android/OneSignalConfig.plugin";
+        $"Packages/{ScopeRegistriesConfig.OneSignalScope}.android/Runtime/Plugins/Android/OneSignalConfig.plugin";
 
     static readonly string k_Edm4UPackageDownloadUrl =
         $"https://github.com/googlesamples/unity-jar-resolver/blob/v{k_Edm4UVersion}/external-dependency-manager-{k_Edm4UVersion}.unitypackage?raw=true";
