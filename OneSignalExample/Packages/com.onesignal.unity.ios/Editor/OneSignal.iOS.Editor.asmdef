@@ -1,12 +1,9 @@
 {
-    "name": "Com.OneSignal.iOS",
-    "references": [
-        "Com.OneSignal"
-    ],
+    "name": "OneSignal.iOS.Editor",
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [
-        "Editor",
-        "iOS"
+        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

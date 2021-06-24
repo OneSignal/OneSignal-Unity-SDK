@@ -1,7 +1,7 @@
 {
-    "name": "Com.OneSignal.Android",
+    "name": "OneSignal.Android",
     "references": [
-        "Com.OneSignal"
+        "OneSignal.Core"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

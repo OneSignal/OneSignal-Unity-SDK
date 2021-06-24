@@ -1,9 +1,8 @@
 {
-    "name": "Com.OneSignal.Editor",
+    "name": "OneSignal.Android.Editor",
     "references": [
-        "Com.OneSignal"
+        "OneSignal.Core.Editor"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

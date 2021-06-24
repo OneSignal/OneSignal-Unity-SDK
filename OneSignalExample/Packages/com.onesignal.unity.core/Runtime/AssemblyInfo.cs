@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Com.OneSignal.iOS")]
-[assembly: InternalsVisibleTo("Com.OneSignal.Android")]
-[assembly: InternalsVisibleTo("Com.OneSignal.Editor")]
+[assembly: InternalsVisibleTo("OneSignal.iOS")]
+[assembly: InternalsVisibleTo("OneSignal.Android")]
+[assembly: InternalsVisibleTo("OneSignal.Core.Editor")]
