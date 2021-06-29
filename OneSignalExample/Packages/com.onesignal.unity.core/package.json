@@ -22,11 +22,10 @@
     "email": "support@onesignal.com",
     "url": "https://onesignal.com/"
   },
-
   "homepage": "https://onesignal.com/",
   "bugs": {
     "url": "https://github.com/OneSignal/OneSignal-Unity-SDK/issues",
-    "email" : "support@onesignal.com"
+    "email": "support@onesignal.com"
   },
   "repository": {
     "type": "git",
