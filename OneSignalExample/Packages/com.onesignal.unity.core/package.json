@@ -30,5 +30,12 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:OneSignal/OneSignal-Unity-SDK.git"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Full Usage",
+      "description": "An example monobehaviour which implements all of the major OneSignal features.",
+      "path": "Samples~"
+    }
+  ]
 }
