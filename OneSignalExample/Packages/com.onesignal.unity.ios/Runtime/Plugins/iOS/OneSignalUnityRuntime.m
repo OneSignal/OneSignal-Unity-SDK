@@ -1,4 +1,4 @@
-/**
+/*
  * Modified MIT License
  *
  * Copyright 2017 OneSignal
