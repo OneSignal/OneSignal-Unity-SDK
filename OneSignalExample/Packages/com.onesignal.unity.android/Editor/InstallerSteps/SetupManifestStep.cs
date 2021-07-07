@@ -9,7 +9,7 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public class SetupAndroidManifestInstallStep : InstallStep
+public class SetupManifestStep : OneSignalInstallerStep
 {
     public override string Summary
         => "Setup keys in Android manifest";

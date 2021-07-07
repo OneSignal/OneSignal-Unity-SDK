@@ -7,27 +7,27 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public class InstallWindow : EditorWindow
+public class OneSignalInstallerWindow : EditorWindow
 {
     [MenuItem("OneSignal/Install")]
     public static void Show()
     {
-        var window = GetWindow(typeof(InstallWindow), true, _title);
+        var window = GetWindow(typeof(OneSignalInstallerWindow), true, _title);
         window.Show();
     }
 
     private const string _title = "OneSignal Component Installer";
     private const string _header = "";
-    private IReadOnlyList<InstallStep> _installSteps;
+    private IReadOnlyList<OneSignalInstallerStep> _installSteps;
     
     private void OnEnable()
     {
-        var stepTypes = _findAllAssignableTypes<InstallStep>("OneSignal");
-        var steps = new List<InstallStep>();
+        var stepTypes = _findAllAssignableTypes<OneSignalInstallerStep>("OneSignal");
+        var steps = new List<OneSignalInstallerStep>();
 
         foreach (var stepType in stepTypes)
         {
-            if (Activator.CreateInstance(stepType) is InstallStep step)
+            if (Activator.CreateInstance(stepType) is OneSignalInstallerStep step)
                 steps.Add(step);
             else
                 Debug.LogWarning($"could not create install step from type {stepType.Name}");
