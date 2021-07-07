@@ -25,52 +25,62 @@
  * THE SOFTWARE.
  */
 
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
-
+/// <summary>
+/// Handles installation of remaining dependencies and resources required by the android package
+/// </summary>
 [InitializeOnLoad]
 public class OneSignalEditorScriptAndroid
 {
-    const string k_Edm4UVersion = "1.2.165";
-
-    static readonly string k_AndroidConfigFolder =
-        $"Packages/com.onesignal.unity.android/Runtime/Plugins/Android/OneSignalConfig.plugin";
-
-    static readonly string k_Edm4UPackageDownloadUrl =
-        $"https://github.com/googlesamples/unity-jar-resolver/blob/v{k_Edm4UVersion}/external-dependency-manager-{k_Edm4UVersion}.unitypackage?raw=true";
-
+    /// <remarks>
+    /// will attempt to perform operation on load of the Editor
+    /// </remarks>
     static OneSignalEditorScriptAndroid()
     {
-        CreateOneSignalAndroidManifest();
-        InstallEdm4U();
+        InstallAndroidDependencies();
     }
 
-    static bool IsEdm4UInstalled()
+    [MenuItem("OneSignal/Install Android Dependencies")]
+    public static void InstallAndroidDependencies()
+    {
+        _installEdm4U();
+        _exportResources();
+        _replaceApplicationIdInManifest();
+    }
+    
+    private const string _edm4UVersion = "1.2.165";
+    private const string _keyInManifestToReplace = "{applicationId}";
+    private const string _androidPluginPackagePath = "Packages/com.onesignal.unity.android/Editor/OneSignalConfig.plugin";
+    private const string _androidPluginExportPath = "Assets/Plugins/Android/OneSignalConfig.plugin";
+
+    static readonly string _edm4UPackageDownloadUrl = $"https://github.com/googlesamples/unity-jar-resolver/blob/v{_edm4UVersion}/external-dependency-manager-{_edm4UVersion}.unitypackage?raw=true";
+
+    private static bool _isEdm4UInstalled()
     {
         var precompiledAssemblies = CompilationPipeline.GetPrecompiledAssemblyNames();
         foreach (var assemblyName in precompiledAssemblies)
         {
             if (assemblyName.StartsWith("Google.VersionHandler"))
-            {
                 return true;
-            }
         }
 
         return false;
     }
 
-    static void InstallEdm4U()
+    private static void _installEdm4U()
     {
         // If Edm4U is already installed we would do nothing.
-        if (IsEdm4UInstalled())
-        {
+        if (_isEdm4UInstalled())
             return;
-        }
 
-        var request = EditorWebRequest.Get(k_Edm4UPackageDownloadUrl);
+        var request = EditorWebRequest.Get(_edm4UPackageDownloadUrl);
         request.AddEditorProgressDialog("Downloading Google External Dependency Manager");
         request.Send(unityRequest =>
         {
@@ -90,23 +100,73 @@ public class OneSignalEditorScriptAndroid
         });
     }
 
-    // Copies `AndroidManifestTemplate.xml` to `AndroidManifest.xml`
-    // then replace `${manifestApplicationId}` with current packagename in the Unity settings.
-    static void CreateOneSignalAndroidManifest()
+    private static void _exportResources()
     {
-        var configFullPath = Path.GetFullPath($"{k_AndroidConfigFolder}");
-        var manifestPath = Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
-        var manifestTemplatePath =
-            Path.GetFullPath($"{configFullPath}{Path.DirectorySeparatorChar}AndroidManifestTemplate.xml");
+        var packagePath = Path.GetFullPath($"{_androidPluginPackagePath}");
+        var exportPath = Path.GetFullPath($"{_androidPluginExportPath}");
+        var paths = Directory.GetFiles(packagePath, "*", SearchOption.AllDirectories);
+        var filteredPaths = paths.Where(path => !path.EndsWith(".meta"));
 
-        File.Copy(manifestTemplatePath, manifestPath, true);
-        var streamReader = new StreamReader(manifestPath);
-        var body = streamReader.ReadToEnd();
-        streamReader.Close();
-        body = body.Replace("${manifestApplicationId}", PlayerSettings.applicationIdentifier);
-        using (var streamWriter = new StreamWriter(manifestPath, false))
+        foreach (var path in filteredPaths)
         {
-            streamWriter.Write(body);
+            var trimmedPath = path.Remove(0, packagePath.Length + 1);
+            var fileExportPath = Path.Combine(exportPath, trimmedPath);
+            var containingPath = fileExportPath.Remove(fileExportPath.LastIndexOf(Path.DirectorySeparatorChar));
+
+            /*
+             * Export the file.
+             * By default the CreateDirectory and Copy methods don't overwrite but we use the Exists
+             * checks to avoid polluting the console with warnings.
+             */
+            
+            if (!Directory.Exists(containingPath)) 
+                Directory.CreateDirectory(containingPath);
+            
+            if (!File.Exists(fileExportPath))
+                File.Copy(path, fileExportPath);
+        }
+
+        AssetDatabase.Refresh();
+    }
+
+    private static void _replaceApplicationIdInManifest()
+    {
+        var exportPath = Path.GetFullPath($"{_androidPluginExportPath}");
+        var manifestPath = Path.GetFullPath($"{exportPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
+        var replacements = new Dictionary<string, string>
+        {
+            [_keyInManifestToReplace] = PlayerSettings.applicationIdentifier
+        };
+
+        // modifies the manifest in place
+        _replaceStringsInFile(manifestPath, manifestPath, replacements);
+    }
+
+    private static void _replaceStringsInFile(string sourcePath, string destinationPath,
+        IReadOnlyDictionary<string, string> replacements)
+    {
+        try
+        {
+            if (!File.Exists(sourcePath))
+            {
+                Debug.LogError($"could not find {sourcePath}");
+                return;
+            }
+
+            var reader = new StreamReader(sourcePath);
+            var contents = reader.ReadToEnd();
+            reader.Close();
+
+            foreach (var replacement in replacements)
+                contents = contents.Replace(replacement.Key, replacement.Value);
+
+            var writer = new StreamWriter(destinationPath);
+            writer.Write(contents);
+            writer.Close();
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError($"could not replace strings of {sourcePath} because:\n{exception.Message}");
         }
     }
 }
