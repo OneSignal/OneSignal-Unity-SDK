@@ -1,7 +1,7 @@
 /// <summary>
 /// 
 /// </summary>
-public abstract class InstallStep
+public abstract class OneSignalInstallerStep
 {
     /// <summary>
     /// 
