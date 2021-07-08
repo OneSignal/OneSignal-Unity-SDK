@@ -24,6 +24,9 @@ public class ExportAndroidResourcesStep : OneSignalInstallerStep
         var packagePath = _getPackagePath();
         var exportPath = _getExportPath();
 
+        if (!Directory.Exists(exportPath))
+            return false;
+
         var packageFiles = Directory.GetFiles(packagePath, "*", SearchOption.AllDirectories);
         var exportFiles = Directory.GetFiles(exportPath, "*", SearchOption.AllDirectories);
 
