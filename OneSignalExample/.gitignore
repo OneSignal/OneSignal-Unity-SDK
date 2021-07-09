@@ -55,5 +55,3 @@ Assets/Root
 /web/
 
 /ProjectSettings/AndroidResolverDependencies.xml
-
-**/OneSignalConfig.plugin/AndroidManifest.xml*
