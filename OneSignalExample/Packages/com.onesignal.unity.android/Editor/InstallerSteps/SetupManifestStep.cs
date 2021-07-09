@@ -23,12 +23,22 @@ public class SetupManifestStep : OneSignalInstallerStep
 
     protected override bool _getIsStepCompleted()
     {
-        return false;
+        var exportPath = Path.GetFullPath(_androidPluginExportPath);
+        var manifestPath = Path.GetFullPath($"{exportPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
+        
+        if (!File.Exists(manifestPath))
+            return false;
+        
+        var reader = new StreamReader(manifestPath);
+        var contents = reader.ReadToEnd();
+        reader.Close();
+        
+        return !contents.Contains(_keyInManifestToReplace);
     }
 
     protected override void _install()
     {
-        var exportPath = Path.GetFullPath($"{_androidPluginExportPath}");
+        var exportPath = Path.GetFullPath(_androidPluginExportPath);
         var manifestPath = Path.GetFullPath($"{exportPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");
         var replacements = new Dictionary<string, string>
         {
@@ -41,7 +51,7 @@ public class SetupManifestStep : OneSignalInstallerStep
     
     private const string _keyInManifestToReplace = "{applicationId}";
     private const string _androidPluginExportPath = "Assets/Plugins/Android/OneSignalConfig.plugin";
-
+    
     private static void _replaceStringsInFile(string sourcePath, string destinationPath,
         IReadOnlyDictionary<string, string> replacements)
     {
