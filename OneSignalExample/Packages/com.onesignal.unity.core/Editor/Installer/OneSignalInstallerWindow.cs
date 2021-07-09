@@ -9,8 +9,8 @@ using UnityEngine;
 /// </summary>
 public class OneSignalInstallerWindow : EditorWindow
 {
-    [MenuItem("OneSignal/Install")]
-    public static void Show()
+    [MenuItem("OneSignal/Dependency Installer")]
+    public static void ShowWindow()
     {
         var window = GetWindow(typeof(OneSignalInstallerWindow), true, _title);
         window.Show();
