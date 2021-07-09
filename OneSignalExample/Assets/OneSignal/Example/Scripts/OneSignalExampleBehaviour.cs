@@ -17,20 +17,22 @@ namespace TestApp
                 .EndInit();
             
             OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
-        
-            // iOS - Shows the iOS native notification permission prompt.
-            //   - Instead we recomemnd using an In-App Message to prompt for notification 
-            //     permission to explain how notifications are helpful to your users.
-            OneSignal.PromptForPushNotificationsWithUserResponse(OneSignalPromptForPushNotificationsReponse);
-        
+            
+            /*
+             * iOS
+             * - Shows the iOS native notification permission prompt.
+             * - Instead we recommend using an In-App Message to prompt for notification permission to explain how
+             * notifications are helpful to your users.
+             */
+            OneSignal.PromptForPushNotificationsWithUserResponse(OneSignalPromptForPushNotificationsResponse);
         }
         
         private void HandleIamClicked(OSInAppMessageAction action)
         {
-            throw new NotImplementedException();
+            
         }
         
-        private void OneSignalPromptForPushNotificationsReponse(bool accepted)
+        private void OneSignalPromptForPushNotificationsResponse(bool accepted)
         {
             
         }
