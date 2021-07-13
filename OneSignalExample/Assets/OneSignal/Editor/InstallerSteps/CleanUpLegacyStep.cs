@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Compilation;
-using UnityEngine;
 
 /// <summary>
 /// 
@@ -15,18 +11,37 @@ public class CleanUpLegacyStep : OneSignalInstallerStep
         => "Remove legacy files";
 
     public override string Details
-        => "";
+        => "Checks for the diff between the files distributed with the package and those which are in the " +
+           OneSignalFileInventory.PackageAssetsPath;
 
     public override string DocumentationLink
         => "";
 
     protected override bool _getIsStepCompleted()
     {
-        return false;
+        if (_inventory == null)
+            _inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
+
+        if (_inventory == null)
+            return true;
+        
+        var diff = _inventory.CurrentPaths.Except(_inventory.DistributedPaths);
+        return !diff.Any();
     }
 
     protected override void _install()
     {
+        if (_inventory == null)
+            _inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
+
+        if (_inventory == null)
+            return; // error
         
+        var diff = _inventory.CurrentPaths.Except(_inventory.DistributedPaths);
+
+        foreach (var path in diff)
+            File.Delete(path);
     }
+
+    private OneSignalFileInventory _inventory;
 }
