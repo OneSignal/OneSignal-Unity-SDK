@@ -10,7 +10,8 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
         => "Import OneSignal packages";
 
     public override string Details
-        => "";
+        => "Add the OneSignal registry and core, ios, and android packages to the project manifest so they will be" +
+           "downloaded and imported";
 
     public override string DocumentationLink
         => "";
