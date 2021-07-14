@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OneSignalPush.MiniJSON;
 using UnityEngine.Networking;
 
 static class GitHubUtility

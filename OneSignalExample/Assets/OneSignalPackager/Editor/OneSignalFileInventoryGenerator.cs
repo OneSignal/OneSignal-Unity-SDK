@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Creates the <see cref="OneSignalFileInventory"/> resource to be distributed with the SDK *.unitypackage
 /// </summary>
-public sealed class OneSignalFileInventoryGenerator : ScriptableObject
+public static class OneSignalFileInventoryGenerator
 {
     /// <summary>
     /// Run from the internal OneSignal menu or cmdline to create a inventory resource to distribute
