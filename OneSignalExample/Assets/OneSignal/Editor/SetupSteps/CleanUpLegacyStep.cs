@@ -25,8 +25,9 @@ public sealed class CleanUpLegacyStep : OneSignalSetupStep
 
         if (_inventory == null)
             return true;
-        
-        var diff = _inventory.CurrentPaths.Except(_inventory.DistributedPaths);
+
+        var currentPaths = _inventory.GetCurrentPaths();
+        var diff = currentPaths.Except(_inventory.DistributedPaths);
         return !diff.Any();
     }
 
@@ -38,7 +39,8 @@ public sealed class CleanUpLegacyStep : OneSignalSetupStep
         if (_inventory == null)
             return; // error
         
-        var diff = _inventory.CurrentPaths.Except(_inventory.DistributedPaths);
+        var currentPaths = _inventory.GetCurrentPaths();
+        var diff = currentPaths.Except(_inventory.DistributedPaths);
 
         foreach (var path in diff)
             File.Delete(path);

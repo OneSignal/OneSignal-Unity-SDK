@@ -14,7 +14,7 @@ public static class OneSignalFileInventoryGenerator
     public static void GenerateInventory()
     {
         var inventory = ScriptableObject.CreateInstance<OneSignalFileInventory>();
-        inventory.DistributedPaths = inventory.CurrentPaths;
+        inventory.DistributedPaths = inventory.GetCurrentPaths();
 
         Directory.CreateDirectory(OneSignalFileInventory.EditorResourcesPath);
         AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);

@@ -27,7 +27,8 @@ public static class OneSignalBootstrapper
         if (inventory == null)
             return; // error
         
-        var diff = inventory.CurrentPaths.Except(inventory.DistributedPaths);
+        var currentPaths = inventory.GetCurrentPaths();
+        var diff = currentPaths.Except(inventory.DistributedPaths);
 
         if (diff.Any())
             EditorApplication.delayCall += _showOpenSetupDialog;
