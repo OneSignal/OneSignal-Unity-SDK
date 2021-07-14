@@ -98,6 +98,18 @@ class Manifest
             m_ScopeRegistries.Add(registry.Url, registry);
         }
     }
+    
+    /// <summary>
+    /// Removes a scope registry
+    /// </summary>
+    /// <param name="url"></param>
+    public void RemoveScopeRegistry(string url)
+    {
+        if (IsRegistryPresent(url))
+        {
+            m_ScopeRegistries.Remove(url);
+        }
+    }
 
     /// <summary>
     /// Adds dependency.
@@ -110,6 +122,18 @@ class Manifest
         {
             var dependency = new Dependency(name, version);
             m_Dependencies.Add(dependency.Name, dependency);
+        }
+    }
+    
+    /// <summary>
+    /// Removes a dependency
+    /// </summary>
+    /// <param name="name"></param>
+    public void RemoveDependency(string name)
+    {
+        if (IsDependencyPresent(name))
+        {
+            m_Dependencies.Remove(name);
         }
     }
 
