@@ -7,7 +7,7 @@ using UnityEditor;
 public static class Bootstrapper
 {
     /// <summary>
-    /// Asks to open the installer if legacy files are found
+    /// Asks to open the SDK Setup if legacy files are found
     /// </summary>
     [InitializeOnLoadMethod]
     public static void CheckForLegacy()
@@ -29,13 +29,13 @@ public static class Bootstrapper
         
         var dialogResult = EditorUtility.DisplayDialog(
             "OneSignal",
-            "The project contains an outdated version of OneSignal SDK! We recommend running the OneSignal installer.",
-            "Open Installer",
+            "The project contains an outdated version of OneSignal SDK! We recommend running the OneSignal SDK Setup.",
+            "Open SDK Setup",
             "Cancel"
         );
 
         if (dialogResult) 
-            OneSignalInstallerWindow.ShowWindow();
+            OneSignalSetupWindow.ShowWindow();
     }
 
     private const string _sessionCheckKey = "onesignal.bootstrapper.check";

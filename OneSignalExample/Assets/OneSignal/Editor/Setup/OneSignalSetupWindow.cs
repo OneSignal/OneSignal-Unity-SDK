@@ -1,3 +1,4 @@
+#if !ONE_SIGNAL_INSTALLED
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,19 +9,19 @@ using UnityEngine.UI;
 /// <summary>
 /// Pop up window which displays any additional required or optional setup steps by the SDK
 /// </summary>
-public class OneSignalInstallerWindow : EditorWindow
+public class OneSignalSetupWindow : EditorWindow
 {
-    [MenuItem("OneSignal/Dependency Installer")]
+    [MenuItem("OneSignal/SDK Setup")]
     public static void ShowWindow()
     {
-        var window = GetWindow(typeof(OneSignalInstallerWindow), true, _title);
+        var window = GetWindow(typeof(OneSignalSetupWindow), true, _title);
         window.Show();
     }
 
-    private const string _title = "OneSignal Component Installer";
+    private const string _title = "OneSignal SDK Setup";
     private const string _description = "Additional steps required to get the OneSignal Unity SDK up and running";
     
-    private IReadOnlyList<OneSignalInstallerStep> _installSteps;
+    private IReadOnlyList<OneSignalSetupStep> _setupSteps;
     private readonly Queue<Action> _actionsToPerform = new Queue<Action>();
     
     private bool _guiSetupComplete = false;
@@ -31,18 +32,18 @@ public class OneSignalInstallerWindow : EditorWindow
     
     private void OnEnable()
     {
-        var stepTypes = _findAllAssignableTypes<OneSignalInstallerStep>("OneSignal");
-        var steps = new List<OneSignalInstallerStep>();
+        var stepTypes = _findAllAssignableTypes<OneSignalSetupStep>("OneSignal");
+        var steps = new List<OneSignalSetupStep>();
 
         foreach (var stepType in stepTypes)
         {
-            if (Activator.CreateInstance(stepType) is OneSignalInstallerStep step)
+            if (Activator.CreateInstance(stepType) is OneSignalSetupStep step)
                 steps.Add(step);
             else
-                Debug.LogWarning($"could not create install step from type {stepType.Name}");
+                Debug.LogWarning($"could not create setup step from type {stepType.Name}");
         }
 
-        _installSteps = steps;
+        _setupSteps = steps;
     }
 
     private void OnGUI()
@@ -52,18 +53,18 @@ public class OneSignalInstallerWindow : EditorWindow
         GUILayout.Label(_description);
         EditorGUILayout.Separator();
 
-        if (_installSteps == null) 
+        if (_setupSteps == null) 
             return;
 
         if (GUILayout.Button("Run All Steps"))
         {
-            foreach (var step in _installSteps)
-                _actionsToPerform.Enqueue(step.Install);
+            foreach (var step in _setupSteps)
+                _actionsToPerform.Enqueue(step.RunStep);
         }
         
         EditorGUILayout.Separator();
         
-        foreach (var step in _installSteps)
+        foreach (var step in _setupSteps)
         {
             EditorGUILayout.BeginHorizontal();
 
@@ -77,7 +78,7 @@ public class OneSignalInstallerWindow : EditorWindow
             GUI.Label(sumRect, sumContent);
 
             EditorGUI.BeginDisabledGroup(step.IsStepCompleted);
-            _handleButtonResult(GUILayout.Button("Install"), step.Install);
+            _handleButtonResult(GUILayout.Button("Run"), step.RunStep);
             EditorGUI.EndDisabledGroup();
             
             EditorGUILayout.EndHorizontal();
@@ -135,3 +136,4 @@ public class OneSignalInstallerWindow : EditorWindow
         return assignableTypes;
     }
 }
+#endif

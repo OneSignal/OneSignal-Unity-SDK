@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Copies the OneSignalConfig.plugin to Assets/Plugins/Android/*
 /// </summary>
-public class ExportAndroidResourcesStep : OneSignalInstallerStep
+public class ExportAndroidResourcesStep : OneSignalSetupStep
 {
     public override string Summary
         => "Copy Android plugin to Assets";
@@ -35,7 +35,7 @@ public class ExportAndroidResourcesStep : OneSignalInstallerStep
         return fileDiff.Any();
     }
 
-    protected override void _install()
+    protected override void _runStep()
     {
         var packagePath = _getPackagePath();
         var exportPath = _getExportPath();
