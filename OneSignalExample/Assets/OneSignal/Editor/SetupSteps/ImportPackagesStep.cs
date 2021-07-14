@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 
 /// <summary>
-/// 
+/// Checks for whether the OneSignal Unity Core package has been added to the project and does so if not
 /// </summary>
 public sealed class ImportPackagesStep : OneSignalSetupStep
 {

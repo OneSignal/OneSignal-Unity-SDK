@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Checks for EDM4U assemblies and installs the package from its github releases
 /// </summary>
-public class InstallEdm4uStep : OneSignalSetupStep
+public sealed class InstallEdm4uStep : OneSignalSetupStep
 {
     public override string Summary
         => $"Install EDM4U {_edm4UVersion}";

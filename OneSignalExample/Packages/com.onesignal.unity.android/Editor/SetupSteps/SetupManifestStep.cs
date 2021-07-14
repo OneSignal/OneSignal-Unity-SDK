@@ -7,7 +7,7 @@ using UnityEditor.Compilation;
 using UnityEngine;
 
 /// <summary>
-/// 
+/// Makes sure that the OneSignalConfig.plugin folder exists and is populated with the correct files within the project
 /// </summary>
 public class SetupManifestStep : OneSignalSetupStep
 {

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Pop up window which displays any additional required or optional setup steps by the SDK
 /// </summary>
-public class OneSignalSetupWindow : EditorWindow
+public sealed class OneSignalSetupWindow : EditorWindow
 {
     [MenuItem("OneSignal/SDK Setup")]
     public static void ShowWindow()
