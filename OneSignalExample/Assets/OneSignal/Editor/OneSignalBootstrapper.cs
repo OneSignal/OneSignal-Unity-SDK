@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using UnityEditor;
+﻿using UnityEditor;
 
 /// <summary>
 /// Handles informing the user on startup/import if the legacy SDK has been detected
