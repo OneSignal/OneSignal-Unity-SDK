@@ -1,8 +1,7 @@
+using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Compilation;
-using UnityEngine;
 
 /// <summary>
 /// Copies the OneSignalConfig.plugin to Assets/Plugins/Android/*
@@ -27,12 +26,14 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
         if (!Directory.Exists(exportPath))
             return false;
 
-        var packageFiles = Directory.GetFiles(packagePath, "*", SearchOption.AllDirectories);
-        var exportFiles = Directory.GetFiles(exportPath, "*", SearchOption.AllDirectories);
+        var packagePaths = Directory.GetFiles(packagePath, "*", SearchOption.AllDirectories)
+            .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
+        
+        var exportPaths = Directory.GetFiles(exportPath, "*", SearchOption.AllDirectories)
+            .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
 
-        var fileDiff = packageFiles.Except(exportFiles);
-
-        return fileDiff.Any();
+        var fileDiff = packagePaths.Except(exportPaths);
+        return !fileDiff.Any();
     }
 
     protected override void _runStep()
