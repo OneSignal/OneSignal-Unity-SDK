@@ -5,7 +5,7 @@ using UnityEditor;
 /// <summary>
 /// 
 /// </summary>
-public class CleanUpLegacyStep : OneSignalInstallerStep
+public sealed class CleanUpLegacyStep : OneSignalInstallerStep
 {
     public override string Summary
         => "Remove legacy files";
