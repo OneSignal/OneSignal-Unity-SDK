@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using OneSignalPush.MiniJSON;
 
 /// <summary>
 /// Representation of Manifest JSON file.
