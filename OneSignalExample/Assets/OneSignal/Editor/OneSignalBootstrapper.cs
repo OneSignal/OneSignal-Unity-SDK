@@ -4,10 +4,10 @@ using UnityEditor;
 /// <summary>
 /// Handles informing the user on startup/import if the legacy SDK has been detected
 /// </summary>
-public static class Bootstrapper
+public static class OneSignalBootstrapper
 {
     /// <summary>
-    /// Asks to open the SDK Setup if legacy files are found
+    /// Asks to open the SDK Setup if legacy files are found or core is missing
     /// </summary>
     [InitializeOnLoadMethod]
     public static void CheckForLegacy()
@@ -17,6 +17,11 @@ public static class Bootstrapper
         
         SessionState.SetBool(_sessionCheckKey, true);
         
+        #if !ONE_SIGNAL_INSTALLED
+        EditorApplication.delayCall += _showOpenSetupDialog;
+        return;
+        #endif
+        
         var inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
 
         if (inventory == null)
@@ -24,9 +29,12 @@ public static class Bootstrapper
         
         var diff = inventory.CurrentPaths.Except(inventory.DistributedPaths);
 
-        if (!diff.Any())
-            return;
-        
+        if (diff.Any())
+            EditorApplication.delayCall += _showOpenSetupDialog;
+    }
+
+    private static void _showOpenSetupDialog()
+    {
         var dialogResult = EditorUtility.DisplayDialog(
             "OneSignal",
             "The project contains an outdated version of OneSignal SDK! We recommend running the OneSignal SDK Setup.",
