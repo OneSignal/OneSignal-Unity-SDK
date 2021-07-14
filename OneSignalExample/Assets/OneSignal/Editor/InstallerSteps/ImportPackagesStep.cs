@@ -1,17 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Google;
 using UnityEditor;
-using UnityEditor.Compilation;
-using UnityEditor.PackageManager;
-using UnityEngine;
 
 /// <summary>
 /// 
 /// </summary>
-public class ImportPackagesStep : OneSignalInstallerStep
+public sealed class ImportPackagesStep : OneSignalInstallerStep
 {
     public override string Summary
         => "Import OneSignal packages";
@@ -30,28 +23,46 @@ public class ImportPackagesStep : OneSignalInstallerStep
     
     protected override void _install()
     {
-#if IS_ONESIGNAL_EXAMPLE_APP
         var manifest = new Manifest();
         manifest.Fetch();
-        manifest.AddDependency(
-            "com.onesignal.unity.core",
-            "file:../../com.onesignal.unity.core"
-        );
         
-        manifest.AddDependency(
-            "com.onesignal.unity.android",
-            "file:../../com.onesignal.unity.android"
-        );
+        manifest.AddScopeRegistry(_scopeRegistry);
         
-        manifest.AddDependency(
-            "com.onesignal.unity.ios",
-            "file:../../com.onesignal.unity.ios"
-        );
+        var scopeRegistry = manifest.GetScopeRegistry(_registryUrl);
+        scopeRegistry.AddScope(_packagesScope);
         
+        manifest.AddDependency(_corePackageName, _coreVersion);
+        manifest.AddDependency(_androidPackageName, _androidVersion);
+        manifest.AddDependency(_iosPackageName, _iosVersion);
+
         manifest.ApplyChanges();
         AssetDatabase.Refresh();
-#else 
-        
-#endif
     }
+    
+    private const string _packagesScope = "com.onesignal.unity";
+    
+    private static readonly string _corePackageName = $"{_packagesScope}.core";
+    private static readonly string _androidPackageName = $"{_packagesScope}.android";
+    private static readonly string _iosPackageName = $"{_packagesScope}.ios";
+    
+#if IS_ONESIGNAL_EXAMPLE_APP
+    private static readonly string _coreVersion = $"file:../../{_corePackageName}";
+    private static readonly string _androidVersion = $"file:../../{_androidPackageName}";
+    private static readonly string _iosVersion = $"file:../../{_iosPackageName}";
+    
+    private const string _registryName = "npmjs";
+    private const string _registryUrl = "https://registry.npmjs.org";
+    
+    // private const string _githubRegistryUrl = "https://npm.pkg.github.com/@OneSignal";
+#else // todo
+    private static readonly string _coreVersion = "";
+    private static readonly string _androidVersion = "";
+    private static readonly string _iosVersion = "";
+
+    private const string _registryName = "npmjs";
+    private const string _registryUrl = "https://registry.npmjs.org";
+#endif
+
+    private static readonly HashSet<string> _scopes = new HashSet<string> { _packagesScope };
+    private static readonly ScopeRegistry _scopeRegistry = new ScopeRegistry(_registryName, _registryUrl, _scopes);
 }
