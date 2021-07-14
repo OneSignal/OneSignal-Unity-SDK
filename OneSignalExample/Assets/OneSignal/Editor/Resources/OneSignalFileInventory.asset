@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90dda284b07e473bb096f8c79d2bbb17, type: 3}
+  m_Name: OneSignalFileInventory
+  m_EditorClassIdentifier: 
+  DistributedPaths:
+  - Assets/OneSignal/.DS_Store
+  - Assets/OneSignal/CHANGELOG.md
+  - Assets/OneSignal/CHANGELOG.md.meta
+  - Assets/OneSignal/Editor.meta
+  - Assets/OneSignal/Example.meta
+  - Assets/OneSignal/OneSignal.UnityPackage.asmdef
+  - Assets/OneSignal/OneSignal.UnityPackage.asmdef.meta
+  - Assets/OneSignal/README.md
+  - Assets/OneSignal/README.md.meta
+  - Assets/OneSignal/VERSION
+  - Assets/OneSignal/VERSION.meta
+  - Assets/OneSignal/Editor/.DS_Store
+  - Assets/OneSignal/Editor/AssemblyInfo.cs
+  - Assets/OneSignal/Editor/AssemblyInfo.cs.meta
+  - Assets/OneSignal/Editor/OneSignalBootstrapper.cs
+  - Assets/OneSignal/Editor/OneSignalBootstrapper.cs.meta
+  - Assets/OneSignal/Editor/OneSignalFileInventory.cs
+  - Assets/OneSignal/Editor/OneSignalFileInventory.cs.meta
+  - Assets/OneSignal/Editor/OneSignalRegistries.xml
+  - Assets/OneSignal/Editor/OneSignalRegistries.xml.meta
+  - Assets/OneSignal/Editor/PackageManagement.meta
+  - Assets/OneSignal/Editor/Resources.meta
+  - Assets/OneSignal/Editor/Setup.meta
+  - Assets/OneSignal/Editor/SetupSteps.meta
+  - Assets/OneSignal/Editor/Utilities.meta
+  - Assets/OneSignal/Editor/PackageManagement/Dependency.cs
+  - Assets/OneSignal/Editor/PackageManagement/Dependency.cs.meta
+  - Assets/OneSignal/Editor/PackageManagement/Manifest.cs
+  - Assets/OneSignal/Editor/PackageManagement/Manifest.cs.meta
+  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistriesConfig.cs
+  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistriesConfig.cs.meta
+  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs
+  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs.meta
+  - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset
+  - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset.meta
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupStep.cs
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupStep.cs.meta
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupWindow.cs
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupWindow.cs.meta
+  - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs
+  - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs.meta
+  - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs
+  - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs.meta
+  - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs
+  - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs.meta
+  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
+  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
+  - Assets/OneSignal/Example/.DS_Store
+  - Assets/OneSignal/Example/Scenes.meta
+  - Assets/OneSignal/Example/Scripts.meta
+  - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity
+  - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity.meta
+  - Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs
+  - Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs.meta
