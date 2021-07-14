@@ -14,14 +14,12 @@ public static class OneSignalBootstrapper
     {
         if (SessionState.GetBool(_sessionCheckKey, false))
             return;
-        
+
         SessionState.SetBool(_sessionCheckKey, true);
-        
-        #if !ONE_SIGNAL_INSTALLED
+
+#if !ONE_SIGNAL_INSTALLED
         EditorApplication.delayCall += _showOpenSetupDialog;
-        return;
-        #endif
-        
+#else
         var inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
 
         if (inventory == null)
@@ -32,6 +30,7 @@ public static class OneSignalBootstrapper
 
         if (diff.Any())
             EditorApplication.delayCall += _showOpenSetupDialog;
+#endif
     }
 
     private static void _showOpenSetupDialog()
@@ -43,7 +42,7 @@ public static class OneSignalBootstrapper
             "Cancel"
         );
 
-        if (dialogResult) 
+        if (dialogResult)
             OneSignalSetupWindow.ShowWindow();
     }
 
