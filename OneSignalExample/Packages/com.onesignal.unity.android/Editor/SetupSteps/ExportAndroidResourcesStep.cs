@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Copies the OneSignalConfig.plugin to Assets/Plugins/Android/*
 /// </summary>
-public class ExportAndroidResourcesStep : OneSignalSetupStep
+public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
 {
     public override string Summary
         => "Copy Android plugin to Assets";

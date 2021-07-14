@@ -3,7 +3,8 @@ using System.Linq;
 using UnityEditor;
 
 /// <summary>
-/// 
+/// Handles if there are files within the Assets/OneSignal folder which should not be there. Typically this
+/// indicates the presence of legacy files.
 /// </summary>
 public sealed class CleanUpLegacyStep : OneSignalSetupStep
 {
