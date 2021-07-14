@@ -1,0 +1,10 @@
+﻿<dependencies>
+  <androidPackages>
+    <androidPackage spec="com.google.android.gms:play-services-base:[10.2.1, 12.1.0[" />
+    <androidPackage spec="com.google.firebase:firebase-messaging:[10.2.1, 12.1.0["/>
+    <androidPackage spec="com.google.android.gms:play-services-location:[10.2.1, 12.1.0[" />
+    <androidPackage spec="com.android.support:support-v4:[26.0.0, 27.2.0[" />
+    <androidPackage spec="com.android.support:cardview-v7:[26.0.0, 27.2.0[" />  
+    <androidPackage spec="com.android.support:customtabs:[26.0.0, 27.2.0[" />
+  </androidPackages>
+</dependencies>
