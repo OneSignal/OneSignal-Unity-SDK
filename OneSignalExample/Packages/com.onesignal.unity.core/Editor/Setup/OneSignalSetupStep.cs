@@ -1,7 +1,7 @@
 /// <summary>
 /// 
 /// </summary>
-public abstract class OneSignalInstallerStep
+public abstract class OneSignalSetupStep
 {
     /// <summary>
     /// 
@@ -36,17 +36,17 @@ public abstract class OneSignalInstallerStep
     /// <summary>
     /// 
     /// </summary>
-    public void Install()
+    public void RunStep()
     {
         if (IsStepCompleted)
             return;
         
-        _install();
+        _runStep();
         _shouldCheckForCompletion = true;
     }
 
     protected abstract bool _getIsStepCompleted();
-    protected abstract void _install();
+    protected abstract void _runStep();
 
     private bool _isComplete = false;
     protected bool _shouldCheckForCompletion = true;

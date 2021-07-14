@@ -5,7 +5,7 @@ using UnityEditor;
 /// <summary>
 /// 
 /// </summary>
-public sealed class CleanUpLegacyStep : OneSignalInstallerStep
+public sealed class CleanUpLegacyStep : OneSignalSetupStep
 {
     public override string Summary
         => "Remove legacy files";
@@ -29,7 +29,7 @@ public sealed class CleanUpLegacyStep : OneSignalInstallerStep
         return !diff.Any();
     }
 
-    protected override void _install()
+    protected override void _runStep()
     {
         if (_inventory == null)
             _inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);

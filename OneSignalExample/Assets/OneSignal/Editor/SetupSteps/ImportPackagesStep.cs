@@ -4,7 +4,7 @@ using UnityEditor;
 /// <summary>
 /// 
 /// </summary>
-public sealed class ImportPackagesStep : OneSignalInstallerStep
+public sealed class ImportPackagesStep : OneSignalSetupStep
 {
     public override string Summary
         => "Import OneSignal packages";
@@ -21,7 +21,7 @@ public sealed class ImportPackagesStep : OneSignalInstallerStep
     protected override bool _getIsStepCompleted() => false;
     #endif
     
-    protected override void _install()
+    protected override void _runStep()
     {
         var manifest = new Manifest();
         manifest.Fetch();

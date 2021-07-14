@@ -9,7 +9,7 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public class SetupManifestStep : OneSignalInstallerStep
+public class SetupManifestStep : OneSignalSetupStep
 {
     public override string Summary
         => "Setup keys in Android manifest";
@@ -36,7 +36,7 @@ public class SetupManifestStep : OneSignalInstallerStep
         return !contents.Contains(_keyInManifestToReplace);
     }
 
-    protected override void _install()
+    protected override void _runStep()
     {
         var exportPath = Path.GetFullPath(_androidPluginExportPath);
         var manifestPath = Path.GetFullPath($"{exportPath}{Path.DirectorySeparatorChar}AndroidManifest.xml");

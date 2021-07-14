@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Checks for EDM4U assemblies and installs the package from its github releases
 /// </summary>
-public class InstallEdm4uStep : OneSignalInstallerStep
+public class InstallEdm4uStep : OneSignalSetupStep
 {
     public override string Summary
         => $"Install EDM4U {_edm4UVersion}";
@@ -30,7 +30,7 @@ public class InstallEdm4uStep : OneSignalInstallerStep
         return false;
     }
 
-    protected override void _install()
+    protected override void _runStep()
     {
         var request = EditorWebRequest.Get(_edm4UPackageDownloadUrl);
         request.AddEditorProgressDialog("Downloading Google External Dependency Manager");
