@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor;
 
 /// <summary>
 /// Checks for whether the OneSignal Unity Core package has been added to the project and does so if not
@@ -31,13 +30,26 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
         
         var scopeRegistry = manifest.GetScopeRegistry(_registryUrl);
         scopeRegistry.AddScope(_packagesScope);
+
+#if UNITY_2017_3_OR_NEWER
+        manifest.ApplyChanges();
         
+        var addRequest = UnityEditor.PackageManager.Client.Add(_coreVersion);
+        while (!addRequest.IsCompleted) { }
+        
+        addRequest = UnityEditor.PackageManager.Client.Add(_androidVersion);
+        while (!addRequest.IsCompleted) { }
+        
+        addRequest = UnityEditor.PackageManager.Client.Add(_iosVersion);
+        while (!addRequest.IsCompleted) { }
+#else
         manifest.AddDependency(_corePackageName, _coreVersion);
         manifest.AddDependency(_androidPackageName, _androidVersion);
         manifest.AddDependency(_iosPackageName, _iosVersion);
 
         manifest.ApplyChanges();
         AssetDatabase.Refresh();
+#endif
     }
     
     private const string _packagesScope = "com.onesignal.unity";
@@ -55,10 +67,10 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
     private const string _registryUrl = "https://registry.npmjs.org";
     
     // private const string _githubRegistryUrl = "https://npm.pkg.github.com/@OneSignal";
-#else // todo
-    private static readonly string _coreVersion = "";
-    private static readonly string _androidVersion = "";
-    private static readonly string _iosVersion = "";
+#else
+    private static readonly string _coreVersion = $"{_corePackageName}@0.0.1-preview";
+    private static readonly string _androidVersion = $"{_corePackageName}@0.0.1-preview";
+    private static readonly string _iosVersion = $"{_corePackageName}@0.0.1-preview";
 
     private const string _registryName = "npmjs";
     private const string _registryUrl = "https://registry.npmjs.org";
