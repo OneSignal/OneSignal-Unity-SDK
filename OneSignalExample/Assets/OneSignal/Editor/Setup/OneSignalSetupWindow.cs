@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Pop up window which displays any additional required or optional setup steps by the SDK
 /// </summary>
-public class OneSignalSetupWindow : EditorWindow
+public sealed class OneSignalSetupWindow : EditorWindow
 {
     [MenuItem("OneSignal/SDK Setup")]
     public static void ShowWindow()
@@ -22,7 +22,7 @@ public class OneSignalSetupWindow : EditorWindow
     private const string _description = "Additional steps required to get the OneSignal Unity SDK up and running";
     
     private IReadOnlyList<OneSignalSetupStep> _setupSteps;
-    private readonly Queue<Action> _actionsToPerform = new Queue<Action>();
+    private readonly Queue<OneSignalSetupStep> _stepsToRun = new Queue<OneSignalSetupStep>();
     
     private bool _guiSetupComplete = false;
     private GUIStyle _summaryStyle;
@@ -56,11 +56,17 @@ public class OneSignalSetupWindow : EditorWindow
         if (_setupSteps == null) 
             return;
 
+        var willDisableControls = _stepsToRun.Count > 0 
+            || EditorApplication.isUpdating 
+            || EditorApplication.isCompiling;
+
+        EditorGUI.BeginDisabledGroup(willDisableControls);
         if (GUILayout.Button("Run All Steps"))
         {
             foreach (var step in _setupSteps)
-                _actionsToPerform.Enqueue(step.RunStep);
+                _stepsToRun.Enqueue(step);
         }
+        EditorGUI.EndDisabledGroup();
         
         EditorGUILayout.Separator();
         
@@ -76,9 +82,10 @@ public class OneSignalSetupWindow : EditorWindow
 
             sumRect.x += sumRect.height + EditorStyles.label.padding.left;
             GUI.Label(sumRect, sumContent);
-
-            EditorGUI.BeginDisabledGroup(step.IsStepCompleted);
-            _handleButtonResult(GUILayout.Button("Run"), step.RunStep);
+            
+            EditorGUI.BeginDisabledGroup(step.IsStepCompleted || willDisableControls);
+            if (GUILayout.Button("Run") && !_stepsToRun.Contains(step))
+                _stepsToRun.Enqueue(step);
             EditorGUI.EndDisabledGroup();
             
             EditorGUILayout.EndHorizontal();
@@ -90,8 +97,20 @@ public class OneSignalSetupWindow : EditorWindow
 
     private void OnInspectorUpdate()
     {
-        while (_actionsToPerform.Count > 0)
-            _actionsToPerform.Dequeue().Invoke();
+        var runnerCount = _stepsToRun.Count + 1.0f;
+        while (_stepsToRun.Count > 0)
+        {
+            var step = _stepsToRun.Dequeue();
+            
+            EditorUtility.DisplayProgressBar(
+                "OneSignal Setup", 
+                $"Running step \"{step.Summary}\"", 
+                _stepsToRun.Count / runnerCount
+            );
+            
+            step.RunStep();
+        }
+        EditorUtility.ClearProgressBar();
     }
 
     private void _setupGUI()
@@ -113,12 +132,6 @@ public class OneSignalSetupWindow : EditorWindow
         _boxTexture = boxContent.image;
         
         _guiSetupComplete = true;
-    }
-
-    private void _handleButtonResult(bool buttonResult, Action buttonAction)
-    {
-        if (buttonResult && !_actionsToPerform.Contains(buttonAction))
-            _actionsToPerform.Enqueue(buttonAction);
     }
 
     private static IEnumerable<Type> _findAllAssignableTypes<T>(string assemblyFilter)
