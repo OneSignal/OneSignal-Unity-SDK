@@ -70,6 +70,10 @@ updatePrimaryVersion() {
     # projectsettings_path="OneSignalExample/ProjectSettings/ProjectSettings.asset"
     # projectsettings_regex="bundleVersion: "
     
+    # commit changes
+    git commit -m "Bumped version to ${new_version}"\
+        ${version_filepath}\
+        ${packagejson_path}
 }
 
 updateBuildVersion() {
