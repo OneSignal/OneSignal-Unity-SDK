@@ -55,14 +55,23 @@ echo "${new_version}" > ${version_filepath}
 echo "Updated - ${version_filepath}"
 
 # update package.json files
-packagejson_regex="\"version\": \"${version_regex}\","
-packagejson_newentry="\"version\": \"${new_version}\","
+packagejson_version_regex="\"version\": \"${version_regex}\","
+packagejson_new_version="\"version\": \"${new_version}\","
+
+# just going to keep these all in sync for now
+packagejson_core_regex="\"com.onesignal.unity.core\": \"${version_regex}\""
+packagejson_new_core="\"com.onesignal.unity.core\": \"${new_version}\""
 
 for packagejson_filepath in com.onesignal.unity.*/package.json
 do
     packagejson_file=$(cat $packagejson_filepath)
-    packagejson_entry=$([[ ${packagejson_file} =~ $packagejson_regex ]] && echo "${BASH_REMATCH[0]}")
-    packagejson_newfile=${packagejson_file/$packagejson_entry/$packagejson_newentry}
-    echo "${packagejson_newfile}" > ${packagejson_filepath}
+
+    packagejson_version=$([[ ${packagejson_file} =~ $packagejson_version_regex ]] && echo "${BASH_REMATCH[0]}")
+    packagejson_file=${packagejson_file/$packagejson_version/$packagejson_new_version}
+
+    packagejson_core=$([[ ${packagejson_file} =~ $packagejson_core_regex ]] && echo "${BASH_REMATCH[0]}")
+    packagejson_file=${packagejson_file/$packagejson_core/$packagejson_new_core}
+
+    echo "${packagejson_file}" > ${packagejson_filepath}
     echo "Updated - ${packagejson_filepath}"
 done
