@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Linq;
+using UnityEditor;
 
 /// <summary>
 /// Handles informing the user on startup/import if the legacy SDK has been detected
@@ -15,7 +16,12 @@ public static class OneSignalBootstrapper
             return;
 
         SessionState.SetBool(_sessionCheckKey, true);
+        
+        EditorApplication.delayCall += _checkForLegacy;
+    }
 
+    private static void _checkForLegacy()
+    {
 #if !ONE_SIGNAL_INSTALLED
         EditorApplication.delayCall += _showOpenSetupDialog;
 #else
