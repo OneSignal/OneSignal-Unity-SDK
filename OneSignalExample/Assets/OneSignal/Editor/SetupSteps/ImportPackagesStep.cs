@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 /// <summary>
 /// Checks for whether the OneSignal Unity Core package has been added to the project and does so if not
@@ -51,8 +53,23 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
         manifest.ApplyChanges();
         AssetDatabase.Refresh();
 #endif
+        OneSignalSetupWindow.CloseWindow();
+        SessionState.SetBool(_shouldShowWindowKey, true);
     }
-    
+
+#if ONE_SIGNAL_INSTALLED
+    [InitializeOnLoadMethod]
+    public static void _showCoreInstallerWindow() 
+    {
+        if (!SessionState.GetBool(_shouldShowWindowKey, false))
+            return;
+        
+        SessionState.EraseBool(_shouldShowWindowKey);
+        OneSignalSetupWindow.ShowWindow();
+    }
+#endif
+
+    private const string _shouldShowWindowKey = "onesignal.importpackage.shouldshow";
     private const string _packagesScope = "com.onesignal.unity";
     
     private static readonly string _corePackageName = $"{_packagesScope}.core";
