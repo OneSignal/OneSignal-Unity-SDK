@@ -30,7 +30,7 @@ public static class OneSignalBootstrapper
         if (inventory == null)
             return; // error
         
-        var currentPaths = inventory.GetCurrentPaths();
+        var currentPaths = OneSignalFileInventory.GetCurrentPaths();
         var diff = currentPaths.Except(inventory.DistributedPaths);
 
         if (diff.Any())
