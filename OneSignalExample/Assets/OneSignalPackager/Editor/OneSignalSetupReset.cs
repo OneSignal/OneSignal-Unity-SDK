@@ -48,6 +48,6 @@ public static class OneSignalSetupReset
         manifest.RemoveScopeRegistry("https://registry.npmjs.org");
         manifest.ApplyChanges();
         
-        AssetDatabase.Refresh();
+        UnityEditor.PackageManager.Client.Resolve();
     }
 }
