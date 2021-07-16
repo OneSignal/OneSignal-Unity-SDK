@@ -12,7 +12,7 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
         => "Copy Android plugin to Assets";
 
     public override string Details
-        => $"Will create a plugin directory of {_getExportPath()} filled with files necessary for the OneSignal SDK " +
+        => $"Will create a plugin directory of {_pluginExportPath} filled with files necessary for the OneSignal SDK " +
            "to operate on Android.";
 
     public override string DocumentationLink
@@ -20,16 +20,13 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
 
     protected override bool _getIsStepCompleted()
     {
-        var packagePath = _getPackagePath();
-        var exportPath = _getExportPath();
-
-        if (!Directory.Exists(exportPath))
+        if (!Directory.Exists(_pluginExportPath))
             return false;
 
-        var packagePaths = Directory.GetFiles(packagePath, "*", SearchOption.AllDirectories)
+        var packagePaths = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories)
             .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
         
-        var exportPaths = Directory.GetFiles(exportPath, "*", SearchOption.AllDirectories)
+        var exportPaths = Directory.GetFiles(_pluginExportPath, "*", SearchOption.AllDirectories)
             .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
 
         var fileDiff = packagePaths.Except(exportPaths);
@@ -38,15 +35,13 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
 
     protected override void _runStep()
     {
-        var packagePath = _getPackagePath();
-        var exportPath = _getExportPath();
-        var files = Directory.GetFiles(packagePath, "*", SearchOption.AllDirectories);
+        var files = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
         var filteredFiles = files.Where(file => !file.EndsWith(".meta"));
 
         foreach (var file in filteredFiles)
         {
-            var trimmedPath = file.Remove(0, packagePath.Length + 1);
-            var fileExportPath = Path.Combine(exportPath, trimmedPath);
+            var trimmedPath = file.Remove(0, _pluginPackagePath.Length + 1);
+            var fileExportPath = Path.Combine(_pluginExportPath, trimmedPath);
             var containingPath = fileExportPath.Remove(fileExportPath.LastIndexOf(Path.DirectorySeparatorChar));
 
             /*
@@ -66,12 +61,8 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
     }
 
     private const string _pluginName = "OneSignalConfig.plugin";
-    private const string _androidPluginPackagePath = "Packages/com.onesignal.unity.android/Editor";
-    private const string _androidPluginExportPath = "Assets/Plugins/Android";
-
-    private static string _getPackagePath()
-        => Path.GetFullPath(Path.Combine(_androidPluginPackagePath, _pluginName));
-
-    private static string _getExportPath()
-        => Path.GetFullPath(Path.Combine(_androidPluginExportPath, _pluginName));
+    private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor");
+    private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
+    private static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
+    private static readonly string _pluginExportPath = Path.Combine(_androidPluginsPath, _pluginName);
 }

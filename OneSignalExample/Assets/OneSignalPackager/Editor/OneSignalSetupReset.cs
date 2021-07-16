@@ -16,13 +16,13 @@ public static class OneSignalSetupReset
          * ExportAndroidResourcesStep
          * deletes the OneSignalConfig.plugin directory
          */
-        AssetDatabase.DeleteAsset("Assets/Plugins/Android/OneSignalConfig.plugin");
+        AssetDatabase.DeleteAsset(Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.plugin"));
 
         /*
          * InstallEdm4UStep
          * deletes the edm4u directory
          */
-        AssetDatabase.DeleteAsset("Assets/ExternalDependencyManager");
+        AssetDatabase.DeleteAsset(Path.Combine("Assets", "ExternalDependencyManager"));
 
         /*
          * SetupManifestStep
@@ -34,7 +34,7 @@ public static class OneSignalSetupReset
          * CleanUpLegacyStep
          * adds a random file to the Assets/OneSignal folder
          */
-        File.Create("Assets/OneSignal/tempfile");
+        File.Create(Path.Combine("Assets", "OneSignal", "tempfile"));
 
         /*
          * ImportPackagesStep
