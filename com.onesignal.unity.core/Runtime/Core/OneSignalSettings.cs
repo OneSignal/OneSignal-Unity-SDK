@@ -19,7 +19,7 @@ public class OneSignalSettings : ScriptableObject
     /// <summary>
     /// Project folder related settings ScriptableObject location path
     /// </summary>
-    public const string SettingsLocation = "Assets/Plugins/OneSignal/Resources";
+    public static readonly string SettingsLocation = Path.Combine("Assets", "Plugins", "OneSignal", "Resources");
 
     internal const string ProductName = "OneSignal";
 
