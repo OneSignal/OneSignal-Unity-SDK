@@ -16,6 +16,12 @@ public sealed class OneSignalSetupWindow : EditorWindow
         var window = GetWindow(typeof(OneSignalSetupWindow), true, _title);
         window.Show();
     }
+    
+    public static void CloseWindow()
+    {
+        var window = GetWindow(typeof(OneSignalSetupWindow), true, _title);
+        window.Close();
+    }
 
     private const string _title = "OneSignal SDK Setup";
     private const string _description = "Additional steps required to get the OneSignal Unity SDK up and running";
