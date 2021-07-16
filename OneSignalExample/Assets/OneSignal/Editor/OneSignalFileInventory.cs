@@ -35,8 +35,8 @@ internal sealed class OneSignalFileInventory : ScriptableObject
         return fixedPaths.ToArray();
     }
 
-    public const string PackageAssetsPath = "Assets/OneSignal";
     public const string AssetName = "OneSignalFileInventory.asset";
-    public const string EditorResourcesPath = "Assets/OneSignal/Editor/Resources";
-    public static readonly string AssetPath = $"{EditorResourcesPath}/{AssetName}";
+    public static readonly string PackageAssetsPath = Path.Combine("Assets", "OneSignal");
+    public static readonly string EditorResourcesPath = Path.Combine(PackageAssetsPath, "Editor", "Resources");
+    public static readonly string AssetPath = Path.Combine(EditorResourcesPath, AssetName);
 }

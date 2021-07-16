@@ -76,7 +76,7 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
     private const string _registryName = "npmjs";
     private const string _registryUrl = "https://registry.npmjs.org";
 
-    private const string _versionPath = "Assets/OneSignal/VERSION";
+    private static readonly string _versionPath = Path.Combine("Assets", "OneSignal", "VERSION");
     private static string _version => File.ReadAllText(_versionPath);
 #endif
 
