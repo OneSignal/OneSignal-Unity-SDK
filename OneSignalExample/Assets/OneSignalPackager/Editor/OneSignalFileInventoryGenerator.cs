@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,8 +15,8 @@ public static class OneSignalFileInventoryGenerator
     public static void GenerateInventory()
     {
         var inventory = ScriptableObject.CreateInstance<OneSignalFileInventory>();
-        inventory.DistributedPaths = inventory.GetCurrentPaths();
-
+        inventory.DistributedPaths = OneSignalFileInventory.GetCurrentPaths();
+        
         Directory.CreateDirectory(OneSignalFileInventory.EditorResourcesPath);
         AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -20,30 +21,35 @@ public sealed class CleanUpLegacyStep : OneSignalSetupStep
 
     protected override bool _getIsStepCompleted()
     {
-        if (_inventory == null)
-            _inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
-
-        if (_inventory == null)
-            return true;
-
-        var currentPaths = _inventory.GetCurrentPaths();
-        var diff = currentPaths.Except(_inventory.DistributedPaths);
+        var diff = _getDiff();
+        
+        if (diff == null)
+            return true; // error
+        
         return !diff.Any();
     }
 
     protected override void _runStep()
     {
+        var diff = _getDiff();
+        
+        if (diff == null)
+            return; // error
+
+        foreach (var path in diff)
+            File.Delete(path);
+    }
+
+    private IEnumerable<string> _getDiff() 
+    {
         if (_inventory == null)
             _inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
 
         if (_inventory == null)
-            return; // error
+            return null; // error
         
-        var currentPaths = _inventory.GetCurrentPaths();
-        var diff = currentPaths.Except(_inventory.DistributedPaths);
-
-        foreach (var path in diff)
-            File.Delete(path);
+        var currentPaths = OneSignalFileInventory.GetCurrentPaths();
+        return currentPaths.Except(_inventory.DistributedPaths);
     }
 
     private OneSignalFileInventory _inventory;
