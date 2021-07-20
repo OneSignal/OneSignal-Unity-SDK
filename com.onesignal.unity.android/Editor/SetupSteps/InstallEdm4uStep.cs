@@ -15,8 +15,8 @@ public sealed class InstallEdm4uStep : OneSignalSetupStep
         => $"Downloads and imports version {_edm4UVersion} from Google's repo. This library resolves dependencies " +
            $"among included libraries on Android.";
 
-    public override string DocumentationLink
-        => "";
+    public override bool IsRequired 
+        => true;
 
     protected override bool _getIsStepCompleted()
     {

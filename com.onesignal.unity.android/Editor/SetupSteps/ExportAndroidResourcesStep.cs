@@ -15,8 +15,8 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
         => $"Will create a plugin directory of {_pluginExportPath} filled with files necessary for the OneSignal SDK " +
            "to operate on Android.";
 
-    public override string DocumentationLink
-        => "";
+    public override bool IsRequired 
+        => true;
 
     protected override bool _getIsStepCompleted()
     {
