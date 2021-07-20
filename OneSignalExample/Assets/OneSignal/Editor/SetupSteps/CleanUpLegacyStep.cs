@@ -16,8 +16,8 @@ public sealed class CleanUpLegacyStep : OneSignalSetupStep
         => "Checks for the diff between the files distributed with the package and those which are in the " +
            OneSignalFileInventory.PackageAssetsPath;
 
-    public override string DocumentationLink
-        => "";
+    public override bool IsRequired 
+        => true;
 
     protected override bool _getIsStepCompleted()
     {

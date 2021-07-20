@@ -15,8 +15,8 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
         => "Add the OneSignal registry and core, ios, and android packages to the project manifest so they will be " +
            "downloaded and imported";
 
-    public override string DocumentationLink
-        => "";
+    public override bool IsRequired 
+        => true;
 
     #if ONE_SIGNAL_INSTALLED
     protected override bool _getIsStepCompleted() => true;

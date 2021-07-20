@@ -1,5 +1,5 @@
 /// <summary>
-/// Abstract class which must be inherited from in order to create a new install step
+/// Abstract class which must be inherited from in order to create a new setup step
 /// </summary>
 public abstract class OneSignalSetupStep
 {
@@ -12,17 +12,17 @@ public abstract class OneSignalSetupStep
     /// Detailed description of precisely what this step will do
     /// </summary>
     public abstract string Details { get; }
-    
+
     /// <summary>
-    /// 
+    /// Whether this step is required for operation of the SDK
     /// </summary>
-    public abstract string DocumentationLink { get; }
+    public abstract bool IsRequired { get; }
     
     /// <summary>
     /// Checks whether or not this step has been completed
     /// </summary>
     /// <remarks>
-    /// The result is cached and only reset on install or specific other conditions
+    /// The result is cached and only reset on run or specific other conditions
     /// </remarks>
     public bool IsStepCompleted {
         get

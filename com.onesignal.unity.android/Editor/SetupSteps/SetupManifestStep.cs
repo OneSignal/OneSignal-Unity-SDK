@@ -19,8 +19,8 @@ public class SetupManifestStep : OneSignalSetupStep
         => $"Adds the {PlayerSettings.applicationIdentifier} applicationIdentifier to the {_manifestPath}." +
            $"If you intend to change this id then please re-run this step";
 
-    public override string DocumentationLink
-        => "";
+    public override bool IsRequired 
+        => true;
 
     protected override bool _getIsStepCompleted()
     {
