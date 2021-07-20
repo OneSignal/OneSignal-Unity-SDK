@@ -1,0 +1,20 @@
+@startuml
+object "OneSignal.Core" as core
+object "OneSignal.Core.Editor" as core_editor
+object "OneSignal.Android" as android
+object "OneSignal.Android.Editor" as android_editor
+object "OneSignal.iOS" as ios
+object "OneSignal.iOS.Editor" as ios_editor
+object "OneSignal.UnityPackage" as package
+object "OneSignal.Packager" as packager
+
+'Dependencies
+android -right-> core
+android_editor -right-> core_editor
+core_editor -down-> core
+ios -left-> core
+package -left-> core_editor
+package -down-> core
+packager -up-> package
+
+@enduml
