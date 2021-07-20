@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ public sealed class OneSignalSetupWindow : EditorWindow
     public static void ShowWindow()
     {
         var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
+        window.minSize = _minSize;
         window.Show();
     }
     
@@ -24,6 +26,8 @@ public sealed class OneSignalSetupWindow : EditorWindow
         window.Close();
     }
 
+    private static readonly Vector2 _minSize = new Vector2(300, 400);
+    
     private const string _title = "OneSignal SDK Setup";
     private const string _description = "Additional steps required to get the OneSignal Unity SDK up and running";
     
@@ -32,9 +36,14 @@ public sealed class OneSignalSetupWindow : EditorWindow
     
     private bool _guiSetupComplete = false;
     private GUIStyle _summaryStyle;
+    private GUIStyle _runStyle;
     private GUIStyle _detailsStyle;
+    private GUIStyle _requiredStyle;
+    private GUIStyle _optionalStyle;
     private Texture _checkTexture;
     private Texture _boxTexture;
+
+    private Vector2 _scrollPosition;
     
     private void OnEnable()
     {
@@ -75,6 +84,10 @@ public sealed class OneSignalSetupWindow : EditorWindow
         EditorGUI.EndDisabledGroup();
         
         EditorGUILayout.Separator();
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+        EditorGUILayout.BeginHorizontal();
+        _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
         
         foreach (var step in _setupSteps)
         {
@@ -90,15 +103,25 @@ public sealed class OneSignalSetupWindow : EditorWindow
             GUI.Label(sumRect, sumContent);
             
             EditorGUI.BeginDisabledGroup(step.IsStepCompleted || willDisableControls);
-            if (GUILayout.Button("Run") && !_stepsToRun.Contains(step))
+            if (GUILayout.Button("Run", _runStyle) && !_stepsToRun.Contains(step))
                 _stepsToRun.Enqueue(step);
             EditorGUI.EndDisabledGroup();
             
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
 
             GUILayout.Label(step.Details, _detailsStyle);
-            EditorGUILayout.Separator();
+            
+            if (step.IsRequired)
+                GUILayout.Label("Required", _requiredStyle);
+            else
+                GUILayout.Label("Optional", _optionalStyle);
+            
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
+        
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndHorizontal();
     }
 
     private void OnInspectorUpdate()
@@ -125,11 +148,19 @@ public sealed class OneSignalSetupWindow : EditorWindow
             return;
 
         _summaryStyle = EditorStyles.boldLabel;
-        
-        _detailsStyle = new GUIStyle(GUI.skin.textField)
-        {
-            wordWrap = true
-        };
+
+        _detailsStyle = new GUIStyle(GUI.skin.textField);
+        _detailsStyle.wordWrap = true;
+
+        _runStyle = new GUIStyle(GUI.skin.button);
+        _runStyle.fixedWidth = _minSize.x * .3f;
+
+        _requiredStyle = new GUIStyle(EditorStyles.miniBoldLabel);
+        _requiredStyle.normal.textColor = Color.red;
+
+        _optionalStyle = new GUIStyle(EditorStyles.miniLabel);
+        _optionalStyle.normal.textColor = Color.yellow;
+        _optionalStyle.fontStyle = FontStyle.Italic;
 
         var checkContent = EditorGUIUtility.IconContent("TestPassed");
         _checkTexture = checkContent.image;
