@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -15,8 +16,8 @@ public class SetupManifestStep : OneSignalSetupStep
         => "Setup keys in Android manifest";
 
     public override string Details
-        => $"Replaces the {_keyInManifestToReplace} with your app's applicationIdentifier " +
-           $"({PlayerSettings.applicationIdentifier}). If you intend to change this id then please re-run this step";
+        => $"Adds the {PlayerSettings.applicationIdentifier} applicationIdentifier to the {_manifestPath}." +
+           $"If you intend to change this id then please re-run this step";
 
     public override string DocumentationLink
         => "";
@@ -29,25 +30,32 @@ public class SetupManifestStep : OneSignalSetupStep
         var reader = new StreamReader(_manifestPath);
         var contents = reader.ReadToEnd();
         reader.Close();
+
+        var matches = Regex.Matches(contents, _manifestRegex);
+        foreach (var match in matches) {
+            if (match.ToString() != PlayerSettings.applicationIdentifier)
+                return false;
+        }
         
-        return !contents.Contains(_keyInManifestToReplace);
+        return true;
     }
 
     protected override void _runStep()
     {
         var replacements = new Dictionary<string, string>
         {
-            [_keyInManifestToReplace] = PlayerSettings.applicationIdentifier
+            [_manifestRegex] = PlayerSettings.applicationIdentifier
         };
 
         // modifies the manifest in place
         _replaceStringsInFile(_manifestPath, _manifestPath, replacements);
     }
     
-    private const string _keyInManifestToReplace = "{applicationId}";
     private const string _pluginName = "OneSignalConfig.plugin";
     private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
     private static readonly string _manifestPath = Path.Combine(_androidPluginsPath, _pluginName, "AndroidManifest.xml");
+
+    private const string _manifestRegex = @"((?<=<permission android:name="").+?(?=\.permission\.C2D_MESSAGE"" android:protectionLevel=""signature"" \/>)|(?<=<category android:name="").+?(?="" \/>))";
     
     private static void _replaceStringsInFile(string sourcePath, string destinationPath,
         IReadOnlyDictionary<string, string> replacements)
@@ -65,7 +73,7 @@ public class SetupManifestStep : OneSignalSetupStep
             reader.Close();
 
             foreach (var replacement in replacements)
-                contents = contents.Replace(replacement.Key, replacement.Value);
+                contents = Regex.Replace(contents, replacement.Key, replacement.Value);
 
             var writer = new StreamWriter(destinationPath);
             writer.Write(contents);
