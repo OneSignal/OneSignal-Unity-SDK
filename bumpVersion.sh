@@ -1,5 +1,20 @@
 #!/bin/bash
 
+manual="
+    OneSignal Unity SDK - bumpVersion
+      Updates all version numbers required to properly identify a version of the OneSignal Unity 
+      SDK. Additionally creates a commit with the changes.
+
+    Usage:
+      ./bumpVersion.sh {version_to_bump} {postfix (optional)}
+
+    Examples:
+      (with an initial verison of 2.14.3) 
+      ./bumpVersion.sh minor preview    Change all verison numbers to 2.15.0-preview
+      ./bumpVersion.sh major            Change all verison numbers to 3.0.0
+      ./bumpVersion.sh patch            Change all verison numbers to 2.14.4
+"
+
 updatePrimaryVersion() {
     # VERSION file will act as the source of truth
     version_filepath="OneSignalExample/Assets/OneSignal/VERSION"
@@ -79,6 +94,12 @@ updatePrimaryVersion() {
 updateBuildVersion() {
     echo "NYI"
 }
+
+if [[ "$#" -ge "1" && "$1" = '-h' || "$1" = '--help' || "$1" = "-?" ]]
+then
+    echo -e "${manual}"
+    exit 0
+fi
 
 to_bump=$1
 postfix=$2
