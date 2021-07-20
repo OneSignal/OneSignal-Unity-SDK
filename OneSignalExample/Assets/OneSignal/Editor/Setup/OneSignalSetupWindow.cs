@@ -11,16 +11,16 @@ using UnityEngine.UI;
 /// </summary>
 public sealed class OneSignalSetupWindow : EditorWindow
 {
-    [MenuItem("OneSignal/SDK Setup")]
+    [MenuItem("Window/" + OneSignalSettings.ProductName)]
     public static void ShowWindow()
     {
-        var window = GetWindow(typeof(OneSignalSetupWindow), true, _title);
+        var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
         window.Show();
     }
     
     public static void CloseWindow()
     {
-        var window = GetWindow(typeof(OneSignalSetupWindow), true, _title);
+        var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
         window.Close();
     }
 
