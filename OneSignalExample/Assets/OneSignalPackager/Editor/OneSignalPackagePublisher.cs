@@ -18,7 +18,7 @@ public static class OneSignalPackagePublisher
     {
         AssetDatabase.Refresh();
         var packageVersion = File.ReadAllText(_versionFilePath);
-        var packageName = $"OneSignal-v{packageVersion}";
+        var packageName = $"OneSignal-v{packageVersion}.unitypackage";
 
         AssetDatabase.ExportPackage(
             _filesPath,
