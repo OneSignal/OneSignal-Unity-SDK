@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using OneSignalPush.MiniJSON;
+using OneSignalPush.Utilities;
 using UnityEngine.Networking;
 
 static class GitHubUtility
