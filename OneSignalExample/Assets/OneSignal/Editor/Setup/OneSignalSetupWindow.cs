@@ -12,7 +12,7 @@ using UnityEngine.UI;
 /// </summary>
 public sealed class OneSignalSetupWindow : EditorWindow
 {
-    [MenuItem("Window/" + OneSignalSettings.ProductName)]
+    [MenuItem("Window/OneSignal")]
     public static void ShowWindow()
     {
         var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
