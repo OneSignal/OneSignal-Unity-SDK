@@ -52,7 +52,7 @@ fi
 if ! command -v gh &> /dev/null
 then
     echo "GitHub CLI could not be found. Please visit https://cli.github.com/ or run brew install gh. Make sure you login after installation via gh auth login"
-    exit 0
+    exit 1
 fi
 
 # try to find unity executable
@@ -64,7 +64,7 @@ unity_path="${unity_versions_path}/${unity_project_version}"
 if [[ ! -d "${unity_versions_path}" ]]
 then
     echo "Could not find any versions of Unity installed at path: ${unity_versions_path}"
-    exit 0
+    exit 1
 elif [[ ! -d "${unity_path}" ]]
 then
     echo "Could not find Unity ${unity_project_version}"
