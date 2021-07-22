@@ -102,7 +102,7 @@ fi
 echo "    New version is ${new_version}"
 
 # update VERSION file
-echo "${new_version}" > ${version_filepath}
+echo -n "${new_version}" > ${version_filepath}
 echo "Updated - ${version_filepath}"
 
 # update package.json files
