@@ -26,13 +26,6 @@ then
     exit 0
 fi
 
-# is github cli available to compose release?
-if ! command -v gh &> /dev/null
-then
-    echo "GitHub CLI could not be found. Please visit https://cli.github.com/ or run brew install gh"
-    exit 0
-fi
-
 # gather args
 to_bump=$1
 postfix=$2
@@ -54,6 +47,15 @@ then
      preview    Attach the 'preview' postfix"
     exit 1
 fi
+
+# is github cli available to compose release?
+if ! command -v gh &> /dev/null
+then
+    echo "GitHub CLI could not be found. Please visit https://cli.github.com/ or run brew install gh"
+    exit 0
+fi
+
+unity_executable="${unity_path}/Unity.app/Contents/MacOS/Unity"
 
 # VERSION file will act as the source of truth
 version_filepath="OneSignalExample/Assets/OneSignal/VERSION"
