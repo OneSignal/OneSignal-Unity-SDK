@@ -55,7 +55,7 @@ public class SetupManifestStep : OneSignalSetupStep
     private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
     private static readonly string _manifestPath = Path.Combine(_androidPluginsPath, _pluginName, "AndroidManifest.xml");
 
-    private const string _manifestRegex = @"((?<=<permission android:name="").+?(?=\.permission\.C2D_MESSAGE"" android:protectionLevel=""signature"" \/>)|(?<=<category android:name="").+?(?="" \/>))";
+    private const string _manifestRegex = @"((?<=<permission android:name="").+?(?=\.permission\.C2D_MESSAGE"" android:protectionLevel=""signature"" \/>)|(?<=<uses-permission android:name="").+?(?=\.permission\.C2D_MESSAGE"" \/>)|(?<=<category android:name="").+?(?="" \/>))";
     
     private static void _replaceStringsInFile(string sourcePath, string destinationPath,
         IReadOnlyDictionary<string, string> replacements)
