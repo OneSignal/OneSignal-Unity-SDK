@@ -51,7 +51,7 @@ fi
 # is github cli available to compose release?
 if ! command -v gh &> /dev/null
 then
-    echo "GitHub CLI could not be found. Please visit https://cli.github.com/ or run brew install gh"
+    echo "GitHub CLI could not be found. Please visit https://cli.github.com/ or run brew install gh. Make sure you login after installation via gh auth login"
     exit 0
 fi
 
@@ -201,9 +201,22 @@ git add ${version_filepath} ${packagejson_path} ${projectsettings_path}
 git stash push --keep-index
 
 # generate new release branch and commit all changes
-git checkout -b release/${new_version} # todo - branch off main once these changes are there
+release_branch="release/${new_version}"
+git checkout -b "${release_branch}" # todo - branch off main once these changes are there
 git commit -m "Bumped version to ${new_version}"
 git push
+
+# create a pull request and draft release for these changes
+gh pr create\
+    --base main\
+    --head "${release_branch}"\
+    --title "Release ${new_version}"\
+    --message "Pull request for version ${new_version}"
+
+gh release create "${new_version}" "${package_path}"\
+    --draft\
+    --title "${new_version} Release"\
+    --notes "TODO"
 
 # return to workspace
 git checkout "${current_branch}"
