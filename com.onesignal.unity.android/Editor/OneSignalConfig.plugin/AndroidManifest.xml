@@ -9,7 +9,7 @@
     android:versionName="1.0" >
 
     <permission android:name="{applicationId}.permission.C2D_MESSAGE" android:protectionLevel="signature" />
-    <uses-permission android:name="com.onesignal.example.permission.C2D_MESSAGE" />
+    <uses-permission android:name="{applicationId}.permission.C2D_MESSAGE" />
     <application>
       <receiver
             android:name="com.onesignal.GcmBroadcastReceiver"
