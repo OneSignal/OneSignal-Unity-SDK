@@ -55,6 +55,41 @@ then
     exit 0
 fi
 
+# try to find unity executable
+unity_project_version_path="OneSignalExample/ProjectSettings/ProjectVersion.txt"
+unity_project_version=$(cat ${unity_project_version_path} | sed -n 's/^m_EditorVersion: //p')
+unity_versions_path="/Applications/Unity/Hub/Editor"
+unity_path="${unity_versions_path}/${unity_project_version}"
+
+if [[ ! -d "${unity_versions_path}" ]]
+then
+    echo "Could not find any versions of Unity installed at path: ${unity_versions_path}"
+    exit 0
+elif [[ ! -d "${unity_path}" ]]
+then
+    echo "Could not find Unity ${unity_project_version}"
+    pushd "${unity_versions_path}" > /dev/null 2>&1
+    
+    options=(* "Exit")
+    PS3="Please select an installed Unity version: "
+    select option in "${options[@]}"
+    do
+        if [[ "$option" = "Exit" ]]
+        then
+            exit 1
+        elif [[ "${options[@]}" =~ "$option" ]]
+        then
+            echo "Using ${option}"
+            unity_path="${unity_versions_path}/${option}"
+            break
+        fi
+        echo $option
+        echo ${options[@]}
+    done
+
+    popd > /dev/null 2>&1
+fi
+
 unity_executable="${unity_path}/Unity.app/Contents/MacOS/Unity"
 
 # VERSION file will act as the source of truth
@@ -128,9 +163,36 @@ do
     echo "Updated - ${packagejson_filepath}"
 done
 
+executeUnityMethod() {
+    local project_path=$1
+    local build_target=$2
+    local method_name=$3
+    local log_path="${PWD}/logs/${method_name}-${build_target}-$(date +%Y%m%d%H%M%S).txt"
+    
+    ${unity_executable} -projectpath ${project_path}\
+                        -quit\
+                        -batchmode\
+                        -buildTarget ${build_target}\
+                        -executeMethod ${method_name}\
+                        -logFile ${log_path}
+   
+    local method_result=$?
+    
+    if [[ ${method_result} -ne 0 ]]; then
+        echo "Unity method failed with ${method_result}"
+        exit ${method_result}
+    else
+        echo "Unity method completed"
+    fi
+}
+
+# update project version
+projectsettings_path="OneSignalExample/ProjectSettings/ProjectSettings.asset"
+executeUnityMethod "OneSignalExample" "Android" "OneSignalPackagePublisher.UpdateProjectVersion"
+
 # preserve current workspace
 current_branch=$(git branch --show-current)
-git add ${version_filepath} ${packagejson_path}
+git add ${version_filepath} ${packagejson_path} ${projectsettings_path}
 git stash push --keep-index
 
 # generate new release branch and commit all changes
