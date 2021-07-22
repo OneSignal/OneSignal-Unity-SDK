@@ -128,6 +128,16 @@ do
     echo "Updated - ${packagejson_filepath}"
 done
 
-git commit -m "Bumped version to ${new_version}"\
-    ${version_filepath}\
-    ${packagejson_path}
+# preserve current workspace
+current_branch=$(git branch --show-current)
+git add ${version_filepath} ${packagejson_path}
+git stash push --keep-index
+
+# generate new release branch and commit all changes
+git checkout -b release/${new_version} # todo - branch off main once these changes are there
+git commit -m "Bumped version to ${new_version}"
+git push
+
+# return to workspace
+git checkout "${current_branch}"
+git stash pop
