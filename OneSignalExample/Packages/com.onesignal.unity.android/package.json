@@ -1,0 +1,38 @@
+{
+  "name": "com.onesignal.unity.android",
+  "displayName": "OneSignal - Android",
+  "version": "0.0.1-preview",
+  "unity": "2018.4",
+  "description": "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.",
+  "dependencies": {
+    "com.onesignal.unity.core": "0.0.1-preview"
+  },
+  "keywords": [
+    "push-notifications",
+    "notification-service",
+    "notifications",
+    "sdk",
+    "pushnotificaitions",
+    "apns",
+    "gcm",
+    "android"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "OneSignal",
+    "email": "support@onesignal.com",
+    "url": "https://onesignal.com/"
+  },
+  "homepage": "https://onesignal.com/",
+  "bugs": {
+    "url": "https://github.com/OneSignal/OneSignal-Unity-SDK/issues",
+    "email": "support@onesignal.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:OneSignal/OneSignal-Unity-SDK.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@OneSignal"
+  }
+}

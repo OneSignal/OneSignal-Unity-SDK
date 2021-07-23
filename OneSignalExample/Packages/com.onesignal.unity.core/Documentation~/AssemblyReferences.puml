@@ -1,0 +1,14 @@
+@startuml
+object "OneSignal.Core" as core
+object "OneSignal.Core.Editor" as core_editor
+object "OneSignal.Android" as android
+object "OneSignal.Android.Editor" as android_editor
+object "OneSignal.iOS" as ios
+object "OneSignal.iOS.Editor" as ios_editor
+
+android -> core
+android_editor -> core_editor
+core_editor --> core
+core <- ios
+
+@enduml
