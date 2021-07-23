@@ -1,15 +1,8 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
-guid: df5743f1854874704b4449d2d0967de9
-NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 11400000
-=======
 guid: 54e1106d2dae63d438d01a3aba3ce3f4
 timeCreated: 1450316662
 licenseType: Free
 TextScriptImporter:
->>>>>>> 4f7848d (Refreshed Android plugin metas so they don't conflict with legacy)
   userData: 
   assetBundleName: 
   assetBundleVariant: 
