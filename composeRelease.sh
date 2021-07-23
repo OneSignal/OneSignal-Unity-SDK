@@ -83,8 +83,6 @@ then
             unity_path="${unity_versions_path}/${option}"
             break
         fi
-        echo $option
-        echo ${options[@]}
     done
 
     popd > /dev/null 2>&1
@@ -169,13 +167,13 @@ executeUnityMethod() {
     local method_name=$3
     local log_path="${PWD}/logs/${method_name}-${build_target}-$(date +%Y%m%d%H%M%S).txt"
     
-    ${unity_executable} -projectpath ${project_path}\
+    ${unity_executable} -projectpath "${project_path}"\
                         -quit\
                         -batchmode\
                         -nographics\
-                        -buildTarget ${build_target}\
-                        -executeMethod ${method_name}\
-                        -logFile ${log_path}
+                        -buildTarget "${build_target}"\
+                        -executeMethod "${method_name}"\
+                        -logFile "${log_path}"
    
     local method_result=$?
     
