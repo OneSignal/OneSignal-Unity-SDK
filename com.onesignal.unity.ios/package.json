@@ -31,8 +31,5 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:OneSignal/OneSignal-Unity-SDK.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@OneSignal"
   }
 }
