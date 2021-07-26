@@ -81,8 +81,8 @@ There are two methods of installation for the OneSignal Unity SDK:
 ### [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
 
 ## Usage
-You can find a complete implementation in our included [example MonoBehaviour](Example/Scripts/OneSignalExampleBehaviour.cs). Additionally we have included a
-[sample scene](Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
+You can find a complete implementation in our included [example MonoBehaviour](OneSignalExample/Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs). Additionally we have included a
+[sample scene](OneSignalExample/Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
 
 ### Initialization
 To get started add the following code in an appropriate place as your application is starting up.
