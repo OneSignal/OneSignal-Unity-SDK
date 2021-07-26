@@ -67,14 +67,14 @@ There are two methods of installation for the OneSignal Unity SDK:
     Scope(s)    com.onesignal
     ```
    and click **Save**.
-3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu.
-4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it.
-
-   ![my registries menu selection](Documentation/registry_menu.png)
-   
-5. Here you will find some final steps which need to be completed in order to finalize the installation.
+3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu. You will see all of the OneSignal Unity SDK packages available
+   on which you can then click **Install** for the platforms you would like to include. Dependencies will be added automatically.
+4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed
+   in order to finalize the installation.
 
    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
+
+   ![my registries menu selection](Documentation~/registry_menu.png)
 
 ## Platform Configuration
 ### [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
