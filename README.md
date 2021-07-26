@@ -74,7 +74,7 @@ There are two methods of installation for the OneSignal Unity SDK:
 
    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
 
-   ![my registries menu selection](Documentation~/registry_menu.png)
+   ![my registries menu selection](Documentation/registry_menu.png)
 
 ## Platform Configuration
 ### [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
