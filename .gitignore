@@ -9,3 +9,9 @@ OneSignalExample/Assets/Plugins
 OneSignalExample/Assets/Plugins.meta
 OneSignalExample/Assets/ExternalDependencyManager
 OneSignalExample/Assets/ExternalDependencyManager.meta
+
+builds/
+
+.DS_Store
+
+OneSignalExample/.idea/

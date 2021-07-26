@@ -35,7 +35,7 @@ using System.Text;
 // Forked from  https://github.com/Jackyjjc/MiniJSON.cs
 // version: 6de00beb134bbab9d873033a48b32e4067ed0c25
 
-namespace OneSignalPush.MiniJSON
+namespace OneSignalPush.Utilities
 {
     // Example usage:
     //
