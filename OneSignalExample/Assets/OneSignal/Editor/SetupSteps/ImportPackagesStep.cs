@@ -83,12 +83,10 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
     
     private const string _registryName = "npmjs";
     private const string _registryUrl = "https://registry.npmjs.org";
-    
-    // private const string _githubRegistryUrl = "https://npm.pkg.github.com/@OneSignal";
 #else
-    private static readonly string _coreVersion = $"{_corePackageName}@{_version}";
-    private static readonly string _androidVersion = $"{_corePackageName}@{_version}";
-    private static readonly string _iosVersion = $"{_corePackageName}@{_version}";
+    private static string _coreVersion => $"{_corePackageName}@{_version}";
+    private static string _androidVersion => $"{_androidPackageName}@{_version}";
+    private static string _iosVersion => $"{_iosPackageName}@{_version}";
 
     private const string _registryName = "npmjs";
     private const string _registryUrl = "https://registry.npmjs.org";
