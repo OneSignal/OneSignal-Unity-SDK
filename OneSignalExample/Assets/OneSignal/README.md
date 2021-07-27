@@ -9,8 +9,8 @@
 - [Requirements](#requirements)
 - [Push Notification Credentials](#push-notification-credentials)
 - [Installation](#installation)
-  - [Unity Asset Store](#unity-asset-store)
-  - [Unity Package Manager](#unity-package-manager)
+  - [Unity Asset Store](#installation)
+  - [Unity Package Manager](#installation)
 - [Platform Configuration](#platform-configuration)
   - [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
   - [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
@@ -33,9 +33,10 @@ You must generate the appropriate credentials for the platform(s) you are releas
 - Amazon Fire - [Generate an Amazon API Key](https://documentation.onesignal.com/docs/generate-an-amazon-api-key)
 
 ## Installation
-There are two methods of installation for the OneSignal Unity SDK: 
+There are two methods of installation available for the OneSignal Unity SDK:
+<details>
+    <summary>Unity Asset Store</summary>
 
-### Unity Asset Store
 > *This installation method is recommended if you are upgrading from any version 2.13.4 or older. See more on this in Step 5.*
 
 1. Add the OneSignal Unity SDK as an available asset to your account by clicking **Add to My Assets** from [our listing on the Unity Asset Store](https://assetstore.unity.com/packages/add-ons/services/billing/onesignal-sdk-193316).
@@ -54,8 +55,10 @@ There are two methods of installation for the OneSignal Unity SDK:
 
 6. After importing the packages Unity will notify you that a new registry has been added and the **OneSignal SDK Setup** window will have refreshed with a few additional 
    steps. Following these will finalize your installation of the OneSignal Unity SDK.
+</details>
 
-### Unity Package Manager
+<details>
+    <summary>Unity Package Manager</summary>
 1. From within the Unity Editor navigate to **Edit > Project Settings** and then to the **Package Manager** settings tab.
    
    ![unity registry manager](Documentation~/package_manager_tab.png)
@@ -76,6 +79,8 @@ There are two methods of installation for the OneSignal Unity SDK:
 
    ![my registries menu selection](Documentation~/registry_menu.png)
    
+</details>
+
 ## Platform Configuration
 ### [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
 ### [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
