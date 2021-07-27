@@ -3,7 +3,16 @@
 </p>
 
 # OneSignal Unity SDK
-[OneSignal](https://onesignal.com) is a free push notification service for mobile apps. This SDK makes it easy to integrate your Unity app with OneSignal.
+A free push notification and in app messaging solution for mobile applications built through Unity.
+
+[OneSignal](https://onesignal.com) provides a fully array of omni-channel messaging solutions across:
+
+- Push Notifications (mobile & web)
+- In App Messages
+- SMS
+- Email
+
+And via many additional platforms. [Check them all out](https://documentation.onesignal.com/docs/sdk-reference)!
 
 #### Table of Contents
 - [Requirements](#requirements)
