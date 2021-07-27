@@ -59,6 +59,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
 
 <details>
     <summary>Unity Package Manager</summary>
+
 1. From within the Unity Editor navigate to **Edit > Project Settings** and then to the **Package Manager** settings tab.
    
    ![unity registry manager](Documentation/package_manager_tab.png)
