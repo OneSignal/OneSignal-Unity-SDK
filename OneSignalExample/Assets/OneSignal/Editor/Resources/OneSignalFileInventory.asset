@@ -13,26 +13,38 @@ MonoBehaviour:
   m_Name: OneSignalFileInventory
   m_EditorClassIdentifier: 
   DistributedPaths:
-  - Assets/OneSignal/.DS_Store
   - Assets/OneSignal/CHANGELOG.md
   - Assets/OneSignal/CHANGELOG.md.meta
   - Assets/OneSignal/Editor.meta
   - Assets/OneSignal/Example.meta
+  - Assets/OneSignal/LICENSE.md
+  - Assets/OneSignal/LICENSE.md.meta
   - Assets/OneSignal/OneSignal.UnityPackage.asmdef
   - Assets/OneSignal/OneSignal.UnityPackage.asmdef.meta
   - Assets/OneSignal/README.md
   - Assets/OneSignal/README.md.meta
   - Assets/OneSignal/VERSION
   - Assets/OneSignal/VERSION.meta
-  - Assets/OneSignal/Editor/.DS_Store
+  - Assets/OneSignal/Documentation~/asset_listing.png
+  - Assets/OneSignal/Documentation~/menu_import_package.png
+  - Assets/OneSignal/Documentation~/menu_import_package.png.meta
+  - Assets/OneSignal/Documentation~/menu_my_assets.png
+  - Assets/OneSignal/Documentation~/menu_my_assets.png.meta
+  - Assets/OneSignal/Documentation~/menu_package_manager.png
+  - Assets/OneSignal/Documentation~/menu_package_manager.png.meta
+  - Assets/OneSignal/Documentation~/outdated_callout.png
+  - Assets/OneSignal/Documentation~/package_import.png
+  - Assets/OneSignal/Documentation~/package_manager_tab.png
+  - Assets/OneSignal/Documentation~/package_manager_tab.png.meta
+  - Assets/OneSignal/Documentation~/registry_menu.png
+  - Assets/OneSignal/Documentation~/registry_menu.png.meta
+  - Assets/OneSignal/Documentation~/setup_window.png
   - Assets/OneSignal/Editor/AssemblyInfo.cs
   - Assets/OneSignal/Editor/AssemblyInfo.cs.meta
   - Assets/OneSignal/Editor/OneSignalBootstrapper.cs
   - Assets/OneSignal/Editor/OneSignalBootstrapper.cs.meta
   - Assets/OneSignal/Editor/OneSignalFileInventory.cs
   - Assets/OneSignal/Editor/OneSignalFileInventory.cs.meta
-  - Assets/OneSignal/Editor/OneSignalRegistries.xml
-  - Assets/OneSignal/Editor/OneSignalRegistries.xml.meta
   - Assets/OneSignal/Editor/PackageManagement.meta
   - Assets/OneSignal/Editor/Resources.meta
   - Assets/OneSignal/Editor/Setup.meta
@@ -60,7 +72,6 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs.meta
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
-  - Assets/OneSignal/Example/.DS_Store
   - Assets/OneSignal/Example/Scenes.meta
   - Assets/OneSignal/Example/Scripts.meta
   - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity
