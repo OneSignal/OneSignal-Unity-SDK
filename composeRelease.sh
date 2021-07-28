@@ -202,7 +202,7 @@ git stash push --keep-index
 release_branch="release/${new_version}"
 git checkout -b "${release_branch}" # todo - branch off main once these changes are there
 git commit -m "Bumped version to ${new_version}"
-git push
+git push --set-upstream origin "${release_branch}"
 
 # create a pull request and draft release for these changes
 gh pr create\
