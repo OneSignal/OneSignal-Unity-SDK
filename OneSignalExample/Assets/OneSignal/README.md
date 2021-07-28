@@ -100,7 +100,7 @@ You can find a complete implementation in our included [example MonoBehaviour](E
 [sample scene](Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
 
 ### Initialization
-To get started add the following code in an appropriate place as your application is starting up.
+To get started add the following code in an appropriate place such as the `Start` method of a `MonoBehaviour` early in your application's lifecycle.
 ```C#
 // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID from app.onesignal.com
 OneSignal.StartInit("YOUR_ONESIGNAL_APP_ID").EndInit();
