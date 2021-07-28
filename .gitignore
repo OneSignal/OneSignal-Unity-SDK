@@ -1,9 +1,3 @@
-# Normaly you do commit this file however since we
-#   always switch Unity versions and want to use
-#   the default packages and versions
-OneSignalExample/Packages/manifest.json
-packages-lock.json
-
 OneSignalExample/Assets/Plugins
 OneSignalExample/Assets/Plugins.meta
 OneSignalExample/Assets/ExternalDependencyManager
