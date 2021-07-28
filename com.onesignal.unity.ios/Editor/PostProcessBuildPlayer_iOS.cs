@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Adds required frameworks to the iOS project, and adds the OneSignalNotificationServiceExtension
  *  Also handles making sure both targets (app and extension service) have the correct dependencies
 */
@@ -44,19 +44,15 @@ using UnityEditor.iOS.Xcode.Extensions;
 
 public static class BuildPostProcessor
 {
-    public static readonly string DEFAULT_PROJECT_TARGET_NAME = "Unity-iPhone";
+    public const string DefaultProjectTargetName = "Unity-iPhone";
+    public const string NotificationServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
+    public const string NotificationServiceExtensionObjCFilename = "NotificationService";
+    public const string PackageName = "com.onesignal.unity.ios";
 
-    public static readonly string NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME =
-        "OneSignalNotificationServiceExtension";
+    public static readonly string PluginLibrariesPath = Path.Combine(PackageName, "Runtime", "Plugins", "iOS");
+    public static readonly string PluginFilesPath = Path.Combine("Packages", PluginLibrariesPath);
 
-    public static readonly string NOTIFICATION_SERVICE_EXTENSION_OBJECTIVEC_FILENAME = "NotificationService";
-
-    private static readonly char DIR_CHAR = Path.DirectorySeparatorChar;
-
-    public static readonly string OS_PLATFORM_LOCATION =
-        "Assets" + DIR_CHAR + "OneSignal" + DIR_CHAR + "Platforms" + DIR_CHAR;
-
-    private static readonly string[] FRAMEWORKS_TO_ADD =
+    private static readonly string[] FrameworksToAdd =
     {
         "NotificationCenter.framework",
         "UserNotifications.framework",
@@ -71,50 +67,45 @@ public static class BuildPostProcessor
         ApsEnv,
         AppGroups
     }
-
-    // Unity 2019.3 made large changes to the Xcode build system / API.
-    // There is now two targets;
-    //  * Unity-Iphone (Main)
-    //  * UnityFramework
-    //     - Plugins are now added this instead of the main target
+    
+    /*
+     * Unity 2019.3 made large changes to the Xcode build system / API.
+     * There is now two targets;
+     *   - Unity-Iphone (Main)
+     *   - UnityFramework
+     *      - Plugins are now added this instead of the main target
+     */
 #if UNITY_2019_3_OR_NEWER
-    private static string GetPBXProjectTargetName(PBXProject project)
-    {
-        // var projectUUID = project.GetUnityMainTargetGuid();
-        // return project.GetBuildPhaseName(projectUUID);
-        // The above always returns null, using a static value for now.
-        return DEFAULT_PROJECT_TARGET_NAME;
-    }
+    /// <remarks>
+    /// var projectUUID = project.GetUnityMainTargetGuid();
+    /// return project.GetBuildPhaseName(projectUUID);
+    /// The above always returns null, using a static value for now.
+    /// </remarks>
+    private static string GetPBXProjectTargetName(PBXProject project) 
+        => DefaultProjectTargetName;
 
-    private static string GetPBXProjectTargetGUID(PBXProject project)
-    {
-        return project.GetUnityMainTargetGuid();
-    }
+    private static string GetPBXProjectTargetGUID(PBXProject project) 
+        => project.GetUnityMainTargetGuid();
 
-    private static string GetPBXProjectUnityFrameworkGUID(PBXProject project)
-    {
-        return project.GetUnityFrameworkTargetGuid();
-    }
+    private static string GetPBXProjectUnityFrameworkGUID(PBXProject project) 
+        => project.GetUnityFrameworkTargetGuid();
 #else
-         private static string GetPBXProjectTargetName(PBXProject project)
-         {
-            return PBXProject.GetUnityTargetName();
-         }
+     private static string GetPBXProjectTargetName(PBXProject project)
+        => PBXProject.GetUnityTargetName();
+     
+     private static string GetPBXProjectTargetGUID(PBXProject project) 
+         => project.TargetGuidByName(PBXProject.GetUnityTargetName());
 
-         private static string GetPBXProjectTargetGUID(PBXProject project)
-         {
-            return project.TargetGuidByName(PBXProject.GetUnityTargetName());
-         }
-
-         private static string GetPBXProjectUnityFrameworkGUID(PBXProject project)
-         {
-            return GetPBXProjectTargetGUID(project);
-         }
+     private static string GetPBXProjectUnityFrameworkGUID(PBXProject project) 
+         => GetPBXProjectTargetGUID(project);
 #endif
 
     [PostProcessBuildAttribute(1)]
     public static void OnPostProcessBuild(BuildTarget target, string path)
     {
+        if (target != BuildTarget.iOS)
+            return;
+        
         var projectPath = PBXProject.GetPBXProjectPath(path);
         var project = new PBXProject();
 
@@ -124,7 +115,7 @@ public static class BuildPostProcessor
         var mainTargetGUID = GetPBXProjectTargetGUID(project);
         var unityFrameworkGUID = GetPBXProjectUnityFrameworkGUID(project);
 
-        foreach (var framework in FRAMEWORKS_TO_ADD)
+        foreach (var framework in FrameworksToAdd)
         {
             project.AddFrameworkToProject(unityFrameworkGUID, framework, false);
         }
@@ -155,23 +146,21 @@ public static class BuildPostProcessor
     }
 
     // Returns exisiting file if found, otherwises provides a default name to use
-    private static string GetEntitlementsPath(string path, PBXProject project, string targetGUI, string targetName)
+    private static string GetEntitlementsPath(string projectPath, PBXProject project, string targetGUI, string targetName)
     {
         // Check if there is already an eltitlements file configured in the Xcode project
 #if UNITY_2018_2_OR_NEWER
         var relativeEntitlementPath = project.GetBuildPropertyForConfig(targetGUI, "CODE_SIGN_ENTITLEMENTS");
         if (relativeEntitlementPath != null)
         {
-            var entitlementPath = path + DIR_CHAR + relativeEntitlementPath;
+            var entitlementPath = Path.Combine(projectPath, relativeEntitlementPath);
             if (File.Exists(entitlementPath))
-            {
                 return entitlementPath;
-            }
         }
 #endif
 
         // No existing file, use a new name
-        return path + DIR_CHAR + targetName + DIR_CHAR + targetName + ".entitlements";
+        return Path.Combine(projectPath, targetName, $"{targetName}.entitlements");
     }
 
     private static void AddOrUpdateEntitlements(string path, PBXProject project, string targetGUI,
@@ -232,7 +221,7 @@ public static class BuildPostProcessor
 #if !UNITY_CLOUD_BUILD
         var projectPath = PBXProject.GetPBXProjectPath(path);
         var mainTargetGUID = GetPBXProjectTargetGUID(project);
-        var extensionTargetName = NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME;
+        var extensionTargetName = NotificationServiceExtensionTargetName;
 
         var exisitingPlistFile = CreateNotificationExtensionPlistFile(path);
         // If file exisits then the below has been completed before from another build
@@ -251,7 +240,7 @@ public static class BuildPostProcessor
 
         AddNotificationServiceSourceFilesToTarget(project, extensionGUID, path);
 
-        foreach (var framework in FRAMEWORKS_TO_ADD)
+        foreach (var framework in FrameworksToAdd)
         {
             project.AddFrameworkToProject(extensionGUID, framework, true);
         }
@@ -259,12 +248,11 @@ public static class BuildPostProcessor
         // Makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
         project.SetBuildProperty(extensionGUID, "TARGETED_DEVICE_FAMILY", "1,2");
         project.SetBuildProperty(extensionGUID, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
-
         project.SetBuildProperty(extensionGUID, "ARCHS", "$(ARCHS_STANDARD)");
         project.SetBuildProperty(extensionGUID, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
-        project.AddBuildProperty(extensionGUID, "LIBRARY_SEARCH_PATHS",
-            "$(PROJECT_DIR)/Libraries/OneSignal/Platforms/iOS");
+        project.AddBuildProperty(extensionGUID, "LIBRARY_SEARCH_PATHS", 
+            $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath}");
         project.WriteToFile(projectPath);
 
         // Add libOneSignal.a to the OneSignalNotificationServiceExtension target
@@ -289,40 +277,39 @@ public static class BuildPostProcessor
 
     // Copies NotificationService.m and .h files into the OneSignalNotificationServiceExtension folder adds them to the Xcode target
     private static void AddNotificationServiceSourceFilesToTarget(PBXProject project, string extensionGUID,
-        string path)
+        string projectPath)
     {
         var buildPhaseID = project.AddSourcesBuildPhase(extensionGUID);
         foreach (var type in new string[] {"m", "h"})
         {
-            var nativeFileName = NOTIFICATION_SERVICE_EXTENSION_OBJECTIVEC_FILENAME + "." + type;
-            var sourcePath = OS_PLATFORM_LOCATION + "iOS" + DIR_CHAR + nativeFileName;
-            var nativeFileRelativeDestination = NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME + "/" + nativeFileName;
-
-            var destPath = path + DIR_CHAR + nativeFileRelativeDestination;
+            var fileName = $"{NotificationServiceExtensionObjCFilename}.{type}";
+            var sourcePath = Path.Combine(PluginFilesPath, fileName);
+            
+            var destPathRelative = Path.Combine(NotificationServiceExtensionTargetName, fileName);
+            var destPath = Path.Combine(projectPath, destPathRelative);
             if (!File.Exists(destPath))
                 FileUtil.CopyFileOrDirectory(sourcePath, destPath);
-
-            var sourceFileGUID = project.AddFile(nativeFileRelativeDestination, nativeFileRelativeDestination,
-                PBXSourceTree.Source);
+            
+            var sourceFileGUID = project.AddFile(destPathRelative, destPathRelative);
             project.AddFileToBuildSection(extensionGUID, buildPhaseID, sourceFileGUID);
         }
     }
 
     // Create a .plist file for the NSE
     // NOTE: File in Xcode project is replaced everytime, never appends
-    private static bool CreateNotificationExtensionPlistFile(string path)
+    private static bool CreateNotificationExtensionPlistFile(string projectPath)
     {
-        var pathToNotificationService = path + DIR_CHAR + NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME;
+        var pathToNotificationService = Path.Combine(projectPath, NotificationServiceExtensionTargetName);
         Directory.CreateDirectory(pathToNotificationService);
 
-        var notificationServicePlistPath = pathToNotificationService + DIR_CHAR + "Info.plist";
+        var notificationServicePlistPath = Path.Combine(pathToNotificationService, "Info.plist");
         bool exisiting = File.Exists(notificationServicePlistPath);
 
         // Read from the OneSignal plist template file.
         var notificationServicePlist = new PlistDocument();
-        notificationServicePlist.ReadFromFile(OS_PLATFORM_LOCATION + "iOS" + DIR_CHAR + "Info.plist");
+        notificationServicePlist.ReadFromFile(Path.Combine(PluginFilesPath, "Info.plist"));
         notificationServicePlist.root.SetString("CFBundleShortVersionString", PlayerSettings.bundleVersion);
-        notificationServicePlist.root.SetString("CFBundleVersion", PlayerSettings.iOS.buildNumber.ToString());
+        notificationServicePlist.root.SetString("CFBundleVersion", PlayerSettings.iOS.buildNumber);
         notificationServicePlist.WriteToFile(notificationServicePlistPath);
         return exisiting;
     }
