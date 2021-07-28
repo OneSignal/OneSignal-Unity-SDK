@@ -209,7 +209,7 @@ gh pr create\
     --base main\
     --head "${release_branch}"\
     --title "Release ${new_version}"\
-    --message "Pull request for version ${new_version}"
+    --body "Pull request for version ${new_version}"
 
 gh release create "${new_version}" "${package_path}"\
     --draft\
