@@ -107,6 +107,9 @@ public static class BuildPostProcessor
     [PostProcessBuildAttribute(1)]
     public static void OnPostProcessBuild(BuildTarget target, string path)
     {
+        if (target != BuildTarget.iOS)
+            return;
+        
         var projectPath = PBXProject.GetPBXProjectPath(path);
         var project = new PBXProject();
 
