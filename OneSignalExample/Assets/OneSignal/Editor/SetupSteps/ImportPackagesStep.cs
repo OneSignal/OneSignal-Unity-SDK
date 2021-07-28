@@ -70,11 +70,11 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
 #endif
 
     private const string _shouldShowWindowKey = "onesignal.importpackage.shouldshow";
-    private const string _packagesScope = "com.onesignal.unity";
+    private const string _packagesScope = "com.onesignal";
     
-    private static readonly string _corePackageName = $"{_packagesScope}.core";
-    private static readonly string _androidPackageName = $"{_packagesScope}.android";
-    private static readonly string _iosPackageName = $"{_packagesScope}.ios";
+    private static readonly string _corePackageName = $"{_packagesScope}.unity.core";
+    private static readonly string _androidPackageName = $"{_packagesScope}.unity.android";
+    private static readonly string _iosPackageName = $"{_packagesScope}.unity.ios";
     
 #if IS_ONESIGNAL_EXAMPLE_APP
     private static readonly string _coreVersion = $"file:../../{_corePackageName}";
