@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Adds required frameworks to the iOS project, and adds the OneSignalNotificationServiceExtension
  *  Also handles making sure both targets (app and extension service) have the correct dependencies
 */
@@ -71,45 +71,37 @@ public static class BuildPostProcessor
         ApsEnv,
         AppGroups
     }
-
-    // Unity 2019.3 made large changes to the Xcode build system / API.
-    // There is now two targets;
-    //  * Unity-Iphone (Main)
-    //  * UnityFramework
-    //     - Plugins are now added this instead of the main target
+    
+    /*
+     * Unity 2019.3 made large changes to the Xcode build system / API.
+     * There is now two targets;
+     *   - Unity-Iphone (Main)
+     *   - UnityFramework
+     *      - Plugins are now added this instead of the main target
+     */
 #if UNITY_2019_3_OR_NEWER
-    private static string GetPBXProjectTargetName(PBXProject project)
-    {
-        // var projectUUID = project.GetUnityMainTargetGuid();
-        // return project.GetBuildPhaseName(projectUUID);
-        // The above always returns null, using a static value for now.
-        return DEFAULT_PROJECT_TARGET_NAME;
-    }
+    /// <remarks>
+    /// var projectUUID = project.GetUnityMainTargetGuid();
+    /// return project.GetBuildPhaseName(projectUUID);
+    /// The above always returns null, using a static value for now.
+    /// </remarks>
+    private static string GetPBXProjectTargetName(PBXProject project) 
+        => DefaultProjectTargetName;
 
-    private static string GetPBXProjectTargetGUID(PBXProject project)
-    {
-        return project.GetUnityMainTargetGuid();
-    }
+    private static string GetPBXProjectTargetGUID(PBXProject project) 
+        => project.GetUnityMainTargetGuid();
 
-    private static string GetPBXProjectUnityFrameworkGUID(PBXProject project)
-    {
-        return project.GetUnityFrameworkTargetGuid();
-    }
+    private static string GetPBXProjectUnityFrameworkGUID(PBXProject project) 
+        => project.GetUnityFrameworkTargetGuid();
 #else
-         private static string GetPBXProjectTargetName(PBXProject project)
-         {
-            return PBXProject.GetUnityTargetName();
-         }
+     private static string GetPBXProjectTargetName(PBXProject project)
+        => PBXProject.GetUnityTargetName();
+     
+     private static string GetPBXProjectTargetGUID(PBXProject project) 
+         => project.TargetGuidByName(PBXProject.GetUnityTargetName());
 
-         private static string GetPBXProjectTargetGUID(PBXProject project)
-         {
-            return project.TargetGuidByName(PBXProject.GetUnityTargetName());
-         }
-
-         private static string GetPBXProjectUnityFrameworkGUID(PBXProject project)
-         {
-            return GetPBXProjectTargetGUID(project);
-         }
+     private static string GetPBXProjectUnityFrameworkGUID(PBXProject project) 
+         => GetPBXProjectTargetGUID(project);
 #endif
 
     [PostProcessBuildAttribute(1)]
