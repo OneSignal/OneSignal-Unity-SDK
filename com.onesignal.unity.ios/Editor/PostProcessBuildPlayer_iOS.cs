@@ -47,9 +47,10 @@ public static class BuildPostProcessor
     public const string DefaultProjectTargetName = "Unity-iPhone";
     public const string NotificationServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
     public const string NotificationServiceExtensionObjCFilename = "NotificationService";
+    public const string PackageName = "com.onesignal.unity.ios";
 
-    public static readonly string PackagePath = Path.Combine("Packages", "com.onesignal.unity.ios");
-    public static readonly string PluginFilesPath = Path.Combine(PackagePath, "Runtime", "Plugins", "iOS");
+    public static readonly string PluginLibrariesPath = Path.Combine(PackageName, "Runtime", "Plugins", "iOS");
+    public static readonly string PluginFilesPath = Path.Combine("Packages", PluginLibrariesPath);
 
     private static readonly string[] FrameworksToAdd =
     {
@@ -250,8 +251,8 @@ public static class BuildPostProcessor
         project.SetBuildProperty(extensionGUID, "ARCHS", "$(ARCHS_STANDARD)");
         project.SetBuildProperty(extensionGUID, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
-        project.AddBuildProperty(extensionGUID, "LIBRARY_SEARCH_PATHS",
-            "$(PROJECT_DIR)/Libraries/OneSignal/Platforms/iOS");
+        project.AddBuildProperty(extensionGUID, "LIBRARY_SEARCH_PATHS", 
+            $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath}");
         project.WriteToFile(projectPath);
 
         // Add libOneSignal.a to the OneSignalNotificationServiceExtension target
