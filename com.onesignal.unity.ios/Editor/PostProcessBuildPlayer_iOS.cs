@@ -287,6 +287,8 @@ public static class BuildPostProcessor
             
             var destPathRelative = Path.Combine(NotificationServiceExtensionTargetName, fileName);
             var destPath = Path.Combine(projectPath, destPathRelative);
+            destPath = destPath.Replace("\\","/");
+            sourcePath = sourcePath.Replace("\\","/");
             if (!File.Exists(destPath))
                 FileUtil.CopyFileOrDirectory(sourcePath, destPath);
             
