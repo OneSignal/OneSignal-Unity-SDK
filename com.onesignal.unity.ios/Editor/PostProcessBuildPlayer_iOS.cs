@@ -287,10 +287,8 @@ public static class BuildPostProcessor
             
             var destPathRelative = Path.Combine(NotificationServiceExtensionTargetName, fileName);
             var destPath = Path.Combine(projectPath, destPathRelative);
-            destPath = destPath.Replace("\\","/");
-            sourcePath = sourcePath.Replace("\\","/");
             if (!File.Exists(destPath))
-                FileUtil.CopyFileOrDirectory(sourcePath, destPath);
+                FileUtil.CopyFileOrDirectory(sourcePath.Replace("\\", "/"), destPath.Replace("\\", "/"));
             
             var sourceFileGUID = project.AddFile(destPathRelative, destPathRelative);
             project.AddFileToBuildSection(extensionGUID, buildPhaseID, sourceFileGUID);
