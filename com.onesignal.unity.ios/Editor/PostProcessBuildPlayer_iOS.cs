@@ -252,7 +252,7 @@ public static class BuildPostProcessor
         project.SetBuildProperty(extensionGUID, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
         project.AddBuildProperty(extensionGUID, "LIBRARY_SEARCH_PATHS", 
-            $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath}");
+            $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
         project.WriteToFile(projectPath);
 
         // Add libOneSignal.a to the OneSignalNotificationServiceExtension target
@@ -288,7 +288,7 @@ public static class BuildPostProcessor
             var destPathRelative = Path.Combine(NotificationServiceExtensionTargetName, fileName);
             var destPath = Path.Combine(projectPath, destPathRelative);
             if (!File.Exists(destPath))
-                FileUtil.CopyFileOrDirectory(sourcePath, destPath);
+                FileUtil.CopyFileOrDirectory(sourcePath.Replace("\\", "/"), destPath.Replace("\\", "/"));
             
             var sourceFileGUID = project.AddFile(destPathRelative, destPathRelative);
             project.AddFileToBuildSection(extensionGUID, buildPhaseID, sourceFileGUID);
