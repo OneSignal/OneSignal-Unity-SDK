@@ -190,7 +190,7 @@ projectsettings_path="OneSignalExample/ProjectSettings/ProjectSettings.asset"
 executeUnityMethod "OneSignalExample" "Android" "OneSignalPackagePublisher.UpdateProjectVersion"
 
 # build a unitypackage for release
-package_path="OneSignal-v${new_version}.unitypackage"
+package_path="OneSignalExample/OneSignal-v${new_version}.unitypackage"
 executeUnityMethod "OneSignalExample" "Android" "OneSignalPackagePublisher.ExportUnityPackage"
 
 # preserve current workspace
@@ -202,14 +202,14 @@ git stash push --keep-index
 release_branch="release/${new_version}"
 git checkout -b "${release_branch}" # todo - branch off main once these changes are there
 git commit -m "Bumped version to ${new_version}"
-git push
+git push --set-upstream origin "${release_branch}"
 
 # create a pull request and draft release for these changes
 gh pr create\
     --base main\
     --head "${release_branch}"\
     --title "Release ${new_version}"\
-    --message "Pull request for version ${new_version}"
+    --body "Pull request for version ${new_version}"
 
 gh release create "${new_version}" "${package_path}"\
     --draft\
