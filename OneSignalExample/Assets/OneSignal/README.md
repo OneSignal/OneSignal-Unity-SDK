@@ -43,10 +43,11 @@ You must generate the appropriate credentials for the platform(s) you are releas
 
 ## Installation
 There are two methods of installation available for the OneSignal Unity SDK:
-<details>
-    <summary>Unity Asset Store</summary>
+> **Upgrading from 2.13.4 or older**</br>
+> It is recommended to use the **Asset Store** path for installation if you are upgrading from a version of the OneSignal Unity SDK 2.13.4 or older.
 
-> *This installation method is recommended if you are upgrading from any version 2.13.4 or older. See more on this in Step 5.*
+<details>
+<summary><b>Unity Asset Store</b> <i>(click to expand)</i></summary>
 
 1. Add the OneSignal Unity SDK as an available asset to your account by clicking **Add to My Assets** from [our listing on the Unity Asset Store](https://assetstore.unity.com/packages/add-ons/services/billing/onesignal-sdk-193316).
 2. Find the package waiting for you to download by clicking **Open in Unity** from that same page. This will open the Unity Editor and its Package Manager window.
@@ -67,7 +68,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
 </details>
 
 <details>
-    <summary>Unity Package Manager</summary>
+<summary><b>Unity Package Manager</b> <i>(click to expand)</i></summary>
 
 1. From within the Unity Editor navigate to **Edit > Project Settings** and then to the **Package Manager** settings tab.
    
