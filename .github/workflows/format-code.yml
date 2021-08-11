@@ -29,3 +29,6 @@ jobs:
         projectPath: OneSignalExample
         buildMethod: OneSignalPackagePublisher.UpdateProjectVersion
 
+    - name: Clean up code
+      run: dotnet jb cleanupcode "OneSignalExample/OneSignalExample.sln"
+
