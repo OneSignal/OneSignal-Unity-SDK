@@ -27,6 +27,7 @@ jobs:
       with:
         targetPlatform: Standalone
         projectPath: OneSignalExample
+        allowDirtyBuild: true
         buildMethod: OneSignalPackagePublisher.UpdateProjectVersion
 
     - name: Clean up code
