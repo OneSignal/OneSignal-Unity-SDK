@@ -25,7 +25,7 @@ jobs:
     - name: Generate Project
       uses: game-ci/unity-builder@v2
       with:
-        targetPlatform: Standalone
+        targetPlatform: Android
         projectPath: OneSignalExample
         allowDirtyBuild: true
         buildMethod: OneSignalPackagePublisher.UpdateProjectVersion
