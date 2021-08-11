@@ -1,4 +1,4 @@
-name: Code Style
+name: Clean Up Code
 
 on:
   workflow_dispatch
@@ -21,4 +21,11 @@ jobs:
         dotnet new tool-manifest
         dotnet tool install JetBrains.ReSharper.GlobalTools
         dotnet tool restore
+
+    - name: Generate Project
+      uses: game-ci/unity-builder@v2
+      with:
+        targetPlatform: Standalone
+        projectPath: OneSignalExample
+        buildMethod: OneSignalPackagePublisher.UpdateProjectVersion
 
