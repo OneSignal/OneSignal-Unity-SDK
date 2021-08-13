@@ -1,10 +1,11 @@
-name: Clean Up Code
+name: Test Compile & Clean Up Code
 
 on:
   workflow_dispatch
 
 jobs:
   build:
+    name: Test & Clean
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +23,7 @@ jobs:
         dotnet tool install JetBrains.ReSharper.GlobalTools
         dotnet tool restore
 
-    - name: Generate Project
+    - name: Test compile & generate project files
       uses: game-ci/unity-builder@v2
       with:
         targetPlatform: Android
