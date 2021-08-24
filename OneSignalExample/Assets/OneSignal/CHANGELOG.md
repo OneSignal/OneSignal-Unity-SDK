@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [2.14.2]
+### Fixed
+- Fixes rare iOS crash with some apps due to a threading issue.
+  From [OneSignal-iOS-SDK PR #979](https://github.com/OneSignal/OneSignal-iOS-SDK/pull/979)
 ## [2.14.1]
 ### Fixed
 - Corrected directory separators in post processor when building for iOS in a 
@@ -20,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.1...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.2...HEAD
+[2.14.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.01..2.14.2
 [2.14.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.0...2.14.1
 [2.14.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.13.6...2.14.0
