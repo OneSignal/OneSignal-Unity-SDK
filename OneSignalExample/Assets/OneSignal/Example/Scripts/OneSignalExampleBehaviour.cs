@@ -29,6 +29,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using OneSignalSDK;
 
 public class OneSignalExampleBehaviour : MonoBehaviour {
 
@@ -47,81 +48,68 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// </summary>
     public string appId = "ONESIGNAL_APP_ID";
 
-    /// <summary>
-    /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
-    /// <see cref="OneSignal.UserDidProvideConsent"/> in this test MonoBehaviour
-    /// </summary>
-    public bool requiresUserPrivacyConsent;
+        // Enable lines below to debug issues with OneSignal. (logLevel, visualLogLevel)
+        OneSignal.Default.LogLevel   = LogType.Log;
+        OneSignal.Default.AlertLevel = LogType.Exception;
 
-    /// <summary>
-    /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
-    /// MonoBehaviour in your opening Scene
-    /// </summary>
-    private void Start() {
-        _logMessage = null;
+        // If you set to true, the user will have to provide consent
+        // using OneSignal.UserDidProvideConsent(true) before the
+        // SDK will initialize
+        OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
 
-        // Enable line below to debug issues with OneSignal. (logLevel, visualLogLevel)
-        OneSignal.SetLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+        // The only required method you need to call to setup OneSignal to receive push notifications.
+        // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
+        // Should only be called once when your app is loaded.
+        OneSignal.Default.NotificationReceived += notification => { };
+        OneSignal.Default.NotificationOpened   += notification => { };
+        OneSignal.Default.InAppMessageClicked  += iamAction => { };
 
-        /*
-         * If you set to true, the user will have to provide consent via OneSignal.UserDidProvideConsent(true) before
-         * the SDK will initialize
-         */
-        OneSignal.SetRequiresUserPrivacyConsent(requiresUserPrivacyConsent);
+        OneSignal.Default.Initialize("99015f5e-87b1-462e-a75b-f99bf7c2822e");
 
-        /*
-         * The only required method you need to call to setup OneSignal to receive push notifications.
-         * Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
-         * Should only invoke once when your app is loaded.
-         */
-        OneSignal.StartInit(appId)
-           .HandleNotificationReceived(HandleNotificationReceived)
-           .HandleNotificationOpened(HandleNotificationOpened)
-           .HandleInAppMessageClicked(OnInAppMessageClicked)
-           .EndInit();
+        // todo - what happened to this?
+        // OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
 
-        // Control how OneSignal notifications will be shown when one is received while your app is in focus
-        OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
+        OneSignal.Default.PermissionStateChanged        += (current, previous) => { };
+        OneSignal.Default.SubscriptionStateChanged      += (current, previous) => { };
+        OneSignal.Default.EmailSubscriptionStateChanged += (current, previous) => { };
 
-        // Each of these events can inform your application when the user's OneSignal states have change
-        OneSignal.permissionObserver        += OnPermissionStateChange;
-        OneSignal.subscriptionObserver      += OnSubscriptionStateChange;
-        OneSignal.emailSubscriptionObserver += OnEmailSubscriptionStateChange;
-
-        // You can also get the current states directly
-        var fullUserState          = OneSignal.GetPermissionSubscriptionState();
-        var permissionState        = fullUserState.permissionStatus;
-        var subscriptionState      = fullUserState.subscriptionStatus;
-        var emailSubscriptionState = fullUserState.emailSubscriptionStatus;
+        // todo - get current state
+        // var pushState = OneSignal.GetPermissionSubscriptionState();
 
         OneSignalInAppMessageTriggerExamples();
         OneSignalOutcomeEventsExamples();
     }
 
-    /// <summary>
-    /// Examples of using OneSignal External User Id
-    /// </summary>
-    private void OnUpdatedExternalUserId(Dictionary<string, object> results) {
+    // Examples of using OneSignal External User Id
+    private void OneSignalExternalUserIdCallback(Dictionary<string, object> results) {
         // The results will contain push and email success statuses
         print($"External user id updated with results: {Json.Serialize(results)}");
 
         // Push can be expected in almost every situation with a success status, but
         // as a pre-caution its good to verify it exists
         if (results.ContainsKey("push")) {
-            if (results["push"] is Dictionary<string, object> pushStatus && pushStatus.ContainsKey("success"))
-                print($"External user id updated for push with results: {pushStatus["success"]}");
+            var pushStatusDict = results["push"] as Dictionary<string, object>;
+
+            if (pushStatusDict.ContainsKey("success")) {
+                Console.WriteLine(
+                    "External user id updated for push with results: " + pushStatusDict["success"] as string);
+            }
         }
 
         // Verify the email is set or check that the results have an email success status
         if (results.ContainsKey("email")) {
-            if (results["email"] is Dictionary<string, object> emailStatus && emailStatus.ContainsKey("success"))
-                print($"External user id updated for email with results: {emailStatus["success"]}");
+            var emailStatusDict = results["email"] as Dictionary<string, object>;
+
+            if (emailStatusDict.ContainsKey("success")) {
+                Console.WriteLine(
+                    "External user id updated for email with results: " + emailStatusDict["success"] as string);
+            }
         }
     }
 
-    private void OnUpdatedExternalUserIdFailure(Dictionary<string, object> error) {
-        // As above the results will contain push and email statuses
-        print($"External user id failed with error: {Json.Serialize(error)}");
+    private void OneSignalExternalUserIdCallbackFailure(Dictionary<string, object> error) {
+        // The results will contain push and email success statuses
+        Console.WriteLine("External user id failed with error: " + Json.Serialize(error));
     }
 
     /// <summary>
@@ -130,108 +118,89 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// </summary>
     private static void OneSignalInAppMessageTriggerExamples() {
         // Add a single trigger
-        OneSignal.AddTrigger("key", "value");
+        OneSignal.Default.AddTrigger("key", "value");
 
         // Get the current value to a trigger by key
         var triggerKey   = "key";
-        var triggerValue = OneSignal.GetTriggerValueForKey(triggerKey);
-        print($"Trigger key: {triggerKey} value: {triggerValue}");
+        var triggerValue = OneSignal.Default.GetTriggerValueForKey(triggerKey);
+        Console.WriteLine($"Trigger key: {triggerKey} value: {triggerValue}");
 
         // Add multiple triggers
-        OneSignal.AddTriggers(new Dictionary<string, object> {
-            { "key1", "value1" },
-            { "key2", 2 }
-        });
+        OneSignal.Default.AddTriggers(new Dictionary<string, object>() { { "key1", "value1" }, { "key2", 2 } });
 
         // Delete a trigger
-        OneSignal.RemoveTriggerForKey("key");
+        OneSignal.Default.RemoveTriggerForKey("key");
 
         // Delete a list of triggers
-        OneSignal.RemoveTriggersForKeys(new List<string> { "key1", "key2" });
+        OneSignal.Default.RemoveTriggersForKeys(new List<string>() { "key1", "key2" });
 
         // Temporarily pause In-App messages; If true is passed in.
         // Great to ensure you never interrupt your user while they are in the middle of a match in your game.
-        OneSignal.PauseInAppMessages(false);
+        OneSignal.Default.InAppMessagesArePaused = true;
     }
 
-    /// <summary>
-    /// Send data to OneSignal which will allow you to track the result of notifications
-    /// https://documentation.onesignal.com/docs/outcomes
-    /// </summary>
-    private static void OneSignalOutcomeEventsExamples() {
-        // Send a result which can occur multiple times
-        OneSignal.SendOutcome("normal_1");
-        OneSignal.SendOutcome("normal_2", OnSendOutcomeSuccess);
+    private void OneSignalOutcomeEventsExamples() {
+        OneSignal.Default.SendOutcome("normal_1");
+        
+        // todo - this
+        //OneSignal.Default.SendOutcome("normal_2", (OutcomeEvent outcomeEvent) => { printOutcomeEvent(outcomeEvent); });
 
-        // Send a result which can only occur once
-        OneSignal.SendUniqueOutcome("unique_1");
-        OneSignal.SendUniqueOutcome("unique_2", OnSendOutcomeSuccess);
+        OneSignal.Default.SendUniqueOutcome("unique_1");
+        
+        // todo - this
+        //OneSignal.Default.SendUniqueOutcome("unique_2", (OutcomeEvent outcomeEvent) => { printOutcomeEvent(outcomeEvent); });
 
-        // Send a result which can occur multiple times with a float value
-        OneSignal.SendOutcomeWithValue("value_1", 3.2f);
-        OneSignal.SendOutcomeWithValue("value_2", 3.2f, OnSendOutcomeSuccess);
+        OneSignal.Default.SendOutcomeWithValue("value_1", 3.2f);
+        
+        // todo - this
+        //OneSignal.Default.SendOutcomeWithValue("value_2", 3.2f,
+            // (OutcomeEvent outcomeEvent) => { printOutcomeEvent(outcomeEvent); });
     }
 
-    private static void OnSendOutcomeSuccess(OSOutcomeEvent outcomeEvent) {
-        print(outcomeEvent.session + "\n" +
+    private void printOutcomeEvent(OutcomeEvent outcomeEvent) {
+        Console.WriteLine(outcomeEvent.session + "\n" +
             string.Join(", ", outcomeEvent.notificationIds) + "\n" +
             outcomeEvent.name + "\n" +
             outcomeEvent.timestamp + "\n" +
             outcomeEvent.weight);
     }
 
-    /*
-     * State change events provide both the new (to) and previous (from) states
-     */
-
-    private void OnSubscriptionStateChange(OSSubscriptionStateChanges stateChanges) {
-        print("SUBSCRIPTION stateChanges: " + stateChanges);
-        print("SUBSCRIPTION stateChanges.to.userId: " + stateChanges.to.userId);
-        print("SUBSCRIPTION stateChanges.to.subscribed: " + stateChanges.to.subscribed);
-    }
-
-    private void OnPermissionStateChange(OSPermissionStateChanges stateChanges) {
-        print($"PERMISSION stateChanges.from.status: {stateChanges.from.status}");
-        print($"PERMISSION stateChanges.to.status: {stateChanges.to.status}");
-    }
-
-    private void OnEmailSubscriptionStateChange(OSEmailSubscriptionStateChanges stateChanges) {
-        print($"EMAIL stateChanges.from.status: {stateChanges.from.emailUserId}, {stateChanges.from.emailAddress}");
-        print($"EMAIL stateChanges.to.status: {stateChanges.to.emailUserId}, {stateChanges.to.emailAddress}");
-    }
-
-    /// <summary>
-    /// Called when your app is in focus and a notification is received.
-    /// The name of the method can be anything as long as the signature matches.
-    /// Method must be static or this object should be marked as DontDestroyOnLoad
-    /// </summary>
-    private static void HandleNotificationReceived(OSNotification notification) {
-        var payload = notification.payload;
-        var message = payload.body;
+    // Called when your app is in focus and a notification is received.
+    // The name of the method can be anything as long as the signature matches.
+    // Method must be static or this object should be marked as DontDestroyOnLoad
+    private static void HandleNotificationReceived(Notification notification) {
+        var payload = notification.Payload;
+        string                message = payload.body;
 
         print("GameControllerExample:HandleNotificationReceived: " + message);
-        print("displayType: " + notification.displayType);
-        _logMessage = "Notification received with text: " + message;
+        print("displayType: " + notification.DisplayType);
+        extraMessage = "Notification received with text: " + message;
 
+<<<<<<< HEAD
         if (payload.additionalData == null)
             print("[HandleNotificationReceived] Additional Data == null");
         else if (Json.Serialize(payload.additionalData) is string dataString)
             print($"[HandleNotificationReceived] message {message}, additionalData: {dataString}");
+=======
+        Dictionary<string, object> additionalData = payload.additionalData;
+        if (additionalData == null)
+            Debug.Log("[HandleNotificationReceived] Additional Data == null");
+>>>>>>> 8187a27 (Heavy WIP on core SDK and public interface)
         else
-            print("[HandleNotificationReceived] Additional Data could not be serialized");
+            Debug.Log("[HandleNotificationReceived] message " + message + ", additionalData: " +
+                Json.Serialize(additionalData) as string);
     }
 
-    /// <summary>
-    /// Called when a notification is opened.
-    /// The name of the method can be anything as long as the signature matches.
-    /// Method must be static or this object should be marked as DontDestroyOnLoad
-    /// </summary>
-    private static void HandleNotificationOpened(OSNotificationOpenedResult result) {
-        var payload  = result.notification.payload;
+    // Called when a notification is opened.
+    // The name of the method can be anything as long as the signature matches.
+    // Method must be static or this object should be marked as DontDestroyOnLoad
+    public static void HandleNotificationOpened(NotificationOpenedResult result) {
+        var payload  = result.notification.Payload;
         var message  = payload.body;
-        var actionID = result.action.actionID;
+        var actionID = result.action.ActionId;
 
         print("GameControllerExample:HandleNotificationOpened: " + message);
+<<<<<<< HEAD
         _logMessage = "Notification opened with text: " + message;
 
         if (payload.additionalData == null)
@@ -240,6 +209,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             print($"[HandleNotificationOpened] message {message}, additionalData: {dataString}");
         else
             print("[HandleNotificationOpened] Additional Data could not be serialized");
+=======
+        extraMessage = "Notification opened with text: " + message;
+
+        var additionalData = payload.additionalData;
+        if (additionalData == null)
+            Debug.Log("[HandleNotificationOpened] Additional Data == null");
+        else {
+            Debug.Log("[HandleNotificationOpened] message " + message + ", additionalData: " +
+                Json.Serialize(additionalData) as string);
+        }
+>>>>>>> 8187a27 (Heavy WIP on core SDK and public interface)
 
         if (actionID != null) {
             // actionSelected equals the id on the button the user pressed.
@@ -248,62 +228,47 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         }
     }
 
-    private static void OnInAppMessageClicked(OSInAppMessageAction action) {
+    public static void HandlerInAppMessageClicked(InAppMessageAction action) {
         var logInAppClickEvent = "In-App Message Clicked: " +
-            "\nClick Name: " + action.clickName +
-            "\nClick Url: " + action.clickUrl +
-            "\nFirst Click: " + action.firstClick +
-            "\nCloses Message: " + action.closesMessage;
+            "\nClick Name: " + action.ClickName +
+            "\nClick Url: " + action.ClickUrl +
+            "\nFirst Click: " + action.FirstClick +
+            "\nCloses Message: " + action.ClosesMessage;
 
         print(logInAppClickEvent);
         _logMessage = logInAppClickEvent;
     }
 
-    /// <summary>
-    /// See https://documentation.onesignal.com/reference/create-notification for a full list of options.
-    /// </summary>
-    /// <remarks>
-    /// You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for
-    /// security reasons.
-    /// If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
-    /// </remarks>
-    private static void SendTestNotification(string userId) {
-        var notification = new Dictionary<string, object> {
-            ["contents"] = new Dictionary<string, string> { { "en", "Test Message" } },
-                        
-            // Send notification to this user
-            ["include_player_ids"] = new List<string> { userId },
-                        
-            // Example of scheduling a notification in the future.
-            ["send_after"] = DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U")
+    // Test Menu
+    // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
+    private void OnGUI() {
+        var customTextSize = new GUIStyle("button") {
+            fontSize = 30
         };
 
-        _logMessage = "Posting test notification now. By default the example should arrive 30 seconds in the future." +
-            "If you would like to see it as a Push and not an In App Alert then please leave the application.";
-        OneSignal.PostNotification(notification, OnNotificationPostSuccess, OnNotificationPostFailure);
-    }
+        var guiBoxStyle = new GUIStyle("box") {
+            fontSize = 30
+        };
 
-    private static void OnNotificationPostSuccess(Dictionary<string, object> response)
-        => _logMessage = "Notification post success!\n" + Json.Serialize(response);
+        var textFieldStyle = new GUIStyle("textField") {
+            fontSize = 30
+        };
 
-    private static void OnNotificationPostFailure(Dictionary<string, object> response)
-        => _logMessage = "Notification failed to post:\n" + Json.Serialize(response);
-    
-    /*
-     * UI Rendering 
-     */
-
-    private const float ItemOriginX = 50.0f;
-    private const float BoxOriginY = 120.0f;
-    private const float ItemStartY = 200.0f;
-    private const float ItemHeightOffset = 90.0f;
-    private const float ItemHeight = 60.0f;
+        float itemOriginX      = 50.0f;
+        float itemWidth        = Screen.width - 120.0f;
+        float boxWidth         = Screen.width - 20.0f;
+        float boxOriginY       = 120.0f;
+        float boxHeight        = requiresUserPrivacyConsent ? 980.0f : 890.0f;
+        float itemStartY       = 200.0f;
+        float itemHeightOffset = 90.0f;
+        float itemHeight       = 60.0f;
 
     private static string _logMessage;
 
     private GUIStyle _customTextSize;
     private GUIStyle _guiBoxStyle;
 
+<<<<<<< HEAD
     private static float ItemWidth => Screen.width - 120.0f;
     private static float BoxWidth => Screen.width - 20.0f;
     private float BoxHeight => requiresUserPrivacyConsent ? 980.0f : 890.0f;
@@ -338,14 +303,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         int position = 0;
 
         if (MenuButton(ref position, "Send Example Tags")) {
+=======
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            "SendTags", customTextSize)) {
+>>>>>>> 8187a27 (Heavy WIP on core SDK and public interface)
             // You can tags users with key value pairs like this:
-            OneSignal.SendTag("UnityTestKey", "TestValue");
+            OneSignal.Default.SendTag("UnityTestKey", "TestValue");
 
             // Or use an IDictionary if you need to set more than one tag.
-            OneSignal.SendTags(new Dictionary<string, string> {
-                { "UnityTestKey2", "value2" },
-                { "UnityTestKey3", "value3" }
-            });
+            OneSignal.Default.SendTags(new Dictionary<string, string>()
+                { { "UnityTestKey2", "value2" }, { "UnityTestKey3", "value3" } });
 
             // You can delete a single tag with it's key.
             // OneSignal.DeleteTag("UnityTestKey");
@@ -353,74 +320,134 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             // OneSignal.DeleteTags(new List<string>() {"UnityTestKey2", "UnityTestKey3" });
         }
 
-        if (MenuButton(ref position, "Get Ids")) {
-            OneSignal.IdsAvailable((userId, pushToken) => {
-                _logMessage = $"UserID:\n{userId}\n\nPushToken:\n{pushToken}";
-            });
+        count++;
+
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), "GetIds",
+            customTextSize)) {
+            // todo - substitute with getDeviceState
+            // OneSignal.IdsAvailable((userId, pushToken) => {
+            //     extraMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
+            // });
         }
 
         if (MenuButton(ref position, "Test Notification")) {
             _logMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if " +
                 "it hangs here to debug the issue.";
 
-            // Checking to make sure this device is registered or you will not receive the notification
-            OneSignal.IdsAvailable((userId, pushToken) => {
-                if (pushToken != null)
-                    SendTestNotification(userId);
-                else
-                    _logMessage = "ERROR: Device is not registered.";
-            });
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            "TestNotification", customTextSize)) {
+            extraMessage
+                = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
+
+            // todo - substitute with getDeviceState
+            // OneSignal.IdsAvailable((userId, pushToken) => {
+            //     if (pushToken != null) {
+            //         // See https://documentation.onesignal.com/reference/create-notification for a full list of options.
+            //         // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
+            //         // If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
+            //
+            //         var notification = new Dictionary<string, object>();
+            //         notification["contents"] = new Dictionary<string, string>() { { "en", "Test Message" } };
+            //
+            //         // Send notification to this device.
+            //         notification["include_player_ids"] = new List<string>() { userId };
+            //
+            //         // Example of scheduling a notification in the future.
+            //         //notification["send_after"] = System.DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U");
+            //
+            //         extraMessage = "Posting test notification now.";
+            //
+            //         OneSignal.PostNotification(notification,
+            //             (responseSuccess) => {
+            //                 extraMessage
+            //                     = "Notification posted successful! Delayed by about 30 seconds to give you time to press the home button to see a notification vs an in-app alert.\n" +
+            //                     Json.Serialize(responseSuccess);
+            //             },
+            //             (responseFailure) => {
+            //                 extraMessage = "Notification failed to post:\n" + Json.Serialize(responseFailure);
+            //             });
+            //     }
+            //     else {
+            //         extraMessage = "ERROR: Device is not registered.";
+            //     }
+            // });
         }
 
         email = GUI.TextField(ItemRect(ref position), email, _customTextSize);
 
-        if (MenuButton(ref position, "Set Email")) {
-            _logMessage = "Setting email to " + email;
+        email = GUI.TextField(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            email, customTextSize);
 
-            OneSignal.SetEmail(email,
-                () => print("Successfully set email"),
-                error => printError("Error setting email: " + Json.Serialize(error))
-            );
+        count++;
+
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            "SetEmail", customTextSize)) {
+            extraMessage = "Setting email to " + email;
+
+            // todo - this
+            // OneSignal.SetEmail(email, () => { Debug.Log("Successfully set email"); },
+                // (error) => { Debug.Log("Encountered error setting email: " + Json.Serialize(error)); });
         }
 
         if (MenuButton(ref position, "Logout Email")) {
             _logMessage = "Logging Out of example@example.com";
 
-            OneSignal.LogoutEmail(
-                () => print("Successfully logged out of email"),
-                error => printError("Error logging out of email: " + Json.Serialize(error))
-            );
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            "LogoutEmail", customTextSize)) {
+            extraMessage = "Logging Out of example@example.com";
+
+            // todo - this
+            // OneSignal.LogoutEmail(() => { Debug.Log("Successfully logged out of email"); },
+            //     (error) => { Debug.Log("Encountered error logging out of email: " + Json.Serialize(error)); });
         }
 
         externalId = GUI.TextField(ItemRect(ref position), externalId, _customTextSize);
 
-        if (MenuButton(ref position, "Set External Id"))
-            OneSignal.SetExternalUserId(externalId, OnUpdatedExternalUserId);
+        externalId = GUI.TextField(
+            new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight), externalId,
+            customTextSize);
 
         if (MenuButton(ref position, "Remove External Id"))
             OneSignal.RemoveExternalUserId(OnUpdatedExternalUserId);
 
-        if (requiresUserPrivacyConsent) {
-            var consentText = OneSignal.UserProvidedConsent()
-                ? "Revoke Privacy Consent"
-                : "Provide Privacy Consent";
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            "SetExternalId", customTextSize)) {
+            
+            // todo - this
+            // OneSignal.SetExternalUserId(externalId, OneSignalExternalUserIdCallback);
+
+            // Auth external id method
+            // OneSignal.SetExternalUserId(externalId, "your_auth_hash_token", OneSignalExternalUserIdCallback, OneSignalExternalUserIdCallbackFailure);
+        }
 
             if (GUI.Button(ItemRect(ref position), consentText, _customTextSize)) {
                 _logMessage = "Providing user privacy consent";
 
-                OneSignal.UserDidProvideConsent(!OneSignal.UserProvidedConsent());
-            }
+        if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            "RemoveExternalId", customTextSize)) {
+            // todo - this
+            // OneSignal.RemoveExternalUserId(OneSignalExternalUserIdCallback);
         }
 
-        if (_logMessage != null) {
-            var logRect = new Rect(
-                10,
-                BoxOriginY + BoxHeight + 20,
-                Screen.width - 20,
-                Screen.height - (BoxOriginY + BoxHeight + 40)
-            );
+        if (requiresUserPrivacyConsent) {
+            count++;
 
-            GUI.Box(logRect, _logMessage, _guiBoxStyle);
+            // todo - this
+            // if (GUI.Button(new Rect(itemOriginX, itemStartY + (count * itemHeightOffset), itemWidth, itemHeight),
+            //     (OneSignal.UserProvidedConsent() ? "Revoke Privacy Consent" : "Provide Privacy Consent"),
+            //     customTextSize)) {
+            //     extraMessage = "Providing user privacy consent";
+            //
+            //     OneSignal.UserDidProvideConsent(!OneSignal.UserProvidedConsent());
+            // }
+        }
+
+        if (extraMessage != null) {
+            guiBoxStyle.alignment = TextAnchor.UpperLeft;
+            guiBoxStyle.wordWrap  = true;
+            GUI.Box(
+                new Rect(10, boxOriginY + boxHeight + 20, Screen.width - 20,
+                    Screen.height - (boxOriginY + boxHeight + 40)), extraMessage, guiBoxStyle);
         }
     }
 
