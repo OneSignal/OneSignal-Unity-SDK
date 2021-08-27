@@ -1,14 +1,10 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Laters {
     public abstract class AwaitableAndroidJavaProxy<TResult> : AndroidJavaProxy {
-        protected AwaitableAndroidJavaProxy(string javaInterface) : base(javaInterface) {}
-        protected AwaitableAndroidJavaProxy(AndroidJavaClass javaInterface) : base(javaInterface) {}
-        
         public TaskAwaiter<TResult> GetAwaiter() {
             if (_completionSource != null)
                 return _completionSource.Task.GetAwaiter();
@@ -22,6 +18,11 @@ namespace Laters {
 
             return _completionSource.Task.GetAwaiter();
         }
+        
+        protected bool _isComplete = false;
+        
+        protected AwaitableAndroidJavaProxy(string javaInterface) : base(javaInterface) {}
+        protected AwaitableAndroidJavaProxy(AndroidJavaClass javaInterface) : base(javaInterface) {}
 
         protected void _complete(TResult result) {
             if (_isComplete)
@@ -59,7 +60,23 @@ namespace Laters {
             
         private TaskCompletionSource<TResult> _completionSource;
         private event Action<TResult> _onComplete;
-        private bool _isComplete = false;
         private TResult _result;
+    }
+
+    /// <summary>
+    /// Helper which will autocomplete the awaited task when a callback is invoked
+    /// </summary>
+    public abstract class AwaitableVoidAndroidJavaProxy : AwaitableAndroidJavaProxy<object> {
+        protected AwaitableVoidAndroidJavaProxy(string javaInterface) : base(javaInterface) {}
+        protected AwaitableVoidAndroidJavaProxy(AndroidJavaClass javaInterface) : base(javaInterface) {}
+
+        public override AndroidJavaObject Invoke(string methodName, object[] args) {
+            var invokeResult = base.Invoke(methodName, args);
+            
+            if (_isComplete == false)
+                _complete(null);
+            
+            return invokeResult;
+        }
     }
 }
