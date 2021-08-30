@@ -46,16 +46,16 @@ namespace OneSignalSDK {
             get => _sdkClass.CallStatic<bool>("userProvidedPrivacyConsent");
             set => _sdkClass.CallStatic("provideUserConsent", value);
         }
-        
+
         public override bool RequiresPrivacyConsent {
-            get => _sdkClass.CallStatic<bool>("requiresUserPrivacyConsent"); 
-            set => _sdkClass.CallStatic("setRequiresUserPrivacyConsent", value); 
+            get => _sdkClass.CallStatic<bool>("requiresUserPrivacyConsent");
+            set => _sdkClass.CallStatic("setRequiresUserPrivacyConsent", value);
         }
-        
+
         public override void Initialize(string appId) {
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            var context = activity.Call<AndroidJavaObject>("getApplicationContext");
+            var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            var context     = activity.Call<AndroidJavaObject>("getApplicationContext");
 
             _sdkClass.CallStatic("initWithContext", context);
             _sdkClass.CallStatic("setAppId", appId);
@@ -67,30 +67,32 @@ namespace OneSignalSDK {
 
         public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
             // cancels immediately, iOS only
+            // todo - is cancellation the right solution?
             return Task.FromCanceled<OSNotificationPermission>(new CancellationToken());
         }
 
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
 
-        public override void AddTrigger(string key, object value)
+        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetTrigger(string key, object value)
             => _sdkClass.CallStatic("addTrigger", key, value);
 
-        public override void AddTriggers(Dictionary<string, object> triggers)
-        {
+        public override void SetTriggers(Dictionary<string, object> triggers) {
             throw new System.NotImplementedException();
         }
 
-        public override void RemoveTriggerForKey(string key)
+        public override void RemoveTrigger(string key)
             => _sdkClass.CallStatic("removeTriggerForKey", key);
 
-        public override void RemoveTriggersForKeys(IList<string> keys)
-        {
+        public override void RemoveTriggers(IEnumerable<string> keys) {
             throw new System.NotImplementedException();
         }
 
-        public override object GetTriggerValueForKey(string key)
-        {
+        public override object GetTrigger(string key) {
             throw new System.NotImplementedException();
         }
 
@@ -99,83 +101,60 @@ namespace OneSignalSDK {
             set => _sdkClass.CallStatic("pauseInAppMessages", value);
         }
 
-        public override void SendTag(string tagName, string tagValue)
-        {
+        public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
             throw new System.NotImplementedException();
         }
 
-        public override void SendTags(IDictionary<string, string> tags)
-        {
+        public override Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags) {
             throw new System.NotImplementedException();
         }
 
-        public override void GetTags()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public async Task<Dictionary<string, object>> GetTagsAsync()
+        public override async Task<Dictionary<string, object>> GetTags()
             => await _callAsync<Dictionary<string, object>, OSGetTagsHandler>("GetTags");
 
-        public override Task<Dictionary<string, object>> RefreshTags()
-        {
+        public override Task<Dictionary<string, object>> DeleteTag(string key) {
             throw new System.NotImplementedException();
         }
 
-        public override void DeleteTag(string key)
-        {
+        public override Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys) {
             throw new System.NotImplementedException();
         }
 
-        public override void DeleteTags(IEnumerable<string> keys)
-        {
+        public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetExternalUserId(string externalId)
-        {
+        public override Task<Dictionary<string, object>> SetEmail(string email, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetExternalUserId(string externalId, string authHashToken)
-        {
+        public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetEmail(string email)
-        {
+        public override Task<Dictionary<string, object>> LogOut(
+            LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
+        ) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetEmail(string email, string emailAuthToken)
-        {
+        public override void PromptLocation() {
+            // do nothing - iOS Only
+        }
+
+        public override bool ShareLocation {
+            set => _sdkClass.CallStatic("setLocationShared", value);
+        }
+
+        public override Task<OutcomeEvent> SendOutcome(string name) {
             throw new System.NotImplementedException();
         }
 
-        public override void LogOut(LogOutOptions options = LogOutOptions.ExternalUserId)
-        {
+        public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
             throw new System.NotImplementedException();
         }
 
-        public override void PromptLocation()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override bool ShareLocation { get; set; }
-
-        public override void SendOutcome(string name)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SendUniqueOutcome(string name)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SendOutcomeWithValue(string name, float value)
-        {
+        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
             throw new System.NotImplementedException();
         }
     }
