@@ -19,7 +19,7 @@ namespace OneSignalSDK {
         }
         
         /*
-         * Observers
+         * Global Observers
          */
         
         private sealed class OSPermissionObserver : OneSignalAndroidJavaProxy {
@@ -49,9 +49,31 @@ namespace OneSignalSDK {
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) { }
         }
+
+        // todo - received result
+        private sealed class OSNotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
+            public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler") { }
+
+            /// <param name="notificationReceivedEvent">OSNotificationOpenedResult</param>
+            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) { }
+        }
+
+        private sealed class OSNotificationOpenedHandler : OneSignalAndroidJavaProxy {
+            public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler") { }
+
+            /// <param name="result">OSNotificationOpenedResult</param>
+            public void notificationOpened(AndroidJavaObject result) { }
+        }
+
+        private sealed class OSInAppMessageClickHandler : OneSignalAndroidJavaProxy {
+            public OSInAppMessageClickHandler() : base("OSInAppMessageClickHandler") { }
+
+            /// <param name="result">OSInAppMessageAction</param>
+            public void inAppMessageClicked(AndroidJavaObject result) { }
+        }
         
         /*
-         * Callbacks
+         * Direct Callbacks
          */
 
         private sealed class OSGetTagsHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
@@ -88,28 +110,6 @@ namespace OneSignalSDK {
 
             /// <param name="error">ExternalIdError</param>
             public void onFailure(AndroidJavaObject error) { }
-        }
-
-        private sealed class OSInAppMessageClickHandler : OneSignalAwaitableAndroidJavaProxy<InAppMessageAction> {
-            public OSInAppMessageClickHandler() : base("OSInAppMessageClickHandler") { }
-
-            /// <param name="result">OSInAppMessageAction</param>
-            public void inAppMessageClicked(AndroidJavaObject result) { }
-        }
-
-        private sealed class OSNotificationOpenedHandler : OneSignalAwaitableAndroidJavaProxy<NotificationOpenedResult> {
-            public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler") { }
-
-            /// <param name="result">OSNotificationOpenedResult</param>
-            public void notificationOpened(AndroidJavaObject result) { }
-        }
-
-        // todo - received result
-        private sealed class OSNotificationWillShowInForegroundHandler : OneSignalAwaitableAndroidJavaProxy<NotificationOpenedResult> {
-            public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler") { }
-
-            /// <param name="notificationReceivedEvent">OSNotificationOpenedResult</param>
-            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) { }
         }
 
         // todo - received result

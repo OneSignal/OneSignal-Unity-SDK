@@ -40,6 +40,10 @@ namespace OneSignalSDK {
         public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
         public override event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
         public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+
+        public override bool PrivacyConsent { get; set; }
+        public override bool RequiresPrivacyConsent { get; set; }
+
         public override void Initialize(string appId) {
             throw new System.NotImplementedException();
         }
@@ -56,68 +60,67 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override void AddTrigger(string key, object value) {
+        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             throw new System.NotImplementedException();
         }
 
-        public override void AddTriggers(Dictionary<string, object> triggers) {
+        public override void SetTrigger(string key, object value) {
             throw new System.NotImplementedException();
         }
 
-        public override void RemoveTriggerForKey(string key) {
+        public override void SetTriggers(Dictionary<string, object> triggers) {
             throw new System.NotImplementedException();
         }
 
-        public override void RemoveTriggersForKeys(IList<string> keys) {
+        public override void RemoveTrigger(string key) {
             throw new System.NotImplementedException();
         }
 
-        public override object GetTriggerValueForKey(string key) {
+        public override void RemoveTriggers(IEnumerable<string> keys) {
+            throw new System.NotImplementedException();
+        }
+
+        public override object GetTrigger(string key) {
             throw new System.NotImplementedException();
         }
 
         public override bool InAppMessagesArePaused { get; set; }
-        public override void SendTag(string tagName, string tagValue) {
+
+        public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
             throw new System.NotImplementedException();
         }
 
-        public override void SendTags(IDictionary<string, string> tags) {
+        public override Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags) {
             throw new System.NotImplementedException();
         }
 
-        public override void GetTags() {
+        public override Task<Dictionary<string, object>> GetTags() {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> RefreshTags() {
+        public override Task<Dictionary<string, object>> DeleteTag(string key) {
             throw new System.NotImplementedException();
         }
 
-        public override void DeleteTag(string key) {
+        public override Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys) {
             throw new System.NotImplementedException();
         }
 
-        public override void DeleteTags(IEnumerable<string> keys) {
+        public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetExternalUserId(string externalId) {
+        public override Task<Dictionary<string, object>> SetEmail(string email, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetExternalUserId(string externalId, string authHashToken) {
+        public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetEmail(string email) {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SetEmail(string email, string emailAuthToken) {
-            throw new System.NotImplementedException();
-        }
-
-        public override void LogOut(LogOutOptions options = LogOutOptions.ExternalUserId) {
+        public override Task<Dictionary<string, object>> LogOut(
+            LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
+        ) {
             throw new System.NotImplementedException();
         }
 
@@ -125,16 +128,19 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override bool ShareLocation { get; set; }
-        public override void SendOutcome(string name) {
+        public override bool ShareLocation {
+            set => throw new System.NotImplementedException();
+        }
+
+        public override Task<OutcomeEvent> SendOutcome(string name) {
             throw new System.NotImplementedException();
         }
 
-        public override void SendUniqueOutcome(string name) {
+        public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
             throw new System.NotImplementedException();
         }
 
-        public override void SendOutcomeWithValue(string name, float value) {
+        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
             throw new System.NotImplementedException();
         }
     }

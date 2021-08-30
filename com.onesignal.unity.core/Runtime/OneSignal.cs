@@ -39,7 +39,7 @@ namespace OneSignalSDK {
         /// 
         /// </summary>
         public const string Version = "3.0.0";
-        
+
         /// <summary>
         /// The default static instance of the OneSignal Unity SDK
         /// </summary>
@@ -210,17 +210,11 @@ namespace OneSignalSDK {
         /// todo - custom level?
         /// </summary>
         public LogType LogLevel { get; set; }
-        
+
         /// <summary>
         /// todo - custom level?
         /// </summary>
         public LogType AlertLevel { get; set; }
-
-        /// <summary>
-        /// Your Google Project Number that is only required for Android GCM pushes.
-        /// todo - isn't this deprecated?
-        /// </summary>
-        public string GoogleProjectNumber { get; set; }
 
         /// <summary>
         /// todo - not a dictionary
@@ -231,10 +225,10 @@ namespace OneSignalSDK {
         /// Provides privacy consent. OneSignal Unity SDK will not initialize until this is true.
         /// </summary>
         public abstract bool PrivacyConsent { get; set; }
-        
+
         /// <summary>
         /// Allows you to delay the initialization of the SDK until the user provides privacy consent. The SDK will not
-        /// be fully initialized until 'PrivacyConsent = true'
+        /// be fully initialized until 'PrivacyConsent = true'. Must be set before <see cref="Initialize"/> is called.
         /// </summary>
         public abstract bool RequiresPrivacyConsent { get; set; }
 
@@ -256,50 +250,65 @@ namespace OneSignalSDK {
         /// <summary>
         /// Prompt the user for notification permissions.
         /// Callback fires as soon as the user accepts or declines notifications.
-        /// Must set `kOSSettingsKeyAutoPrompt` to `false` when calling <see href="https://documentation.onesignal.com/docs/unity-sdk#initwithlaunchoptions">initWithLaunchOptions</see>.
+        /// Must set `kOSSettingsKeyAutoPrompt` to `false` when calling
+        /// <a href="https://documentation.onesignal.com/docs/unity-sdk#initwithlaunchoptions">initWithLaunchOptions</a>.
         /// </summary>
-        /// <remarks>Recommended: Set to false and follow <see href="https://documentation.onesignal.com/docs/ios-push-opt-in-prompt">iOS Push Opt-In Prompt</see>.</remarks>
         /// <returns>Awaitable <see cref="Task{TResult}"/> which provides the user's consent status</returns>
+        /// <remarks>Recommended: Set to false and follow
+        /// <a href="https://documentation.onesignal.com/docs/ios-push-opt-in-prompt">Push Opt-In Prompt</a></remarks>
         public abstract Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse();
 
         /// <summary>
         /// Removes all OneSignal app notifications from the Notification Shade
         /// </summary>
         public abstract void ClearOneSignalNotifications();
+
+        /// <summary>
+        /// Allows you to send notifications from user to user or schedule ones in the future to be delivered to the
+        /// current device.
+        /// </summary>
+        /// <param name="options">Contains notification options, see
+        /// <a href="https://documentation.onesignal.com/reference#create-notification">Create Notification POST </a>
+        /// call for all options.</param>
+        /// <remarks>
+        /// You can only use include_player_ids as a targeting parameter from your app. Other target options such as
+        /// {@code tags} and {@code included_segments} require your OneSignal App REST API key which can only be used
+        /// from your server.</remarks>
+        public abstract Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options);
     #endregion
 
-    #region In App Message
+    #region In App Messages
         /// <summary>
         /// Add a trigger, may show an In-App Message if its triggers conditions were met.
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
         /// <param name="value">Value for the trigger. Object passed in will be converted to a string.</param>
-        public abstract void AddTrigger(string key, object value);
+        public abstract void SetTrigger(string key, object value);
 
         /// <summary>
         /// Allows you to set multiple trigger key/value pairs simultaneously.
         /// </summary>
-        public abstract void AddTriggers(Dictionary<string, object> triggers);
+        public abstract void SetTriggers(Dictionary<string, object> triggers);
 
         /// <summary>
         /// Removes a single trigger for the given key. May show an In-App Message if its trigger conditions were met.
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
-        public abstract void RemoveTriggerForKey(string key);
+        public abstract void RemoveTrigger(string key);
 
         /// <summary>
         /// Removes a list of triggers based on a collection of keys. May show an In-App Message if its trigger
         /// conditions were met.
         /// </summary>
         /// <param name="keys">Removes a collection of triggers from their keys.</param>
-        public abstract void RemoveTriggersForKeys(IList<string> keys);
+        public abstract void RemoveTriggers(IEnumerable<string> keys);
 
         /// <summary>
         /// Gets a trigger value for a provided trigger key.
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
         /// <returns>Value if added with 'addTrigger', or null/nil (iOS) if never set.</returns>
-        public abstract object GetTriggerValueForKey(string key);
+        public abstract object GetTrigger(string key);
 
         /// <summary>
         /// Allows you to temporarily pause all In-App Messages. You may want to do this while the user is engaged in
@@ -314,104 +323,105 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="tagName"></param>
         /// <param name="tagValue"></param>
-        public abstract void SendTag(string tagName, string tagValue);
+        public abstract Task<Dictionary<string, object>> SendTag(string tagName, string tagValue);
 
         /// <summary>
         /// Tag player with a key value pairs to later create segments on them at onesignal.com
         /// </summary>
         /// <param name="tags"></param>
-        public abstract void SendTags(IDictionary<string, string> tags);
+        public abstract Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags);
 
         /// <summary>
         /// Retrieve a list of tags that have been set on the player from the OneSignal server
-        /// todo - what does this do?
-        /// </summary>
-        public abstract void GetTags();
-
-        /// <summary>
-        /// todo - this
         /// </summary>
         /// <returns>Awaitable task which will provide the complete <see cref="Dictionary{TKey,TValue}"/> of tags after
         /// querying OneSignal</returns>
-        public abstract Task<Dictionary<string, object>> RefreshTags();
+        public abstract Task<Dictionary<string, object>> GetTags();
 
         /// <summary>
         /// Delete a Tag from current device record
         /// </summary>
-        /// <param name="key"></param>
-        public abstract void DeleteTag(string key);
+        /// <param name="key">todo</param>
+        public abstract Task<Dictionary<string, object>> DeleteTag(string key);
 
         /// <summary>
         /// Delete multiple Tags from current device record
         /// </summary>
-        /// <param name="keys"></param>
-        public abstract void DeleteTags(IEnumerable<string> keys);
+        /// <param name="keys">todo</param>
+        public abstract Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys);
     #endregion
 
-    #region User Properties
+    #region User Identification
         /// <summary>
-        /// Allows you to use your own system's user ID's to send push notifications to your users. To tie a user to a given user ID, you can use this method.
+        /// Allows you to use your own application's user id to send OneSignal messages to your user. To tie a user to a
+        /// given user id, you can use this method.
         /// </summary>
-        public abstract void SetExternalUserId(string externalId);
+        /// <param name="externalId">todo</param>
+        /// <param name="authHash">If you have a backend server, we strongly recommend using
+        /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
+        /// your users. Your backend can generate an email authentication token and send it to your app.</param>
+        /// <returns>todo</returns>
+        public abstract Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null);
 
         /// <summary>
-        /// todo - desc
+        /// Allows you to set the user's email address with the OneSignal SDK. If the user changes their email, you
+        /// need to call LogOut(LogOutOptions.Email) and then SetEmail to update it.
         /// </summary>
-        /// <param name="externalId"></param>
-        /// <param name="authHashToken"></param>
-        public abstract void SetExternalUserId(string externalId, string authHashToken);
+        /// <param name="email">The email that you want subscribe and associate with the device</param>
+        /// <param name="authHash">If you have a backend server, we strongly recommend using
+        /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
+        /// your users. Your backend can generate an email authentication token and send it to your app.</param>
+        public abstract Task<Dictionary<string, object>> SetEmail(string email, string authHash = null);
 
         /// <summary>
-        /// Allows you to set the user's email address with the OneSignal SDK. We offer several overloaded versions of this method.
-        /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
+        /// Set an sms number for the device to later send sms to this number
         /// </summary>
-        /// <param name="email"></param>
-        public abstract void SetEmail(string email);
+        /// <param name="smsNumber">The sms number that you want subscribe and associate with the device</param>
+        /// <param name="authHash">If you have a backend server, we strongly recommend using
+        /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
+        /// your users. Your backend can generate an email authentication token and send it to your app.</param>
+        /// <returns>todo</returns>
+        public abstract Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null);
 
         /// <summary>
-        /// Allows you to set the user's email address with the OneSignal SDK. We offer several overloaded versions of this method.
-        /// If the user changes their email, you need to call logoutEmail and then setEmail to update it.
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="emailAuthToken">
-        /// If you have a backend server, we strongly recommend using <see href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</see> with your users.
-        /// Your backend can generate an email authentication token and send it to your app.
-        /// </param>
-        public abstract void SetEmail(string email, string emailAuthToken);
-
-        /// <summary>
-        /// 
+        /// todo
         /// </summary>
         [Flags] public enum LogOutOptions {
             /// <summary>todo - desc</summary>
             Email,
-            
+
+            /// <summary>todo - desc</summary>
+            SMS,
+
             /// <summary>
             /// If your user logs out of your app and you would like to disassociate their custom user ID from your
             /// system with their OneSignal user ID
             /// </summary>
             ExternalUserId
         }
-        
+
         /// <summary>
-        /// If your app implements logout functionality, you can call logoutEmail to dissociate the email and/or
-        /// external user id from the device (todo - language clarification, device or OneSignal user id?)
+        /// If your app implements logout functionality, you can call LogOut to dissociate the email, sms, and/or
+        /// external user id from the device
         /// </summary>
-        /// <param name="options">todo - desc. Defaults to both</param>
-        public abstract void LogOut(LogOutOptions options = LogOutOptions.Email | LogOutOptions.ExternalUserId);
+        /// <param name="options">todo - desc. Defaults to all</param>
+        public abstract Task<Dictionary<string, object>> LogOut(
+            LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
+        );
     #endregion
 
     #region Location
         /// <summary>
         /// Helper method to show the native prompt to ask the user for consent to share their location
         /// </summary>
+        /// <remarks>iOS Only</remarks>
         public abstract void PromptLocation();
-        
+
         /// <summary>
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>
         /// <remarks>This method must be called before OneSignal `initWithLaunchOptions` on iOS.</remarks>
-        public abstract bool ShareLocation { get; set; }
+        public abstract bool ShareLocation { set; }
     #endregion
 
     #region Outcomes
@@ -419,20 +429,20 @@ namespace OneSignalSDK {
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
-        public abstract void SendOutcome(string name);
+        public abstract Task<OutcomeEvent> SendOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
-        public abstract void SendUniqueOutcome(string name);
+        public abstract Task<OutcomeEvent> SendUniqueOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public abstract void SendOutcomeWithValue(string name, float value);
+        public abstract Task<OutcomeEvent> SendOutcomeWithValue(string name, float value);
     #endregion
 
     }
