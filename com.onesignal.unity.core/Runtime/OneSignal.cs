@@ -309,6 +309,11 @@ namespace OneSignalSDK {
         /// <param name="key">Key for the trigger.</param>
         /// <returns>Value if added with 'addTrigger', or null/nil (iOS) if never set.</returns>
         public abstract object GetTrigger(string key);
+        
+        /// <summary>
+        /// Returns all trigger key-values for the current user
+        /// </summary>
+        public abstract Dictionary<string, object> GetTriggers();
 
         /// <summary>
         /// Allows you to temporarily pause all In-App Messages. You may want to do this while the user is engaged in
@@ -421,7 +426,7 @@ namespace OneSignalSDK {
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>
         /// <remarks>This method must be called before OneSignal `initWithLaunchOptions` on iOS.</remarks>
-        public abstract bool ShareLocation { set; }
+        public abstract bool ShareLocation { get; set; }
     #endregion
 
     #region Outcomes

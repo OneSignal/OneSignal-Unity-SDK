@@ -32,7 +32,7 @@ using UnityEngine;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// public static (?!void|class)
+    /// 
     /// </summary>
     public partial class OneSignalAndroid : OneSignal {
         public override event NotificationReceivedDelegate NotificationReceived;
@@ -92,7 +92,10 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override object GetTrigger(string key) {
+        public override object GetTrigger(string key)
+            => _sdkClass.CallStatic<object>("getTriggerValueForKey", key);
+
+        public override Dictionary<string, object> GetTriggers() {
             throw new System.NotImplementedException();
         }
 
@@ -143,12 +146,12 @@ namespace OneSignalSDK {
         }
 
         public override bool ShareLocation {
+            get => _sdkClass.CallStatic<bool>("isLocationShared");
             set => _sdkClass.CallStatic("setLocationShared", value);
         }
 
-        public override Task<OutcomeEvent> SendOutcome(string name) {
-            throw new System.NotImplementedException();
-        }
+        public override Task<OutcomeEvent> SendOutcome(string name)
+            => _callAsync<OutcomeEvent, OutcomeCallback>("sendOutcome");
 
         public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
             throw new System.NotImplementedException();
