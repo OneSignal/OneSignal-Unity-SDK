@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Laters;
 using UnityEngine;
@@ -16,16 +14,24 @@ namespace OneSignalSDK {
 
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
         
-        private async Task<TReturn> _callAsync<TReturn, TCallback>(string methodName, Action<TReturn> delegateEvent = null) 
+        /// <summary>
+        /// helper, assumes the callback interface is the last parameter
+        /// </summary>
+        private async Task<TReturn> _callAsync<TReturn, TCallback>(string methodName, params object[] args) 
             where TCallback : AwaitableAndroidJavaProxy<TReturn>, new() {
             
             var callback = new TCallback();
-            
-            _sdkClass.CallStatic(methodName, callback);
-            
-            var result = await callback;
-            delegateEvent?.Invoke(result);
-            return result;
+
+            if (args == null || args.Length == 0)
+                _sdkClass.CallStatic(methodName, callback);
+            else {
+                var newArgs = new object[args.Length + 1];
+                args.CopyTo(newArgs, 0);
+                newArgs[args.Length] = callback;
+                _sdkClass.CallStatic(methodName, newArgs);
+            }
+
+            return await callback;
         }
     }
 }
