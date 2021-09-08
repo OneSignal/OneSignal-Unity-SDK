@@ -151,14 +151,12 @@ namespace OneSignalSDK {
         }
 
         public override Task<OutcomeEvent> SendOutcome(string name)
-            => _callAsync<OutcomeEvent, OutcomeCallback>("sendOutcome");
+            => _callAsync<OutcomeEvent, OutcomeCallback>("sendOutcome", name);
 
-        public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
-            throw new System.NotImplementedException();
-        }
+        public override Task<OutcomeEvent> SendUniqueOutcome(string name)
+            => _callAsync<OutcomeEvent, OutcomeCallback>("sendUniqueOutcome", name);
 
-        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
-            throw new System.NotImplementedException();
-        }
+        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value)
+            => _callAsync<OutcomeEvent, OutcomeCallback>("sendOutcomeWithValue", name);
     }
 }
