@@ -113,7 +113,7 @@ namespace OneSignalSDK {
         }
 
         public override async Task<Dictionary<string, object>> GetTags()
-            => await _callAsync<Dictionary<string, object>, OSGetTagsHandler>("GetTags");
+            => await _callAsync<Dictionary<string, object>, OSGetTagsHandler>("getTags");
 
         public override Task<Dictionary<string, object>> DeleteTag(string key) {
             throw new System.NotImplementedException();
