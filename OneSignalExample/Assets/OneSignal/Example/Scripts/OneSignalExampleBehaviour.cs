@@ -32,12 +32,26 @@ using System;
 
 public class OneSignalExampleBehaviour : MonoBehaviour {
 
-    public string email = "Email Address";
-    public string externalId = "External User ID";
-    public string appId = "99015f5e-87b1-462e-a75b-f99bf7c2822e";
-
-    private static bool _requiresUserPrivacyConsent;
-    private static string _logMessage;
+    /// <summary>
+    /// set to an email address you would like to test notifications against
+    /// </summary>
+    public string email = "EMAIL_ADDRESS";
+    
+    /// <summary>
+    /// set to an external user id you would like to test notifications against
+    /// </summary>
+    public string externalId = "EXTERNAL_USER_ID";
+    
+    /// <summary>
+    /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
+    /// </summary>
+    public string appId = "ONESIGNAL_APP_ID";
+    
+    /// <summary>
+    /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
+    /// <see cref="OneSignal.UserDidProvideConsent"/> in this test MonoBehaviour
+    /// </summary>
+    public bool requiresUserPrivacyConsent;
 
     private void Start() {
         _logMessage = null;
@@ -48,7 +62,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         // If you set to true, the user will have to provide consent
         // using OneSignal.UserDidProvideConsent(true) before the
         // SDK will initialize
-        OneSignal.SetRequiresUserPrivacyConsent(_requiresUserPrivacyConsent);
+        OneSignal.SetRequiresUserPrivacyConsent(requiresUserPrivacyConsent);
 
         // The only required method you need to call to setup OneSignal to receive push notifications.
         // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
@@ -61,9 +75,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
 
-        OneSignal.permissionObserver        += OneSignal_permissionObserver;
-        OneSignal.subscriptionObserver      += OneSignal_subscriptionObserver;
-        OneSignal.emailSubscriptionObserver += OneSignal_emailSubscriptionObserver;
+        OneSignal.permissionObserver        += OnPermissionStateChange;
+        OneSignal.subscriptionObserver      += OnSubscriptionStateChange;
+        OneSignal.emailSubscriptionObserver += OnEmailSubscriptionStateChange;
 
         var pushState = OneSignal.GetPermissionSubscriptionState();
 
@@ -96,7 +110,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         print("External user id failed with error: " + Json.Serialize(error));
     }
 
-    // Examples of using OneSignal In-App Message triggers
+    /// <summary>
+    /// Examples of using OneSignal In-App Message triggers
+    /// (https://documentation.onesignal.com/docs/in-app-message-examples)
+    /// </summary>
     private void OneSignalInAppMessageTriggerExamples() {
         // Add a single trigger
         OneSignal.AddTrigger("key", "value");
@@ -116,7 +133,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.RemoveTriggerForKey("key");
 
         // Delete a list of triggers
-        OneSignal.RemoveTriggersForKeys(new List<string>() { "key1", "key2" });
+        OneSignal.RemoveTriggersForKeys(new List<string> { "key1", "key2" });
 
         // Temporarily pause In-App messages; If true is passed in.
         // Great to ensure you never interrupt your user while they are in the middle of a match in your game.
@@ -142,18 +159,18 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             outcomeEvent.weight);
     }
 
-    private void OneSignal_subscriptionObserver(OSSubscriptionStateChanges stateChanges) {
+    private void OnSubscriptionStateChange(OSSubscriptionStateChanges stateChanges) {
         print("SUBSCRIPTION stateChanges: " + stateChanges);
         print("SUBSCRIPTION stateChanges.to.userId: " + stateChanges.to.userId);
         print("SUBSCRIPTION stateChanges.to.subscribed: " + stateChanges.to.subscribed);
     }
 
-    private void OneSignal_permissionObserver(OSPermissionStateChanges stateChanges) {
+    private void OnPermissionStateChange(OSPermissionStateChanges stateChanges) {
         print($"PERMISSION stateChanges.from.status: {stateChanges.from.status}");
         print($"PERMISSION stateChanges.to.status: {stateChanges.to.status}");
     }
 
-    private void OneSignal_emailSubscriptionObserver(OSEmailSubscriptionStateChanges stateChanges) {
+    private void OnEmailSubscriptionStateChange(OSEmailSubscriptionStateChanges stateChanges) {
         print($"EMAIL stateChanges.from.status: {stateChanges.from.emailUserId}, {stateChanges.from.emailAddress}");
         print($"EMAIL stateChanges.to.status: {stateChanges.to.emailUserId}, {stateChanges.to.emailAddress}");
     }
@@ -223,15 +240,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     private const float ItemStartY = 200.0f;
     private const float ItemHeightOffset = 90.0f;
     private const float ItemHeight = 60.0f;
+    
+    private static string _logMessage;
 
     private GUIStyle _customTextSize;
     private GUIStyle _guiBoxStyle;
 
     private static float ItemWidth => Screen.width - 120.0f;
     private static float BoxWidth => Screen.width - 20.0f;
-    private static float BoxHeight => _requiresUserPrivacyConsent ? 980.0f : 890.0f;
+    private float BoxHeight => requiresUserPrivacyConsent ? 980.0f : 890.0f;
 
-    private static Rect MainMenuRect => new Rect(10, BoxOriginY, BoxWidth, BoxHeight);
+    private Rect MainMenuRect => new Rect(10, BoxOriginY, BoxWidth, BoxHeight);
 
     private static Rect ItemRect(ref int position) => new Rect(
         ItemOriginX,
@@ -340,7 +359,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             OneSignal.RemoveExternalUserId(OneSignalExternalUserIdCallback);
         }
 
-        if (_requiresUserPrivacyConsent) {
+        if (requiresUserPrivacyConsent) {
             var consentText = OneSignal.UserProvidedConsent()
                 ? "Revoke Privacy Consent"
                 : "Provide Privacy Consent";
