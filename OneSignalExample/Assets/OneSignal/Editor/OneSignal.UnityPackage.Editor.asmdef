@@ -1,7 +1,8 @@
 {
-    "name": "OneSignal.Packager",
+    "name": "OneSignal.UnityPackage.Editor",
     "references": [
-        "OneSignal.UnityPackage.Editor"
+        "OneSignal.Core.Editor",
+        "OneSignal.Core"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,6 +14,11 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
+        {
+            "name": "com.onesignal.unity.core",
+            "expression": "0.0.1-preview",
+            "define": "ONE_SIGNAL_INSTALLED"
+        }
     ],
     "noEngineReferences": false
 }
