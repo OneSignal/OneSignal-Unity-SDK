@@ -65,7 +65,7 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
             return;
         
         SessionState.EraseBool(_shouldShowWindowKey);
-        OneSignalSetupWindow.ShowWindow();
+        EditorApplication.delayCall += OneSignalSetupWindow.ShowWindow;
     }
 #endif
 
