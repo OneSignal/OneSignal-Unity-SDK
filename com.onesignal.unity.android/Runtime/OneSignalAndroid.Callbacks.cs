@@ -1,3 +1,30 @@
+/*
+ * Modified MIT License
+ *
+ * Copyright 2021 OneSignal
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * 1. The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * 2. All copies of substantial portions of the Software may only be used in connection
+ * with services provided by OneSignal.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 using System.Collections.Generic;
 using Laters;
 using UnityEngine;
@@ -8,44 +35,44 @@ using UnityEngine;
 // ReSharper disable UnusedParameter.Local
 namespace OneSignalSDK {
     public partial class OneSignalAndroid : OneSignal {
-        private abstract class OneSignalAndroidJavaProxy: AndroidJavaProxy {
+        private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
             protected OneSignalAndroidJavaProxy(string listenerClassName)
                 : base(QualifiedSDKClass + "$" + listenerClassName) { }
         }
-        
+
         private abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
             protected OneSignalAwaitableAndroidJavaProxy(string listenerClassName)
                 : base(QualifiedSDKClass + "$" + listenerClassName) { }
         }
-        
+
         /*
          * Global Observers
          */
-        
+
         private sealed class OSPermissionObserver : OneSignalAndroidJavaProxy {
             public OSPermissionObserver() : base("OSPermissionObserver") { }
-            
+
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onOSPermissionChanged(AndroidJavaObject stateChanges) { }
         }
-        
+
         private sealed class OSSubscriptionObserver : OneSignalAndroidJavaProxy {
             public OSSubscriptionObserver() : base("OSSubscriptionObserver") { }
-            
+
             /// <param name="stateChanges">OSSubscriptionStateChanges</param>
             public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) { }
         }
-        
+
         private sealed class OSEmailSubscriptionObserver : OneSignalAndroidJavaProxy {
             public OSEmailSubscriptionObserver() : base("OSEmailSubscriptionObserver") { }
-            
+
             /// <param name="stateChanges">OSEmailSubscriptionStateChanges</param>
             public void onOSEmailSubscriptionChanged(AndroidJavaObject stateChanges) { }
         }
-        
+
         private sealed class OSSMSSubscriptionObserver : OneSignalAndroidJavaProxy {
             public OSSMSSubscriptionObserver() : base("OSSMSSubscriptionObserver") { }
-            
+
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) { }
         }
@@ -71,7 +98,7 @@ namespace OneSignalSDK {
             /// <param name="result">OSInAppMessageAction</param>
             public void inAppMessageClicked(AndroidJavaObject result) { }
         }
-        
+
         /*
          * Direct Callbacks
          */
@@ -83,7 +110,7 @@ namespace OneSignalSDK {
             public void tagsAvailable(AndroidJavaObject tags) { }
         }
 
-        private sealed class ChangeTagsUpdateHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>>  {
+        private sealed class ChangeTagsUpdateHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
             public ChangeTagsUpdateHandler() : base("ChangeTagsUpdateHandler") { }
 
             /// <param name="tags">JSONObject</param>
@@ -96,7 +123,7 @@ namespace OneSignalSDK {
         private sealed class EmailUpdateHandler : AwaitableVoidAndroidJavaProxy {
             public EmailUpdateHandler() : base("EmailUpdateHandler") { }
 
-            public void onSuccess() { }
+            public void onSuccess() { } // completes itself
 
             /// <param name="error">EmailUpdateError</param>
             public void onFailure(AndroidJavaObject error) { }
