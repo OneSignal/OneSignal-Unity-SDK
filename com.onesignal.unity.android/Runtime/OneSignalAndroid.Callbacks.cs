@@ -107,14 +107,16 @@ namespace OneSignalSDK {
             public OSGetTagsHandler() : base("OSGetTagsHandler") { }
 
             /// <param name="tags">JSONObject</param>
-            public void tagsAvailable(AndroidJavaObject tags) { }
+            public void tagsAvailable(AndroidJavaObject tags) // this is coming back from another thread
+                => UnityMainThreadDispatch.Post(state => _complete(tags.JSONObjectToDictionary()));
         }
 
         private sealed class ChangeTagsUpdateHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
             public ChangeTagsUpdateHandler() : base("ChangeTagsUpdateHandler") { }
 
             /// <param name="tags">JSONObject</param>
-            public void onSuccess(AndroidJavaObject tags) { }
+            public void onSuccess(AndroidJavaObject tags)
+                => _complete(tags.JSONObjectToDictionary());
 
             /// <param name="error">SendTagsError</param>
             public void onFailure(AndroidJavaObject error) { }
@@ -133,7 +135,8 @@ namespace OneSignalSDK {
             public OSExternalUserIdUpdateCompletionHandler() : base("OSExternalUserIdUpdateCompletionHandler") { }
 
             /// <param name="results">JSONObject</param>
-            public void onSuccess(AndroidJavaObject results) { }
+            public void onSuccess(AndroidJavaObject results)
+                => _complete(results.JSONObjectToDictionary());
 
             /// <param name="error">ExternalIdError</param>
             public void onFailure(AndroidJavaObject error) { }
@@ -152,7 +155,8 @@ namespace OneSignalSDK {
             public OSSMSUpdateHandler() : base("OSSMSUpdateHandler") { }
 
             /// <param name="result">JSONObject</param>
-            public void onSuccess(AndroidJavaObject result) { }
+            public void onSuccess(AndroidJavaObject result)
+                => _complete(result.JSONObjectToDictionary());
 
             /// <param name="error">OSSMSUpdateError</param>
             public void onFailure(AndroidJavaObject error) { }
@@ -169,7 +173,8 @@ namespace OneSignalSDK {
             public PostNotificationResponseHandler() : base("PostNotificationResponseHandler") { }
 
             /// <param name="response">JSONObject</param>
-            public void onSuccess(AndroidJavaObject response) { }
+            public void onSuccess(AndroidJavaObject response)
+                => _complete(response.JSONObjectToDictionary());
 
             /// <param name="response">JSONObject</param>
             public void onFailure(AndroidJavaObject response) { }
