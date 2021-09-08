@@ -34,6 +34,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
     public string email = "Email Address";
     public string externalId = "External User ID";
+    public string appId = "99015f5e-87b1-462e-a75b-f99bf7c2822e";
 
     private static bool _requiresUserPrivacyConsent;
     private static string _logMessage;
@@ -52,7 +53,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         // The only required method you need to call to setup OneSignal to receive push notifications.
         // Call before using any other methods on OneSignal (except setLogLevel or SetRequiredUserPrivacyConsent)
         // Should only be called once when your app is loaded.
-        OneSignal.StartInit("99015f5e-87b1-462e-a75b-f99bf7c2822e")
+        OneSignal.StartInit(appId)
            .HandleNotificationReceived(HandleNotificationReceived)
            .HandleNotificationOpened(HandleNotificationOpened)
            .HandleInAppMessageClicked(HandlerInAppMessageClicked)
