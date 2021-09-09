@@ -244,9 +244,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     private static void OnInAppMessageClicked(OSInAppMessageAction action) {
         var logInAppClickEvent = "In-App Message Clicked: " +
             "\nClick Name: " + action.clickName +
@@ -258,6 +255,36 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _logMessage = logInAppClickEvent;
     }
 
+    /// <summary>
+    /// See https://documentation.onesignal.com/reference/create-notification for a full list of options.
+    /// </summary>
+    /// <remarks>
+    /// You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for
+    /// security reasons.
+    /// If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
+    /// </remarks>
+    private static void SendTestNotification(string userId) {
+        var notification = new Dictionary<string, object> {
+            ["contents"] = new Dictionary<string, string> { { "en", "Test Message" } },
+                        
+            // Send notification to this user
+            ["include_player_ids"] = new List<string> { userId },
+                        
+            // Example of scheduling a notification in the future.
+            ["send_after"] = DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U")
+        };
+
+        _logMessage = "Posting test notification now. By default the example should arrive 30 seconds in the future." +
+            "If you would like to see it as a Push and not an In App Alert then please leave the application.";
+        OneSignal.PostNotification(notification, OnNotificationPostSuccess, OnNotificationPostFailure);
+    }
+
+    private static void OnNotificationPostSuccess(Dictionary<string, object> response)
+        => _logMessage = "Notification post success!\n" + Json.Serialize(response);
+
+    private static void OnNotificationPostFailure(Dictionary<string, object> response)
+        => _logMessage = "Notification failed to post:\n" + Json.Serialize(response);
+    
     /*
      * UI Rendering 
      */
@@ -292,14 +319,21 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     // Test Menu
     // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
     private void OnGUI() {
-        _customTextSize ??= new GUIStyle(GUI.skin.button) { fontSize = 30 };
-        _guiBoxStyle    ??= new GUIStyle(GUI.skin.box) { fontSize    = 30 };
+        _customTextSize ??= new GUIStyle(GUI.skin.button) {
+            fontSize = 30
+        };
+        
+        _guiBoxStyle ??= new GUIStyle(GUI.skin.box) {
+            fontSize  = 30,
+            alignment = TextAnchor.UpperLeft,
+            wordWrap  = true
+        };
 
         GUI.Box(MainMenuRect, "Test Menu", _guiBoxStyle);
 
         int position = 0;
 
-        if (MenuButton(ref position, "SendTags")) {
+        if (MenuButton(ref position, "Send Example Tags")) {
             // You can tags users with key value pairs like this:
             OneSignal.SendTag("UnityTestKey", "TestValue");
 
@@ -315,51 +349,28 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             // OneSignal.DeleteTags(new List<string>() {"UnityTestKey2", "UnityTestKey3" });
         }
 
-        if (MenuButton(ref position, "GetIds")) {
+        if (MenuButton(ref position, "Get Ids")) {
             OneSignal.IdsAvailable((userId, pushToken) => {
-                _logMessage = "UserID:\n" + userId + "\n\nPushToken:\n" + pushToken;
+                _logMessage = $"UserID:\n{userId}\n\nPushToken:\n{pushToken}";
             });
         }
 
-        if (MenuButton(ref position, "TestNotification")) {
-            _logMessage
-                = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if it hangs here to debug the issue.";
+        if (MenuButton(ref position, "Test Notification")) {
+            _logMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if " +
+                "it hangs here to debug the issue.";
 
+            // Checking to make sure this device is registered or you will not receive the notification
             OneSignal.IdsAvailable((userId, pushToken) => {
-                if (pushToken != null) {
-                    // See https://documentation.onesignal.com/reference/create-notification for a full list of options.
-                    // You can not use included_segments or any fields that require your OneSignal 'REST API Key' in your app for security reasons.
-                    // If you need to use your OneSignal 'REST API Key' you will need your own server where you can make this call.
-
-                    var notification = new Dictionary<string, object> {
-                        ["contents"]           = new Dictionary<string, string> { { "en", "Test Message" } },
-                        ["include_player_ids"] = new List<string> { userId } // Send notification to this device.
-                    };
-
-                    // Example of scheduling a notification in the future.
-                    //notification["send_after"] = System.DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U");
-
-                    _logMessage = "Posting test notification now.";
-
-                    OneSignal.PostNotification(notification,
-                        (responseSuccess) => {
-                            _logMessage
-                                = "Notification posted successful! Delayed by about 30 seconds to give you time to press the home button to see a notification vs an in-app alert.\n" +
-                                Json.Serialize(responseSuccess);
-                        },
-                        (responseFailure) => {
-                            _logMessage = "Notification failed to post:\n" + Json.Serialize(responseFailure);
-                        });
-                }
-                else {
+                if (pushToken != null)
+                    SendTestNotification(userId);
+                else
                     _logMessage = "ERROR: Device is not registered.";
-                }
             });
         }
 
         email = GUI.TextField(ItemRect(ref position), email, _customTextSize);
 
-        if (MenuButton(ref position, "SetEmail")) {
+        if (MenuButton(ref position, "Set Email")) {
             _logMessage = "Setting email to " + email;
 
             OneSignal.SetEmail(email,
@@ -368,7 +379,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             );
         }
 
-        if (MenuButton(ref position, "LogoutEmail")) {
+        if (MenuButton(ref position, "Logout Email")) {
             _logMessage = "Logging Out of example@example.com";
 
             OneSignal.LogoutEmail(
@@ -379,10 +390,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         externalId = GUI.TextField(ItemRect(ref position), externalId, _customTextSize);
 
-        if (MenuButton(ref position, "SetExternalId"))
+        if (MenuButton(ref position, "Set External Id"))
             OneSignal.SetExternalUserId(externalId, OnUpdatedExternalUserId);
 
-        if (MenuButton(ref position, "RemoveExternalId"))
+        if (MenuButton(ref position, "Remove External Id"))
             OneSignal.RemoveExternalUserId(OnUpdatedExternalUserId);
 
         if (requiresUserPrivacyConsent) {
@@ -398,10 +409,14 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         }
 
         if (_logMessage != null) {
-            _guiBoxStyle.alignment = TextAnchor.UpperLeft;
-            _guiBoxStyle.wordWrap  = true;
-            GUI.Box(new Rect(10, BoxOriginY + BoxHeight + 20, Screen.width - 20,
-                Screen.height - (BoxOriginY + BoxHeight + 40)), _logMessage, _guiBoxStyle);
+            var logRect = new Rect(
+                10,
+                BoxOriginY + BoxHeight + 20,
+                Screen.width - 20,
+                Screen.height - (BoxOriginY + BoxHeight + 40)
+            );
+
+            GUI.Box(logRect, _logMessage, _guiBoxStyle);
         }
     }
 
