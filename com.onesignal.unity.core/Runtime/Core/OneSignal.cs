@@ -614,6 +614,7 @@ public class OneSignal : MonoBehaviour
     /// <summary>
     /// Android - When user receives notification, vibrate device less.
     /// </summary>
+    [Obsolete("Only works below Android 8, please check out https://documentation.onesignal.com/docs/android-notification-categories")]
     public static void EnableVibrate(bool enable)
     {
         oneSignalPlatform.EnableVibrate(enable);
@@ -622,6 +623,7 @@ public class OneSignal : MonoBehaviour
     /// <summary>
     /// Android - When user receives notification, do not play a sound
     /// </summary>
+    [Obsolete("Only works below Android 8, please check out https://documentation.onesignal.com/docs/android-notification-categories")]
     public static void EnableSound(bool enable)
     {
         oneSignalPlatform.EnableSound(enable);

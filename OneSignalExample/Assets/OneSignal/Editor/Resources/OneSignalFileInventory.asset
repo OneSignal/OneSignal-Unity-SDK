@@ -19,8 +19,6 @@ MonoBehaviour:
   - Assets/OneSignal/Example.meta
   - Assets/OneSignal/LICENSE.md
   - Assets/OneSignal/LICENSE.md.meta
-  - Assets/OneSignal/OneSignal.UnityPackage.asmdef
-  - Assets/OneSignal/OneSignal.UnityPackage.asmdef.meta
   - Assets/OneSignal/README.md
   - Assets/OneSignal/README.md.meta
   - Assets/OneSignal/VERSION
@@ -41,6 +39,8 @@ MonoBehaviour:
   - Assets/OneSignal/Documentation~/setup_window.png
   - Assets/OneSignal/Editor/AssemblyInfo.cs
   - Assets/OneSignal/Editor/AssemblyInfo.cs.meta
+  - Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef
+  - Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef.meta
   - Assets/OneSignal/Editor/OneSignalBootstrapper.cs
   - Assets/OneSignal/Editor/OneSignalBootstrapper.cs.meta
   - Assets/OneSignal/Editor/OneSignalFileInventory.cs
@@ -72,6 +72,8 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs.meta
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
+  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
+  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef.meta
   - Assets/OneSignal/Example/Scenes.meta
   - Assets/OneSignal/Example/Scripts.meta
   - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity

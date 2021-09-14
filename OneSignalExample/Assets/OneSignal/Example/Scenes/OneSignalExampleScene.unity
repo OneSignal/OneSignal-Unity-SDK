@@ -244,6 +244,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e0cf583b67c419894c77bc78acc66c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  email: Email Address
+  externalId: External User ID
 --- !u!4 &1816083102
 Transform:
   m_ObjectHideFlags: 0

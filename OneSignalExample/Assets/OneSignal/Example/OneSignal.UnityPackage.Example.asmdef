@@ -1,11 +1,13 @@
 {
-    "name": "OneSignal.UnityPackage",
+    "name": "OneSignal.UnityPackage.Example",
+    "rootNamespace": "",
     "references": [
-        "OneSignal.Core.Editor",
         "OneSignal.Core"
     ],
     "includePlatforms": [
-        "Editor"
+        "Android",
+        "Editor",
+        "iOS"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

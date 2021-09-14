@@ -213,12 +213,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         print("displayType: " + notification.displayType);
         _logMessage = "Notification received with text: " + message;
 
-        if (payload.additionalData == null)
-            print("[HandleNotificationReceived] Additional Data == null");
-        else if (Json.Serialize(payload.additionalData) is { } dataString)
-            print($"[HandleNotificationReceived] message {message}, additionalData: {dataString}");
-        else
-            print("[HandleNotificationReceived] Additional Data could not be serialized");
+        print(payload.additionalData != null && Json.Serialize(payload.additionalData) is { } dataString
+            ? $"[HandleNotificationReceived] message {message}, additionalData: {dataString}"
+            : "[HandleNotificationReceived] Additional Data == null"
+        );
     }
 
     /// <summary>
@@ -234,12 +232,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         print("GameControllerExample:HandleNotificationOpened: " + message);
         _logMessage = "Notification opened with text: " + message;
 
-        if (payload.additionalData == null)
-            print("[HandleNotificationOpened] Additional Data == null");
-        else if (Json.Serialize(payload.additionalData) is { } dataString)
-            print($"[HandleNotificationOpened] message {message}, additionalData: {dataString}");
-        else
-            print("[HandleNotificationOpened] Additional Data could not be serialized");
+        print(payload.additionalData != null && Json.Serialize(payload.additionalData) is { } dataString
+            ? $"[HandleNotificationOpened] message {message}, additionalData: {dataString}"
+            : "[HandleNotificationOpened] Additional Data == null"
+        );
 
         if (actionID != null) {
             // actionSelected equals the id on the button the user pressed.
