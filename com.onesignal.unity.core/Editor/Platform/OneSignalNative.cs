@@ -84,6 +84,10 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
+        public override Dictionary<string, object> GetTriggers() {
+            throw new System.NotImplementedException();
+        }
+
         public override bool InAppMessagesArePaused { get; set; }
 
         public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
@@ -129,6 +133,7 @@ namespace OneSignalSDK {
         }
 
         public override bool ShareLocation {
+            get => throw new System.NotImplementedException();
             set => throw new System.NotImplementedException();
         }
 
