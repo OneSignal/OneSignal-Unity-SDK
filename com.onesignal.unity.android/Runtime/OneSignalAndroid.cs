@@ -88,7 +88,7 @@ namespace OneSignalSDK {
         public override void RemoveTrigger(string key)
             => _sdkClass.CallStatic("removeTriggerForKey", key);
 
-        public override void RemoveTriggers(IEnumerable<string> keys) {
+        public override void RemoveTriggers(params string[] keys) {
             throw new System.NotImplementedException();
         }
 
