@@ -301,7 +301,7 @@ namespace OneSignalSDK {
         /// conditions were met.
         /// </summary>
         /// <param name="keys">Removes a collection of triggers from their keys.</param>
-        public abstract void RemoveTriggers(IEnumerable<string> keys);
+        public abstract void RemoveTriggers(params string[] keys);
 
         /// <summary>
         /// Gets a trigger value for a provided trigger key.
