@@ -76,7 +76,7 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override void RemoveTriggers(IEnumerable<string> keys) {
+        public override void RemoveTriggers(params string[] keys) {
             throw new System.NotImplementedException();
         }
 
