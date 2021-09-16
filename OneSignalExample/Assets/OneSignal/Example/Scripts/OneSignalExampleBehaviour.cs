@@ -539,20 +539,20 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.InAppMessageClicked  += OnInAppMessageClicked;
         
         OneSignal.Default.Initialize(appId);
-
-        // Control how OneSignal notifications will be shown when one is received while your app is in focus
-        OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
+        // todo
+        // // Control how OneSignal notifications will be shown when one is received while your app is in focus
+        // OneSignal.inFocusDisplayType = OneSignal.OSInFocusDisplayOption.Notification;
         
         // Each of these events can inform your application when the user's OneSignal states have change
         OneSignal.Default.PermissionStateChanged        += OnPermissionStateChange;
         OneSignal.Default.SubscriptionStateChanged      += OnSubscriptionStateChange;
         OneSignal.Default.EmailSubscriptionStateChanged += OnEmailSubscriptionStateChange;
-
-        // You can also get the current states directly
-        var fullUserState          = OneSignal.GetPermissionSubscriptionState();
-        var permissionState        = fullUserState.permissionStatus;
-        var subscriptionState      = fullUserState.subscriptionStatus;
-        var emailSubscriptionState = fullUserState.emailSubscriptionStatus;
+        // todo
+        // // You can also get the current states directly
+        // var fullUserState          = OneSignal.GetPermissionSubscriptionState();
+        // var permissionState        = fullUserState.permissionStatus;
+        // var subscriptionState      = fullUserState.subscriptionStatus;
+        // var emailSubscriptionState = fullUserState.emailSubscriptionStatus;
 
         OneSignalInAppMessageTriggerExamples();
         OneSignalOutcomeEventsExamples();
@@ -629,8 +629,8 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         // Send a result which can only occur once
         OneSignal.Default.SendUniqueOutcome("unique_1");
-        
-        var result = await OneSignal.Default.SendUniqueOutcome("unique_2");
+        // todo
+        // var result = await OneSignal.Default.SendUniqueOutcome("unique_2");
 
         // Send a result which can occur multiple times with a float value
         OneSignal.Default.SendOutcomeWithValue("value_1", 3.2f);
@@ -827,51 +827,52 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         }
 
         if (MenuButton(ref position, "Get Ids")) {
-            OneSignal.IdsAvailable((userId, pushToken) => {
-                _logMessage = $"UserID:\n{userId}\n\nPushToken:\n{pushToken}";
-            });
+            // todo
+            // OneSignal.IdsAvailable((userId, pushToken) => {
+            //     _logMessage = $"UserID:\n{userId}\n\nPushToken:\n{pushToken}";
+            // });
         }
 
         if (MenuButton(ref position, "Test Notification")) {
             _logMessage = "Waiting to get a OneSignal userId. Uncomment OneSignal.SetLogLevel in the Start method if " +
                 "it hangs here to debug the issue.";
-
-            // Checking to make sure this device is registered or you will not receive the notification
-            OneSignal.IdsAvailable((userId, pushToken) => {
-                if (pushToken != null)
-                    SendTestNotification(userId);
-                else
-                    _logMessage = "ERROR: Device is not registered.";
-            });
+            // todo
+            // // Checking to make sure this device is registered or you will not receive the notification
+            // OneSignal.IdsAvailable((userId, pushToken) => {
+            //     if (pushToken != null)
+            //         SendTestNotification(userId);
+            //     else
+            //         _logMessage = "ERROR: Device is not registered.";
+            // });
         }
 
         email = GUI.TextField(ItemRect(ref position), email, _customTextSize);
 
         if (MenuButton(ref position, "Set Email")) {
             _logMessage = "Setting email to " + email;
-
-            OneSignal.Default.SetEmail(email,
-                () => print("Successfully set email"),
-                error => printError("Error setting email: " + Json.Serialize(error))
-            );
+            // todo
+            // OneSignal.Default.SetEmail(email,
+            //     () => print("Successfully set email"),
+            //     error => printError("Error setting email: " + Json.Serialize(error))
+            // );
         }
 
         if (MenuButton(ref position, "Logout Email")) {
             _logMessage = "Logging Out of example@example.com";
-
-            OneSignal.LogoutEmail(
-                () => print("Successfully logged out of email"),
-                error => printError("Error logging out of email: " + Json.Serialize(error))
-            );
+            // todo
+            // OneSignal.LogoutEmail(
+            //     () => print("Successfully logged out of email"),
+            //     error => printError("Error logging out of email: " + Json.Serialize(error))
+            // );
         }
 
         externalId = GUI.TextField(ItemRect(ref position), externalId, _customTextSize);
-
-        if (MenuButton(ref position, "Set External Id"))
-            OneSignal.SetExternalUserId(externalId, OnUpdatedExternalUserId);
-
-        if (MenuButton(ref position, "Remove External Id"))
-            OneSignal.Default.RemoveExternalUserId(OnUpdatedExternalUserId);
+        // todo
+        // if (MenuButton(ref position, "Set External Id"))
+        //     OneSignal.SetExternalUserId(externalId, OnUpdatedExternalUserId);
+        //
+        // if (MenuButton(ref position, "Remove External Id"))
+        //     OneSignal.Default.RemoveExternalUserId(OnUpdatedExternalUserId);
 
         if (requiresUserPrivacyConsent) {
             var consentText = OneSignal.Default.PrivacyConsent
