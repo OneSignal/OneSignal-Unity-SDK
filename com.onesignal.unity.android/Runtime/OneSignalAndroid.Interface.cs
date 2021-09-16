@@ -33,7 +33,7 @@ namespace OneSignalSDK {
     /// <summary>
     /// 
     /// </summary>
-    public partial class OneSignalAndroid : OneSignal {
+    public sealed partial class OneSignalAndroid : OneSignal {
 
         private const string SDKPackage = "com.onesignal";
         private const string SDKClassName = "OneSignal";
