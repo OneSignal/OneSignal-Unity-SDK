@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2021 OneSignal
+ * Copyright 2017 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,12 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS && !UNITY_EDITOR
-using UnityEngine;
-
 namespace OneSignalSDK {
     /// <summary>
     /// 
     /// </summary>
-    internal static class OneSignalIOSInit {
-        [RuntimeInitializeOnLoadMethod] public static void Init() => OneSignal.Default = new OneSignalIOS();
+    public sealed partial class OneSignalIOS : OneSignal {
+        
+        private delegate void OnAppTrackingResponse(long responseCode);
     }
 }
-#endif

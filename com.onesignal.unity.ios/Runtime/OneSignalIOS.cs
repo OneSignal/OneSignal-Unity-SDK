@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Modified MIT License
  *
  * Copyright 2017 OneSignal
@@ -25,434 +25,122 @@
  * THE SOFTWARE.
  */
 
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using System;
+using System.Threading.Tasks;
 
-class OneSignalIOS : IOneSignalPlatform
-{
-    [DllImport("__Internal")]
-    public static extern void _init(string listenerName, string appId, bool autoPrompt, bool inAppLaunchUrLs,
-        int displayOption, int logLevel, int visualLogLevel, bool requiresUserPrivacyConsent);
-
-    [DllImport("__Internal")]
-    public static extern void _registerForPushNotifications();
-
-    [DllImport("__Internal")]
-    public static extern void _sendTag(string tagName, string tagValue);
-
-    [DllImport("__Internal")]
-    public static extern void _sendTags(string tags);
-
-    [DllImport("__Internal")]
-    public static extern void _getTags(string delegateId);
-
-    [DllImport("__Internal")]
-    public static extern void _deleteTag(string key);
-
-    [DllImport("__Internal")]
-    public static extern void _deleteTags(string keys);
-
-    [DllImport("__Internal")]
-    public static extern void _idsAvailable(string delegateId);
-
-    [DllImport("__Internal")]
-    public static extern void _setSubscription(bool enable);
-
-    [DllImport("__Internal")]
-    public static extern void _postNotification(string delegateIdSuccess, string delegateIdFailure, string json);
-
-    [DllImport("__Internal")]
-    public static extern void _syncHashedEmail(string email);
-
-    [DllImport("__Internal")]
-    public static extern void _promptLocation();
-
-    [DllImport("__Internal")]
-    public static extern void _setInFocusDisplayType(int type);
-
-    [DllImport("__Internal")]
-    public static extern void _promptForPushNotificationsWithUserResponse();
-
-    [DllImport("__Internal")]
-    public static extern void _addPermissionObserver();
-
-    [DllImport("__Internal")]
-    public static extern void _removePermissionObserver();
-
-    [DllImport("__Internal")]
-    public static extern void _addSubscriptionObserver();
-
-    [DllImport("__Internal")]
-    public static extern void _removeSubscriptionObserver();
-
-    [DllImport("__Internal")]
-    public static extern void _addEmailSubscriptionObserver();
-
-    [DllImport("__Internal")]
-    public static extern void _removeEmailSubscriptionObserver();
-
-    [DllImport("__Internal")]
-    public static extern string _getPermissionSubscriptionState();
-
-    [DllImport("__Internal")]
-    public static extern void _setUnauthenticatedEmail(string delegateIdSuccess, string delegateIdFailure,
-        string email);
-
-    [DllImport("__Internal")]
-    public static extern void _setEmail(string delegateIdSuccess, string delegateIdFailure, string email,
-        string emailAuthCode);
-
-    [DllImport("__Internal")]
-    public static extern void _logoutEmail(string delegateIdSuccess, string delegateIdFailure);
-
-    [DllImport("__Internal")]
-    public static extern void _setOneSignalLogLevel(int logLevel, int visualLogLevel);
-
-    [DllImport("__Internal")]
-    public static extern void _userDidProvideConsent(bool consent);
-
-    [DllImport("__Internal")]
-    public static extern bool _userProvidedConsent();
-
-    [DllImport("__Internal")]
-    public static extern void _setRequiresUserPrivacyConsent(bool required);
-
-    [DllImport("__Internal")]
-    public static extern void _setLocationShared(bool enable);
-
-    [DllImport("__Internal")]
-    public static extern void _setExternalUserId(string delegateId, string externalId);
-
-    [DllImport("__Internal")]
-    public static extern void _setExternalUserIdWithAuthToken(string delegateId, string delegateIdFailure,
-        string externalId, string authHashToken);
-
-    [DllImport("__Internal")]
-    public static extern void _removeExternalUserId(string delegateId);
-
-    [DllImport("__Internal")]
-    public static extern void _addTriggers(string triggers);
-
-    [DllImport("__Internal")]
-    public static extern void _removeTriggerForKey(string key);
-
-    [DllImport("__Internal")]
-    public static extern void _removeTriggersForKeys(string keys);
-
-    [DllImport("__Internal")]
-    public static extern string _getTriggerValueForKey(string key);
-
-    [DllImport("__Internal")]
-    public static extern void _pauseInAppMessages(bool pause);
-
-    [DllImport("__Internal")]
-    public static extern void _sendOutcome(string delegateId, string name);
-
-    [DllImport("__Internal")]
-    public static extern void _sendUniqueOutcome(string delegateId, string name);
-
-    [DllImport("__Internal")]
-    public static extern void _sendOutcomeWithValue(string delegateId, string name, float value);
-
-    public void Init()
-    {
-        bool autoPrompt = true, inAppLaunchUrl = true;
-        if (OneSignal.builder.iOSSettings != null)
-        {
-            if (OneSignal.builder.iOSSettings.ContainsKey(OneSignal.kOSSettingsAutoPrompt))
-                autoPrompt = OneSignal.builder.iOSSettings[OneSignal.kOSSettingsAutoPrompt];
-            if (OneSignal.builder.iOSSettings.ContainsKey(OneSignal.kOSSettingsInAppLaunchURL))
-                inAppLaunchUrl = OneSignal.builder.iOSSettings[OneSignal.kOSSettingsInAppLaunchURL];
+namespace OneSignalSDK {
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed partial class OneSignalIOS : OneSignal {
+        public override event NotificationReceivedDelegate NotificationReceived;
+        public override event NotificationOpenedDelegate NotificationOpened;
+        public override event InAppMessageClickedDelegate InAppMessageClicked;
+        public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
+        public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        
+        public override bool PrivacyConsent { get; set; }
+        
+        public override bool RequiresPrivacyConsent { get; set; }
+        
+        public override void Initialize(string appId) {
+            throw new System.NotImplementedException();
         }
 
-        _init(OneSignal.GameObjectName, OneSignal.builder.appID,
-            autoPrompt, inAppLaunchUrl, (int) OneSignal.inFocusDisplayType,
-            (int) OneSignal.logLevel, (int) OneSignal.visualLogLevel, OneSignal.requiresUserConsent);
-    }
-
-    public void SetLocationShared(bool shared)
-    {
-        _setLocationShared(shared);
-    }
-
-    public void RegisterForPushNotifications()
-    {
-        _registerForPushNotifications();
-    }
-
-    public void SendTag(string tagName, string tagValue)
-    {
-        _sendTag(tagName, tagValue);
-    }
-
-    public void SendTags(IDictionary<string, string> tags)
-    {
-        _sendTags(Json.Serialize(tags));
-    }
-
-    public void GetTags(string delegateId)
-    {
-        _getTags(delegateId);
-    }
-
-    public void DeleteTag(string key)
-    {
-        _deleteTag(key);
-    }
-
-    public void DeleteTags(IList<string> keys)
-    {
-        _deleteTags(Json.Serialize(keys));
-    }
-
-    public void IdsAvailable(string delegateId)
-    {
-        _idsAvailable(delegateId);
-    }
-
-    public void SetSubscription(bool enable)
-    {
-        _setSubscription(enable);
-    }
-
-    public void PostNotification(string delegateIdSuccess, string delegateIdFailure,
-        Dictionary<string, object> data)
-    {
-        _postNotification(delegateIdSuccess, delegateIdFailure, Json.Serialize(data));
-    }
-
-    public void SyncHashedEmail(string email)
-    {
-        _syncHashedEmail(email);
-    }
-
-    public void PromptLocation()
-    {
-        _promptLocation();
-    }
-
-    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel)
-    {
-        _setOneSignalLogLevel((int) logLevel, (int) visualLevel);
-    }
-
-    public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display)
-    {
-        _setInFocusDisplayType((int) display);
-    }
-
-    public void PromptForPushNotificationsWithUserResponse()
-    {
-        _promptForPushNotificationsWithUserResponse();
-    }
-
-    public void AddPermissionObserver()
-    {
-        _addPermissionObserver();
-    }
-
-    public void RemovePermissionObserver()
-    {
-        _removePermissionObserver();
-    }
-
-    public void AddSubscriptionObserver()
-    {
-        _addSubscriptionObserver();
-    }
-
-    public void RemoveSubscriptionObserver()
-    {
-        _removeSubscriptionObserver();
-    }
-
-    public void AddEmailSubscriptionObserver()
-    {
-        _addEmailSubscriptionObserver();
-    }
-
-    public void RemoveEmailSubscriptionObserver()
-    {
-        _removeEmailSubscriptionObserver();
-    }
-
-    public void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email)
-    {
-        _setUnauthenticatedEmail(delegateIdSuccess, delegateIdFailure, email);
-    }
-
-    public void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email, string emailAuthCode)
-    {
-        _setEmail(delegateIdSuccess, delegateIdFailure, email, emailAuthCode);
-    }
-
-    public void LogoutEmail(string delegateIdSuccess, string delegateIdFailure)
-    {
-        _logoutEmail(delegateIdSuccess, delegateIdFailure);
-    }
-
-    public void UserDidProvideConsent(bool consent)
-    {
-        _userDidProvideConsent(consent);
-    }
-
-    public bool UserProvidedConsent()
-    {
-        return _userProvidedConsent();
-    }
-
-    public void SetRequiresUserPrivacyConsent(bool required)
-    {
-        _setRequiresUserPrivacyConsent(required);
-    }
-
-    public void SetExternalUserId(string delegateId, string externalId)
-    {
-        _setExternalUserId(delegateId, externalId);
-    }
-
-    public void SetExternalUserId(string delegateId, string delegateIdFailure, string externalId,
-        string externalIdAuthHash)
-    {
-        _setExternalUserIdWithAuthToken(delegateId, delegateIdFailure, externalId, externalIdAuthHash);
-    }
-
-    public void RemoveExternalUserId(string delegateId)
-    {
-        _removeExternalUserId(delegateId);
-    }
-
-    public void AddTrigger(string key, object value)
-    {
-        IDictionary<string, object> trigger = new Dictionary<string, object>() {{key, value}};
-        _addTriggers(Json.Serialize(trigger));
-    }
-
-    public void AddTriggers(IDictionary<string, object> triggers)
-    {
-        _addTriggers(Json.Serialize(triggers));
-    }
-
-    public void RemoveTriggerForKey(string key)
-    {
-        _removeTriggerForKey(key);
-    }
-
-    public void RemoveTriggersForKeys(IList<string> keys)
-    {
-        _removeTriggersForKeys(Json.Serialize(keys));
-    }
-
-    public object GetTriggerValueForKey(string key)
-    {
-        Dictionary<string, object> triggerValue =
-            Json.Deserialize(_getTriggerValueForKey(key)) as Dictionary<string, object>;
-        return triggerValue["value"];
-    }
-
-    public void PauseInAppMessages(bool pause)
-    {
-        _pauseInAppMessages(pause);
-    }
-
-    public void EnableVibrate(bool enable)
-    {
-    }
-
-    public void EnableSound(bool enable)
-    {
-    }
-
-    public void ClearOneSignalNotifications()
-    {
-    }
-
-    public void SendOutcome(string delegateId, string name)
-    {
-        _sendOutcome(delegateId, name);
-    }
-
-    public void SendUniqueOutcome(string delegateId, string name)
-    {
-        _sendUniqueOutcome(delegateId, name);
-    }
-
-    public void SendOutcomeWithValue(string delegateId, string name, float value)
-    {
-        _sendOutcomeWithValue(delegateId, name, value);
-    }
-
-    public OSPermissionSubscriptionState GetPermissionSubscriptionState()
-    {
-        return OneSignalPlatformHelper.ParsePermissionSubscriptionState(this, _getPermissionSubscriptionState());
-    }
-
-    public OSPermissionStateChanges ParseOSPermissionStateChanges(string jsonStat)
-    {
-        return OneSignalPlatformHelper.ParseOSPermissionStateChanges(this, jsonStat);
-    }
-
-    public OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string jsonState)
-    {
-        return OneSignalPlatformHelper.ParseOSEmailSubscriptionStateChanges(this, jsonState);
-    }
-
-    public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string jsonStat)
-    {
-        return OneSignalPlatformHelper.ParseOSSubscriptionStateChanges(this, jsonStat);
-    }
-
-    public OSPermissionState ParseOSPermissionState(object stateDict)
-    {
-        var stateDictCasted = stateDict as Dictionary<string, object>;
-
-        var state = new OSPermissionState();
-        state.hasPrompted = Convert.ToBoolean(stateDictCasted["hasPrompted"]);
-        state.status = (OSNotificationPermission) Convert.ToInt32(stateDictCasted["status"]);
-
-        return state;
-    }
-
-    public OSSubscriptionState ParseOSSubscriptionState(object stateDict)
-    {
-        var stateDictCasted = stateDict as Dictionary<string, object>;
-
-        var state = new OSSubscriptionState();
-        state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
-        state.userSubscriptionSetting = Convert.ToBoolean(stateDictCasted["userSubscriptionSetting"]);
-        state.userId = stateDictCasted["userId"] as string;
-        state.pushToken = stateDictCasted["pushToken"] as string;
-
-        return state;
-    }
-
-    public OSEmailSubscriptionState ParseOSEmailSubscriptionState(object stateDict)
-    {
-        var stateDictCasted = stateDict as Dictionary<string, object>;
-
-        var state = new OSEmailSubscriptionState();
-
-        if (stateDictCasted.ContainsKey("emailUserId"))
-        {
-            state.emailUserId = stateDictCasted["emailUserId"] as string;
-        }
-        else
-        {
-            state.emailUserId = "";
+        public override void RegisterForPushNotifications() {
+            throw new System.NotImplementedException();
         }
 
-        if (stateDictCasted.ContainsKey("emailAddress"))
-        {
-            state.emailAddress = stateDictCasted["emailAddress"] as string;
-        }
-        else
-        {
-            state.emailAddress = "";
+        public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
+            throw new System.NotImplementedException();
         }
 
-        state.subscribed = stateDictCasted.ContainsKey("emailUserId") && stateDictCasted["emailUserId"] != null;
+        public override void ClearOneSignalNotifications() {
+            throw new System.NotImplementedException();
+        }
 
-        return state;
+        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetTrigger(string key, object value) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetTriggers(Dictionary<string, object> triggers) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void RemoveTrigger(string key) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void RemoveTriggers(params string[] keys) {
+            throw new System.NotImplementedException();
+        }
+
+        public override object GetTrigger(string key) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Dictionary<string, object> GetTriggers() {
+            throw new System.NotImplementedException();
+        }
+
+        public override bool InAppMessagesArePaused { get; set; }
+        public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> GetTags() {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> DeleteTag(string key) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> SetEmail(string email, string authHash = null) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<Dictionary<string, object>> LogOut(LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void PromptLocation() {
+            throw new System.NotImplementedException();
+        }
+
+        public override bool ShareLocation { get; set; }
+        
+        public override Task<OutcomeEvent> SendOutcome(string name) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
+            throw new System.NotImplementedException();
+        }
     }
 }
