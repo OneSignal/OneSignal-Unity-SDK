@@ -34,7 +34,10 @@ using UnityEngine;
 // ReSharper disable UnusedType.Local
 // ReSharper disable UnusedParameter.Local
 namespace OneSignalSDK {
-    public partial class OneSignalAndroid : OneSignal {
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed partial class OneSignalAndroid : OneSignal {
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
             protected OneSignalAndroidJavaProxy(string listenerClassName)
                 : base(QualifiedSDKClass + "$" + listenerClassName) { }
