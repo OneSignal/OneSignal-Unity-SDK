@@ -62,9 +62,8 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("setAppId", appId);
         }
 
-        public override void RegisterForPushNotifications() {
-            // do nothing - iOS Only
-        }
+        public override void RegisterForPushNotifications()
+            => SDKDebug.Log("RegisterForPushNotifications invoked on Android, does nothing.");
 
         public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
             // cancels immediately, iOS only
@@ -142,9 +141,8 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override void PromptLocation() {
-            // do nothing - iOS Only
-        }
+        public override void PromptLocation()
+            => SDKDebug.Log("PromptLocation invoked on Android, does nothing.");
 
         public override bool ShareLocation {
             get => _sdkClass.CallStatic<bool>("isLocationShared");
