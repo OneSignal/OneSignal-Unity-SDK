@@ -26,6 +26,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -74,30 +75,27 @@ namespace OneSignalSDK {
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
 
-        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
-            throw new System.NotImplementedException();
-        }
+        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options)
+            => _callAsync<Dictionary<string, object>, PostNotificationResponseHandler>("postNotification", options.ToJSONObject());
 
         public override void SetTrigger(string key, object value)
             => _sdkClass.CallStatic("addTrigger", key, value);
 
-        public override void SetTriggers(Dictionary<string, object> triggers) {
-            throw new System.NotImplementedException();
-        }
+        public override void SetTriggers(Dictionary<string, object> triggers)
+            => _sdkClass.CallStatic("addTriggers", triggers.ToMap());
 
         public override void RemoveTrigger(string key)
             => _sdkClass.CallStatic("removeTriggerForKey", key);
 
-        public override void RemoveTriggers(params string[] keys) {
-            throw new System.NotImplementedException();
-        }
+        public override void RemoveTriggers(params string[] keys)
+            => _sdkClass.CallStatic("removeTriggersForKeys", keys.ToList()); // todo - test me thoroughly
 
         public override object GetTrigger(string key)
             => _sdkClass.CallStatic<object>("getTriggerValueForKey", key);
 
-        public override Dictionary<string, object> GetTriggers() {
-            throw new System.NotImplementedException();
-        }
+        public override Dictionary<string, object> GetTriggers()
+            => _sdkClass.CallStatic<AndroidJavaObject>("getTriggers")
+               .MapToDictionary();
 
         public override bool InAppMessagesArePaused {
             get => _sdkClass.CallStatic<bool>("isInAppMessagingPaused");

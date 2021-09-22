@@ -52,5 +52,29 @@ namespace OneSignalSDK {
             => new AndroidJavaObject(JSONObjectClassName, Json.Serialize(source));
 
         private const string JSONObjectClassName = "org.json.JSONObject";
+        
+        /*
+         * Map
+         */
+        
+        /// <summary>
+        /// Converts from a Java java.util.Map to a <see cref="Dictionary{TKey,TValue}"/>
+        /// </summary>
+        public static Dictionary<string, object> MapToDictionary(this AndroidJavaObject source) {
+            return null; // todo
+        }
+
+        /// <summary>
+        /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java java.util.Map
+        /// </summary>
+        public static AndroidJavaObject ToMap(this Dictionary<string, object> source) {
+            return null;
+        }
+        
+        /*
+         * Collection
+         */
+
+
     }
 }
