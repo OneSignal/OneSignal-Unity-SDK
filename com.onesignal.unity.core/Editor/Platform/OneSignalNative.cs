@@ -94,7 +94,7 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags) {
+        public override Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags) {
             throw new System.NotImplementedException();
         }
 
@@ -114,7 +114,7 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> SetEmail(string email, string authHash = null) {
+        public override Task SetEmail(string email, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
