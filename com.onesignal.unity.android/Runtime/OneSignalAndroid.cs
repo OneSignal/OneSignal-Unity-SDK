@@ -94,44 +94,36 @@ namespace OneSignalSDK {
             => _sdkClass.CallStatic<object>("getTriggerValueForKey", key);
 
         public override Dictionary<string, object> GetTriggers()
-            => _sdkClass.CallStatic<AndroidJavaObject>("getTriggers")
-               .MapToDictionary();
+            => _sdkClass.CallStatic<AndroidJavaObject>("getTriggers").MapToDictionary();
 
         public override bool InAppMessagesArePaused {
             get => _sdkClass.CallStatic<bool>("isInAppMessagingPaused");
             set => _sdkClass.CallStatic("pauseInAppMessages", value);
         }
 
-        public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task<Dictionary<string, object>> SendTag(string tagName, object tagValue)
+            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("sendTag", tagName, tagValue.ToString());
 
-        public override Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags)
+            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("sendTags", tags.ToJSONObject());
 
         public override async Task<Dictionary<string, object>> GetTags()
             => await _callAsync<Dictionary<string, object>, OSGetTagsHandler>("getTags");
 
-        public override Task<Dictionary<string, object>> DeleteTag(string key) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task<Dictionary<string, object>> DeleteTag(string key)
+            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("deleteTag", key);
 
-        public override Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys)
+            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("deleteTags", keys.ToList());
 
-        public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null)
+            => await _callAsync<Dictionary<string, object>, OSExternalUserIdUpdateCompletionHandler>("setExternalUserId", externalId, authHash);
 
-        public override Task<Dictionary<string, object>> SetEmail(string email, string authHash = null) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task SetEmail(string email, string authHash = null)
+            => await _callAsync<object, EmailUpdateHandler>("setEmail", email, authHash);
 
-        public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
-            throw new System.NotImplementedException();
-        }
+        public override async Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null)
+            => await _callAsync<Dictionary<string, object>, OSSMSUpdateHandler>("setSMSNumber", smsNumber, authHash);
 
         public override Task<Dictionary<string, object>> LogOut(
             LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
