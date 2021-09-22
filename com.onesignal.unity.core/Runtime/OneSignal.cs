@@ -203,6 +203,11 @@ namespace OneSignalSDK {
         /// todo - this
         /// </summary>
         public abstract event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+
+        /// <summary>
+        /// todo - this
+        /// </summary>
+        public abstract event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
     #endregion
 
     #region SDK Setup

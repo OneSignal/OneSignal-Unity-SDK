@@ -41,6 +41,7 @@ namespace OneSignalSDK {
         public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
         public override event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
         public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        public override event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
         public override bool PrivacyConsent {
             get => _sdkClass.CallStatic<bool>("userProvidedPrivacyConsent");
