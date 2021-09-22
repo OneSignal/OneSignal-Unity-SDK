@@ -30,7 +30,12 @@ namespace OneSignalSDK {
     /// 
     /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
-        
-        private delegate void OnAppTrackingResponse(long responseCode);
+
+        private delegate void BooleanResponseDelegate(bool response);
+
+        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
+        private void OnUserPushResponse(bool response) {
+            
+        }
     }
 }

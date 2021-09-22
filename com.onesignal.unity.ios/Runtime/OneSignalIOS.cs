@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2017 OneSignal
+ * Copyright 2021 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,42 +40,43 @@ namespace OneSignalSDK {
         public override event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
         public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+
+        public override bool PrivacyConsent {
+            get => _getPrivacyConsent();
+            set => _setPrivacyConsent(value);
+        }
         
-        public override bool PrivacyConsent { get; set; }
-        
-        public override bool RequiresPrivacyConsent { get; set; }
-        
-        public override void Initialize(string appId) {
-            throw new System.NotImplementedException();
+        public override bool RequiresPrivacyConsent {
+            get => _getRequiresPrivacyConsent();
+            set => _setRequiresPrivacyConsent(value);
         }
 
-        public override void RegisterForPushNotifications() {
-            throw new System.NotImplementedException();
-        }
+        public override void Initialize(string appId)
+            => _initialize(appId);
+
+        public override void RegisterForPushNotifications()
+            => _registerForPushNotifications();
 
         public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
             throw new System.NotImplementedException();
         }
 
-        public override void ClearOneSignalNotifications() {
-            throw new System.NotImplementedException();
-        }
+        public override void ClearOneSignalNotifications()
+            => _clearOneSignalNotifications();
 
         public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             throw new System.NotImplementedException();
         }
 
-        public override void SetTrigger(string key, object value) {
-            throw new System.NotImplementedException();
-        }
+        public override void SetTrigger(string key, object value)
+            => _setTrigger(key, value.ToString());
 
         public override void SetTriggers(Dictionary<string, object> triggers) {
             throw new System.NotImplementedException();
         }
 
-        public override void RemoveTrigger(string key) {
-            throw new System.NotImplementedException();
-        }
+        public override void RemoveTrigger(string key)
+            => _removeTrigger(key);
 
         public override void RemoveTriggers(params string[] keys) {
             throw new System.NotImplementedException();
@@ -89,12 +90,16 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override bool InAppMessagesArePaused { get; set; }
-        public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
+        public override bool InAppMessagesArePaused {
+            get => _getInAppMessagesArePaused();
+            set => _setInAppMessagesArePaused(value);
+        }
+        
+        public override Task<Dictionary<string, object>> SendTag(string tagName, object tagValue) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags) {
+        public override Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags) {
             throw new System.NotImplementedException();
         }
 
@@ -114,7 +119,7 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> SetEmail(string email, string authHash = null) {
+        public override Task SetEmail(string email, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
@@ -126,11 +131,13 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override void PromptLocation() {
-            throw new System.NotImplementedException();
-        }
+        public override void PromptLocation()
+            => _promptLocation();
 
-        public override bool ShareLocation { get; set; }
+        public override bool ShareLocation {
+            get => _getShareLocation();
+            set => _setShareLocation(value);
+        }
         
         public override Task<OutcomeEvent> SendOutcome(string name) {
             throw new System.NotImplementedException();
