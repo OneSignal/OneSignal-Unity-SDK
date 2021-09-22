@@ -33,13 +33,13 @@ namespace OneSignalSDK {
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>
     internal sealed class OneSignalNative : OneSignal {
-
         public override event NotificationReceivedDelegate NotificationReceived;
         public override event NotificationOpenedDelegate NotificationOpened;
         public override event InAppMessageClickedDelegate InAppMessageClicked;
         public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
         public override event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
         public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        public override event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
