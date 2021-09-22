@@ -84,7 +84,7 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onOSPermissionChanged(AndroidJavaObject stateChanges) {
-                _instance.PermissionStateChanged?.Invoke(null);
+                _instance.PermissionStateChanged?.Invoke(null, null);
             }
         }
 
@@ -93,7 +93,7 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSSubscriptionStateChanges</param>
             public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.SubscriptionStateChanged?.Invoke(null);
+                _instance.SubscriptionStateChanged?.Invoke(null, null);
             }
         }
 
@@ -102,16 +102,16 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSEmailSubscriptionStateChanges</param>
             public void onOSEmailSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.EmailSubscriptionStateChanged?.Invoke(null);
+                _instance.EmailSubscriptionStateChanged?.Invoke(null, null);
             }
         }
 
         private sealed class OSSMSSubscriptionObserver : OneSignalAndroidJavaProxy {
             public OSSMSSubscriptionObserver() : base("OSSMSSubscriptionObserver") { }
 
-            /// <param name="stateChanges">OSPermissionStateChanges</param>
+            /// <param name="stateChanges">OSSMSSubscriptionStateChanges</param>
             public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.SMSSubscriptionStateChanged?.Invoke(null);
+                _instance.SMSSubscriptionStateChanged?.Invoke(null, null);
             }
         }
 
@@ -196,7 +196,10 @@ namespace OneSignalSDK {
                 => _complete(tags.JSONObjectToDictionary());
 
             /// <param name="error">SendTagsError</param>
-            public void onFailure(AndroidJavaObject error) { }
+            public void onFailure(AndroidJavaObject error) {
+                SDKDebug.Error(error.Call<string>("toString"));
+                // todo
+            }
         }
 
         private sealed class EmailUpdateHandler : AwaitableVoidAndroidJavaProxy {
@@ -205,7 +208,10 @@ namespace OneSignalSDK {
             public void onSuccess() { } // completes itself
 
             /// <param name="error">EmailUpdateError</param>
-            public void onFailure(AndroidJavaObject error) { }
+            public void onFailure(AndroidJavaObject error) {
+                SDKDebug.Error(error.Call<string>("toString"));
+                // todo
+            }
         }
 
         private sealed class OSExternalUserIdUpdateCompletionHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
@@ -216,7 +222,10 @@ namespace OneSignalSDK {
                 => _complete(results.JSONObjectToDictionary());
 
             /// <param name="error">ExternalIdError</param>
-            public void onFailure(AndroidJavaObject error) { }
+            public void onFailure(AndroidJavaObject error) {
+                SDKDebug.Error(error.Call<string>("toString"));
+                // todo
+            }
         }
 
         private sealed class OSSMSUpdateHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
@@ -227,7 +236,10 @@ namespace OneSignalSDK {
                 => _complete(result.JSONObjectToDictionary());
 
             /// <param name="error">OSSMSUpdateError</param>
-            public void onFailure(AndroidJavaObject error) { }
+            public void onFailure(AndroidJavaObject error) {
+                SDKDebug.Error(error.Call<string>("toString"));
+                // todo
+            }
         }
 
         private sealed class OutcomeCallback : OneSignalAwaitableAndroidJavaProxy<OutcomeEvent> {
@@ -245,7 +257,10 @@ namespace OneSignalSDK {
                 => _complete(response.JSONObjectToDictionary());
 
             /// <param name="response">JSONObject</param>
-            public void onFailure(AndroidJavaObject response) { }
+            public void onFailure(AndroidJavaObject response) {
+                SDKDebug.Error(response.Call<string>("toString"));
+                // todo
+            }
         }
     }
 }
