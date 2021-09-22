@@ -48,7 +48,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java org.json.JSONObject
         /// </summary>
-        public static AndroidJavaObject ToJSONObject(this Dictionary<string, object> source)
+        public static AndroidJavaObject ToJSONObject<TKey, TValue>(this Dictionary<TKey, TValue> source)
             => new AndroidJavaObject(JSONObjectClassName, Json.Serialize(source));
 
         private const string JSONObjectClassName = "org.json.JSONObject";
