@@ -25,32 +25,17 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
 using UnityEngine;
 
-// ReSharper disable InconsistentNaming
 namespace OneSignalSDK {
     /// <summary>
-    /// Conversion methods for common Java types wrapped by <see cref="AndroidJavaObject"/>
+    /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>
-    internal static class AndroidJavaObjectExtensions {
+    internal sealed class SDKDebug {
+        public static void Log(string message) => Debug.Log(_formatMessage(message));
+        public static void Warn(string message) => Debug.LogWarning(_formatMessage(message));
+        public static void Error(string message) => Debug.LogError(_formatMessage(message));
         
-        /*
-         * JSONObject
-         */
-        
-        /// <summary>
-        /// Converts from a Java org.json.JSONObject to a <see cref="Dictionary{TKey,TValue}"/>
-        /// </summary>
-        public static Dictionary<string, object> JSONObjectToDictionary(this AndroidJavaObject source)
-            => source == null ? null : Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object>;
-
-        /// <summary>
-        /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java org.json.JSONObject
-        /// </summary>
-        public static AndroidJavaObject ToJSONObject(this Dictionary<string, object> source)
-            => new AndroidJavaObject(JSONObjectClassName, Json.Serialize(source));
-
-        private const string JSONObjectClassName = "org.json.JSONObject";
+        private static string _formatMessage(string message) => "[OneSignal] " + message;
     }
 }

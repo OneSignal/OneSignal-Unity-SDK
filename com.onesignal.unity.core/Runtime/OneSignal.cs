@@ -35,9 +35,6 @@ namespace OneSignalSDK {
     /// todo - desc
     /// </summary>
     public abstract partial class OneSignal {
-        /// <summary>
-        /// 
-        /// </summary>
         public const string Version = "3.0.0";
 
         /// <summary>
@@ -57,7 +54,7 @@ namespace OneSignalSDK {
          */
 
         /// <summary>
-        /// When a push notification is received when the user is in your game.
+        /// When a push notification is received while the user is in your application.
         /// </summary>
         /// <param name="notification"> The Notification dictionary filled from a serialized native OSNotification object</param>
         public delegate void NotificationReceivedDelegate(Notification notification);
