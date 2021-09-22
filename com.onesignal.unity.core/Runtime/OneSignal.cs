@@ -330,13 +330,13 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="tagName"></param>
         /// <param name="tagValue"></param>
-        public abstract Task<Dictionary<string, object>> SendTag(string tagName, string tagValue);
+        public abstract Task<Dictionary<string, object>> SendTag(string tagName, object tagValue);
 
         /// <summary>
         /// Tag player with a key value pairs to later create segments on them at onesignal.com
         /// </summary>
         /// <param name="tags"></param>
-        public abstract Task<Dictionary<string, object>> SendTags(IDictionary<string, string> tags);
+        public abstract Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags);
 
         /// <summary>
         /// Retrieve a list of tags that have been set on the player from the OneSignal server
@@ -378,7 +378,7 @@ namespace OneSignalSDK {
         /// <param name="authHash">If you have a backend server, we strongly recommend using
         /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
         /// your users. Your backend can generate an email authentication token and send it to your app.</param>
-        public abstract Task<Dictionary<string, object>> SetEmail(string email, string authHash = null);
+        public abstract Task SetEmail(string email, string authHash = null);
 
         /// <summary>
         /// Set an sms number for the device to later send sms to this number
