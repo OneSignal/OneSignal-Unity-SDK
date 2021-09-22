@@ -25,11 +25,48 @@
  * THE SOFTWARE.
  */
 
+using System.Runtime.InteropServices;
+
 namespace OneSignalSDK {
     /// <summary>
     /// 
     /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
+        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback();
+        [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback();
+        [DllImport("__Internal")] private static extern void _setInAppMessageClickedCallback();
+        
+        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback();
+        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback();
+        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback();
+        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback();
+        
+        [DllImport("__Internal")] private static extern void _setPrivacyConsent(bool consent);
+        [DllImport("__Internal")] private static extern bool _getPrivacyConsent();
+        [DllImport("__Internal")] private static extern void _setRequiresPrivacyConsent(bool required);
+        [DllImport("__Internal")] private static extern bool _getRequiresPrivacyConsent();
+        [DllImport("__Internal")] private static extern void _initialize(string appId);
+        [DllImport("__Internal")] private static extern void _registerForPushNotifications();
+        [DllImport("__Internal")] private static extern void _promptForPushNotificationsWithUserResponse(BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _clearOneSignalNotifications();
+        
+        // post notif
+        
+        [DllImport("__Internal")] private static extern void _setTrigger(string key, string value);
+        [DllImport("__Internal")] private static extern void _setTriggers(); // todo
+        [DllImport("__Internal")] private static extern void _removeTrigger(string key);
+        [DllImport("__Internal")] private static extern void _removeTriggers(); // todo
+        [DllImport("__Internal")] private static extern void _getTrigger(string key); // todo
+        [DllImport("__Internal")] private static extern void _getTriggers(); // todo
+        [DllImport("__Internal")] private static extern void _setInAppMessagesArePaused(bool paused);
+        [DllImport("__Internal")] private static extern bool _getInAppMessagesArePaused();
+
+        // todo - tasky things
+        
+        [DllImport("__Internal")] private static extern void _promptLocation();
+        [DllImport("__Internal")] private static extern void _setShareLocation(bool share);
+        [DllImport("__Internal")] private static extern bool _getShareLocation();
+        
         
     }
 }
