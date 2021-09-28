@@ -57,15 +57,19 @@ namespace OneSignalSDK {
         public override void RegisterForPushNotifications()
             => _registerForPushNotifications();
 
-        public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
-            throw new System.NotImplementedException();
+        public override async Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
+            var proxy = new BooleanCallbackProxy();
+            _promptForPushNotificationsWithUserResponse(proxy.OnResponse);
+            return await proxy ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
         }
 
         public override void ClearOneSignalNotifications()
             => _clearOneSignalNotifications();
 
-        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
-            throw new System.NotImplementedException();
+        public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
+            var proxy = new StringCallbackProxy();
+            _postNotification(Json.Serialize(options), proxy.OnResponse);
+            return Json.Deserialize(await proxy) as Dictionary<string, object>;
         }
 
         public override void SetTrigger(string key, object value)
@@ -82,9 +86,8 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override object GetTrigger(string key) {
-            throw new System.NotImplementedException();
-        }
+        public override object GetTrigger(string key)
+            => _getTrigger(key);
 
         public override Dictionary<string, object> GetTriggers() {
             throw new System.NotImplementedException();
@@ -139,16 +142,35 @@ namespace OneSignalSDK {
             set => _setShareLocation(value);
         }
         
-        public override Task<OutcomeEvent> SendOutcome(string name) {
-            throw new System.NotImplementedException();
+        public override async Task<OutcomeEvent> SendOutcome(string name) {
+            var proxy = new StringCallbackProxy();
+            _sendOutcome(name, proxy.OnResponse);
+
+            var response = Json.Deserialize(await proxy);
+            
+            // todo - convert to OutcomeEvent
+            
+            return null;
         }
 
-        public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
-            throw new System.NotImplementedException();
+        public override async Task<OutcomeEvent> SendUniqueOutcome(string name) {
+            var proxy = new StringCallbackProxy();
+            _sendUniqueOutcome(name, proxy.OnResponse);
+
+            var response = Json.Deserialize(await proxy);
+            
+            // todo - convert to OutcomeEvent
+            return null;
         }
 
-        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
-            throw new System.NotImplementedException();
+        public override async Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
+            var proxy = new StringCallbackProxy();
+            _sendOutcomeWithValue(name, value, proxy.OnResponse);
+
+            var response = Json.Deserialize(await proxy);
+            
+            // todo - convert to OutcomeEvent
+            return null;
         }
     }
 }
