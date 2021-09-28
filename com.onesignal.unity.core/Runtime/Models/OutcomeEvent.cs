@@ -27,95 +27,46 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     /// <summary>
     /// todo - desc
     /// </summary>
-    [Serializable] public class OutcomeEvent {
-
-        public enum OSSession {
-            DIRECT,
-            INDIRECT,
-            UNATTRIBUTED,
-            DISABLED
-        }
+    public enum SessionType {
+        /// <summary>todo</summary>
+        Direct,
+        
+        /// <summary>todo</summary>
+        Indirect,
+        
+        /// <summary>todo</summary>
+        Unattributed,
+        
+        /// <summary>todo</summary>
+        Disabled
+    }
+    
+    /// <summary>
+    /// todo - desc
+    /// </summary>
+    [Serializable] public sealed class OutcomeEvent {
+        /// <summary>todo</summary>
+        [FormerlySerializedAs("session")]
+        public SessionType sessionType;
 
         /// <summary>todo</summary>
-        public OSSession session = OSSession.DISABLED;
+        [FormerlySerializedAs("notification_ids")]
+        public List<string> notificationIds;
 
         /// <summary>todo</summary>
-        public List<string> notificationIds = new List<string>();
+        public string id;
 
         /// <summary>todo</summary>
-        public string name = "";
+        public long timestamp;
 
         /// <summary>todo</summary>
-        public long timestamp = 0;
-
-        /// <summary>todo</summary>
-        public double weight = 0.0;
-
-        /// <summary>todo</summary>
-        internal OutcomeEvent() { }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="outcomeDict"></param>
-        internal OutcomeEvent(IReadOnlyDictionary<string, object> outcomeDict) {
-            // session
-            if (outcomeDict.ContainsKey("session") && outcomeDict["session"] != null)
-                session = _sessionFromString(outcomeDict["session"] as string);
-
-            // notificationIds
-            if (outcomeDict.ContainsKey("notification_ids") && outcomeDict["notification_ids"] != null) {
-                var notifications = new List<string>();
-
-                if (outcomeDict["notification_ids"] is string) {
-                    // notificationIds come over as a string of comma seperated string ids
-                    notifications = new List<string> { Convert.ToString(outcomeDict["notification_ids"] as string) };
-                }
-                else {
-                    // notificationIds come over as a List<object> and should be parsed and appended to the List<string>
-                    if (outcomeDict["notification_ids"] is List<object> idObjects) {
-                        foreach (var id in idObjects)
-                            notifications.Add(id.ToString());
-                    }
-                }
-
-                notificationIds = notifications;
-            }
-
-            // id
-            if (outcomeDict.ContainsKey("id") && outcomeDict["id"] != null)
-                name = outcomeDict["id"] as string;
-
-            // timestamp
-            if (outcomeDict.ContainsKey("timestamp") && outcomeDict["timestamp"] != null)
-                timestamp = (long)outcomeDict["timestamp"];
-
-            // weight
-            if (outcomeDict.ContainsKey("weight") && outcomeDict["weight"] != null)
-                weight = double.Parse(Convert.ToString(outcomeDict["weight"]));
-        }
-
-        // Used by onSendOutcomeSuccess() to convert session string to OSSession
-        private OSSession _sessionFromString(string session)
-        {
-            session = session.ToLower();
-
-            switch (session)
-            {
-                case "direct":
-                    return OSSession.DIRECT;
-                case "indirect":
-                    return OSSession.INDIRECT;
-                case "unattributed":
-                    return OSSession.UNATTRIBUTED;
-                default:
-                    return OSSession.DISABLED;
-            }
-        }
+        public double weight;
     }
 }

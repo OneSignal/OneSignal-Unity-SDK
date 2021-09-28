@@ -25,6 +25,9 @@
  * THE SOFTWARE.
  */
 
+using System;
+using UnityEngine.Serialization;
+
 namespace OneSignalSDK {
     /// <summary>
     /// todo - desc
@@ -40,12 +43,13 @@ namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    public class NotificationAction {
+    [Serializable] public sealed class NotificationAction {
         /// <summary>todo</summary>
-        public string ActionId;
+        [FormerlySerializedAs("actionID")] 
+        public string id;
 
         /// <summary>todo</summary>
-        public NotificationActionType ActionType;
+        public NotificationActionType type;
     }
 
 }

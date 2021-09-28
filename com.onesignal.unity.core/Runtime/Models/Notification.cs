@@ -25,6 +25,8 @@
  * THE SOFTWARE.
  */
 
+using System;
+
 namespace OneSignalSDK {
     /// <summary>
     /// 
@@ -43,23 +45,23 @@ namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    public class Notification {
+    [Serializable] public sealed class Notification {
         /// <summary>todo</summary>
-        public bool IsAppInFocus;
+        public bool isAppInFocus;
 
         /// <summary>todo</summary>
-        public bool Shown;
+        public bool shown;
 
         /// <summary>todo</summary>
-        public bool Silent;
+        public bool silentNotification;
 
         /// <summary>todo</summary>
         public int androidNotificationId;
 
         /// <summary>todo</summary>
-        public NotificationDisplayType DisplayType;
+        public NotificationDisplayType displayType;
 
         /// <summary>todo</summary>
-        public NotificationPayload Payload;
+        public NotificationPayload payload;
     }
 }

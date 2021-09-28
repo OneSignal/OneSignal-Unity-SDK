@@ -25,18 +25,20 @@
  * THE SOFTWARE.
  */
 
+using System;
+
 namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    public class SMSSubscriptionState {
-        /// <summary></summary>
-        public string SMSUserId;
+    [Serializable] public sealed class SMSSubscriptionState {
+        /// <summary>todo</summary>
+        public string smsUserId;
 
-        /// <summary></summary>
-        public string SMSNumber;
+        /// <summary>todo</summary>
+        public string smsNumber;
 
-        /// <summary></summary>
-        public bool Subscribed;
+        /// <summary>todo</summary>
+        public bool isSubscribed;
     }
 }

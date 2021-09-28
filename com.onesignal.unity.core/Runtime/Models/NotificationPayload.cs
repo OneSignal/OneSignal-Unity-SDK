@@ -25,15 +25,18 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    public class NotificationPayload {
+    [Serializable] public sealed class NotificationPayload {
         /// <summary>todo</summary>
-        public string notificationID;
+        [FormerlySerializedAs("notificationID")]
+        public string id;
 
         /// <summary>todo</summary>
         public string sound;
@@ -78,7 +81,7 @@ namespace OneSignalSDK {
         public string ledColor;
 
         /// <summary>todo</summary>
-        public int lockScreenVisibility = 1;
+        public int lockScreenVisibility;
 
         /// <summary>todo</summary>
         public string groupKey;

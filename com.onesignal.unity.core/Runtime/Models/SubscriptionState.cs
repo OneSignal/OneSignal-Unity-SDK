@@ -25,12 +25,13 @@
  * THE SOFTWARE.
  */
 
+using System;
+
 namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    public class SubscriptionState {
-
+    [Serializable] public sealed class SubscriptionState {
         /// <summary>todo</summary>
         public bool userSubscriptionSetting;
 
@@ -43,5 +44,4 @@ namespace OneSignalSDK {
         /// <summary>todo</summary>
         public bool subscribed;
     }
-
 }

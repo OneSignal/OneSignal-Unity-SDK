@@ -25,21 +25,28 @@
  * THE SOFTWARE.
  */
 
+using System;
+using UnityEngine.Serialization;
+
 namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    public class InAppMessageAction {
-        /// <summary></summary>
-        public string ClickName;
+    [Serializable] public sealed class InAppMessageAction {
+        /// <summary>todo</summary>
+        [FormerlySerializedAs("click_name")]
+        public string clickName;
         
-        /// <summary></summary>
-        public string ClickUrl;
+        /// <summary>todo</summary>
+        [FormerlySerializedAs("click_url")]
+        public string clickUrl;
         
-        /// <summary></summary>
-        public bool FirstClick;
+        /// <summary>todo</summary>
+        [FormerlySerializedAs("first_click")]
+        public bool firstClick;
         
-        /// <summary></summary>
-        public bool ClosesMessage;
+        /// <summary>todo</summary>
+        [FormerlySerializedAs("closes_message")]
+        public bool closesMessage;
     }
 }
