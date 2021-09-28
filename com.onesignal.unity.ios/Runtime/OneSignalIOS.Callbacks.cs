@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2017 OneSignal
+ * Copyright 2021 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,32 @@
  * THE SOFTWARE.
  */
 
+using Laters;
+
 namespace OneSignalSDK {
     /// <summary>
     /// 
     /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
-
         private delegate void BooleanResponseDelegate(bool response);
+        private delegate void StringResponseDelegate(string response);
+        
+        private interface ICallbackProxy<in TReturn> {
+            void OnResponse(TReturn response);
+        }
 
-        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-        private void OnUserPushResponse(bool response) {
-            
+        private abstract class CallbackProxy<TReturn> : BaseLater<TReturn>, ICallbackProxy<TReturn> {
+            public abstract void OnResponse(TReturn response);
+        }
+        
+        private sealed class BooleanCallbackProxy : CallbackProxy<bool> {
+            [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
+            public override void OnResponse(bool response) => _complete(response);
+        }
+        
+        private sealed class StringCallbackProxy : CallbackProxy<string> {
+            [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+            public override void OnResponse(string response) => _complete(response);
         }
     }
 }
