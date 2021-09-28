@@ -90,11 +90,11 @@ namespace OneSignalSDK {
 
         public override bool InAppMessagesArePaused { get; set; }
 
-        public override Task<Dictionary<string, object>> SendTag(string tagName, object tagValue) {
+        public override Task<bool> SendTag(string tagName, object tagValue) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags) {
+        public override Task<bool> SendTags(Dictionary<string, object> tags) {
             throw new System.NotImplementedException();
         }
 
@@ -102,11 +102,11 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> DeleteTag(string key) {
+        public override Task<bool> DeleteTag(string key) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys) {
+        public override Task<bool> DeleteTags(IEnumerable<string> keys) {
             throw new System.NotImplementedException();
         }
 
