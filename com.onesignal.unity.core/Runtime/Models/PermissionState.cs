@@ -31,7 +31,7 @@ namespace OneSignalSDK {
     /// <summary>
     /// todo
     /// </summary>
-    public enum OSNotificationPermission {
+    public enum NotificationPermission {
         /// <summary>todo</summary>
         NotDetermined,
 
@@ -50,6 +50,6 @@ namespace OneSignalSDK {
         public bool hasPrompted;
 
         /// <summary>todo</summary>
-        public OSNotificationPermission status;
+        public NotificationPermission status;
     }
 }

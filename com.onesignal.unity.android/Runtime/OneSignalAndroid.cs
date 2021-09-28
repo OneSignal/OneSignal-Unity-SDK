@@ -66,10 +66,10 @@ namespace OneSignalSDK {
         public override void RegisterForPushNotifications()
             => SDKDebug.Log("RegisterForPushNotifications invoked on Android, does nothing.");
 
-        public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
+        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             // cancels immediately, iOS only
             // todo - is cancellation the right solution?
-            return Task.FromCanceled<OSNotificationPermission>(new CancellationToken());
+            return Task.FromCanceled<NotificationPermission>(new CancellationToken());
         }
 
         public override void ClearOneSignalNotifications()

@@ -219,11 +219,6 @@ namespace OneSignalSDK {
         public LogType AlertLevel { get; set; }
 
         /// <summary>
-        /// todo - not a dictionary
-        /// </summary>
-        public Dictionary<string, bool> iOSSettings { get; set; }
-
-        /// <summary>
         /// Provides privacy consent. OneSignal Unity SDK will not initialize until this is true.
         /// </summary>
         public abstract bool PrivacyConsent { get; set; }
@@ -258,7 +253,7 @@ namespace OneSignalSDK {
         /// <returns>Awaitable <see cref="Task{TResult}"/> which provides the user's consent status</returns>
         /// <remarks>Recommended: Set to false and follow
         /// <a href="https://documentation.onesignal.com/docs/ios-push-opt-in-prompt">Push Opt-In Prompt</a></remarks>
-        public abstract Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse();
+        public abstract Task<NotificationPermission> PromptForPushNotificationsWithUserResponse();
 
         /// <summary>
         /// Removes all OneSignal app notifications from the Notification Shade

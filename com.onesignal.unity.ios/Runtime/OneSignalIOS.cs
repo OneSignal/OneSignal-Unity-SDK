@@ -57,10 +57,10 @@ namespace OneSignalSDK {
         public override void RegisterForPushNotifications()
             => _registerForPushNotifications();
 
-        public override async Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
+        public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             var proxy = new BooleanCallbackProxy();
             _promptForPushNotificationsWithUserResponse(proxy.OnResponse);
-            return await proxy ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
+            return await proxy ? NotificationPermission.Authorized : NotificationPermission.Denied;
         }
 
         public override void ClearOneSignalNotifications()

@@ -26,6 +26,7 @@
  */
 
 using System;
+using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -39,6 +40,7 @@ namespace OneSignalSDK {
         public string smsNumber;
 
         /// <summary>todo</summary>
-        public bool isSubscribed;
+        [FormerlySerializedAs("isSubscribed")]
+        public bool subscribed;
     }
 }
