@@ -647,9 +647,9 @@ namespace OneSignalSDK {
         }
 
         private static void OnSendOutcomeSuccess(OutcomeEvent outcomeEvent) {
-            print(outcomeEvent.session + "\n" +
+            print(outcomeEvent.sessionType + "\n" +
                 string.Join(", ", outcomeEvent.notificationIds) + "\n" +
-                outcomeEvent.name + "\n" +
+                outcomeEvent.id + "\n" +
                 outcomeEvent.timestamp + "\n" +
                 outcomeEvent.weight);
         }
@@ -670,8 +670,8 @@ namespace OneSignalSDK {
         }
 
         private void OnEmailSubscriptionStateChange(EmailSubscriptionState current, EmailSubscriptionState previous) {
-            print($"EMAIL stateChanges.from.status: {previous.EmailUserId}, {previous.EmailAddress}");
-            print($"EMAIL stateChanges.to.status: {current.EmailUserId}, {current.EmailAddress}");
+            print($"EMAIL stateChanges.from.status: {previous.emailUserId}, {previous.emailAddress}");
+            print($"EMAIL stateChanges.to.status: {current.emailUserId}, {current.emailAddress}");
         }
 
         /// <summary>
@@ -680,11 +680,11 @@ namespace OneSignalSDK {
         /// Method must be static or this object should be marked as DontDestroyOnLoad
         /// </summary>
         private static void HandleNotificationReceived(Notification notification) {
-            var payload = notification.Payload;
+            var payload = notification.payload;
             var message = payload.body;
 
             print("GameControllerExample:HandleNotificationReceived: " + message);
-            print("displayType: " + notification.DisplayType);
+            print("displayType: " + notification.displayType);
             _logMessage = "Notification received with text: " + message;
 
             if (payload.additionalData == null)
@@ -701,9 +701,9 @@ namespace OneSignalSDK {
         /// Method must be static or this object should be marked as DontDestroyOnLoad
         /// </summary>
         private static void HandleNotificationOpened(NotificationOpenedResult notificationOpenedResult) {
-            var payload  = notificationOpenedResult.notification.Payload;
+            var payload  = notificationOpenedResult.notification.payload;
             var message  = payload.body;
-            var actionID = notificationOpenedResult.action.ActionId;
+            var actionID = notificationOpenedResult.action.id;
 
             print("GameControllerExample:HandleNotificationOpened: " + message);
             _logMessage = "Notification opened with text: " + message;
@@ -724,10 +724,10 @@ namespace OneSignalSDK {
 
         private static void OnInAppMessageClicked(InAppMessageAction inAppMessageAction) {
             var logInAppClickEvent = "In-App Message Clicked: " +
-                "\nClick Name: " + inAppMessageAction.ClickName +
-                "\nClick Url: " + inAppMessageAction.ClickUrl +
-                "\nFirst Click: " + inAppMessageAction.FirstClick +
-                "\nCloses Message: " + inAppMessageAction.ClosesMessage;
+                "\nClick Name: " + inAppMessageAction.clickName +
+                "\nClick Url: " + inAppMessageAction.clickUrl +
+                "\nFirst Click: " + inAppMessageAction.firstClick +
+                "\nCloses Message: " + inAppMessageAction.closesMessage;
 
             print(logInAppClickEvent);
             _logMessage = logInAppClickEvent;

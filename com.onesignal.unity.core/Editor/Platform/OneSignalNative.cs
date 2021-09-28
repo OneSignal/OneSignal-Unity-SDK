@@ -52,7 +52,7 @@ namespace OneSignalSDK {
             throw new System.NotImplementedException();
         }
 
-        public override Task<OSNotificationPermission> PromptForPushNotificationsWithUserResponse() {
+        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             throw new System.NotImplementedException();
         }
 
@@ -90,7 +90,7 @@ namespace OneSignalSDK {
 
         public override bool InAppMessagesArePaused { get; set; }
 
-        public override Task<Dictionary<string, object>> SendTag(string tagName, string tagValue) {
+        public override Task<Dictionary<string, object>> SendTag(string tagName, object tagValue) {
             throw new System.NotImplementedException();
         }
 
