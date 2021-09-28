@@ -28,6 +28,7 @@
  #import "OneSignal.h"
  
 typedef void (*BooleanResponseDelegate)(bool response);
+typedef void (*StringResponseDelegate)(const char* response);
  
 extern "C" {
 
