@@ -25,27 +25,55 @@
  * THE SOFTWARE.
  */
  
- #import "OneSignal.h"
+#import "OneSignal.h"
  
 typedef void (*BooleanResponseDelegate)(bool response);
 typedef void (*StringResponseDelegate)(const char* response);
  
 extern "C" {
 
-    void _setPrivacyConsent(bool consent) {
+    void _setNotificationReceivedCallback() {
+   
+    }
+                                               
+    void _setNotificationOpenedCallback() {
     
+    }
+    
+    void _setInAppMessageClickedCallback() {
+    
+    }
+    
+    void _setPermissionStateChangedCallback() {
+    
+    }
+    
+    void _setSubscriptionStateChangedCallback() {
+    
+    }
+    
+    void _setEmailSubscriptionStateChangedCallback() {
+    
+    }
+    
+    void _setSMSSubscriptionStateChangedCallback() {
+    
+    }
+
+    void _setPrivacyConsent(bool consent) {
+        [OneSignal consentGranted: consent];
     }
     
     bool _getPrivacyConsent() {
-    
+        return false; // todo - doesn't exist
     }
  
     void _setRequiresPrivacyConsent(bool required) {
-    
+        [OneSignal setRequiresUserPrivacyConsent: required];
     }
     
     bool _getRequiresPrivacyConsent() {
-    
+        return [OneSignal requiresUserPrivacyConsent];
     }
  
     void _initialize(const char* appId) {
@@ -100,7 +128,37 @@ extern "C" {
     
     }
     
-    // todo - tasky things
+    void _sendTag(string name, string value, StringResponseDelegate callback) {
+    
+    }
+    
+    void _sendTags(string tagJson, StringResponseDelegate callback) {
+    
+    }
+                                                                       
+    void _getTags(StringResponseDelegate callback) {
+    
+    }
+                                                      
+    void _deleteTag(string name, StringResponseDelegate callback) {
+    
+    }
+                                                                     
+    void _deleteTags(string tagsJson, StringResponseDelegate callback) {
+    
+    }
+                                                                          
+    void _setExternalUserId(string externalId, string authHash, StringResponseDelegate callback) {
+    
+    }
+                                                                                                    
+    void _setEmail(string email, string authHash, StringResponseDelegate callback) {
+    
+    }
+                                                                                      
+    void _setSMSNumber(string smsNumber, string authHash, StringResponseDelegate callback) {
+    
+    }
     
     void _promptLocation() {
     
