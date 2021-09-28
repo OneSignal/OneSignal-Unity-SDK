@@ -64,6 +64,10 @@ extern "C" {
     
     }
     
+    void _postNotification(string options, StringCallbackProxy callback) {
+    
+    }
+    
     void _setTrigger(string key, string value) {
     
     }
