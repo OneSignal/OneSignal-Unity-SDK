@@ -325,32 +325,35 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="tagName"></param>
         /// <param name="tagValue"></param>
-        public abstract Task<Dictionary<string, object>> SendTag(string tagName, object tagValue);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> SendTag(string tagName, object tagValue);
 
         /// <summary>
         /// Tag player with a key value pairs to later create segments on them at onesignal.com
         /// </summary>
         /// <param name="tags"></param>
-        public abstract Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> SendTags(Dictionary<string, object> tags);
 
         /// <summary>
         /// Retrieve a list of tags that have been set on the player from the OneSignal server
         /// </summary>
-        /// <returns>Awaitable task which will provide the complete <see cref="Dictionary{TKey,TValue}"/> of tags after
-        /// querying OneSignal</returns>
+        /// <returns>Awaitable <see cref="Dictionary{TKey,TValue}"/> of this user's tags</returns>
         public abstract Task<Dictionary<string, object>> GetTags();
 
         /// <summary>
         /// Delete a Tag from current device record
         /// </summary>
         /// <param name="key">todo</param>
-        public abstract Task<Dictionary<string, object>> DeleteTag(string key);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> DeleteTag(string key);
 
         /// <summary>
         /// Delete multiple Tags from current device record
         /// </summary>
         /// <param name="keys">todo</param>
-        public abstract Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> DeleteTags(IEnumerable<string> keys);
     #endregion
 
     #region User Identification

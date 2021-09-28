@@ -38,6 +38,12 @@ namespace OneSignalSDK {
     /// 
     /// </summary>
     public sealed partial class OneSignalAndroid : OneSignal {
+        private const string SDKPackage = "com.onesignal";
+        private const string SDKClassName = "OneSignal";
+        private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
+
+        private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
+        
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
             protected OneSignalAndroidJavaProxy(string listenerClassName)
                 : base(QualifiedSDKClass + "$" + listenerClassName) { }
@@ -183,22 +189,22 @@ namespace OneSignalSDK {
         private sealed class OSGetTagsHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
             public OSGetTagsHandler() : base("OSGetTagsHandler") { }
 
-            /// <param name="tags">JSONObject</param>
+            /// <param name="tags">JSONObject of the device's tags</param>
             public void tagsAvailable(AndroidJavaObject tags) // this is coming back from another thread
                 => UnityMainThreadDispatch.Post(state => _complete(tags.JSONObjectToDictionary()));
         }
 
-        private sealed class ChangeTagsUpdateHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
+        private sealed class ChangeTagsUpdateHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
             public ChangeTagsUpdateHandler() : base("ChangeTagsUpdateHandler") { }
 
-            /// <param name="tags">JSONObject</param>
+            /// <param name="tags">JSONObject of the tags</param>
             public void onSuccess(AndroidJavaObject tags)
-                => _complete(tags.JSONObjectToDictionary());
+                => _complete(true);
 
             /// <param name="error">SendTagsError</param>
             public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
-                // todo
+                _complete(false);
             }
         }
 

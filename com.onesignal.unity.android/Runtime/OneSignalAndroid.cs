@@ -75,8 +75,11 @@ namespace OneSignalSDK {
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
 
-        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options)
-            => _callAsync<Dictionary<string, object>, PostNotificationResponseHandler>("postNotification", options.ToJSONObject());
+        public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
+            var proxy = new PostNotificationResponseHandler();
+            _sdkClass.CallStatic("postNotification", options.ToJSONObject(), proxy);
+            return await proxy;
+        }
 
         public override void SetTrigger(string key, object value)
             => _sdkClass.CallStatic("addTrigger", key, value);
@@ -101,29 +104,53 @@ namespace OneSignalSDK {
             set => _sdkClass.CallStatic("pauseInAppMessages", value);
         }
 
-        public override async Task<Dictionary<string, object>> SendTag(string tagName, object tagValue)
-            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("sendTag", tagName, tagValue.ToString());
+        public override async Task<bool> SendTag(string tagName, object tagValue) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("sendTag", tagName, tagValue.ToString(), proxy);
+            return await proxy;
+        }
 
-        public override async Task<Dictionary<string, object>> SendTags(Dictionary<string, object> tags)
-            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("sendTags", tags.ToJSONObject());
+        public override async Task<bool> SendTags(Dictionary<string, object> tags) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("sendTags", tags.ToJSONObject(), proxy);
+            return await proxy;
+        }
 
-        public override async Task<Dictionary<string, object>> GetTags()
-            => await _callAsync<Dictionary<string, object>, OSGetTagsHandler>("getTags");
+        public override async Task<Dictionary<string, object>> GetTags() {
+            var proxy = new OSGetTagsHandler();
+            _sdkClass.CallStatic("getTags", proxy);
+            return await proxy;
+        }
 
-        public override async Task<Dictionary<string, object>> DeleteTag(string key)
-            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("deleteTag", key);
+        public override async Task<bool> DeleteTag(string key) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("deleteTag", key, proxy);
+            return await proxy;
+        }
 
-        public override async Task<Dictionary<string, object>> DeleteTags(IEnumerable<string> keys)
-            => await _callAsync<Dictionary<string, object>, ChangeTagsUpdateHandler>("deleteTags", keys.ToList());
+        public override async Task<bool> DeleteTags(IEnumerable<string> keys) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("deleteTags", keys.ToList(), proxy);
+            return await proxy;
+        }
 
-        public override async Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null)
-            => await _callAsync<Dictionary<string, object>, OSExternalUserIdUpdateCompletionHandler>("setExternalUserId", externalId, authHash);
+        public override async Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
+            var proxy = new OSExternalUserIdUpdateCompletionHandler();
+            _sdkClass.CallStatic("setExternalUserId", externalId, authHash, proxy);
+            return await proxy;
+        }
 
-        public override async Task SetEmail(string email, string authHash = null)
-            => await _callAsync<object, EmailUpdateHandler>("setEmail", email, authHash);
+        public override async Task SetEmail(string email, string authHash = null) {
+            var proxy = new EmailUpdateHandler();
+            _sdkClass.CallStatic("setEmail", email, authHash, proxy);
+            await proxy;
+        }
 
-        public override async Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null)
-            => await _callAsync<Dictionary<string, object>, OSSMSUpdateHandler>("setSMSNumber", smsNumber, authHash);
+        public override async Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
+            var proxy = new OSSMSUpdateHandler();
+            _sdkClass.CallStatic("setSMSNumber", smsNumber, authHash, proxy);
+            return await proxy;
+        }
 
         public override Task<Dictionary<string, object>> LogOut(
             LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
@@ -139,13 +166,22 @@ namespace OneSignalSDK {
             set => _sdkClass.CallStatic("setLocationShared", value);
         }
 
-        public override Task<OutcomeEvent> SendOutcome(string name)
-            => _callAsync<OutcomeEvent, OutcomeCallback>("sendOutcome", name);
+        public override async Task<OutcomeEvent> SendOutcome(string name) {
+            var proxy = new OutcomeCallback();
+            _sdkClass.CallStatic("sendOutcome", name, proxy);
+            return await proxy;
+        }
 
-        public override Task<OutcomeEvent> SendUniqueOutcome(string name)
-            => _callAsync<OutcomeEvent, OutcomeCallback>("sendUniqueOutcome", name);
+        public override async Task<OutcomeEvent> SendUniqueOutcome(string name) {
+            var proxy = new OutcomeCallback();
+            _sdkClass.CallStatic("sendUniqueOutcome", name, proxy);
+            return await proxy;
+        }
 
-        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value)
-            => _callAsync<OutcomeEvent, OutcomeCallback>("sendOutcomeWithValue", name);
+        public override async Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
+            var proxy = new OutcomeCallback();
+            _sdkClass.CallStatic("sendOutcomeWithValue", name, value, proxy);
+            return await proxy;
+        }
     }
 }
