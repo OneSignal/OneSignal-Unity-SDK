@@ -25,22 +25,27 @@
  * THE SOFTWARE.
  */
 
+using System;
+
 namespace OneSignalSDK {
     /// <summary>
-    /// 
+    /// todo
     /// </summary>
-    public enum OSNotificationPermission
-    {
+    public enum OSNotificationPermission {
+        /// <summary>todo</summary>
         NotDetermined,
+
+        /// <summary>todo</summary>
         Denied,
+
+        /// <summary>todo</summary>
         Authorized
     }
-    
+
     /// <summary>
     /// todo - should this exist? OSNotificationPermission.NotDetermined should be the same as hasPrompted == false
     /// </summary>
-    public class PermissionState {
-
+    [Serializable] public sealed class PermissionState {
         /// <summary>todo</summary>
         public bool hasPrompted;
 

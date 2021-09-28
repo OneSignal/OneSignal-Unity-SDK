@@ -25,11 +25,13 @@
  * THE SOFTWARE.
  */
 
+using System;
+
 namespace OneSignalSDK {
     /// <summary>
     /// todo - desc
     /// </summary>
-    public class NotificationOpenedResult {
+    [Serializable] public sealed class NotificationOpenedResult {
         /// <summary>todo</summary>
         public NotificationAction action;
         
