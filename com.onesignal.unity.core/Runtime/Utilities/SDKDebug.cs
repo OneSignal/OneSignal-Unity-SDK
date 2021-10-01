@@ -32,9 +32,20 @@ namespace OneSignalSDK {
     /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>
     internal sealed class SDKDebug {
-        public static void Log(string message) => Debug.Log(_formatMessage(message));
-        public static void Warn(string message) => Debug.LogWarning(_formatMessage(message));
-        public static void Error(string message) => Debug.LogError(_formatMessage(message));
+        public static void Log(string message) {
+            if (OneSignal.Default.LogLevel >= LogType.Log)
+                Debug.Log(_formatMessage(message));
+        }
+        
+        public static void Warn(string message) {
+            if (OneSignal.Default.LogLevel >= LogType.Warning)
+                Debug.LogWarning(_formatMessage(message));
+        }
+        
+        public static void Error(string message) {
+            if (OneSignal.Default.LogLevel >= LogType.Error)
+                Debug.LogError(_formatMessage(message));
+        }
         
         private static string _formatMessage(string message) => "[OneSignal] " + message;
     }
