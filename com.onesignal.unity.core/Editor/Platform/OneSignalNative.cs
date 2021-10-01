@@ -45,108 +45,105 @@ namespace OneSignalSDK {
         public override bool RequiresPrivacyConsent { get; set; }
 
         public override void Initialize(string appId) {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void RegisterForPushNotifications() {
-            throw new System.NotImplementedException();
+            
         }
 
         public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
-            throw new System.NotImplementedException();
+            return Task.FromResult(NotificationPermission.NotDetermined);
         }
 
         public override void ClearOneSignalNotifications() {
-            throw new System.NotImplementedException();
+            
         }
 
         public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new Dictionary<string, object>());
         }
 
         public override void SetTrigger(string key, object value) {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void SetTriggers(Dictionary<string, object> triggers) {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void RemoveTrigger(string key) {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void RemoveTriggers(params string[] keys) {
-            throw new System.NotImplementedException();
+            
         }
 
         public override object GetTrigger(string key) {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public override Dictionary<string, object> GetTriggers() {
-            throw new System.NotImplementedException();
+            return new Dictionary<string, object>();
         }
 
         public override bool InAppMessagesArePaused { get; set; }
 
         public override Task<bool> SendTag(string tagName, object tagValue) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public override Task<bool> SendTags(Dictionary<string, object> tags) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public override Task<Dictionary<string, object>> GetTags() {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new Dictionary<string, object>());
         }
 
         public override Task<bool> DeleteTag(string key) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public override Task<bool> DeleteTags(IEnumerable<string> keys) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new Dictionary<string, object>());
         }
 
         public override Task SetEmail(string email, string authHash = null) {
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new Dictionary<string, object>());
         }
 
         public override Task<Dictionary<string, object>> LogOut(
             LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
         ) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new Dictionary<string, object>());
         }
 
         public override void PromptLocation() {
-            throw new System.NotImplementedException();
+            
         }
 
-        public override bool ShareLocation {
-            get => throw new System.NotImplementedException();
-            set => throw new System.NotImplementedException();
-        }
+        public override bool ShareLocation  { get; set; }
 
         public override Task<OutcomeEvent> SendOutcome(string name) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new OutcomeEvent());
         }
 
         public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new OutcomeEvent());
         }
 
         public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
-            throw new System.NotImplementedException();
+            return Task.FromResult(new OutcomeEvent());
         }
     }
 }
