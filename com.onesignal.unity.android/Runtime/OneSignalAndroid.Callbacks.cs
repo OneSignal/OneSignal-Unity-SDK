@@ -99,7 +99,7 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSSubscriptionStateChanges</param>
             public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.SubscriptionStateChanged?.Invoke(null, null);
+                _instance.PushSubscriptionStateChanged?.Invoke(null, null);
             }
         }
 

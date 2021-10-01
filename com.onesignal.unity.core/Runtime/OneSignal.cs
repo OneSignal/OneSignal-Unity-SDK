@@ -194,7 +194,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// todo - this
         /// </summary>
-        public abstract event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
+        public abstract event OnStateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
 
         /// <summary>
         /// todo - this

@@ -551,7 +551,7 @@ namespace OneSignalSDK {
 
             // Each of these events can inform your application when the user's OneSignal states have change
             _onesignal.PermissionStateChanged        += OnPermissionStateChange;
-            _onesignal.SubscriptionStateChanged      += OnSubscriptionStateChange;
+            _onesignal.PushSubscriptionStateChanged      += OnPushSubscriptionStateChange;
             _onesignal.EmailSubscriptionStateChanged += OnEmailSubscriptionStateChange;
 
             // todo
@@ -658,7 +658,7 @@ namespace OneSignalSDK {
          * State change events provide both the new (to) and previous (from) states
          */
 
-        private void OnSubscriptionStateChange(SubscriptionState current, SubscriptionState previous) {
+        private void OnPushSubscriptionStateChange(PushSubscriptionState current, PushSubscriptionState previous) {
             print("SUBSCRIPTION stateChanges: " + current);
             print("SUBSCRIPTION stateChanges.to.userId: " + current.userId);
             print("SUBSCRIPTION stateChanges.to.subscribed: " + current.subscribed);
