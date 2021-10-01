@@ -37,7 +37,7 @@ namespace OneSignalSDK {
         public override event NotificationOpenedDelegate NotificationOpened;
         public override event InAppMessageClickedDelegate InAppMessageClicked;
         public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
-        public override event OnStateChangeDelegate<SubscriptionState> SubscriptionStateChanged;
+        public override event OnStateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
         public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
