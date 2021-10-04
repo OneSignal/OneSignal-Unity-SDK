@@ -64,7 +64,7 @@ namespace OneSignalSDK {
         }
 
         public override void ClearOneSignalNotifications()
-            => _clearOneSignalNotifications();
+            => SDKDebug.Log("ClearOneSignalNotifications invoked on iOS, does nothing");
 
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             var proxy = new StringCallbackProxy();
