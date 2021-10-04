@@ -215,7 +215,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         if (payload.additionalData == null)
             print("[HandleNotificationReceived] Additional Data == null");
-        else if (Json.Serialize(payload.additionalData) is { } dataString)
+        else if (Json.Serialize(payload.additionalData) is string dataString)
             print($"[HandleNotificationReceived] message {message}, additionalData: {dataString}");
         else
             print("[HandleNotificationReceived] Additional Data could not be serialized");
@@ -236,7 +236,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         if (payload.additionalData == null)
             print("[HandleNotificationOpened] Additional Data == null");
-        else if (Json.Serialize(payload.additionalData) is { } dataString)
+        else if (Json.Serialize(payload.additionalData) is string dataString)
             print($"[HandleNotificationOpened] message {message}, additionalData: {dataString}");
         else
             print("[HandleNotificationOpened] Additional Data could not be serialized");
@@ -323,11 +323,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     // Test Menu
     // Includes SendTag/SendTags, getting the userID and pushToken, and scheduling an example notification
     private void OnGUI() {
-        _customTextSize ??= new GUIStyle(GUI.skin.button) {
+        _customTextSize = _customTextSize ?? new GUIStyle(GUI.skin.button) {
             fontSize = 30
         };
         
-        _guiBoxStyle ??= new GUIStyle(GUI.skin.box) {
+        _guiBoxStyle = _guiBoxStyle ?? new GUIStyle(GUI.skin.box) {
             fontSize  = 30,
             alignment = TextAnchor.UpperLeft,
             wordWrap  = true
