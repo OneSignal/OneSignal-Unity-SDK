@@ -208,43 +208,41 @@ namespace OneSignalSDK {
             }
         }
 
-        private sealed class EmailUpdateHandler : AwaitableVoidAndroidJavaProxy {
+        private sealed class EmailUpdateHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
             public EmailUpdateHandler() : base("EmailUpdateHandler") { }
 
-            public void onSuccess() { } // completes itself
+            public void onSuccess() => _complete(true);
 
             /// <param name="error">EmailUpdateError</param>
             public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
-                // todo
+                _complete(false);
             }
         }
 
-        private sealed class OSExternalUserIdUpdateCompletionHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
+        private sealed class OSExternalUserIdUpdateCompletionHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
             public OSExternalUserIdUpdateCompletionHandler() : base("OSExternalUserIdUpdateCompletionHandler") { }
 
             /// <param name="results">JSONObject</param>
-            public void onSuccess(AndroidJavaObject results)
-                => _complete(results.JSONObjectToDictionary());
+            public void onSuccess(AndroidJavaObject results) => _complete(true);
 
             /// <param name="error">ExternalIdError</param>
             public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
-                // todo
+                _complete(false);
             }
         }
 
-        private sealed class OSSMSUpdateHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
+        private sealed class OSSMSUpdateHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
             public OSSMSUpdateHandler() : base("OSSMSUpdateHandler") { }
 
             /// <param name="result">JSONObject</param>
-            public void onSuccess(AndroidJavaObject result)
-                => _complete(result.JSONObjectToDictionary());
+            public void onSuccess(AndroidJavaObject result) => _complete(true);
 
             /// <param name="error">OSSMSUpdateError</param>
             public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
-                // todo
+                _complete(false);
             }
         }
 
@@ -252,7 +250,7 @@ namespace OneSignalSDK {
             public OutcomeCallback() : base("OutcomeCallback") { }
 
             /// <param name="outcomeEvent">OSOutcomeEvent</param>
-            public void onSuccess(AndroidJavaObject outcomeEvent) { }
+            public void onSuccess(AndroidJavaObject outcomeEvent) => _complete(outcomeEvent != null);
         }
 
         private sealed class PostNotificationResponseHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
@@ -265,7 +263,7 @@ namespace OneSignalSDK {
             /// <param name="response">JSONObject</param>
             public void onFailure(AndroidJavaObject response) {
                 SDKDebug.Error(response.Call<string>("toString"));
-                // todo
+                _complete(null);
             }
         }
     }

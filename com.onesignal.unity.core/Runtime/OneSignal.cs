@@ -355,8 +355,8 @@ namespace OneSignalSDK {
         /// <param name="authHash">If you have a backend server, we strongly recommend using
         /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
         /// your users. Your backend can generate an email authentication token and send it to your app.</param>
-        /// <returns>todo</returns>
-        public abstract Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> SetExternalUserId(string externalId, string authHash = null);
 
         /// <summary>
         /// Allows you to set the user's email address with the OneSignal SDK. If the user changes their email, you
@@ -366,7 +366,8 @@ namespace OneSignalSDK {
         /// <param name="authHash">If you have a backend server, we strongly recommend using
         /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
         /// your users. Your backend can generate an email authentication token and send it to your app.</param>
-        public abstract Task SetEmail(string email, string authHash = null);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> SetEmail(string email, string authHash = null);
 
         /// <summary>
         /// Set an sms number for the device to later send sms to this number
@@ -375,8 +376,8 @@ namespace OneSignalSDK {
         /// <param name="authHash">If you have a backend server, we strongly recommend using
         /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
         /// your users. Your backend can generate an email authentication token and send it to your app.</param>
-        /// <returns>todo</returns>
-        public abstract Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null);
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> SetSMSNumber(string smsNumber, string authHash = null);
 
         /// <summary>
         /// todo
@@ -424,12 +425,14 @@ namespace OneSignalSDK {
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendUniqueOutcome(string name);
 
         /// <summary>
@@ -437,6 +440,7 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendOutcomeWithValue(string name, float value);
     #endregion
 

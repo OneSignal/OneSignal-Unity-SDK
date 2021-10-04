@@ -98,39 +98,43 @@ namespace OneSignalSDK {
             set => _setInAppMessagesArePaused(value);
         }
         
-        public override Task<bool> SendTag(string tagName, object tagValue) {
+        public override async Task<bool> SendTag(string tagName, object tagValue) {
+            var proxy = new BooleanCallbackProxy();
+            _sendTag(tagName, tagValue.ToString(), proxy.OnResponse);
+            return await proxy;
+        }
+
+        public override async Task<bool> SendTags(Dictionary<string, object> tags) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<bool> SendTags(Dictionary<string, object> tags) {
+        public override async Task<Dictionary<string, object>> GetTags() {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> GetTags() {
+        public override async Task<bool> DeleteTag(string key) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<bool> DeleteTag(string key) {
+        public override async Task<bool> DeleteTags(IEnumerable<string> keys) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<bool> DeleteTags(IEnumerable<string> keys) {
+        public override async Task<bool> SetExternalUserId(string externalId, string authHash = null) {
+            var proxy = new BooleanCallbackProxy();
+            _setExternalUserId(externalId, authHash, proxy.OnResponse);
+            return await proxy;
+        }
+
+        public override async Task<bool> SetEmail(string email, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
+        public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
             throw new System.NotImplementedException();
         }
 
-        public override Task SetEmail(string email, string authHash = null) {
-            throw new System.NotImplementedException();
-        }
-
-        public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
-            throw new System.NotImplementedException();
-        }
-
-        public override Task<Dictionary<string, object>> LogOut(LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId) {
+        public override async Task<Dictionary<string, object>> LogOut(LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId) {
             throw new System.NotImplementedException();
         }
 
