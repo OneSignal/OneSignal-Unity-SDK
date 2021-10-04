@@ -52,6 +52,6 @@ namespace OneSignalSDK {
         [InitializeOnLoadMethod]
 #endif
         [RuntimeInitializeOnLoadMethod]
-        private static void _initialize() => _context ??= SynchronizationContext.Current;
+        private static void _initialize() => _context = _context ?? SynchronizationContext.Current;
     }
 }
