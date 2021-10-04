@@ -76,16 +76,6 @@ namespace OneSignalSDK {
         public delegate void InAppMessageClickedDelegate(InAppMessageAction action);
 
         /*
-         * Outcomes
-         */
-
-        /// <summary>
-        /// todo - this
-        /// </summary>
-        /// <param name="outcomeEvent"></param>
-        public delegate void OnSendOutcomeSuccessDelegate(OutcomeEvent outcomeEvent);
-
-        /*
          * Properties
          */
 
@@ -434,20 +424,20 @@ namespace OneSignalSDK {
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
-        public abstract Task<OutcomeEvent> SendOutcome(string name);
+        public abstract Task<bool> SendOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
-        public abstract Task<OutcomeEvent> SendUniqueOutcome(string name);
+        public abstract Task<bool> SendUniqueOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public abstract Task<OutcomeEvent> SendOutcomeWithValue(string name, float value);
+        public abstract Task<bool> SendOutcomeWithValue(string name, float value);
     #endregion
 
     }

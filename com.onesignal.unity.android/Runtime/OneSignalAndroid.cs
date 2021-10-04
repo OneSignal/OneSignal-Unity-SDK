@@ -166,19 +166,19 @@ namespace OneSignalSDK {
             set => _sdkClass.CallStatic("setLocationShared", value);
         }
 
-        public override async Task<OutcomeEvent> SendOutcome(string name) {
+        public override async Task<bool> SendOutcome(string name) {
             var proxy = new OutcomeCallback();
             _sdkClass.CallStatic("sendOutcome", name, proxy);
             return await proxy;
         }
 
-        public override async Task<OutcomeEvent> SendUniqueOutcome(string name) {
+        public override async Task<bool> SendUniqueOutcome(string name) {
             var proxy = new OutcomeCallback();
             _sdkClass.CallStatic("sendUniqueOutcome", name, proxy);
             return await proxy;
         }
 
-        public override async Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
+        public override async Task<bool> SendOutcomeWithValue(string name, float value) {
             var proxy = new OutcomeCallback();
             _sdkClass.CallStatic("sendOutcomeWithValue", name, value, proxy);
             return await proxy;
