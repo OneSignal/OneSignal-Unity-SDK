@@ -36,14 +36,14 @@ namespace OneSignalSDK {
          * Global callbacks
          */
         
-        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback();
-        [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback();
-        [DllImport("__Internal")] private static extern void _setInAppMessageClickedCallback();
+        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageClickedCallback(StringResponseDelegate callback);
         
-        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback();
-        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback();
-        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback();
-        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback();
+        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback(StringResponseDelegate callback);
         
         /*
          * Direct methods
@@ -67,15 +67,15 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _setInAppMessagesArePaused(bool paused);
         [DllImport("__Internal")] private static extern bool _getInAppMessagesArePaused();
 
-        [DllImport("__Internal")] private static extern void _sendTag(string name, string value, StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendTags(string tagJson, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendTag(string name, string value, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendTags(string tagJson, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _getTags(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _deleteTag(string name, StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _deleteTags(string tagsJson, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _deleteTag(string name, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _deleteTags(string tagsJson, BooleanResponseDelegate callback);
         
-        [DllImport("__Internal")] private static extern void _setExternalUserId(string externalId, string authHash, StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setEmail(string email, string authHash, StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setSMSNumber(string smsNumber, string authHash, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setExternalUserId(string externalId, string authHash, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setEmail(string email, string authHash, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSMSNumber(string smsNumber, string authHash, BooleanResponseDelegate callback);
         
         [DllImport("__Internal")] private static extern void _promptLocation();
         [DllImport("__Internal")] private static extern void _setShareLocation(bool share);
