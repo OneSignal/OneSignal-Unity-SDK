@@ -134,19 +134,19 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
-        public override async Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
+        public override async Task<bool> SetExternalUserId(string externalId, string authHash = null) {
             var proxy = new OSExternalUserIdUpdateCompletionHandler();
             _sdkClass.CallStatic("setExternalUserId", externalId, authHash, proxy);
             return await proxy;
         }
 
-        public override async Task SetEmail(string email, string authHash = null) {
+        public override async Task<bool> SetEmail(string email, string authHash = null) {
             var proxy = new EmailUpdateHandler();
             _sdkClass.CallStatic("setEmail", email, authHash, proxy);
-            await proxy;
+            return await proxy;
         }
 
-        public override async Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
+        public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
             var proxy = new OSSMSUpdateHandler();
             _sdkClass.CallStatic("setSMSNumber", smsNumber, authHash, proxy);
             return await proxy;

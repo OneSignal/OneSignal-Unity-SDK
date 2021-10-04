@@ -110,16 +110,16 @@ namespace OneSignalSDK {
             return Task.FromResult(false);
         }
 
-        public override Task<Dictionary<string, object>> SetExternalUserId(string externalId, string authHash = null) {
-            return Task.FromResult(new Dictionary<string, object>());
+        public override Task<bool> SetExternalUserId(string externalId, string authHash = null) {
+            return Task.FromResult(false);
         }
 
-        public override Task SetEmail(string email, string authHash = null) {
-            return Task.CompletedTask;
+        public override Task<bool> SetEmail(string email, string authHash = null) {
+            return Task.FromResult(false);
         }
 
-        public override Task<Dictionary<string, object>> SetSMSNumber(string smsNumber, string authHash = null) {
-            return Task.FromResult(new Dictionary<string, object>());
+        public override Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
+            return Task.FromResult(false);
         }
 
         public override Task<Dictionary<string, object>> LogOut(
