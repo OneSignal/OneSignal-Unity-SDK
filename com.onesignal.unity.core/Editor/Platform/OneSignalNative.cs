@@ -134,16 +134,16 @@ namespace OneSignalSDK {
 
         public override bool ShareLocation  { get; set; }
 
-        public override Task<OutcomeEvent> SendOutcome(string name) {
-            return Task.FromResult(new OutcomeEvent());
+        public override Task<bool> SendOutcome(string name) {
+            return Task.FromResult(false);
         }
 
-        public override Task<OutcomeEvent> SendUniqueOutcome(string name) {
-            return Task.FromResult(new OutcomeEvent());
+        public override Task<bool> SendUniqueOutcome(string name) {
+            return Task.FromResult(false);
         }
 
-        public override Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
-            return Task.FromResult(new OutcomeEvent());
+        public override Task<bool> SendOutcomeWithValue(string name, float value) {
+            return Task.FromResult(false);
         }
     }
 }

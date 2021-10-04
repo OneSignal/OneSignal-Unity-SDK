@@ -142,35 +142,22 @@ namespace OneSignalSDK {
             set => _setShareLocation(value);
         }
         
-        public override async Task<OutcomeEvent> SendOutcome(string name) {
-            var proxy = new StringCallbackProxy();
+        public override async Task<bool> SendOutcome(string name) {
+            var proxy = new BooleanCallbackProxy();
             _sendOutcome(name, proxy.OnResponse);
-
-            var response = Json.Deserialize(await proxy);
-            
-            // todo - convert to OutcomeEvent
-            
-            return null;
+            return await proxy;
         }
 
-        public override async Task<OutcomeEvent> SendUniqueOutcome(string name) {
-            var proxy = new StringCallbackProxy();
+        public override async Task<bool> SendUniqueOutcome(string name) {
+            var proxy = new BooleanCallbackProxy();
             _sendUniqueOutcome(name, proxy.OnResponse);
-
-            var response = Json.Deserialize(await proxy);
-            
-            // todo - convert to OutcomeEvent
-            return null;
+            return await proxy;
         }
 
-        public override async Task<OutcomeEvent> SendOutcomeWithValue(string name, float value) {
-            var proxy = new StringCallbackProxy();
+        public override async Task<bool> SendOutcomeWithValue(string name, float value) {
+            var proxy = new BooleanCallbackProxy();
             _sendOutcomeWithValue(name, value, proxy.OnResponse);
-
-            var response = Json.Deserialize(await proxy);
-            
-            // todo - convert to OutcomeEvent
-            return null;
+            return await proxy;
         }
     }
 }

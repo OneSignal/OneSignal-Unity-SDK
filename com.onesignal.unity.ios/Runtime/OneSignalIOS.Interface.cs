@@ -81,8 +81,8 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _setShareLocation(bool share);
         [DllImport("__Internal")] private static extern bool _getShareLocation();
         
-        [DllImport("__Internal")] private static extern void _sendOutcome(string name, StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendUniqueOutcome(string name, StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendOutcomeWithValue(string name, float value, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendOutcome(string name, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendUniqueOutcome(string name, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendOutcomeWithValue(string name, float value, BooleanResponseDelegate callback);
     }
 }

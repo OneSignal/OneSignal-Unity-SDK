@@ -248,7 +248,7 @@ namespace OneSignalSDK {
             }
         }
 
-        private sealed class OutcomeCallback : OneSignalAwaitableAndroidJavaProxy<OutcomeEvent> {
+        private sealed class OutcomeCallback : OneSignalAwaitableAndroidJavaProxy<bool> {
             public OutcomeCallback() : base("OutcomeCallback") { }
 
             /// <param name="outcomeEvent">OSOutcomeEvent</param>
