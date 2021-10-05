@@ -105,15 +105,21 @@ namespace OneSignalSDK {
         }
 
         public override async Task<bool> SendTags(Dictionary<string, object> tags) {
-            throw new System.NotImplementedException();
+            var proxy = new BooleanCallbackProxy();
+            _sendTags(Json.Serialize(tags), proxy.OnResponse);
+            return await proxy;
         }
 
         public override async Task<Dictionary<string, object>> GetTags() {
-            throw new System.NotImplementedException();
+            var proxy = new StringCallbackProxy();
+            _getTags(proxy.OnResponse);
+            return Json.Deserialize(await proxy) as Dictionary<string, object>;
         }
 
         public override async Task<bool> DeleteTag(string key) {
-            throw new System.NotImplementedException();
+            var proxy = new BooleanCallbackProxy();
+            _deleteTag(key, proxy.OnResponse);
+            return await proxy;
         }
 
         public override async Task<bool> DeleteTags(IEnumerable<string> keys) {
@@ -127,11 +133,15 @@ namespace OneSignalSDK {
         }
 
         public override async Task<bool> SetEmail(string email, string authHash = null) {
-            throw new System.NotImplementedException();
+            var proxy = new BooleanCallbackProxy();
+            _setEmail(email, authHash, proxy.OnResponse);
+            return await proxy;
         }
 
         public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
-            throw new System.NotImplementedException();
+            var proxy = new BooleanCallbackProxy();
+            _setSMSNumber(smsNumber, authHash, proxy.OnResponse);
+            return await proxy;
         }
 
         public override async Task<Dictionary<string, object>> LogOut(LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId) {
