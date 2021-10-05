@@ -657,7 +657,7 @@ MonoBehaviour:
   externalId: EXTERNAL_USER_ID
   appId: ONESIGNAL_APP_ID
   requiresUserPrivacyConsent: 0
-  Console: {fileID: 315627971}
+  console: {fileID: 315627971}
 --- !u!1 &315627969
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,19 +716,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 792110c4f5f19e64196eb25f41c0b783, type: 3}
     m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 6
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: <color=green><b>I ></b></color> Welcome to the <color=red>OneSignal</color>
+  m_Text: <color=green><b>I></b></color> Welcome to the <color=red>OneSignal</color>
     test application! Try out the SDK by tapping buttons below. You can see the results
     in this console window.
 --- !u!222 &315627972

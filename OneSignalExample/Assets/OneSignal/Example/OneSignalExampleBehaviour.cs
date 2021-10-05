@@ -1013,7 +1013,7 @@ namespace OneSignalSDK {
          * You can safely ignore everything in this region, this just controls rendering for the example
          */
 
-        public Text Console;
+        public Text console;
         
         private void Awake() {
             SDKDebug.LogIntercept   += _log;
@@ -1023,17 +1023,17 @@ namespace OneSignalSDK {
 
         private void _log(object message) {
             Debug.Log(message);
-            Console.text += $"\n<color=green><b>I ></b></color> {message}";
+            console.text += $"\n<color=green><b>I></b></color> {message}";
         }
 
         private void _warn(object message) {
             Debug.LogWarning(message);
-            Console.text += $"\n<color=orange><b>W ></b></color> {message}";
+            console.text += $"\n<color=orange><b>W></b></color> {message}";
         }
 
         private void _error(object message) {
             Debug.LogError(message);
-            Console.text += $"\n<color=red><b>E ></b></color> {message}";
+            console.text += $"\n<color=red><b>E></b></color> {message}";
         }
     #endregion
     }
