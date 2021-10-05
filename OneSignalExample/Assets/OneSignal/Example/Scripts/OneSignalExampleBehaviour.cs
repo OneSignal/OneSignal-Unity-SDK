@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if ONE_SIGNAL_INSTALLED
 /*
  * Modified MIT License
@@ -919,3 +920,122 @@ namespace OneSignalSDK {
 }
 >>>>>>> 80dc462 (Updated public APIs to support async in correct methods)
 #endif
+=======
+using System;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace OneSignalSDK {
+    public class OneSignalExampleBehaviour : MonoBehaviour {
+        /// <summary>
+        /// set to an email address you would like to test notifications against
+        /// </summary>
+        public string email = "EMAIL_ADDRESS";
+
+        /// <summary>
+        /// set to an external user id you would like to test notifications against
+        /// </summary>
+        public string externalId = "EXTERNAL_USER_ID";
+
+        /// <summary>
+        /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
+        /// </summary>
+        public string appId = "ONESIGNAL_APP_ID";
+
+        /// <summary>
+        /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
+        /// <see cref="OneSignal.PrivacyConsent"/> in this test MonoBehaviour
+        /// </summary>
+        public bool requiresUserPrivacyConsent;
+
+        /// <summary>
+        /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
+        /// MonoBehaviour in your opening Scene
+        /// </summary>
+        private void Start() {
+            // Enable lines below to debug issues with OneSignal
+            OneSignal.Default.LogLevel   = LogType.Log;
+            OneSignal.Default.AlertLevel = LogType.Exception;
+
+            // Setting RequiresPrivacyConsent to true will prevent the OneSignalSDK from operating until
+            // PrivacyConsent is also set to true
+            OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
+            
+            // Setup the below to listen for and respond to events from notifications
+            OneSignal.Default.NotificationOpened   += _notificationOpened;
+            OneSignal.Default.NotificationReceived += _notificationReceived;
+            
+            // Setup the below to listen for and respond to events from in app messages
+            OneSignal.Default.InAppMessageClicked += _iamClicked;
+            
+            // Setup the below to listen for and respond to state changes
+            OneSignal.Default.PermissionStateChanged        += _permissionStateChanged;
+            OneSignal.Default.PushSubscriptionStateChanged  += _pushStateChanged;
+            OneSignal.Default.EmailSubscriptionStateChanged += _emailStateChanged;
+            OneSignal.Default.SMSSubscriptionStateChanged   += _smsStateChanged;
+        }
+
+        private void _notificationOpened(NotificationOpenedResult result) {
+            
+        }
+
+        private void _notificationReceived(Notification notification) {
+            
+        }
+
+        private void _iamClicked(InAppMessageAction inAppMessageAction) {
+            
+        }
+
+        private void _permissionStateChanged(PermissionState current, PermissionState previous) {
+            
+        }
+
+        private void _pushStateChanged(PushSubscriptionState current, PushSubscriptionState previous) {
+            
+        }
+
+        private void _emailStateChanged(EmailSubscriptionState current, EmailSubscriptionState previous) {
+            
+        }
+
+        private void _smsStateChanged(SMSSubscriptionState current, SMSSubscriptionState previous) {
+            
+        }
+
+        public void Initialize() {
+            _log("Initializing...");
+            OneSignal.Default.Initialize(appId);
+        }
+
+    #region Rendering
+        /*
+         * You can safely ignore everything in this region, this just controls rendering for the example
+         */
+
+        public Text Console;
+        
+        private void Awake() {
+            SDKDebug.LogIntercept   += _log;
+            SDKDebug.WarnIntercept  += _warn;
+            SDKDebug.ErrorIntercept += _error;
+        }
+
+        private void _log(object message) {
+            Debug.Log(message);
+            Console.text += $"\n<color=green><b>I ></b></color> {message}";
+        }
+
+        private void _warn(object message) {
+            Debug.LogWarning(message);
+            Console.text += $"\n<color=orange><b>W ></b></color> {message}";
+        }
+
+        private void _error(object message) {
+            Debug.LogError(message);
+            Console.text += $"\n<color=red><b>E ></b></color> {message}";
+        }
+    #endregion
+    }
+}
+>>>>>>> 2088c30 (WIP on example scene and behaviour)

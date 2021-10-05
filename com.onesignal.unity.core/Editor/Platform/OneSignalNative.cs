@@ -45,7 +45,12 @@ namespace OneSignalSDK {
         public override bool RequiresPrivacyConsent { get; set; }
 
         public override void Initialize(string appId) {
+            if (string.IsNullOrEmpty(appId)) {
+                SDKDebug.Error("appId is null or empty");
+                return;
+            }
             
+            SDKDebug.Warn("Native SDK is placeholder. Please run on supported platform (iOS or Android).");
         }
 
         public override void RegisterForPushNotifications() {

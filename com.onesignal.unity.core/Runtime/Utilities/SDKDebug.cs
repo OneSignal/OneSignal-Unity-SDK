@@ -25,25 +25,37 @@
  * THE SOFTWARE.
  */
 
+using System;
 using UnityEngine;
 
 namespace OneSignalSDK {
     /// <summary>
     /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>
-    internal sealed class SDKDebug {
+    internal static class SDKDebug {
+
+        public static event Action<object> LogIntercept; 
+        public static event Action<object> WarnIntercept; 
+        public static event Action<object> ErrorIntercept; 
+
         public static void Log(string message) {
-            if (OneSignal.Default.LogLevel >= LogType.Log)
+            if (LogIntercept != null)
+                LogIntercept(message);
+            else if (OneSignal.Default.LogLevel >= LogType.Log)
                 Debug.Log(_formatMessage(message));
         }
         
         public static void Warn(string message) {
-            if (OneSignal.Default.LogLevel >= LogType.Warning)
+            if (WarnIntercept != null)
+                WarnIntercept(message);
+            else if (OneSignal.Default.LogLevel >= LogType.Warning)
                 Debug.LogWarning(_formatMessage(message));
         }
         
         public static void Error(string message) {
-            if (OneSignal.Default.LogLevel >= LogType.Error)
+            if (ErrorIntercept != null)
+                ErrorIntercept(message);
+            else  if (OneSignal.Default.LogLevel >= LogType.Error)
                 Debug.LogError(_formatMessage(message));
         }
         
