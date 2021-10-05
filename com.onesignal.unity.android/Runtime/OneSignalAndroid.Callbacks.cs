@@ -43,10 +43,22 @@ namespace OneSignalSDK {
         private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
 
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
-        
+
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
             protected OneSignalAndroidJavaProxy(string listenerClassName)
                 : base(QualifiedSDKClass + "$" + listenerClassName) { }
+
+            /// <summary>helper for pulling state changes for observers</summary>
+            protected static (TState curr, TState prev) _getStatesChanges<TState>(AndroidJavaObject stateChanges) {
+                var currJO  = stateChanges.Call<AndroidJavaObject>("to");
+                var prevJO  = stateChanges.Call<AndroidJavaObject>("from");
+                var currStr = currJO.Call<string>("toString");
+                var prevStr = prevJO.Call<string>("toString");
+                var curr    = JsonUtility.FromJson<TState>(currStr);
+                var prev    = JsonUtility.FromJson<TState>(prevStr);
+
+                return (curr, prev);
+            }
         }
 
         private abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
@@ -98,8 +110,9 @@ namespace OneSignalSDK {
             public OSSubscriptionObserver() : base("OSSubscriptionObserver") { }
 
             /// <param name="stateChanges">OSSubscriptionStateChanges</param>
-            public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.PushSubscriptionStateChanged?.Invoke(null, null);
+            public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) {
+                var (curr, prev) = _getStatesChanges<PushSubscriptionState>(stateChanges);
+                _instance.PushSubscriptionStateChanged?.Invoke(curr, prev);
             }
         }
 
@@ -107,8 +120,9 @@ namespace OneSignalSDK {
             public OSEmailSubscriptionObserver() : base("OSEmailSubscriptionObserver") { }
 
             /// <param name="stateChanges">OSEmailSubscriptionStateChanges</param>
-            public void onOSEmailSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.EmailSubscriptionStateChanged?.Invoke(null, null);
+            public void onOSEmailSubscriptionChanged(AndroidJavaObject stateChanges) {
+                var (curr, prev) = _getStatesChanges<EmailSubscriptionState>(stateChanges);
+                _instance.EmailSubscriptionStateChanged?.Invoke(curr, prev);
             }
         }
 
@@ -116,8 +130,9 @@ namespace OneSignalSDK {
             public OSSMSSubscriptionObserver() : base("OSSMSSubscriptionObserver") { }
 
             /// <param name="stateChanges">OSSMSSubscriptionStateChanges</param>
-            public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) { 
-                _instance.SMSSubscriptionStateChanged?.Invoke(null, null);
+            public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) {
+                var (curr, prev) = _getStatesChanges<SMSSubscriptionState>(stateChanges);
+                _instance.SMSSubscriptionStateChanged?.Invoke(curr, prev);
             }
         }
 
