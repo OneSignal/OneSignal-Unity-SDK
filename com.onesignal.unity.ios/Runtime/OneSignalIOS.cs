@@ -54,9 +54,6 @@ namespace OneSignalSDK {
         public override void Initialize(string appId)
             => _initialize(appId);
 
-        public override void RegisterForPushNotifications()
-            => _registerForPushNotifications();
-
         public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             var proxy = new BooleanCallbackProxy();
             _promptForPushNotificationsWithUserResponse(proxy.OnResponse);
