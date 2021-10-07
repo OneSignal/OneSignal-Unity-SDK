@@ -43,7 +43,7 @@ namespace OneSignalSDK {
         public static OneSignal Default {
             get => _getDefaultInstance();
             internal set {
-                SDKDebug.Log($"Setting OneSignal.Default to platform SDK {value.GetType()}");
+                SDKDebug.Log($"OneSignal.Default set to platform SDK {value.GetType()}. Current version is {Version}");
                 _default = value;
             }
         }
