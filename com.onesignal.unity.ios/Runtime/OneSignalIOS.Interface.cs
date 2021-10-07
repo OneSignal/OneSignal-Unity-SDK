@@ -55,18 +55,18 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern bool _getRequiresPrivacyConsent();
         [DllImport("__Internal")] private static extern void _initialize(string appId);
         [DllImport("__Internal")] private static extern void _promptForPushNotificationsWithUserResponse(BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _postNotification(string options, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _postNotification(string optionsJson, StringResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _setTrigger(string key, string value);
-        [DllImport("__Internal")] private static extern void _setTriggers(); // todo
+        [DllImport("__Internal")] private static extern void _setTriggers(string triggersJson);
         [DllImport("__Internal")] private static extern void _removeTrigger(string key);
-        [DllImport("__Internal")] private static extern void _removeTriggers(); // todo
-        [DllImport("__Internal")] private static extern object _getTrigger(string key); // todo
-        [DllImport("__Internal")] private static extern void _getTriggers(); // todo
+        [DllImport("__Internal")] private static extern void _removeTriggers(string triggersJson);
+        [DllImport("__Internal")] private static extern object _getTrigger(string key);
+        [DllImport("__Internal")] private static extern string _getTriggers();
         [DllImport("__Internal")] private static extern void _setInAppMessagesArePaused(bool paused);
         [DllImport("__Internal")] private static extern bool _getInAppMessagesArePaused();
 
         [DllImport("__Internal")] private static extern void _sendTag(string name, string value, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendTags(string tagJson, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendTags(string tagsJson, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _getTags(StringResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _deleteTag(string name, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _deleteTags(string tagsJson, BooleanResponseDelegate callback);
