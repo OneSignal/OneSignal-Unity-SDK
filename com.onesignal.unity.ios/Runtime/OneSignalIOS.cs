@@ -72,23 +72,20 @@ namespace OneSignalSDK {
         public override void SetTrigger(string key, object value)
             => _setTrigger(key, value.ToString());
 
-        public override void SetTriggers(Dictionary<string, object> triggers) {
-            throw new System.NotImplementedException();
-        }
+        public override void SetTriggers(Dictionary<string, object> triggers)
+            => _setTriggers(Json.Serialize(triggers));
 
         public override void RemoveTrigger(string key)
             => _removeTrigger(key);
 
-        public override void RemoveTriggers(params string[] keys) {
-            throw new System.NotImplementedException();
-        }
+        public override void RemoveTriggers(params string[] keys)
+            => _removeTriggers(Json.Serialize(keys));
 
         public override object GetTrigger(string key)
             => _getTrigger(key);
 
-        public override Dictionary<string, object> GetTriggers() {
-            throw new System.NotImplementedException();
-        }
+        public override Dictionary<string, object> GetTriggers()
+            => Json.Deserialize(_getTriggers()) as Dictionary<string, object>;
 
         public override bool InAppMessagesArePaused {
             get => _getInAppMessagesArePaused();
@@ -120,7 +117,9 @@ namespace OneSignalSDK {
         }
 
         public override async Task<bool> DeleteTags(IEnumerable<string> keys) {
-            throw new System.NotImplementedException();
+            var proxy = new BooleanCallbackProxy();
+            _deleteTags(Json.Serialize(keys), proxy.OnResponse);
+            return await proxy;
         }
 
         public override async Task<bool> SetExternalUserId(string externalId, string authHash = null) {
