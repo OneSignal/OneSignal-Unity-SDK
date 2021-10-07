@@ -84,7 +84,7 @@ namespace OneSignalSDK {
              */
             _onesignal.NotificationReceived += HandleNotificationReceived;
             _onesignal.NotificationOpened   += HandleNotificationOpened;
-            _onesignal.InAppMessageClicked  += OnInAppMessageClicked;
+            _onesignal.InAppMessageTriggeredAction  += OnInAppMessageTriggeredAction;
 
             _onesignal.Initialize(appId);
 
@@ -259,7 +259,7 @@ namespace OneSignalSDK {
             }
         }
 
-        private static void OnInAppMessageClicked(InAppMessageAction inAppMessageAction) {
+        private static void OnInAppMessageTriggeredAction(InAppMessageAction inAppMessageAction) {
             var logInAppClickEvent = "In-App Message Clicked: " +
                 "\nClick Name: " + inAppMessageAction.clickName +
                 "\nClick Url: " + inAppMessageAction.clickUrl +

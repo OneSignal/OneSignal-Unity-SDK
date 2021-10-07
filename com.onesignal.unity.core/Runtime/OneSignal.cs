@@ -64,12 +64,18 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="result">The Notification open result describing: 1. The notification opened 2. The action taken by the user. </param>
         public delegate void NotificationOpenedDelegate(NotificationOpenedResult result);
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        /// <param name="message">todo</param>
+        public delegate void InAppMessageLifecycleDelegate(InAppMessage message);
         
         /// <summary>
         /// Sets a In App Message opened handler. The instance will be called when an In App Message action is tapped on.
         /// </summary>
         /// <param name="action">todo</param>
-        public delegate void InAppMessageClickedDelegate(InAppMessageAction action);
+        public delegate void InAppMessageActionDelegate(InAppMessageAction action);
 
         /// <summary>
         /// todo - desc
@@ -104,9 +110,29 @@ namespace OneSignalSDK {
          */
 
         /// <summary>
-        /// The delegate will be called when an In App Message action is tapped on.
+        /// todo
         /// </summary>
-        public abstract event InAppMessageClickedDelegate InAppMessageClicked;
+        public abstract event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public abstract event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public abstract event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public abstract event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public abstract event InAppMessageActionDelegate InAppMessageTriggeredAction;
 
         /*
          * Data Changes
