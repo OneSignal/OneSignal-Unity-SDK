@@ -33,7 +33,6 @@ namespace OneSignalSDK {
     /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>
     internal static class SDKDebug {
-
         public static event Action<object> LogIntercept; 
         public static event Action<object> WarnIntercept; 
         public static event Action<object> ErrorIntercept; 

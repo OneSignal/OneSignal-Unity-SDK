@@ -922,6 +922,7 @@ namespace OneSignalSDK {
 #endif
 =======
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -976,7 +977,7 @@ namespace OneSignalSDK {
         }
 
         private void _notificationOpened(NotificationOpenedResult result) {
-            
+            _log("Notification was opened");
         }
 
         private void _notificationReceived(Notification notification) {
@@ -1008,9 +1009,97 @@ namespace OneSignalSDK {
             OneSignal.Default.Initialize(appId);
         }
 
+        public void ToggleRequiresPrivacyConsent() {
+            _log($"Toggling RequiresPrivacyConsent to {!OneSignal.Default.RequiresPrivacyConsent}");
+            OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
+        }
+
+        public void TogglePrivacyConsent() {
+            _log($"Toggling PrivacyConsent to {!OneSignal.Default.PrivacyConsent}");
+            OneSignal.Default.PrivacyConsent = !OneSignal.Default.PrivacyConsent;
+        }
+
+        public void SetLogLevel() {
+            var newLevel = _nextEnum(OneSignal.Default.LogLevel);
+            _log($"Setting LogLevel to {newLevel}");
+            
+            // LogLevel uses the standard Unity LogType
+            OneSignal.Default.LogLevel = newLevel;
+        }
+
+        public void SetAlertLevel() {
+            var newLevel = _nextEnum(OneSignal.Default.AlertLevel);
+            _log($"Setting AlertLevel to {newLevel}");
+            
+            // AlertLevel uses the standard Unity LogType
+            OneSignal.Default.AlertLevel = newLevel;
+        }
+
+        public async void SetEmail(string email) {
+            _log($"Calling SetEmail({email}) and awaiting result...");
+            
+            // You can choose to await the result of SetEmail if the invoking method is async
+            var result = await OneSignal.Default.SetEmail(email);
+            
+            if (result)
+                _log("Set succeeded");
+            else
+                _error("Set failed");
+        }
+
+        public async void SetExternalId(string externalId) {
+            _log($"Calling SetExternalUserId({externalId}) and awaiting result...");
+            
+            // You can choose to await the result of SetExternalUserId if the invoking method is async
+            var result = await OneSignal.Default.SetExternalUserId(externalId);
+            
+            if (result)
+                _log("Set succeeded");
+            else
+                _error("Set failed");
+        }
+
+        public async void SetSMSNumber(string phoneNumber) {
+            _log($"Calling SetSMSNumber({phoneNumber}) and awaiting result...");
+            
+            // You can choose to await the result of SetSMSNumber if the invoking method is async
+            var result = await OneSignal.Default.SetSMSNumber(phoneNumber);
+            
+            if (result)
+                _log("Set succeeded");
+            else
+                _error("Set failed");
+        }
+
+        public async void PromptForPush() {
+            _log("Calling PromptForPushNotificationsWithUserResponse and awaiting result...");
+
+            // You can choose to await the result of PromptForPushNotificationsWithUserResponse if the invoking method is async
+            var result = await OneSignal.Default.PromptForPushNotificationsWithUserResponse();
+
+            _log($"Prompt completed with <b>{result}</b>");
+        }
+
+        public void ClearPush() {
+            _log("Clearing existing OneSignal push notifications...");
+            OneSignal.Default.ClearOneSignalNotifications();
+        }
+
+        public async void SendPushToSelf() {
+            _log("Sending push notification to this device via PostNotification...");
+            var pushOptions = new Dictionary<string, object>();
+            // todo - options
+
+            var result = await OneSignal.Default.PostNotification(pushOptions);
+        }
+
+        public async void SendTag(string name, string value) {
+            
+        }
+
     #region Rendering
         /*
-         * You can safely ignore everything in this region, this just controls rendering for the example
+         * You can safely ignore everything in this region and below
          */
 
         public Text console;
@@ -1023,17 +1112,27 @@ namespace OneSignalSDK {
 
         private void _log(object message) {
             Debug.Log(message);
-            console.text += $"\n<color=green><b>I></b></color> {message}";
+            console.text += $"\n<color=green><b>I></b></color>\t{message}";
         }
 
         private void _warn(object message) {
             Debug.LogWarning(message);
-            console.text += $"\n<color=orange><b>W></b></color> {message}";
+            console.text += $"\n<color=orange><b>W></b></color>\t{message}";
         }
 
         private void _error(object message) {
             Debug.LogError(message);
-            console.text += $"\n<color=red><b>E></b></color> {message}";
+            console.text += $"\n<color=red><b>E></b></color>\t{message}";
+        }
+    #endregion
+
+    #region Helpers
+        private static T _nextEnum<T>(T src) where T : struct {
+            if (!typeof(T).IsEnum)
+                throw new ArgumentException($"Argument {typeof(T).FullName} is not an Enum");
+            var vals = (T[])Enum.GetValues(src.GetType());
+            var next = Array.IndexOf(vals, src) + 1;
+            return vals.Length == next ? vals[0] : vals[next];
         }
     #endregion
     }
