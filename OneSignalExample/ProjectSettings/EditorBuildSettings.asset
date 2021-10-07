@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/OneSignal/Example/OneSignalExampleScene.unity
-    guid: 050179f3927d55941bf409edf35e9c80
+    guid: 54284d014d2241544a24b57b13c09ac8
   m_configObjects: {}
