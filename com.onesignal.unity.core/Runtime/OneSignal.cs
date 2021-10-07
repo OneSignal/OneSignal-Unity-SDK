@@ -64,59 +64,12 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="result">The Notification open result describing: 1. The notification opened 2. The action taken by the user. </param>
         public delegate void NotificationOpenedDelegate(NotificationOpenedResult result);
-
-        /*
-         * In App Messages
-         */
-
+        
         /// <summary>
         /// Sets a In App Message opened handler. The instance will be called when an In App Message action is tapped on.
         /// </summary>
-        /// <param name="action">Instance to a class implementing this interference.</param>
+        /// <param name="action">todo</param>
         public delegate void InAppMessageClickedDelegate(InAppMessageAction action);
-
-        /*
-         * Properties
-         */
-
-        /// <summary>
-        /// When external user id for push or email channel is set or removed.
-        /// todo - Dictionary should be an object
-        /// </summary>
-        /// <param name="results">The dictionary payload containing the success status for the channels updating external user id.</param>
-        public delegate void OnUpdateExternalUserIdDelegate(Dictionary<string, object> results);
-
-        /// <summary>
-        /// When update of external user id for push or email channel has failed.
-        /// todo - Dictionary should be an object
-        /// todo - Should this be public?
-        /// </summary>
-        /// <param name="error">The dictionary payload containing errors.</param>
-        public delegate void OnUpdateExternalUserIdFailedDelegate(Dictionary<string, object> error);
-
-        /// <summary>
-        /// When the email was set on OneSignal's server.
-        /// todo - should this exist?
-        /// </summary>
-        public delegate void OnEmailUpdatedDelegate();
-
-        /// <summary>
-        /// When the email failed to be set.
-        /// todo - should this exist?
-        /// </summary>
-        public delegate void OnEmailUpdateFailureDelegate(Dictionary<string, object> error);
-
-        /// <summary>
-        /// Delegate fires when the email was set on OneSignal's server.
-        /// todo - should this exist? what is this?
-        /// </summary>
-        public delegate void OnLogoutEmailSuccessDelegate();
-
-        /// <summary>
-        /// Delegate fires when the email failed to be set.
-        /// todo - should this exist? what is this?
-        /// </summary>
-        public delegate void OnLogoutEmailFailureDelegate(Dictionary<string, object> error);
 
         /// <summary>
         /// todo - desc
@@ -125,23 +78,6 @@ namespace OneSignalSDK {
         /// <param name="current"></param>
         /// <param name="previous"></param>
         public delegate void OnStateChangeDelegate<in TState>(TState current, TState previous);
-
-        /*
-         * ???
-         */
-
-        /// <summary>
-        /// Delegate you can define to get the all the tags set on a player from onesignal.com
-        /// todo - not a dictionary
-        /// todo - is
-        /// </summary>
-        /// <param name="tags">Dictionary of key value pairs retrieved from the OneSignal server.</param>
-        public delegate void TagsReceivedDelegate(Dictionary<string, object> tags);
-
-        /// <summary>
-        /// todo - this
-        /// </summary>
-        public delegate void PushPermissionResponseDelegate(bool accepted);
     #endregion
 
     #region Events
@@ -256,39 +192,39 @@ namespace OneSignalSDK {
 
     #region In App Messages
         /// <summary>
-        /// Add a trigger, may show an In-App Message if its triggers conditions were met.
+        /// Add a local trigger. May show an In-App Message if its triggers conditions were met.
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
         /// <param name="value">Value for the trigger. Object passed in will be converted to a string.</param>
         public abstract void SetTrigger(string key, object value);
 
         /// <summary>
-        /// Allows you to set multiple trigger key/value pairs simultaneously.
+        /// Allows you to set multiple local trigger key/value pairs simultaneously. May show an In-App Message if its
+        /// triggers conditions were met.
         /// </summary>
         public abstract void SetTriggers(Dictionary<string, object> triggers);
 
         /// <summary>
-        /// Removes a single trigger for the given key. May show an In-App Message if its trigger conditions were met.
+        /// Removes a single local trigger for the given key.
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
         public abstract void RemoveTrigger(string key);
 
         /// <summary>
-        /// Removes a list of triggers based on a collection of keys. May show an In-App Message if its trigger
-        /// conditions were met.
+        /// Removes a list of local triggers based on a collection of keys.
         /// </summary>
         /// <param name="keys">Removes a collection of triggers from their keys.</param>
         public abstract void RemoveTriggers(params string[] keys);
 
         /// <summary>
-        /// Gets a trigger value for a provided trigger key.
+        /// Gets a local trigger value for a provided trigger key.
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
         /// <returns>Value if added with 'addTrigger', or null/nil (iOS) if never set.</returns>
         public abstract object GetTrigger(string key);
         
         /// <summary>
-        /// Returns all trigger key-values for the current user
+        /// Returns all local trigger key-values for the current user
         /// </summary>
         public abstract Dictionary<string, object> GetTriggers();
 
@@ -316,7 +252,7 @@ namespace OneSignalSDK {
         public abstract Task<bool> SendTags(Dictionary<string, object> tags);
 
         /// <summary>
-        /// Retrieve a list of tags that have been set on the player from the OneSignal server
+        /// Retrieve a list of tags that have been set on the user from the OneSignal server
         /// </summary>
         /// <returns>Awaitable <see cref="Dictionary{TKey,TValue}"/> of this user's tags</returns>
         public abstract Task<Dictionary<string, object>> GetTags();
