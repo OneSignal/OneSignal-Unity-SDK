@@ -63,9 +63,6 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("setAppId", appId);
         }
 
-        public override void RegisterForPushNotifications()
-            => SDKDebug.Log("RegisterForPushNotifications invoked on Android, does nothing.");
-
         public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             // cancels immediately, iOS only
             // todo - is cancellation the right solution?

@@ -228,20 +228,10 @@ namespace OneSignalSDK {
 
     #region Push Notifications
         /// <summary>
-        /// Call this when you would like to prompt an iOS user accept push notifications with the default system prompt.
-        /// Only use if you passed false to autoRegister when calling Init.
-        /// </summary>
-        /// <remarks>iOS Only</remarks>
-        public abstract void RegisterForPushNotifications();
-
-        /// <summary>
         /// Prompt the user for notification permissions.
-        /// Callback fires as soon as the user accepts or declines notifications.
-        /// Must set `kOSSettingsKeyAutoPrompt` to `false` when calling
-        /// <a href="https://documentation.onesignal.com/docs/unity-sdk#initwithlaunchoptions">initWithLaunchOptions</a>.
         /// </summary>
-        /// <returns>Awaitable <see cref="Task{TResult}"/> which provides the user's consent status</returns>
-        /// <remarks>Recommended: Set to false and follow
+        /// <returns>Awaitable NotificationPermission which provides the user's consent status</returns>
+        /// <remarks>Recommended: Do not use and instead follow
         /// <a href="https://documentation.onesignal.com/docs/ios-push-opt-in-prompt">Push Opt-In Prompt</a></remarks>
         public abstract Task<NotificationPermission> PromptForPushNotificationsWithUserResponse();
 

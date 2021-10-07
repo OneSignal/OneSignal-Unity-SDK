@@ -53,10 +53,6 @@ namespace OneSignalSDK {
             SDKDebug.Warn("Native SDK is placeholder. Please run on supported platform (iOS or Android).");
         }
 
-        public override void RegisterForPushNotifications() {
-            
-        }
-
         public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             return Task.FromResult(NotificationPermission.NotDetermined);
         }

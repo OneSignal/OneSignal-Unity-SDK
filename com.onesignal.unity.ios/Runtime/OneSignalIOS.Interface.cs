@@ -54,7 +54,6 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _setRequiresPrivacyConsent(bool required);
         [DllImport("__Internal")] private static extern bool _getRequiresPrivacyConsent();
         [DllImport("__Internal")] private static extern void _initialize(string appId);
-        [DllImport("__Internal")] private static extern void _registerForPushNotifications();
         [DllImport("__Internal")] private static extern void _promptForPushNotificationsWithUserResponse(BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _postNotification(string options, StringResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _setTrigger(string key, string value);
