@@ -193,7 +193,7 @@ namespace OneSignalSDK {
 
             /// <param name="result">OSInAppMessageAction</param>
             public void inAppMessageClicked(AndroidJavaObject result) {
-                _instance.InAppMessageClicked?.Invoke(null); // todo
+                _instance.InAppMessageTriggeredAction?.Invoke(null); // todo
             }
         }
 

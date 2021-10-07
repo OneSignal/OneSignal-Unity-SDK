@@ -926,6 +926,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
 namespace OneSignalSDK {
     public class OneSignalExampleBehaviour : MonoBehaviour {
         /// <summary>
@@ -967,7 +969,7 @@ namespace OneSignalSDK {
             OneSignal.Default.NotificationReceived += _notificationReceived;
             
             // Setup the below to listen for and respond to events from in app messages
-            OneSignal.Default.InAppMessageClicked += _iamClicked;
+            OneSignal.Default.InAppMessageTriggeredAction += IamTriggeredAction;
             
             // Setup the below to listen for and respond to state changes
             OneSignal.Default.PermissionStateChanged        += _permissionStateChanged;
@@ -977,31 +979,31 @@ namespace OneSignalSDK {
         }
 
         private void _notificationOpened(NotificationOpenedResult result) {
-            _log("Notification was opened");
+            _log($"Notification was opened with result:\n{JsonUtility.ToJson(result)}");
         }
 
         private void _notificationReceived(Notification notification) {
-            
+            _log($"Notification was received in foreground:\n{JsonUtility.ToJson(notification)}");
         }
 
-        private void _iamClicked(InAppMessageAction inAppMessageAction) {
-            
+        private void IamTriggeredAction(InAppMessageAction inAppMessageAction) {
+            _log($"IAM triggered action:\n{JsonUtility.ToJson(inAppMessageAction)}");
         }
 
         private void _permissionStateChanged(PermissionState current, PermissionState previous) {
-            
+            _log($"Permission state changed to:\n{JsonUtility.ToJson(current)}");
         }
 
         private void _pushStateChanged(PushSubscriptionState current, PushSubscriptionState previous) {
-            
+            _log($"Push state changed to:\n{JsonUtility.ToJson(current)}");
         }
 
         private void _emailStateChanged(EmailSubscriptionState current, EmailSubscriptionState previous) {
-            
+            _log($"Email state changed to:\n{JsonUtility.ToJson(current)}");
         }
 
         private void _smsStateChanged(SMSSubscriptionState current, SMSSubscriptionState previous) {
-            
+            _log($"SMS state changed to:\n{JsonUtility.ToJson(current)}");
         }
 
         public void Initialize() {
@@ -1112,17 +1114,17 @@ namespace OneSignalSDK {
 
         private void _log(object message) {
             Debug.Log(message);
-            console.text += $"\n<color=green><b>I></b></color>\t{message}";
+            console.text += $"\n<color=green><b>I></b></color> {message}";
         }
 
         private void _warn(object message) {
             Debug.LogWarning(message);
-            console.text += $"\n<color=orange><b>W></b></color>\t{message}";
+            console.text += $"\n<color=orange><b>W></b></color> {message}";
         }
 
         private void _error(object message) {
             Debug.LogError(message);
-            console.text += $"\n<color=red><b>E></b></color>\t{message}";
+            console.text += $"\n<color=red><b>E></b></color> {message}";
         }
     #endregion
 
