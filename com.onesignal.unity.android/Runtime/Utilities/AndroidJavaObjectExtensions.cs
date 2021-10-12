@@ -70,11 +70,6 @@ namespace OneSignalSDK {
         public static AndroidJavaObject ToMap(this Dictionary<string, object> source) {
             return null;
         }
-        
-        /*
-         * Collection
-         */
-
 
     }
 }

@@ -28,7 +28,11 @@
 using System;
 
 namespace OneSignalSDK {
+    /// <summary>
+    /// todo
+    /// </summary>
     [Serializable] public sealed class InAppMessage {
-        
+        /// <summary>todo</summary>
+        public string id;
     }
 }
