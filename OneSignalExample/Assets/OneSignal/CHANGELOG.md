@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [2.14.4]
+### Fixed
+- Removed use of C# 8.0 features to maintain compatibility
+### Changed
+- Updated included Android SDK to [3.16.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/3.16.1)
+  - Avoid continuing with null IAM message Ids [#1386](https://github.com/OneSignal/OneSignal-Android-SDK/pull/1386)
+- Updated included iOS SDK to version [2.16.7](https://github.com/OneSignal/OneSignal-iOS-SDK/tree/2.16.7/)
+  - In App Messaging now respects device orientation locks for Unity Applications [#1000](https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1000)
 ## [2.14.3]
 ### Fixed
 - Added a delayed call when attempting to reshow the `OneSignalSetupWindow` after importing packages.
@@ -30,10 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The OneSignal Unity SDK has now transitioned to [Unity Package Manager](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@1.8/manual/index.html) support
-    - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
+  - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.3...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.4...HEAD
+[2.14.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.3...2.14.4
 [2.14.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.2...2.14.3
 [2.14.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.1...2.14.2
 [2.14.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.0...2.14.1
