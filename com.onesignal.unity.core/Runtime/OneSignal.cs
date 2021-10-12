@@ -49,21 +49,17 @@ namespace OneSignalSDK {
         }
 
     #region Delegate Definitions
-        /*
-         * Notifications
-         */
-
         /// <summary>
-        /// When a push notification is received while the user is in your application.
+        /// When a push notification is received while the application is currently
         /// </summary>
-        /// <param name="notification"> The Notification dictionary filled from a serialized native OSNotification object</param>
-        public delegate void NotificationReceivedDelegate(Notification notification);
+        /// <param name="notification">todo</param>
+        public delegate void NotificationLifecycleDelegate(Notification notification);
 
         /// <summary>
-        /// When a push notification is opened.
+        /// When a push notification was acted on by the user.
         /// </summary>
         /// <param name="result">The Notification open result describing: 1. The notification opened 2. The action taken by the user. </param>
-        public delegate void NotificationOpenedDelegate(NotificationOpenedResult result);
+        public delegate void NotificationActionDelegate(NotificationOpenedResult result);
 
         /// <summary>
         /// todo
@@ -83,7 +79,7 @@ namespace OneSignalSDK {
         /// <typeparam name="TState"></typeparam>
         /// <param name="current"></param>
         /// <param name="previous"></param>
-        public delegate void OnStateChangeDelegate<in TState>(TState current, TState previous);
+        public delegate void StateChangeDelegate<in TState>(TState current, TState previous);
     #endregion
 
     #region Events
@@ -92,18 +88,14 @@ namespace OneSignalSDK {
          */
 
         /// <summary>
-        /// When an In App Message action is received. 
-        /// todo - is this desc accurate? is it ONLY IAM?
-        /// todo - more desc!
+        /// When an push notification has been received
         /// </summary>
-        public abstract event NotificationReceivedDelegate NotificationReceived;
+        public abstract event NotificationLifecycleDelegate NotificationReceived;
 
         /// <summary>
-        /// When an In App Message action is opened.
-        /// todo - is this desc accurate? is it ONLY IAM?
-        /// todo - more desc!
+        /// When a push notification has been opened by the user
         /// </summary>
-        public abstract event NotificationOpenedDelegate NotificationOpened;
+        public abstract event NotificationActionDelegate NotificationWasOpened;
 
         /*
          * In App Messages
@@ -135,28 +127,28 @@ namespace OneSignalSDK {
         public abstract event InAppMessageActionDelegate InAppMessageTriggeredAction;
 
         /*
-         * Data Changes
+         * States
          */
 
         /// <summary>
         /// todo - this
         /// </summary>
-        public abstract event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
+        public abstract event StateChangeDelegate<PermissionState> PermissionStateChanged;
 
         /// <summary>
         /// todo - this
         /// </summary>
-        public abstract event OnStateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
+        public abstract event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
 
         /// <summary>
         /// todo - this
         /// </summary>
-        public abstract event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        public abstract event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
 
         /// <summary>
         /// todo - this
         /// </summary>
-        public abstract event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+        public abstract event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
     #endregion
 
     #region SDK Setup
@@ -265,10 +257,10 @@ namespace OneSignalSDK {
         /// <summary>
         /// Tag player with a key value pair to later create segments on them at onesignal.com
         /// </summary>
-        /// <param name="tagName"></param>
-        /// <param name="tagValue"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
-        public abstract Task<bool> SendTag(string tagName, object tagValue);
+        public abstract Task<bool> SendTag(string key, object value);
 
         /// <summary>
         /// Tag player with a key value pairs to later create segments on them at onesignal.com
@@ -300,8 +292,8 @@ namespace OneSignalSDK {
 
     #region User Identification
         /// <summary>
-        /// Allows you to use your own application's user id to send OneSignal messages to your user. To tie a user to a
-        /// given user id, you can use this method.
+        /// Allows you to use your own application's user id to send OneSignal messages to your user. To tie the user
+        /// to a given user id, you can use this method.
         /// </summary>
         /// <param name="externalId">todo</param>
         /// <param name="authHash">If you have a backend server, we strongly recommend using
@@ -368,7 +360,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>
-        /// <remarks>This method must be called before OneSignal `initWithLaunchOptions` on iOS.</remarks>
+        /// <remarks>This method must be called before <see cref="OneSignal.Initialize"/> on iOS.</remarks>
         public abstract bool ShareLocation { get; set; }
     #endregion
 

@@ -33,13 +33,17 @@ namespace OneSignalSDK {
     /// 
     /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
-        public override event NotificationReceivedDelegate NotificationReceived;
-        public override event NotificationOpenedDelegate NotificationOpened;
+        public override event NotificationLifecycleDelegate NotificationReceived;
+        public override event NotificationActionDelegate NotificationWasOpened;
+        public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
+        public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
+        public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
+        public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
         public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
-        public override event OnStateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
-        public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
-        public override event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
+        public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
         public override bool PrivacyConsent {
             get => _getPrivacyConsent();
@@ -92,9 +96,9 @@ namespace OneSignalSDK {
             set => _setInAppMessagesArePaused(value);
         }
         
-        public override async Task<bool> SendTag(string tagName, object tagValue) {
+        public override async Task<bool> SendTag(string key, object value) {
             var proxy = new BooleanCallbackProxy();
-            _sendTag(tagName, tagValue.ToString(), proxy.OnResponse);
+            _sendTag(key, value.ToString(), proxy.OnResponse);
             return await proxy;
         }
 

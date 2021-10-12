@@ -33,13 +33,17 @@ namespace OneSignalSDK {
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>
     internal sealed class OneSignalNative : OneSignal {
-        public override event NotificationReceivedDelegate NotificationReceived;
-        public override event NotificationOpenedDelegate NotificationOpened;
+        public override event NotificationLifecycleDelegate NotificationReceived;
+        public override event NotificationActionDelegate NotificationWasOpened;
+        public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
+        public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
+        public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
+        public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
         public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event OnStateChangeDelegate<PermissionState> PermissionStateChanged;
-        public override event OnStateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
-        public override event OnStateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
-        public override event OnStateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
+        public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
@@ -91,7 +95,7 @@ namespace OneSignalSDK {
 
         public override bool InAppMessagesArePaused { get; set; }
 
-        public override Task<bool> SendTag(string tagName, object tagValue) {
+        public override Task<bool> SendTag(string key, object value) {
             return Task.FromResult(false);
         }
 
