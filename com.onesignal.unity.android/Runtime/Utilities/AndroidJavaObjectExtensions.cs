@@ -49,15 +49,13 @@ namespace OneSignalSDK {
         /// Converts from a Java org.json.JSONObject to a <see cref="Dictionary{TKey,TValue}"/>
         /// </summary>
         public static Dictionary<string, object> JSONObjectToDictionary(this AndroidJavaObject source)
-            => source == null ? null : Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object>;
+            => Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object>;
 
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java org.json.JSONObject
         /// </summary>
         public static AndroidJavaObject ToJSONObject<TKey, TValue>(this Dictionary<TKey, TValue> source)
-            => new AndroidJavaObject(JSONObjectClassName, Json.Serialize(source));
-
-        private const string JSONObjectClassName = "org.json.JSONObject";
+            => new AndroidJavaObject("org.json.JSONObject", Json.Serialize(source));
         
         /*
          * Map
