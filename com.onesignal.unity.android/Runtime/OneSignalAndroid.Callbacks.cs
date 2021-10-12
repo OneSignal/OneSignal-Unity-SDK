@@ -47,18 +47,6 @@ namespace OneSignalSDK {
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
             protected OneSignalAndroidJavaProxy(string listenerClassName)
                 : base(QualifiedSDKClass + "$" + listenerClassName) { }
-
-            /// <summary>helper for pulling state changes for observers</summary>
-            protected static (TState curr, TState prev) _getStatesChanges<TState>(AndroidJavaObject stateChanges) {
-                var currJO  = stateChanges.Call<AndroidJavaObject>("to");
-                var prevJO  = stateChanges.Call<AndroidJavaObject>("from");
-                var currStr = currJO.Call<string>("toString");
-                var prevStr = prevJO.Call<string>("toString");
-                var curr    = JsonUtility.FromJson<TState>(currStr);
-                var prev    = JsonUtility.FromJson<TState>(prevStr);
-
-                return (curr, prev);
-            }
         }
 
         private abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
@@ -102,7 +90,8 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onOSPermissionChanged(AndroidJavaObject stateChanges) {
-                _instance.PermissionStateChanged?.Invoke(null, null);
+                var (curr, prev) = _getStatesChanges<PermissionState>(stateChanges);
+                _instance.PermissionStateChanged?.Invoke(curr, prev);
             }
         }
 
@@ -141,51 +130,44 @@ namespace OneSignalSDK {
 
             /// <param name="context">Context</param>
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
-            public void remoteNotificationReceived(AndroidJavaObject context, AndroidJavaObject notificationReceivedEvent) {
-                _instance.NotificationReceived?.Invoke(null); // todo
-            }
+            public void remoteNotificationReceived(AndroidJavaObject context, AndroidJavaObject notificationReceivedEvent)
+                => _instance.NotificationReceived?.Invoke(_notificationFromEventJavaObject(notificationReceivedEvent));
         }
 
         private sealed class OSNotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
             public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler") { }
 
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
-            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) {
-                // todo
-            }
+            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent)
+                => _instance.NotificationReceived?.Invoke(_notificationFromEventJavaObject(notificationReceivedEvent));
         }
 
         private sealed class OSNotificationOpenedHandler : OneSignalAndroidJavaProxy {
             public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler") { }
 
             /// <param name="result">OSNotificationOpenedResult</param>
-            public void notificationOpened(AndroidJavaObject result) {
-                _instance.NotificationOpened?.Invoke(null); // todo
-            }
+            public void notificationOpened(AndroidJavaObject result)
+                => _instance.NotificationWasOpened?.Invoke(result.ToSerializable<NotificationOpenedResult>());
         }
         
         private sealed class OSInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
             public OSInAppMessageLifecycleHandler() : base("OSInAppMessageLifecycleHandler") { }
             
             /// <param name="message">OSInAppMessage</param>
-            public void onWillDisplayInAppMessage(AndroidJavaObject message) {
-                // todo
-            }
+            public void onWillDisplayInAppMessage(AndroidJavaObject message)
+                => _instance.InAppMessageWillDisplay?.Invoke(_inAppMessageFromJavaObject(message));
             
             /// <param name="message">OSInAppMessage</param>
-            public void onDidDisplayInAppMessage(AndroidJavaObject message) {
-                // todo
-            }
+            public void onDidDisplayInAppMessage(AndroidJavaObject message)
+                => _instance.InAppMessageDidDisplay?.Invoke(_inAppMessageFromJavaObject(message));
             
             /// <param name="message">OSInAppMessage</param>
-            public void onWillDismissInAppMessage(AndroidJavaObject message) {
-                // todo
-            }
+            public void onWillDismissInAppMessage(AndroidJavaObject message)
+                => _instance.InAppMessageWillDismiss?.Invoke(_inAppMessageFromJavaObject(message));
             
             /// <param name="message">OSInAppMessage</param>
-            public void onDidDismissInAppMessage(AndroidJavaObject message) {
-                // todo
-            }
+            public void onDidDismissInAppMessage(AndroidJavaObject message)
+                => _instance.InAppMessageDidDismiss?.Invoke(_inAppMessageFromJavaObject(message));
         }
 
         private sealed class OSInAppMessageClickHandler : OneSignalAndroidJavaProxy {
