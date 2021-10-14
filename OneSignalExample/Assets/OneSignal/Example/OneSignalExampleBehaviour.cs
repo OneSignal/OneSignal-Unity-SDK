@@ -925,6 +925,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -939,6 +940,11 @@ namespace OneSignalSDK {
         /// set to an external user id you would like to test notifications against
         /// </summary>
         public string externalId = "EXTERNAL_USER_ID";
+        
+        /// <summary>
+        /// set to an external user id you would like to test notifications against
+        /// </summary>
+        public string phoneNumber = "PHONE_NUMBER";
 
         /// <summary>
         /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
@@ -951,6 +957,43 @@ namespace OneSignalSDK {
         /// </summary>
         public bool requiresUserPrivacyConsent;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string tagKey;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string tagValue;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string triggerKey;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string triggerValue;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string outcomeKey;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public float outcomeValue;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string outcomeUniqueKey;
+        
+        private OneSignal _onesignal = OneSignal.Default;
+        
         /// <summary>
         /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
         /// MonoBehaviour in your opening Scene
@@ -965,7 +1008,7 @@ namespace OneSignalSDK {
             OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
             
             // Setup the below to listen for and respond to events from notifications
-            OneSignal.Default.NotificationOpened   += _notificationOpened;
+            OneSignal.Default.NotificationWasOpened   += _notificationOpened;
             OneSignal.Default.NotificationReceived += _notificationReceived;
             
             // Setup the below to listen for and respond to events from in app messages
@@ -977,6 +1020,10 @@ namespace OneSignalSDK {
             OneSignal.Default.EmailSubscriptionStateChanged += _emailStateChanged;
             OneSignal.Default.SMSSubscriptionStateChanged   += _smsStateChanged;
         }
+        
+        /*
+         * SDK events
+         */
 
         private void _notificationOpened(NotificationOpenedResult result) {
             _log($"Notification was opened with result:\n{JsonUtility.ToJson(result)}");
@@ -1005,6 +1052,10 @@ namespace OneSignalSDK {
         private void _smsStateChanged(SMSSubscriptionState current, SMSSubscriptionState previous) {
             _log($"SMS state changed to:\n{JsonUtility.ToJson(current)}");
         }
+        
+        /*
+         * SDK setup
+         */
 
         public void Initialize() {
             _log("Initializing...");
@@ -1036,11 +1087,14 @@ namespace OneSignalSDK {
             // AlertLevel uses the standard Unity LogType
             OneSignal.Default.AlertLevel = newLevel;
         }
+        
+        /*
+         * User identification
+         */
 
-        public async void SetEmail(string email) {
+        public async void SetEmail() {
             _log($"Calling SetEmail({email}) and awaiting result...");
             
-            // You can choose to await the result of SetEmail if the invoking method is async
             var result = await OneSignal.Default.SetEmail(email);
             
             if (result)
@@ -1049,10 +1103,9 @@ namespace OneSignalSDK {
                 _error("Set failed");
         }
 
-        public async void SetExternalId(string externalId) {
+        public async void SetExternalId() {
             _log($"Calling SetExternalUserId({externalId}) and awaiting result...");
             
-            // You can choose to await the result of SetExternalUserId if the invoking method is async
             var result = await OneSignal.Default.SetExternalUserId(externalId);
             
             if (result)
@@ -1061,10 +1114,9 @@ namespace OneSignalSDK {
                 _error("Set failed");
         }
 
-        public async void SetSMSNumber(string phoneNumber) {
+        public async void SetSMSNumber() {
             _log($"Calling SetSMSNumber({phoneNumber}) and awaiting result...");
             
-            // You can choose to await the result of SetSMSNumber if the invoking method is async
             var result = await OneSignal.Default.SetSMSNumber(phoneNumber);
             
             if (result)
@@ -1072,11 +1124,14 @@ namespace OneSignalSDK {
             else
                 _error("Set failed");
         }
+        
+        /*
+         * Push
+         */
 
         public async void PromptForPush() {
             _log("Calling PromptForPushNotificationsWithUserResponse and awaiting result...");
 
-            // You can choose to await the result of PromptForPushNotificationsWithUserResponse if the invoking method is async
             var result = await OneSignal.Default.PromptForPushNotificationsWithUserResponse();
 
             _log($"Prompt completed with <b>{result}</b>");
@@ -1089,14 +1144,129 @@ namespace OneSignalSDK {
 
         public async void SendPushToSelf() {
             _log("Sending push notification to this device via PostNotification...");
-            var pushOptions = new Dictionary<string, object>();
-            // todo - options
+            
+            // Check out our API docs at https://documentation.onesignal.com/reference/create-notification
+            // for a full list of possibilities for notification options.
+            var pushOptions = new Dictionary<string, object> {
+                ["contents"] = new Dictionary<string, string> {
+                    ["en"] = "Test Message"
+                },
+
+                // Send notification to this user
+                ["include_external_user_ids"] = new List<string> { externalId },
+
+                // Example of scheduling a notification in the future
+                ["send_after"] = DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U")
+            };
 
             var result = await OneSignal.Default.PostNotification(pushOptions);
+            _log($"Notification sent with result {result}");
+        }
+        
+        /*
+         * In App Messages
+         */
+
+        public void SetTrigger() {
+            _log($"Setting trigger with key {triggerKey} and value {triggerValue}");
+            OneSignal.Default.SetTrigger(triggerKey, triggerValue);
         }
 
-        public async void SendTag(string name, string value) {
+        public void GetTrigger() {
+            _log($"Getting trigger for key {triggerKey}");
+            var value = OneSignal.Default.GetTrigger(triggerKey);
+            _log($"Trigger for key {triggerKey} is of value {value}");
+        }
+
+        public void RemoveTrigger() {
+            _log($"Removing trigger for key {triggerKey}");
+            OneSignal.Default.RemoveTrigger(triggerKey);
+        }
+
+        public void GetTriggers() {
+            _log("Getting all trigger keys and values");
+            var triggers = OneSignal.Default.GetTriggers();
             
+            if (Json.Serialize(triggers) is string triggersString)
+                _log("Current triggers are " + triggersString);
+            else
+                _error("Could not serialize triggers");
+        }
+        
+        public void ToggleInAppMessagesArePaused() {
+            _log($"Toggling InAppMessagesArePaused to {!OneSignal.Default.InAppMessagesArePaused}");
+            OneSignal.Default.InAppMessagesArePaused = !OneSignal.Default.InAppMessagesArePaused;
+        }
+        
+        /*
+         * Tags
+         */
+
+        public async void SendTag() {
+            _log($"Sending tag with key {tagKey} and value {tagValue} and awaiting result...");
+
+            var result = await OneSignal.Default.SendTag(tagKey, tagValue);
+            
+            if (result)
+                _log("Send succeeded");
+            else
+                _error("Send failed");
+        }
+
+        public async void GetTags() {
+            _log("Requesting all tag keys and values for this user...");
+            var tags = await OneSignal.Default.GetTags();
+            
+            if (Json.Serialize(tags) is string tagsString)
+                _log("Current tags are " + tagsString);
+            else
+                _error("Could not serialize tags");
+        }
+        
+        /*
+         * Outcomes
+         */
+
+        public async void SendOutcome() {
+            _log($"Sending outcome with key {outcomeKey} and awaiting result...");
+
+            var result = await OneSignal.Default.SendOutcome(outcomeKey);
+            
+            if (result)
+                _log("Send succeeded");
+            else
+                _error("Send failed");
+        }
+
+        public async void SendUniqueOutcome() {
+            _log($"Sending tag with key {outcomeKey} and awaiting result...");
+
+            var result = await OneSignal.Default.SendUniqueOutcome(outcomeUniqueKey);
+            
+            if (result)
+                _log("Send succeeded");
+            else
+                _error("Send failed");
+        }
+
+        public async void SendOutcomeWithValue() {
+            _log($"Sending tag with key {outcomeKey} and value {outcomeValue} and awaiting result...");
+
+            var result = await OneSignal.Default.SendOutcomeWithValue(outcomeKey, outcomeValue);
+            
+            if (result)
+                _log("Send succeeded");
+            else
+                _error("Send failed");
+        }
+        
+        /*
+         * Location
+         */
+        
+        public void ToggleShareLocation() {
+            _log($"Toggling ShareLocation to {!OneSignal.Default.ShareLocation}");
+            OneSignal.Default.ShareLocation = !OneSignal.Default.ShareLocation;
         }
 
     #region Rendering
@@ -1105,6 +1275,20 @@ namespace OneSignalSDK {
          */
 
         public Text console;
+
+        public void SetExternalIdString(string newVal) => externalId = newVal;
+        public void SetEmailString(string newVal) => email = newVal;
+        public void SetPhoneNumberString(string newVal) => phoneNumber = newVal;
+        
+        public void SetTriggerKey(string newVal) => triggerKey = newVal;
+        public void SetTriggerValue(string newVal) => triggerValue = newVal;
+        
+        public void SetTagKey(string newVal) => tagKey = newVal;
+        public void SetTagValue(string newVal) => tagValue = newVal;
+        
+        public void SetOutcomeKey(string newVal) => outcomeKey = newVal;
+        public void SetOutcomeValue(float newVal) => outcomeValue = newVal;
+        public void SetOutcomeUniqueKey(string newVal) => outcomeUniqueKey = newVal;
         
         private void Awake() {
             SDKDebug.LogIntercept   += _log;

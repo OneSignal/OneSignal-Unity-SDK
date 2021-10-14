@@ -120,7 +120,7 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
-        public override async Task<bool> DeleteTags(IEnumerable<string> keys) {
+        public override async Task<bool> DeleteTags(params string[] keys) {
             var proxy = new BooleanCallbackProxy();
             _deleteTags(Json.Serialize(keys), proxy.OnResponse);
             return await proxy;
