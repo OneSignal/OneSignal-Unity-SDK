@@ -83,7 +83,7 @@ namespace OneSignalSDK {
              * Should only invoke once when your app is loaded.
              */
             _onesignal.NotificationReceived += HandleNotificationReceived;
-            _onesignal.NotificationOpened   += HandleNotificationOpened;
+            _onesignal.NotificationWasOpened   += HandleNotificationOpened;
             _onesignal.InAppMessageTriggeredAction  += OnInAppMessageTriggeredAction;
 
             _onesignal.Initialize(appId);

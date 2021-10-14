@@ -129,7 +129,7 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
-        public override async Task<bool> DeleteTags(IEnumerable<string> keys) {
+        public override async Task<bool> DeleteTags(params string[] keys) {
             var proxy = new ChangeTagsUpdateHandler();
             _sdkClass.CallStatic("deleteTags", keys.ToList(), proxy);
             return await proxy;

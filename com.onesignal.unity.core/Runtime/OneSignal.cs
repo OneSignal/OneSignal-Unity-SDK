@@ -287,7 +287,7 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="keys">todo</param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
-        public abstract Task<bool> DeleteTags(IEnumerable<string> keys);
+        public abstract Task<bool> DeleteTags(params string[] keys);
     #endregion
 
     #region User Identification
@@ -344,7 +344,6 @@ namespace OneSignalSDK {
         /// If your app implements logout functionality, you can call LogOut to dissociate the email, sms, and/or
         /// external user id from the device
         /// </summary>
-        /// <param name="options">todo - desc. Defaults to all</param>
         public abstract Task<Dictionary<string, object>> LogOut(
             LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
         );

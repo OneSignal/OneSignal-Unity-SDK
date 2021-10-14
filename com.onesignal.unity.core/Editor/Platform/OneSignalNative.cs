@@ -111,7 +111,7 @@ namespace OneSignalSDK {
             return Task.FromResult(false);
         }
 
-        public override Task<bool> DeleteTags(IEnumerable<string> keys) {
+        public override Task<bool> DeleteTags(params string[] keys) {
             return Task.FromResult(false);
         }
 
