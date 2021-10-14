@@ -38,10 +38,13 @@ namespace OneSignalSDK {
 
             // only 1 sdk should be available for any given supported platform
             var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignal>("OneSignal");
-            if (Activator.CreateInstance(availableSDKs.First()) is OneSignal sdk)
+            if (Activator.CreateInstance(availableSDKs.First()) is OneSignal sdk) {
                 _default = sdk;
-            else
+                SDKDebug.Log($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
+            }
+            else {
                 SDKDebug.Error("Could not find an implementation of OneSignal SDK to use!");
+            }
             
             return _default;
         }

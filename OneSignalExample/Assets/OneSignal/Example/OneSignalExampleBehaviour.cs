@@ -992,8 +992,6 @@ namespace OneSignalSDK {
         /// </summary>
         public string outcomeUniqueKey;
         
-        private OneSignal _onesignal = OneSignal.Default;
-        
         /// <summary>
         /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
         /// MonoBehaviour in your opening Scene
@@ -1202,15 +1200,26 @@ namespace OneSignalSDK {
          * Tags
          */
 
-        public async void SendTag() {
-            _log($"Sending tag with key {tagKey} and value {tagValue} and awaiting result...");
+        public async void SetTag() {
+            _log($"Setting tag with key {tagKey} and value {tagValue} and awaiting result...");
 
             var result = await OneSignal.Default.SendTag(tagKey, tagValue);
             
             if (result)
-                _log("Send succeeded");
+                _log("Set succeeded");
             else
-                _error("Send failed");
+                _error("Set failed");
+        }
+
+        public async void RemoveTag() {
+            _log($"Removing tag for key {triggerKey} and awaiting result...");
+
+            var result = await OneSignal.Default.DeleteTag(tagKey);
+            
+            if (result)
+                _log("Remove succeeded");
+            else
+                _error("Remove failed");
         }
 
         public async void GetTags() {
@@ -1227,7 +1236,7 @@ namespace OneSignalSDK {
          * Outcomes
          */
 
-        public async void SendOutcome() {
+        public async void SetOutcome() {
             _log($"Sending outcome with key {outcomeKey} and awaiting result...");
 
             var result = await OneSignal.Default.SendOutcome(outcomeKey);
@@ -1238,8 +1247,8 @@ namespace OneSignalSDK {
                 _error("Send failed");
         }
 
-        public async void SendUniqueOutcome() {
-            _log($"Sending tag with key {outcomeKey} and awaiting result...");
+        public async void SetUniqueOutcome() {
+            _log($"Setting outcome with key {outcomeKey} and awaiting result...");
 
             var result = await OneSignal.Default.SendUniqueOutcome(outcomeUniqueKey);
             
@@ -1249,8 +1258,8 @@ namespace OneSignalSDK {
                 _error("Send failed");
         }
 
-        public async void SendOutcomeWithValue() {
-            _log($"Sending tag with key {outcomeKey} and value {outcomeValue} and awaiting result...");
+        public async void SetOutcomeWithValue() {
+            _log($"Setting outcome with key {outcomeKey} and value {outcomeValue} and awaiting result...");
 
             var result = await OneSignal.Default.SendOutcomeWithValue(outcomeKey, outcomeValue);
             
@@ -1263,6 +1272,11 @@ namespace OneSignalSDK {
         /*
          * Location
          */
+
+        public void PromptLocation() {
+            _log("Opening prompt to ask for user consent to access location");
+            OneSignal.Default.PromptLocation();
+        }
         
         public void ToggleShareLocation() {
             _log($"Toggling ShareLocation to {!OneSignal.Default.ShareLocation}");
@@ -1287,7 +1301,7 @@ namespace OneSignalSDK {
         public void SetTagValue(string newVal) => tagValue = newVal;
         
         public void SetOutcomeKey(string newVal) => outcomeKey = newVal;
-        public void SetOutcomeValue(float newVal) => outcomeValue = newVal;
+        public void SetOutcomeValue(string newVal) => outcomeValue = Convert.ToSingle(newVal);
         public void SetOutcomeUniqueKey(string newVal) => outcomeUniqueKey = newVal;
         
         private void Awake() {
