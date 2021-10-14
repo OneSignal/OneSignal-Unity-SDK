@@ -1,11 +1,10 @@
 {
     "name": "OneSignal.iOS",
+    "rootNamespace": "",
     "references": [
         "OneSignal.Core"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
-        "Editor",
         "iOS"
     ],
     "excludePlatforms": [],
@@ -13,5 +12,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

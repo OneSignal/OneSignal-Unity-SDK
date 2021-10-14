@@ -63,7 +63,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// Used to provide a reference for and sets up the global callbacks
         /// </summary>
-        internal OneSignalAndroid() {
+        public OneSignalAndroid() {
             if (_instance != null)
                 SDKDebug.Error("Additional instance of OneSignalAndroid created.");
             
