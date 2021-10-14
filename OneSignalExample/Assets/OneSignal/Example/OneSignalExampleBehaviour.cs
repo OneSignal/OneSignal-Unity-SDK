@@ -988,11 +988,6 @@ namespace OneSignalSDK {
         public float outcomeValue;
         
         /// <summary>
-        /// 
-        /// </summary>
-        public string outcomeUniqueKey;
-        
-        /// <summary>
         /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
         /// MonoBehaviour in your opening Scene
         /// </summary>
@@ -1061,18 +1056,18 @@ namespace OneSignalSDK {
         }
 
         public void ToggleRequiresPrivacyConsent() {
-            _log($"Toggling RequiresPrivacyConsent to {!OneSignal.Default.RequiresPrivacyConsent}");
+            _log($"Toggling RequiresPrivacyConsent to <b>{!OneSignal.Default.RequiresPrivacyConsent}</b>");
             OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
         }
 
         public void TogglePrivacyConsent() {
-            _log($"Toggling PrivacyConsent to {!OneSignal.Default.PrivacyConsent}");
+            _log($"Toggling PrivacyConsent to <b>{!OneSignal.Default.PrivacyConsent}</b>");
             OneSignal.Default.PrivacyConsent = !OneSignal.Default.PrivacyConsent;
         }
 
         public void SetLogLevel() {
             var newLevel = _nextEnum(OneSignal.Default.LogLevel);
-            _log($"Setting LogLevel to {newLevel}");
+            _log($"Setting LogLevel to <b>{newLevel}</b>");
             
             // LogLevel uses the standard Unity LogType
             OneSignal.Default.LogLevel = newLevel;
@@ -1080,7 +1075,7 @@ namespace OneSignalSDK {
 
         public void SetAlertLevel() {
             var newLevel = _nextEnum(OneSignal.Default.AlertLevel);
-            _log($"Setting AlertLevel to {newLevel}");
+            _log($"Setting AlertLevel to <b>{newLevel}</b>");
             
             // AlertLevel uses the standard Unity LogType
             OneSignal.Default.AlertLevel = newLevel;
@@ -1091,7 +1086,7 @@ namespace OneSignalSDK {
          */
 
         public async void SetEmail() {
-            _log($"Calling SetEmail({email}) and awaiting result...");
+            _log($"Calling SetEmail(<b>{email}</b>) and awaiting result...");
             
             var result = await OneSignal.Default.SetEmail(email);
             
@@ -1102,7 +1097,7 @@ namespace OneSignalSDK {
         }
 
         public async void SetExternalId() {
-            _log($"Calling SetExternalUserId({externalId}) and awaiting result...");
+            _log($"Calling SetExternalUserId(<b>{externalId}</b>) and awaiting result...");
             
             var result = await OneSignal.Default.SetExternalUserId(externalId);
             
@@ -1113,7 +1108,7 @@ namespace OneSignalSDK {
         }
 
         public async void SetSMSNumber() {
-            _log($"Calling SetSMSNumber({phoneNumber}) and awaiting result...");
+            _log($"Calling SetSMSNumber(<b>{phoneNumber}</b>) and awaiting result...");
             
             var result = await OneSignal.Default.SetSMSNumber(phoneNumber);
             
@@ -1158,7 +1153,11 @@ namespace OneSignalSDK {
             };
 
             var result = await OneSignal.Default.PostNotification(pushOptions);
-            _log($"Notification sent with result {result}");
+            
+            if (Json.Serialize(result) is string resultString)
+                _log($"Notification sent with result <b>{resultString}</b>");
+            else
+                _error("Could not serialize result of PostNotification");
         }
         
         /*
@@ -1166,18 +1165,18 @@ namespace OneSignalSDK {
          */
 
         public void SetTrigger() {
-            _log($"Setting trigger with key {triggerKey} and value {triggerValue}");
+            _log($"Setting trigger with key <b>{triggerKey}</b> and value <b>{triggerValue}</b>");
             OneSignal.Default.SetTrigger(triggerKey, triggerValue);
         }
 
         public void GetTrigger() {
-            _log($"Getting trigger for key {triggerKey}");
+            _log($"Getting trigger for key <b>{triggerKey}</b>");
             var value = OneSignal.Default.GetTrigger(triggerKey);
-            _log($"Trigger for key {triggerKey} is of value {value}");
+            _log($"Trigger for key <b>{triggerKey}</b> is of value <b>{value}</b>");
         }
 
         public void RemoveTrigger() {
-            _log($"Removing trigger for key {triggerKey}");
+            _log($"Removing trigger for key <b>{triggerKey}</b>");
             OneSignal.Default.RemoveTrigger(triggerKey);
         }
 
@@ -1186,13 +1185,13 @@ namespace OneSignalSDK {
             var triggers = OneSignal.Default.GetTriggers();
             
             if (Json.Serialize(triggers) is string triggersString)
-                _log("Current triggers are " + triggersString);
+                _log($"Current triggers are <b>{triggersString}</b>");
             else
                 _error("Could not serialize triggers");
         }
         
         public void ToggleInAppMessagesArePaused() {
-            _log($"Toggling InAppMessagesArePaused to {!OneSignal.Default.InAppMessagesArePaused}");
+            _log($"Toggling InAppMessagesArePaused to <b>{!OneSignal.Default.InAppMessagesArePaused}</b>");
             OneSignal.Default.InAppMessagesArePaused = !OneSignal.Default.InAppMessagesArePaused;
         }
         
@@ -1201,7 +1200,7 @@ namespace OneSignalSDK {
          */
 
         public async void SetTag() {
-            _log($"Setting tag with key {tagKey} and value {tagValue} and awaiting result...");
+            _log($"Setting tag with key <b>{tagKey}</b> and value <b>{tagValue}</b> and awaiting result...");
 
             var result = await OneSignal.Default.SendTag(tagKey, tagValue);
             
@@ -1212,7 +1211,7 @@ namespace OneSignalSDK {
         }
 
         public async void RemoveTag() {
-            _log($"Removing tag for key {triggerKey} and awaiting result...");
+            _log($"Removing tag for key <b>{triggerKey}</b> and awaiting result...");
 
             var result = await OneSignal.Default.DeleteTag(tagKey);
             
@@ -1227,7 +1226,7 @@ namespace OneSignalSDK {
             var tags = await OneSignal.Default.GetTags();
             
             if (Json.Serialize(tags) is string tagsString)
-                _log("Current tags are " + tagsString);
+                _log($"Current tags are <b>{tagsString}</b>");
             else
                 _error("Could not serialize tags");
         }
@@ -1237,7 +1236,7 @@ namespace OneSignalSDK {
          */
 
         public async void SetOutcome() {
-            _log($"Sending outcome with key {outcomeKey} and awaiting result...");
+            _log($"Sending outcome with key <b>{outcomeKey}</b> and awaiting result...");
 
             var result = await OneSignal.Default.SendOutcome(outcomeKey);
             
@@ -1248,9 +1247,9 @@ namespace OneSignalSDK {
         }
 
         public async void SetUniqueOutcome() {
-            _log($"Setting outcome with key {outcomeKey} and awaiting result...");
+            _log($"Setting unique outcome with key <b>{outcomeKey}</b> and awaiting result...");
 
-            var result = await OneSignal.Default.SendUniqueOutcome(outcomeUniqueKey);
+            var result = await OneSignal.Default.SendUniqueOutcome(outcomeKey);
             
             if (result)
                 _log("Send succeeded");
@@ -1259,7 +1258,7 @@ namespace OneSignalSDK {
         }
 
         public async void SetOutcomeWithValue() {
-            _log($"Setting outcome with key {outcomeKey} and value {outcomeValue} and awaiting result...");
+            _log($"Setting outcome with key <b>{outcomeKey}</b> and value <b>{outcomeValue}</b> and awaiting result...");
 
             var result = await OneSignal.Default.SendOutcomeWithValue(outcomeKey, outcomeValue);
             
@@ -1279,7 +1278,7 @@ namespace OneSignalSDK {
         }
         
         public void ToggleShareLocation() {
-            _log($"Toggling ShareLocation to {!OneSignal.Default.ShareLocation}");
+            _log($"Toggling ShareLocation to <b>{!OneSignal.Default.ShareLocation}</b>");
             OneSignal.Default.ShareLocation = !OneSignal.Default.ShareLocation;
         }
 
@@ -1302,7 +1301,6 @@ namespace OneSignalSDK {
         
         public void SetOutcomeKey(string newVal) => outcomeKey = newVal;
         public void SetOutcomeValue(string newVal) => outcomeValue = Convert.ToSingle(newVal);
-        public void SetOutcomeUniqueKey(string newVal) => outcomeUniqueKey = newVal;
         
         private void Awake() {
             SDKDebug.LogIntercept   += _log;
