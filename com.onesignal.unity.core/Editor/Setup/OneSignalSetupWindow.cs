@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using OneSignalSDK;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,7 +47,7 @@ public sealed class OneSignalSetupWindow : EditorWindow
     
     private void OnEnable()
     {
-        var stepTypes = _findAllAssignableTypes<OneSignalSetupStep>("OneSignal");
+        var stepTypes = ReflectionHelpers.FindAllAssignableTypes<OneSignalSetupStep>("OneSignal");
         var steps = new List<OneSignalSetupStep>();
 
         foreach (var stepType in stepTypes)
@@ -168,20 +169,5 @@ public sealed class OneSignalSetupWindow : EditorWindow
         _boxTexture = boxContent.image;
         
         _guiSetupComplete = true;
-    }
-
-    private static IEnumerable<Type> _findAllAssignableTypes<T>(string assemblyFilter)
-    {
-        var assignableType = typeof(T);
-        
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        var filteredAssemblies = assemblies.Where(assembly 
-            => assembly.FullName.Contains(assemblyFilter));
-        
-        var allTypes = filteredAssemblies.SelectMany(assembly => assembly.GetTypes());
-        var assignableTypes = allTypes.Where(type 
-            => type != assignableType && assignableType.IsAssignableFrom(type));
-
-        return assignableTypes;
     }
 }
