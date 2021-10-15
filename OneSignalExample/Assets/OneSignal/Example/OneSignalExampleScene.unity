@@ -1574,10 +1574,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a40a711031e4cb8b9b3f674dda19d55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  email: EMAIL_ADDRESS
-  externalId: EXTERNAL_USER_ID
-  phoneNumber: PHONE_NUMBER
-  appId: ONESIGNAL_APP_ID
+  email: 
+  externalId: 
+  phoneNumber: 
+  appId: 
   requiresUserPrivacyConsent: 0
   tagKey: 
   tagValue: 
