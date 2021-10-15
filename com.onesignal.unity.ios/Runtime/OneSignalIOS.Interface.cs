@@ -38,12 +38,17 @@ namespace OneSignalSDK {
         
         [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback(StringResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback(StringResponseDelegate callback);
+        
+        [DllImport("__Internal")] private static extern void _setInAppMessageWillDisplayCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageDidDisplayCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageWillDismissCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageDidDismissCallback(StringResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _setInAppMessageClickedCallback(StringResponseDelegate callback);
         
-        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback(StateChangeDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback(StateChangeDelegate callback);
+        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback(StateChangeDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback(StateChangeDelegate callback);
         
         /*
          * Direct methods
