@@ -1236,14 +1236,14 @@ namespace OneSignalSDK {
          */
 
         public async void SetOutcome() {
-            _log($"Sending outcome with key <b>{outcomeKey}</b> and awaiting result...");
+            _log($"Setting outcome with key <b>{outcomeKey}</b> and awaiting result...");
 
             var result = await OneSignal.Default.SendOutcome(outcomeKey);
             
             if (result)
-                _log("Send succeeded");
+                _log("Set succeeded");
             else
-                _error("Send failed");
+                _error("Set failed");
         }
 
         public async void SetUniqueOutcome() {
@@ -1252,9 +1252,9 @@ namespace OneSignalSDK {
             var result = await OneSignal.Default.SendUniqueOutcome(outcomeKey);
             
             if (result)
-                _log("Send succeeded");
+                _log("Set succeeded");
             else
-                _error("Send failed");
+                _error("Set failed");
         }
 
         public async void SetOutcomeWithValue() {
@@ -1263,9 +1263,9 @@ namespace OneSignalSDK {
             var result = await OneSignal.Default.SendOutcomeWithValue(outcomeKey, outcomeValue);
             
             if (result)
-                _log("Send succeeded");
+                _log("Set succeeded");
             else
-                _error("Send failed");
+                _error("Set failed");
         }
         
         /*
