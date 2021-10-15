@@ -934,22 +934,22 @@ namespace OneSignalSDK {
         /// <summary>
         /// set to an email address you would like to test notifications against
         /// </summary>
-        public string email = "EMAIL_ADDRESS";
+        public string email;
 
         /// <summary>
         /// set to an external user id you would like to test notifications against
         /// </summary>
-        public string externalId = "EXTERNAL_USER_ID";
+        public string externalId;
         
         /// <summary>
         /// set to an external user id you would like to test notifications against
         /// </summary>
-        public string phoneNumber = "PHONE_NUMBER";
+        public string phoneNumber;
 
         /// <summary>
         /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
         /// </summary>
-        public string appId = "ONESIGNAL_APP_ID";
+        public string appId;
 
         /// <summary>
         /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
