@@ -95,7 +95,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// When a push notification has been opened by the user
         /// </summary>
-        public abstract event NotificationActionDelegate NotificationWasOpened;
+        public abstract event NotificationActionDelegate NotificationOpened;
 
         /*
          * In App Messages

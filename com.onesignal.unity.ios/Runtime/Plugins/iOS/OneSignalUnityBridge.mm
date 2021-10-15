@@ -30,6 +30,7 @@
 
 typedef void (*BooleanResponseDelegate)(bool response);
 typedef void (*StringResponseDelegate)(const char* response);
+typedef void (*StateChangeDelegate)(const char* current, const char* previous);
 
 /*
  * Helpers
@@ -65,13 +66,21 @@ void handleOutcomeResult(OSOutcomeEvent *outcome, BooleanResponseDelegate callba
  * Observer singleton for global callbacks
  */
 
-@interface OneSignalObserver : NSObject <OSPermissionObserver, OSSubscriptionObserver, OSEmailSubscriptionObserver, OSSMSSubscriptionObserver>
+@interface OneSignalObserver : NSObject <OSPermissionObserver,
+                                         OSSubscriptionObserver,
+                                         OSEmailSubscriptionObserver,
+                                         OSSMSSubscriptionObserver,
+                                         OSInAppMessageLifecycleHandler>
 
 + (instancetype) sharedObserver;
-@property StringResponseDelegate permissionDelegate;
-@property StringResponseDelegate subscriptionDelegate;
-@property StringResponseDelegate emailDelegate;
-@property StringResponseDelegate smsDelegate;
+@property StateChangeDelegate permissionDelegate;
+@property StateChangeDelegate subscriptionDelegate;
+@property StateChangeDelegate emailDelegate;
+@property StateChangeDelegate smsDelegate;
+@property StringResponseDelegate iamWillDisplayDelegate;
+@property StringResponseDelegate iamDidDisplayDelegate;
+@property StringResponseDelegate iamWillDismissDelegate;
+@property StringResponseDelegate iamDidDismissDelegate;
 
 @end
 
@@ -86,20 +95,68 @@ void handleOutcomeResult(OSOutcomeEvent *outcome, BooleanResponseDelegate callba
     return _sharedObject;
 }
 
+- (instancetype) init {
+    if (self = [super init]) {
+        [OneSignal setInAppMessageLifecycleHandler:self];
+        [OneSignal addPermissionObserver:self];
+        [OneSignal addSubscriptionObserver:self];
+        [OneSignal addEmailSubscriptionObserver:self];
+        [OneSignal addSMSSubscriptionObserver:self];
+    }
+
+    return self;
+}
+
 - (void)onOSPermissionChanged:(OSPermissionStateChanges * _Nonnull)stateChanges {
-    _permissionDelegate(jsonStringFromDictionary([stateChanges toDictionary]));
+    if (_permissionDelegate != nil) {
+        auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        _permissionDelegate(curr, prev);
+    }
 }
 
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges * _Nonnull)stateChanges {
-    _subscriptionDelegate(jsonStringFromDictionary([stateChanges toDictionary]));
+    if (_subscriptionDelegate != nil) {
+        auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        _subscriptionDelegate(curr, prev);
+    }
 }
 
 - (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges * _Nonnull)stateChanges {
-    _emailDelegate(jsonStringFromDictionary([stateChanges toDictionary]));
+    if (_emailDelegate != nil) {
+        auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        _emailDelegate(curr, prev);
+    }
 }
 
 - (void)onOSSMSSubscriptionChanged:(OSSMSSubscriptionStateChanges * _Nonnull)stateChanges {
-    _smsDelegate(jsonStringFromDictionary([stateChanges toDictionary]));
+    if (_smsDelegate != nil) {
+        auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        _smsDelegate(curr, prev);
+    }
+}
+
+- (void)onWillDisplayInAppMessage:(OSInAppMessage *)message {
+    if (_iamWillDisplayDelegate != nil)
+        _iamWillDisplayDelegate([message.messageId UTF8String]);
+}
+
+- (void)onDidDisplayInAppMessage:(OSInAppMessage *)message {
+    if (_iamDidDisplayDelegate != nil)
+        _iamDidDisplayDelegate([message.messageId UTF8String]);
+}
+
+- (void)onWillDismissInAppMessage:(OSInAppMessage *)message {
+    if (_iamWillDismissDelegate != nil)
+        _iamWillDismissDelegate([message.messageId UTF8String]);
+}
+
+- (void)onDidDismissInAppMessage:(OSInAppMessage *)message {
+    if (_iamDidDismissDelegate != nil)
+        _iamDidDismissDelegate([message.messageId UTF8String]);
 }
 
 @end
@@ -124,6 +181,22 @@ extern "C" {
         }];
     }
 
+    void _setInAppMessageWillDisplayCallback(StringResponseDelegate callback) {
+        [[OneSignalObserver sharedObserver] setIamWillDisplayDelegate:callback];
+    }
+
+    void _setInAppMessageDidDisplayCallback(StringResponseDelegate callback) {
+        [[OneSignalObserver sharedObserver] setIamDidDisplayDelegate:callback];
+    }
+
+    void _setInAppMessageWillDismissCallback(StringResponseDelegate callback) {
+        [[OneSignalObserver sharedObserver] setIamWillDismissDelegate:callback];
+    }
+
+    void _setInAppMessageDidDismissCallback(StringResponseDelegate callback) {
+        [[OneSignalObserver sharedObserver] setIamDidDismissDelegate:callback];
+    }
+
     void _setInAppMessageClickedCallback(StringResponseDelegate callback) {
         [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction * _Nonnull action) {
             NSString *stringResponse = [action propertiesAsJsonString];
@@ -131,24 +204,20 @@ extern "C" {
         }];
     }
 
-    void _setPermissionStateChangedCallback(StringResponseDelegate callback) {
+    void _setPermissionStateChangedCallback(StateChangeDelegate callback) {
         [[OneSignalObserver sharedObserver] setPermissionDelegate:callback];
-        [OneSignal addPermissionObserver:[OneSignalObserver sharedObserver]];
     }
 
-    void _setSubscriptionStateChangedCallback(StringResponseDelegate callback) {
+    void _setSubscriptionStateChangedCallback(StateChangeDelegate callback) {
         [[OneSignalObserver sharedObserver] setSubscriptionDelegate:callback];
-        [OneSignal addSubscriptionObserver:[OneSignalObserver sharedObserver]];
     }
 
-    void _setEmailSubscriptionStateChangedCallback(StringResponseDelegate callback) {
+    void _setEmailSubscriptionStateChangedCallback(StateChangeDelegate callback) {
         [[OneSignalObserver sharedObserver] setEmailDelegate:callback];
-        [OneSignal addEmailSubscriptionObserver:[OneSignalObserver sharedObserver]];
     }
 
-    void _setSMSSubscriptionStateChangedCallback(StringResponseDelegate callback) {
+    void _setSMSSubscriptionStateChangedCallback(StateChangeDelegate callback) {
         [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
-        [OneSignal addSMSSubscriptionObserver:[OneSignalObserver sharedObserver]];
     }
 
     void _setPrivacyConsent(bool consent) {
@@ -182,9 +251,9 @@ extern "C" {
         NSDictionary *options = objFromJsonString<NSDictionary*>(optionsJson);
 
         [OneSignal postNotification:options onSuccess:^(NSDictionary *result) {
-            // todo
+            callback(jsonStringFromDictionary(result));
         } onFailure:^(NSError *error) {
-            // todo
+            callback(NULL);
         }];
     }
 

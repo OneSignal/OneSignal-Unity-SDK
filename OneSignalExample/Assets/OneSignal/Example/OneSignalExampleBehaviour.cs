@@ -1001,7 +1001,7 @@ namespace OneSignalSDK {
             OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
             
             // Setup the below to listen for and respond to events from notifications
-            OneSignal.Default.NotificationWasOpened   += _notificationOpened;
+            OneSignal.Default.NotificationOpened   += _notificationOpened;
             OneSignal.Default.NotificationReceived += _notificationReceived;
             
             // Setup the below to listen for and respond to events from in app messages

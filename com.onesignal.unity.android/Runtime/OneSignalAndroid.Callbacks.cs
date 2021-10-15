@@ -147,7 +147,7 @@ namespace OneSignalSDK {
 
             /// <param name="result">OSNotificationOpenedResult</param>
             public void notificationOpened(AndroidJavaObject result)
-                => _instance.NotificationWasOpened?.Invoke(result.ToSerializable<NotificationOpenedResult>());
+                => _instance.NotificationOpened?.Invoke(result.ToSerializable<NotificationOpenedResult>());
         }
         
         private sealed class OSInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
