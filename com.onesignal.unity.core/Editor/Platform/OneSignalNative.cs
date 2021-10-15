@@ -28,6 +28,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+#pragma warning disable 0067 // the event 'x' is never used
 namespace OneSignalSDK {
     /// <summary>
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
