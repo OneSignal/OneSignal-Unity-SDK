@@ -72,11 +72,11 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs.meta
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
+  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF
+  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta
   - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
   - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef.meta
-  - Assets/OneSignal/Example/Scenes.meta
-  - Assets/OneSignal/Example/Scripts.meta
-  - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity
-  - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity.meta
-  - Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs
-  - Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs.meta
+  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs
+  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs.meta
+  - Assets/OneSignal/Example/OneSignalExampleScene.unity
+  - Assets/OneSignal/Example/OneSignalExampleScene.unity.meta

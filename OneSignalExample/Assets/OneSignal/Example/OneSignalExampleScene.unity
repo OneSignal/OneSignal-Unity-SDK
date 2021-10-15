@@ -1737,7 +1737,8 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: <color=green><b>I></b></color> Welcome to the <color=red>OneSignal</color>
     test application! Try out the SDK by tapping buttons below. You can see the results
-    in this console window.
+    in this console window. You can find the implementations for these buttons in
+    OneSignalExampleBehaviour.cs
 --- !u!222 &315627972
 CanvasRenderer:
   m_ObjectHideFlags: 0
