@@ -54,11 +54,13 @@ using System;
 using UnityEditor;
 using UnityEditor.iOS.Xcode;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode.Extensions;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -128,6 +130,9 @@ namespace OneSignalSDK {
 
             // Turn on push capabilities
             AddPushCapability();
+
+            // Ensure the Pods target has been added to the extension
+            ExtensionAddPodsToTarget();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
@@ -202,7 +207,7 @@ namespace OneSignalSDK {
 
         private void AddPushCapability() =>
             AddPushCapability(_project.GetMainTargetGuid(), _project.GetMainTargetName());
-
+        
         /// <summary>
         /// Create and add the notification extension to the project
         /// </summary>
@@ -228,7 +233,8 @@ namespace OneSignalSDK {
             // Makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
             _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
-            _project.SetBuildProperty(extensionGuid, "ARCHS", "$(ARCHS_STANDARD)");
+            _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
+            _project.SetBuildProperty(extensionGuid, "ARCHS", "amr64");
             _project.SetBuildProperty(extensionGuid, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
@@ -256,7 +262,7 @@ namespace OneSignalSDK {
         }
         
         /// <summary>
-        /// Create a .plist file for the NSE
+        /// Create a .plist file for the extension
         /// </summary>
         /// <remarks>NOTE: File in Xcode project is replaced everytime, never appends</remarks>
         private bool ExtensionCreatePlist(string path) {
@@ -274,6 +280,40 @@ namespace OneSignalSDK {
             notificationServicePlist.WriteToFile(plistPath);
             
             return alreadyExists;
+        }
+
+        private void ExtensionAddPodsToTarget() {
+            var podfilePath = Path.Combine(_outputPath, "Podfile");
+
+            if (!File.Exists(podfilePath)) {
+                Debug.LogError($"Could not find Podfile. {ServiceExtensionFilename} will have errors.");
+                return;
+            }
+
+            var podfile = File.ReadAllText(podfilePath);
+
+            var extensionEntryRegex = new Regex(@$"target '{ServiceExtensionTargetName}' do\n(.+)\nend");
+            if (extensionEntryRegex.IsMatch(podfile))
+                return;
+
+            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '>= 3.0.0'\nend\n";
+            File.WriteAllText(podfilePath, podfile);
+            
+            // todo - detect if cocoapods is installed
+            
+            var process = new Process {
+                StartInfo = new ProcessStartInfo {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"pod install --project-directory={_outputPath}\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+            
+            process.Start();
+            Debug.Log(process.StandardOutput.ReadToEnd());
+            process.WaitForExit();
         }
     }
 }
