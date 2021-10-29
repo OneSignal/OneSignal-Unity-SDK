@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated included Android SDK to [3.16.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/3.16.2)
   - Fixes for background image not showing and text not rendering in the RTL direction when a RTL system language is set. [#1475](https://github.com/OneSignal/OneSignal-Android-SDK/pull/1475)
+  - Fix IAM preview message returning NPE in a preview case, due to message id being null. [#1463](https://github.com/OneSignal/OneSignal-Android-SDK/pull/1463)
 ## [2.14.4]
 ### Fixed
 - Removed use of C# 8.0 features to maintain compatibility
