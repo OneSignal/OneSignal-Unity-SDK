@@ -28,13 +28,19 @@
 #import <OneSignal/OneSignal.h>
 #import "NSObject+ReadProperties.h"
 
-typedef void (*BooleanResponseDelegate)(bool response);
-typedef void (*StringResponseDelegate)(const char* response);
-typedef void (*StateChangeDelegate)(const char* current, const char* previous);
+typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
+typedef void (*StringResponseDelegate)(int hashCode, const char* response);
+
+typedef void (*BooleanListenerDelegate)(bool response);
+typedef void (*StringListenerDelegate)(const char* response);
+typedef void (*StateListenerDelegate)(const char* current, const char* previous);
 
 /*
  * Helpers
  */
+
+#define CALLBACK(value) callback(hashCode, value)
+#define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
 
 template <typename TObj>
 TObj objFromJsonString(const char* jsonString) {
@@ -55,13 +61,6 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
     return [jsonString UTF8String];
 }
 
-void handleOutcomeResult(OSOutcomeEvent *outcome, BooleanResponseDelegate callback) {
-    if (outcome != nil)
-        callback(YES);
-    else
-        callback(NO);
-}
-
 /*
  * Observer singleton for global callbacks
  */
@@ -73,14 +72,14 @@ void handleOutcomeResult(OSOutcomeEvent *outcome, BooleanResponseDelegate callba
                                          OSInAppMessageLifecycleHandler>
 
 + (instancetype) sharedObserver;
-@property StateChangeDelegate permissionDelegate;
-@property StateChangeDelegate subscriptionDelegate;
-@property StateChangeDelegate emailDelegate;
-@property StateChangeDelegate smsDelegate;
-@property StringResponseDelegate iamWillDisplayDelegate;
-@property StringResponseDelegate iamDidDisplayDelegate;
-@property StringResponseDelegate iamWillDismissDelegate;
-@property StringResponseDelegate iamDidDismissDelegate;
+@property StateListenerDelegate permissionDelegate;
+@property StateListenerDelegate subscriptionDelegate;
+@property StateListenerDelegate emailDelegate;
+@property StateListenerDelegate smsDelegate;
+@property StringListenerDelegate iamWillDisplayDelegate;
+@property StringListenerDelegate iamDidDisplayDelegate;
+@property StringListenerDelegate iamWillDismissDelegate;
+@property StringListenerDelegate iamDidDismissDelegate;
 
 @end
 
@@ -167,56 +166,56 @@ void handleOutcomeResult(OSOutcomeEvent *outcome, BooleanResponseDelegate callba
 
 extern "C" {
 
-    void _setNotificationReceivedCallback(StringResponseDelegate callback) {
+    void _setNotificationReceivedCallback(StringListenerDelegate callback) {
         [OneSignal setNotificationWillShowInForegroundHandler:^(OSNotification *notification, OSNotificationDisplayResponse completion) {
             NSString *stringResponse = [notification stringify];
             callback([stringResponse UTF8String]);
         }];
     }
 
-    void _setNotificationOpenedCallback(StringResponseDelegate callback) {
+    void _setNotificationOpenedCallback(StringListenerDelegate callback) {
         [OneSignal setNotificationOpenedHandler:^(OSNotificationOpenedResult * _Nonnull result) {
             NSString *stringResponse = [result stringify];
             callback([stringResponse UTF8String]);
         }];
     }
 
-    void _setInAppMessageWillDisplayCallback(StringResponseDelegate callback) {
+    void _setInAppMessageWillDisplayCallback(StringListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setIamWillDisplayDelegate:callback];
     }
 
-    void _setInAppMessageDidDisplayCallback(StringResponseDelegate callback) {
+    void _setInAppMessageDidDisplayCallback(StringListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setIamDidDisplayDelegate:callback];
     }
 
-    void _setInAppMessageWillDismissCallback(StringResponseDelegate callback) {
+    void _setInAppMessageWillDismissCallback(StringListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setIamWillDismissDelegate:callback];
     }
 
-    void _setInAppMessageDidDismissCallback(StringResponseDelegate callback) {
+    void _setInAppMessageDidDismissCallback(StringListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setIamDidDismissDelegate:callback];
     }
 
-    void _setInAppMessageClickedCallback(StringResponseDelegate callback) {
+    void _setInAppMessageClickedCallback(StringListenerDelegate callback) {
         [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction * _Nonnull action) {
             NSString *stringResponse = [action propertiesAsJsonString];
             callback([stringResponse UTF8String]);
         }];
     }
 
-    void _setPermissionStateChangedCallback(StateChangeDelegate callback) {
+    void _setPermissionStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setPermissionDelegate:callback];
     }
 
-    void _setSubscriptionStateChangedCallback(StateChangeDelegate callback) {
+    void _setSubscriptionStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setSubscriptionDelegate:callback];
     }
 
-    void _setEmailSubscriptionStateChangedCallback(StateChangeDelegate callback) {
+    void _setEmailSubscriptionStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setEmailDelegate:callback];
     }
 
-    void _setSMSSubscriptionStateChangedCallback(StateChangeDelegate callback) {
+    void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
     }
 
@@ -237,28 +236,28 @@ extern "C" {
     }
 
     void _initialize(const char* appId) {
-        [OneSignal setAppId:[NSString stringWithUTF8String:appId]];
+        [OneSignal setAppId:TO_NSSTRING(appId)];
         [OneSignal initWithLaunchOptions:nil];
     }
 
-    void _promptForPushNotificationsWithUserResponse(BooleanResponseDelegate callback) {
+    void _promptForPushNotificationsWithUserResponse(int hashCode, BooleanResponseDelegate callback) {
         [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
-            callback(accepted);
+            CALLBACK(accepted);
         }];
     }
 
-    void _postNotification(const char* optionsJson, StringResponseDelegate callback) {
+    void _postNotification(const char* optionsJson, int hashCode, StringResponseDelegate callback) {
         NSDictionary *options = objFromJsonString<NSDictionary*>(optionsJson);
 
         [OneSignal postNotification:options onSuccess:^(NSDictionary *result) {
-            callback(jsonStringFromDictionary(result));
+            CALLBACK(jsonStringFromDictionary(result));
         } onFailure:^(NSError *error) {
-            callback(NULL);
+            CALLBACK(NULL);
         }];
     }
 
     void _setTrigger(const char* key, const char* value) {
-        [OneSignal addTrigger:[NSString stringWithUTF8String:key] withValue:[NSString stringWithUTF8String:value]];
+        [OneSignal addTrigger:TO_NSSTRING(key) withValue:TO_NSSTRING(value)];
     }
 
     void _setTriggers(const char* triggersJson) {
@@ -267,7 +266,7 @@ extern "C" {
     }
 
     void _removeTrigger(const char* key) {
-        [OneSignal removeTriggerForKey:[NSString stringWithUTF8String:key]];
+        [OneSignal removeTriggerForKey:TO_NSSTRING(key)];
     }
 
     void _removeTriggers(const char* triggersJson) {
@@ -276,7 +275,7 @@ extern "C" {
     }
 
     const char* _getTrigger(const char* key) {
-        id value = [OneSignal getTriggerValueForKey:[NSString stringWithUTF8String:key]];
+        id value = [OneSignal getTriggerValueForKey:TO_NSSTRING(key)];
         return [[value string] UTF8String];
     }
 
@@ -293,68 +292,68 @@ extern "C" {
         return [OneSignal isInAppMessagingPaused];
     }
 
-    void _sendTag(const char* name, const char* value, BooleanResponseDelegate callback) {
-        [OneSignal sendTag:[NSString stringWithUTF8String:name]
-                     value:[NSString stringWithUTF8String:value]
-                 onSuccess:^(NSDictionary *result) { callback(YES); }
-                 onFailure:^(NSError *error) { callback(NO); }];
+    void _sendTag(const char* name, const char* value, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal sendTag:TO_NSSTRING(name)
+                     value:TO_NSSTRING(value)
+                 onSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                 onFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _sendTags(const char* tagsJson, BooleanResponseDelegate callback) {
+    void _sendTags(const char* tagsJson, int hashCode, BooleanResponseDelegate callback) {
         NSDictionary *tags = objFromJsonString<NSDictionary*>(tagsJson);
 
         [OneSignal sendTags:tags
-                  onSuccess:^(NSDictionary *result) { callback(YES); }
-                  onFailure:^(NSError *error) { callback(NO); }];
+                  onSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                  onFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _getTags(StringResponseDelegate callback) {
+    void _getTags(int hashCode, StringResponseDelegate callback) {
         [OneSignal getTags:^(NSDictionary *result) {
-            callback(jsonStringFromDictionary(result));
+            CALLBACK(jsonStringFromDictionary(result));
         } onFailure:^(NSError *error) {
             NSLog(@"[Onesignal] Could not get tags");
-            callback(nil);
+            CALLBACK(nil);
         }];
     }
 
-    void _deleteTag(const char* name, BooleanResponseDelegate callback) {
-        [OneSignal deleteTag:[NSString stringWithUTF8String:name]
-                   onSuccess:^(NSDictionary *result) { callback(YES); }
-                   onFailure:^(NSError *error) { callback(NO); }];
+    void _deleteTag(const char* name, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal deleteTag:TO_NSSTRING(name)
+                   onSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                   onFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _deleteTags(const char* tagsJson, BooleanResponseDelegate callback) {
+    void _deleteTags(const char* tagsJson, int hashCode, BooleanResponseDelegate callback) {
         NSArray *tags = objFromJsonString<NSArray*>(tagsJson);
 
         if (tags == nil) {
             NSLog(@"[Onesignal] Could not parse tags to delete");
-            callback(NO);
+            CALLBACK(NO);
         }
 
         [OneSignal deleteTags:tags
-                    onSuccess:^(NSDictionary *result) { callback(YES); }
-                    onFailure:^(NSError *error) { callback(NO); }];
+                    onSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                    onFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _setExternalUserId(const char* externalId, const char* authHash, BooleanResponseDelegate callback) {
-        [OneSignal setExternalUserId:[NSString stringWithUTF8String:externalId]
-         withExternalIdAuthHashToken:[NSString stringWithUTF8String:authHash]
-                         withSuccess:^(NSDictionary *results) { callback(YES); }
-                         withFailure:^(NSError *error) { callback(NO); }];
+    void _setExternalUserId(const char* externalId, const char* authHash, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal setExternalUserId:TO_NSSTRING(externalId)
+         withExternalIdAuthHashToken:TO_NSSTRING(authHash)
+                         withSuccess:^(NSDictionary *results) { CALLBACK(YES); }
+                         withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _setEmail(const char* email, const char* authHash, BooleanResponseDelegate callback) {
-        [OneSignal setEmail:[NSString stringWithUTF8String:email]
-     withEmailAuthHashToken:[NSString stringWithUTF8String:authHash]
-                withSuccess:^{ callback(YES); }
-                withFailure:^(NSError *error) { callback(NO); }];
+    void _setEmail(const char* email, const char* authHash, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal setEmail:TO_NSSTRING(email)
+     withEmailAuthHashToken:TO_NSSTRING(authHash)
+                withSuccess:^{ CALLBACK(YES); }
+                withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _setSMSNumber(const char* smsNumber, const char* authHash, BooleanResponseDelegate callback) {
-        [OneSignal setSMSNumber:[NSString stringWithUTF8String:smsNumber]
-           withSMSAuthHashToken:[NSString stringWithUTF8String:authHash]
-                    withSuccess:^(NSDictionary *results) { callback(YES); }
-                    withFailure:^(NSError *error) { callback(NO); }];
+    void _setSMSNumber(const char* smsNumber, const char* authHash, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal setSMSNumber:TO_NSSTRING(smsNumber)
+           withSMSAuthHashToken:TO_NSSTRING(authHash)
+                    withSuccess:^(NSDictionary *results) { CALLBACK(YES); }
+                    withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
     void _promptLocation() {
@@ -369,20 +368,20 @@ extern "C" {
         return [OneSignal isLocationShared];
     }
 
-    void _sendOutcome(const char* name, BooleanResponseDelegate callback) {
-        [OneSignal sendOutcome:[NSString stringWithUTF8String:name]
-                     onSuccess:^(OSOutcomeEvent *outcome) { handleOutcomeResult(outcome, callback); }];
+    void _sendOutcome(const char* name, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal sendOutcome:TO_NSSTRING(name)
+                     onSuccess:^(OSOutcomeEvent *outcome) { CALLBACK(outcome != nil); }];
     }
 
-    void _sendUniqueOutcome(const char* name, BooleanResponseDelegate callback) {
-        [OneSignal sendUniqueOutcome:[NSString stringWithUTF8String:name]
-                           onSuccess:^(OSOutcomeEvent *outcome) { handleOutcomeResult(outcome, callback); }];
+    void _sendUniqueOutcome(const char* name, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal sendUniqueOutcome:TO_NSSTRING(name)
+                           onSuccess:^(OSOutcomeEvent *outcome) { CALLBACK(outcome != nil); }];
     }
 
-    void _sendOutcomeWithValue(const char* name, float value, BooleanResponseDelegate callback) {
-        [OneSignal sendOutcomeWithValue:[NSString stringWithUTF8String:name]
+    void _sendOutcomeWithValue(const char* name, float value, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal sendOutcomeWithValue:TO_NSSTRING(name)
                                   value:@(value)
-                              onSuccess:^(OSOutcomeEvent *outcome) { handleOutcomeResult(outcome, callback); }];
+                              onSuccess:^(OSOutcomeEvent *outcome) { CALLBACK(outcome != nil); }];
     }
 }
 
