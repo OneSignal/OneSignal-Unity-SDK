@@ -3,8 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Laters {
+    /// <summary>For referencing <see cref="ILater{TResult}"/> generically</summary>
+    public interface ILater {}
+    
     /// <summary>Read-only interface for a standard <see cref="Later{TResult}"/></summary>
-    public interface ILater<TResult> {
+    public interface ILater<TResult> : ILater {
         event Action<TResult> OnComplete;
         TaskAwaiter<TResult> GetAwaiter();
     }

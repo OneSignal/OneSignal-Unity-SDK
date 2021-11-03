@@ -25,34 +25,44 @@
  * THE SOFTWARE.
  */
 
+using System.Collections.Generic;
 using Laters;
 using UnityEngine;
 
 namespace OneSignalSDK {
+    
     /// <summary>
     /// 
     /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
-        private delegate void BooleanResponseDelegate(bool response);
-        private delegate void StringResponseDelegate(string response);
-        private delegate void StateChangeDelegate(string current, string previous);
+        private delegate void BooleanResponseDelegate(int hashCode, bool response);
+        private delegate void StringResponseDelegate(int hashCode, string response);
         
-        private interface ICallbackProxy<in TReturn> {
-            void OnResponse(TReturn response);
+        private delegate void BooleanListenerDelegate(bool response);
+        private delegate void StringListenerDelegate(string response);
+        private delegate void StateListenerDelegate(string current, string previous);
+
+        private static readonly Dictionary<int, ILater> WaitingProxies = new Dictionary<int, ILater>();
+
+        private static (Later<TResult> proxy, int hashCode) _setupProxy<TResult>() {
+            var proxy = new Later<TResult>();
+            var hashCode = proxy.GetHashCode();
+            WaitingProxies[hashCode] = proxy;
+            return (proxy, hashCode);
+        }
+        
+        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
+        private static void BooleanCallbackProxy(int hashCode, bool response) {
+            if (WaitingProxies[hashCode] is Later<bool> later)
+                later.Complete(response);
+            WaitingProxies.Remove(hashCode);
         }
 
-        private abstract class CallbackProxy<TReturn> : BaseLater<TReturn>, ICallbackProxy<TReturn> {
-            public abstract void OnResponse(TReturn response);
-        }
-        
-        private sealed class BooleanCallbackProxy : CallbackProxy<bool> {
-            [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-            public override void OnResponse(bool response) => _complete(response);
-        }
-        
-        private sealed class StringCallbackProxy : CallbackProxy<string> {
-            [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
-            public override void OnResponse(string response) => _complete(response);
+        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        private static void StringCallbackProxy(int hashCode, string response) {
+            if (WaitingProxies[hashCode] is Later<string> later)
+                later.Complete(response);
+            WaitingProxies.Remove(hashCode);
         }
         
         /*
@@ -66,7 +76,7 @@ namespace OneSignalSDK {
         /// </summary>
         public OneSignalIOS() {
             if (_instance != null)
-                SDKDebug.Error("Additional instance of OneSignalAndroid created.");
+                SDKDebug.Error("Additional instance of OneSignalIOS created.");
 
             _setNotificationReceivedCallback(_onNotificationReceived);
             _setNotificationOpenedCallback(_onNotificationOpened);
@@ -85,56 +95,56 @@ namespace OneSignalSDK {
             _instance = this;
         }
         
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onNotificationReceived(string response)
             => _instance.NotificationReceived?.Invoke(JsonUtility.FromJson<Notification>(response));
 
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onNotificationOpened(string response)
             => _instance.NotificationOpened?.Invoke(JsonUtility.FromJson<NotificationOpenedResult>(response));
         
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageWillDisplay(string response)
             => _instance.InAppMessageWillDisplay?.Invoke(new InAppMessage { id = response });
 
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageDidDisplay(string response)
             => _instance.InAppMessageDidDisplay?.Invoke(new InAppMessage { id = response });
 
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageWillDismiss(string response)
             => _instance.InAppMessageWillDismiss?.Invoke(new InAppMessage { id = response });
 
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageDidDismiss(string response)
             => _instance.InAppMessageDidDismiss?.Invoke(new InAppMessage { id = response });
 
-        [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageClicked(string response)
             => _instance.InAppMessageTriggeredAction?.Invoke(JsonUtility.FromJson<InAppMessageAction>(response));
 
-        [AOT.MonoPInvokeCallback(typeof(StateChangeDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onPermissionStateChanged(string current, string previous) {
             var curr = JsonUtility.FromJson<PermissionState>(current);
             var prev = JsonUtility.FromJson<PermissionState>(previous);
             _instance.PermissionStateChanged?.Invoke(curr, prev);
         }
         
-        [AOT.MonoPInvokeCallback(typeof(StateChangeDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onSubscriptionStateChanged(string current, string previous) {
             var curr = JsonUtility.FromJson<PushSubscriptionState>(current);
             var prev = JsonUtility.FromJson<PushSubscriptionState>(previous);
             _instance.PushSubscriptionStateChanged?.Invoke(curr, prev);
         }
         
-        [AOT.MonoPInvokeCallback(typeof(StateChangeDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onEmailSubscriptionStateChanged(string current, string previous) {
             var curr = JsonUtility.FromJson<EmailSubscriptionState>(current);
             var prev = JsonUtility.FromJson<EmailSubscriptionState>(previous);
             _instance.EmailSubscriptionStateChanged?.Invoke(curr, prev);
         }
         
-        [AOT.MonoPInvokeCallback(typeof(StateChangeDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onSMSSubscriptionStateChanged(string current, string previous) {
             var curr = JsonUtility.FromJson<SMSSubscriptionState>(current);
             var prev = JsonUtility.FromJson<SMSSubscriptionState>(previous);

@@ -26,7 +26,9 @@
  */
 
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Laters;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -59,8 +61,8 @@ namespace OneSignalSDK {
             => _initialize(appId);
 
         public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
-            var proxy = new BooleanCallbackProxy();
-            _promptForPushNotificationsWithUserResponse(proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _promptForPushNotificationsWithUserResponse(hashCode, BooleanCallbackProxy);
             return await proxy ? NotificationPermission.Authorized : NotificationPermission.Denied;
         }
 
@@ -68,8 +70,8 @@ namespace OneSignalSDK {
             => SDKDebug.Log("ClearOneSignalNotifications invoked on iOS, does nothing");
 
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
-            var proxy = new StringCallbackProxy();
-            _postNotification(Json.Serialize(options), proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<string>();
+            _postNotification(Json.Serialize(options), hashCode, StringCallbackProxy);
             return Json.Deserialize(await proxy) as Dictionary<string, object>;
         }
 
@@ -97,50 +99,50 @@ namespace OneSignalSDK {
         }
         
         public override async Task<bool> SendTag(string key, object value) {
-            var proxy = new BooleanCallbackProxy();
-            _sendTag(key, value.ToString(), proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _sendTag(key, value.ToString(), hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> SendTags(Dictionary<string, object> tags) {
-            var proxy = new BooleanCallbackProxy();
-            _sendTags(Json.Serialize(tags), proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _sendTags(Json.Serialize(tags), hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<Dictionary<string, object>> GetTags() {
-            var proxy = new StringCallbackProxy();
-            _getTags(proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<string>();
+            _getTags(hashCode, StringCallbackProxy);
             return Json.Deserialize(await proxy) as Dictionary<string, object>;
         }
 
         public override async Task<bool> DeleteTag(string key) {
-            var proxy = new BooleanCallbackProxy();
-            _deleteTag(key, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _deleteTag(key, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> DeleteTags(params string[] keys) {
-            var proxy = new BooleanCallbackProxy();
-            _deleteTags(Json.Serialize(keys), proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _deleteTags(Json.Serialize(keys), hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> SetExternalUserId(string externalId, string authHash = null) {
-            var proxy = new BooleanCallbackProxy();
-            _setExternalUserId(externalId, authHash, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _setExternalUserId(externalId, authHash, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> SetEmail(string email, string authHash = null) {
-            var proxy = new BooleanCallbackProxy();
-            _setEmail(email, authHash, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _setEmail(email, authHash, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
-            var proxy = new BooleanCallbackProxy();
-            _setSMSNumber(smsNumber, authHash, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _setSMSNumber(smsNumber, authHash, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
@@ -157,20 +159,20 @@ namespace OneSignalSDK {
         }
         
         public override async Task<bool> SendOutcome(string name) {
-            var proxy = new BooleanCallbackProxy();
-            _sendOutcome(name, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _sendOutcome(name, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> SendUniqueOutcome(string name) {
-            var proxy = new BooleanCallbackProxy();
-            _sendUniqueOutcome(name, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _sendUniqueOutcome(name, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public override async Task<bool> SendOutcomeWithValue(string name, float value) {
-            var proxy = new BooleanCallbackProxy();
-            _sendOutcomeWithValue(name, value, proxy.OnResponse);
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _sendOutcomeWithValue(name, value, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
     }

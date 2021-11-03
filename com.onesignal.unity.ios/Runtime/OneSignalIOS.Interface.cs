@@ -36,19 +36,19 @@ namespace OneSignalSDK {
          * Global callbacks
          */
         
-        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback(StringListenerDelegate callback);
         
-        [DllImport("__Internal")] private static extern void _setInAppMessageWillDisplayCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setInAppMessageDidDisplayCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setInAppMessageWillDismissCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setInAppMessageDidDismissCallback(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setInAppMessageClickedCallback(StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageWillDisplayCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageDidDisplayCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageWillDismissCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageDidDismissCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setInAppMessageClickedCallback(StringListenerDelegate callback);
         
-        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback(StateChangeDelegate callback);
-        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback(StateChangeDelegate callback);
-        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback(StateChangeDelegate callback);
-        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback(StateChangeDelegate callback);
+        [DllImport("__Internal")] private static extern void _setPermissionStateChangedCallback(StateListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSubscriptionStateChangedCallback(StateListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setEmailSubscriptionStateChangedCallback(StateListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback);
         
         /*
          * Direct methods
@@ -59,8 +59,8 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _setRequiresPrivacyConsent(bool required);
         [DllImport("__Internal")] private static extern bool _getRequiresPrivacyConsent();
         [DllImport("__Internal")] private static extern void _initialize(string appId);
-        [DllImport("__Internal")] private static extern void _promptForPushNotificationsWithUserResponse(BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _postNotification(string optionsJson, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _promptForPushNotificationsWithUserResponse(int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _postNotification(string optionsJson, int hashCode, StringResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _setTrigger(string key, string value);
         [DllImport("__Internal")] private static extern void _setTriggers(string triggersJson);
         [DllImport("__Internal")] private static extern void _removeTrigger(string key);
@@ -70,22 +70,22 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _setInAppMessagesArePaused(bool paused);
         [DllImport("__Internal")] private static extern bool _getInAppMessagesArePaused();
 
-        [DllImport("__Internal")] private static extern void _sendTag(string name, string value, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendTags(string tagsJson, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _getTags(StringResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _deleteTag(string name, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _deleteTags(string tagsJson, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendTag(string name, string value, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendTags(string tagsJson, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _getTags(int hashCode, StringResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _deleteTag(string name, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _deleteTags(string tagsJson, int hashCode, BooleanResponseDelegate callback);
         
-        [DllImport("__Internal")] private static extern void _setExternalUserId(string externalId, string authHash, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setEmail(string email, string authHash, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _setSMSNumber(string smsNumber, string authHash, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setExternalUserId(string externalId, string authHash, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setEmail(string email, string authHash, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _setSMSNumber(string smsNumber, string authHash, int hashCode, BooleanResponseDelegate callback);
         
         [DllImport("__Internal")] private static extern void _promptLocation();
         [DllImport("__Internal")] private static extern void _setShareLocation(bool share);
         [DllImport("__Internal")] private static extern bool _getShareLocation();
         
-        [DllImport("__Internal")] private static extern void _sendOutcome(string name, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendUniqueOutcome(string name, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _sendOutcomeWithValue(string name, float value, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendOutcome(string name, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendUniqueOutcome(string name, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _sendOutcomeWithValue(string name, float value, int hashCode, BooleanResponseDelegate callback);
     }
 }
