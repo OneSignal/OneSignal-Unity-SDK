@@ -39,6 +39,6 @@ namespace OneSignalSDK {
         public string emailAddress;
 
         /// <summary>todo</summary>
-        public bool subscribed;
+        public bool isSubscribed;
     }
 }

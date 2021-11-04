@@ -109,7 +109,7 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
 - (void)onOSPermissionChanged:(OSPermissionStateChanges * _Nonnull)stateChanges {
     if (_permissionDelegate != nil) {
         auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
-        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges from] toDictionary]);
         _permissionDelegate(curr, prev);
     }
 }
@@ -117,7 +117,7 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
 - (void)onOSSubscriptionChanged:(OSSubscriptionStateChanges * _Nonnull)stateChanges {
     if (_subscriptionDelegate != nil) {
         auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
-        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges from] toDictionary]);
         _subscriptionDelegate(curr, prev);
     }
 }
@@ -125,7 +125,7 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
 - (void)onOSEmailSubscriptionChanged:(OSEmailSubscriptionStateChanges * _Nonnull)stateChanges {
     if (_emailDelegate != nil) {
         auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
-        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges from] toDictionary]);
         _emailDelegate(curr, prev);
     }
 }
@@ -133,7 +133,7 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
 - (void)onOSSMSSubscriptionChanged:(OSSMSSubscriptionStateChanges * _Nonnull)stateChanges {
     if (_smsDelegate != nil) {
         auto curr = jsonStringFromDictionary([[stateChanges to] toDictionary]);
-        auto prev = jsonStringFromDictionary([[stateChanges to] toDictionary]);
+        auto prev = jsonStringFromDictionary([[stateChanges from] toDictionary]);
         _smsDelegate(curr, prev);
     }
 }
