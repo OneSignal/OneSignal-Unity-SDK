@@ -65,7 +65,7 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _setTriggers(string triggersJson);
         [DllImport("__Internal")] private static extern void _removeTrigger(string key);
         [DllImport("__Internal")] private static extern void _removeTriggers(string triggersJson);
-        [DllImport("__Internal")] private static extern object _getTrigger(string key);
+        [DllImport("__Internal")] private static extern string _getTrigger(string key);
         [DllImport("__Internal")] private static extern string _getTriggers();
         [DllImport("__Internal")] private static extern void _setInAppMessagesArePaused(bool paused);
         [DllImport("__Internal")] private static extern bool _getInAppMessagesArePaused();

@@ -212,15 +212,15 @@ namespace OneSignalSDK {
         /// <summary>
         /// Add a local trigger. May show an In-App Message if its triggers conditions were met.
         /// </summary>
-        /// <param name="key">Key for the trigger.</param>
-        /// <param name="value">Value for the trigger. Object passed in will be converted to a string.</param>
-        public abstract void SetTrigger(string key, object value);
+        /// <param name="key">Key for the trigger</param>
+        /// <param name="value">Value for the trigger</param>
+        public abstract void SetTrigger(string key, string value);
 
         /// <summary>
         /// Allows you to set multiple local trigger key/value pairs simultaneously. May show an In-App Message if its
         /// triggers conditions were met.
         /// </summary>
-        public abstract void SetTriggers(Dictionary<string, object> triggers);
+        public abstract void SetTriggers(Dictionary<string, string> triggers);
 
         /// <summary>
         /// Removes a single local trigger for the given key.
@@ -239,7 +239,7 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="key">Key for the trigger.</param>
         /// <returns>Value if added with 'addTrigger', or null/nil (iOS) if never set.</returns>
-        public abstract object GetTrigger(string key);
+        public abstract string GetTrigger(string key);
         
         /// <summary>
         /// Returns all local trigger key-values for the current user

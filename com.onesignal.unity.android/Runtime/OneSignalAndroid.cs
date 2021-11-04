@@ -82,10 +82,10 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
-        public override void SetTrigger(string key, object value)
+        public override void SetTrigger(string key, string value)
             => _sdkClass.CallStatic("addTrigger", key, value);
 
-        public override void SetTriggers(Dictionary<string, object> triggers)
+        public override void SetTriggers(Dictionary<string, string> triggers)
             => _sdkClass.CallStatic("addTriggers", triggers.ToMap());
 
         public override void RemoveTrigger(string key)
@@ -94,7 +94,7 @@ namespace OneSignalSDK {
         public override void RemoveTriggers(params string[] keys)
             => _sdkClass.CallStatic("removeTriggersForKeys", keys.ToList()); // todo - test me thoroughly
 
-        public override object GetTrigger(string key)
+        public override string GetTrigger(string key)
             => _sdkClass.CallStatic<object>("getTriggerValueForKey", key);
 
         public override Dictionary<string, object> GetTriggers()
