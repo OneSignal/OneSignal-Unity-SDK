@@ -64,14 +64,14 @@ namespace OneSignalSDK {
         /// <summary>
         /// Converts from a Java java.util.Map to a <see cref="Dictionary{TKey,TValue}"/>
         /// </summary>
-        public static Dictionary<string, object> MapToDictionary(this AndroidJavaObject source) {
+        public static Dictionary<TKey, TValue> MapToDictionary<TKey, TValue>(this AndroidJavaObject source) {
             return null; // todo
         }
 
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java java.util.Map
         /// </summary>
-        public static AndroidJavaObject ToMap(this Dictionary<string, object> source) {
+        public static AndroidJavaObject ToMap<TKey, TValue>(this Dictionary<TKey, TValue> source) {
             return null;
         }
 

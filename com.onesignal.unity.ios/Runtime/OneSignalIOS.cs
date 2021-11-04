@@ -90,8 +90,8 @@ namespace OneSignalSDK {
         public override string GetTrigger(string key)
             => _getTrigger(key);
 
-        public override Dictionary<string, object> GetTriggers()
-            => Json.Deserialize(_getTriggers()) as Dictionary<string, object>;
+        public override Dictionary<string, string> GetTriggers()
+            => Json.Deserialize(_getTriggers()) as Dictionary<string, string>;
 
         public override bool InAppMessagesArePaused {
             get => _getInAppMessagesArePaused();

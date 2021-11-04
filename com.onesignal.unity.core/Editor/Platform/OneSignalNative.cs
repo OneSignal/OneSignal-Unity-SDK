@@ -90,8 +90,8 @@ namespace OneSignalSDK {
             return null;
         }
 
-        public override Dictionary<string, object> GetTriggers() {
-            return new Dictionary<string, object>();
+        public override Dictionary<string, string> GetTriggers() {
+            return new Dictionary<string, string>();
         }
 
         public override bool InAppMessagesArePaused { get; set; }
