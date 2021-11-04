@@ -75,10 +75,10 @@ namespace OneSignalSDK {
             return Json.Deserialize(await proxy) as Dictionary<string, object>;
         }
 
-        public override void SetTrigger(string key, object value)
-            => _setTrigger(key, value.ToString());
+        public override void SetTrigger(string key, string value)
+            => _setTrigger(key, value);
 
-        public override void SetTriggers(Dictionary<string, object> triggers)
+        public override void SetTriggers(Dictionary<string, string> triggers)
             => _setTriggers(Json.Serialize(triggers));
 
         public override void RemoveTrigger(string key)
@@ -87,7 +87,7 @@ namespace OneSignalSDK {
         public override void RemoveTriggers(params string[] keys)
             => _removeTriggers(Json.Serialize(keys));
 
-        public override object GetTrigger(string key)
+        public override string GetTrigger(string key)
             => _getTrigger(key);
 
         public override Dictionary<string, object> GetTriggers()

@@ -70,11 +70,11 @@ namespace OneSignalSDK {
             return Task.FromResult(new Dictionary<string, object>());
         }
 
-        public override void SetTrigger(string key, object value) {
+        public override void SetTrigger(string key, string value) {
             
         }
 
-        public override void SetTriggers(Dictionary<string, object> triggers) {
+        public override void SetTriggers(Dictionary<string, string> triggers) {
             
         }
 
@@ -86,7 +86,7 @@ namespace OneSignalSDK {
             
         }
 
-        public override object GetTrigger(string key) {
+        public override string GetTrigger(string key) {
             return null;
         }
 

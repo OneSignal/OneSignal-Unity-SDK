@@ -281,7 +281,7 @@ extern "C" {
 
     const char* _getTriggers() {
         NSDictionary *triggers = [OneSignal getTriggers];
-        return jsonStringFromDictionary(triggers);
+        return strdup(jsonStringFromDictionary(triggers));
     }
 
     void _setInAppMessagesArePaused(bool paused) {
