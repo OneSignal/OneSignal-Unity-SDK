@@ -276,7 +276,8 @@ extern "C" {
 
     const char* _getTrigger(const char* key) {
         id value = [OneSignal getTriggerValueForKey:TO_NSSTRING(key)];
-        return [[value string] UTF8String];
+        NSString *asString = [NSString stringWithFormat:@"%@", value];
+        return strdup([asString UTF8String]);
     }
 
     const char* _getTriggers() {
