@@ -1019,31 +1019,31 @@ namespace OneSignalSDK {
          */
 
         private void _notificationOpened(NotificationOpenedResult result) {
-            _log($"Notification was opened with result:\n{JsonUtility.ToJson(result)}");
+            _log($"Notification was opened with result: {JsonUtility.ToJson(result)}");
         }
 
         private void _notificationReceived(Notification notification) {
-            _log($"Notification was received in foreground:\n{JsonUtility.ToJson(notification)}");
+            _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}");
         }
 
         private void IamTriggeredAction(InAppMessageAction inAppMessageAction) {
-            _log($"IAM triggered action:\n{JsonUtility.ToJson(inAppMessageAction)}");
+            _log($"IAM triggered action: {JsonUtility.ToJson(inAppMessageAction)}");
         }
 
         private void _permissionStateChanged(PermissionState current, PermissionState previous) {
-            _log($"Permission state changed to:\n{JsonUtility.ToJson(current)}");
+            _log($"Permission state changed to: {JsonUtility.ToJson(current)}");
         }
 
         private void _pushStateChanged(PushSubscriptionState current, PushSubscriptionState previous) {
-            _log($"Push state changed to:\n{JsonUtility.ToJson(current)}");
+            _log($"Push state changed to: {JsonUtility.ToJson(current)}");
         }
 
         private void _emailStateChanged(EmailSubscriptionState current, EmailSubscriptionState previous) {
-            _log($"Email state changed to:\n{JsonUtility.ToJson(current)}");
+            _log($"Email state changed to: {JsonUtility.ToJson(current)}");
         }
 
         private void _smsStateChanged(SMSSubscriptionState current, SMSSubscriptionState previous) {
-            _log($"SMS state changed to:\n{JsonUtility.ToJson(current)}");
+            _log($"SMS state changed to: {JsonUtility.ToJson(current)}");
         }
         
         /*
@@ -1051,7 +1051,7 @@ namespace OneSignalSDK {
          */
 
         public void Initialize() {
-            _log("Initializing...");
+            _log($"Initializing with appId <b>{appId}</b>");
             OneSignal.Default.Initialize(appId);
         }
 
