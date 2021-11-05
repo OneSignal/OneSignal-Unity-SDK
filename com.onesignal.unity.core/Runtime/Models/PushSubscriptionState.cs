@@ -33,7 +33,7 @@ namespace OneSignalSDK {
     /// </summary>
     [Serializable] public sealed class PushSubscriptionState { // todo - should this be NotificationSubscriptionState?
         /// <summary>todo</summary>
-        public bool userSubscriptionSetting;
+        public bool isPushDisabled;
 
         /// <summary>todo</summary>
         public string userId;
@@ -42,6 +42,6 @@ namespace OneSignalSDK {
         public string pushToken;
 
         /// <summary>todo</summary>
-        public bool subscribed;
+        public bool isSubscribed;
     }
 }

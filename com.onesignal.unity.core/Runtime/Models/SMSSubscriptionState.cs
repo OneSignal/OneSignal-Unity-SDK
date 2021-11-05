@@ -40,7 +40,6 @@ namespace OneSignalSDK {
         public string smsNumber;
 
         /// <summary>todo</summary>
-        [FormerlySerializedAs("isSubscribed")]
-        public bool subscribed;
+        public bool isSubscribed;
     }
 }
