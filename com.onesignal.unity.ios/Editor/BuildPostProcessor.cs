@@ -234,7 +234,7 @@ namespace OneSignalSDK {
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
             _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
-            _project.SetBuildProperty(extensionGuid, "ARCHS", "amr64");
+            _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(extensionGuid, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
