@@ -1289,6 +1289,8 @@ namespace OneSignalSDK {
 
         public Text console;
 
+        public void SetAppIdString(string newVal) => appId = newVal;
+        
         public void SetExternalIdString(string newVal) => externalId = newVal;
         public void SetEmailString(string newVal) => email = newVal;
         public void SetPhoneNumberString(string newVal) => phoneNumber = newVal;
