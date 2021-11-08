@@ -26,6 +26,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Laters;
@@ -90,8 +91,12 @@ namespace OneSignalSDK {
         public override string GetTrigger(string key)
             => _getTrigger(key);
 
-        public override Dictionary<string, string> GetTriggers()
-            => Json.Deserialize(_getTriggers()) as Dictionary<string, string>;
+        public override Dictionary<string, string> GetTriggers() {
+            var triggersDict = Json.Deserialize(_getTriggers()) as Dictionary<string, object>;
+            return triggersDict?.ToDictionary(item => item.Key, 
+                item => item.Value as string
+            );
+        }
 
         public override bool InAppMessagesArePaused {
             get => _getInAppMessagesArePaused();
