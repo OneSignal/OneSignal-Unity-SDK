@@ -35,8 +35,8 @@ namespace OneSignalSDK {
     /// </summary>
     public sealed partial class OneSignalAndroid : OneSignal {
         private static (TState curr, TState prev) _getStatesChanges<TState>(AndroidJavaObject stateChanges) {
-            var currJO  = stateChanges.Call<AndroidJavaObject>("to");
-            var prevJO  = stateChanges.Call<AndroidJavaObject>("from");
+            var currJO  = stateChanges.Call<AndroidJavaObject>("getTo");
+            var prevJO  = stateChanges.Call<AndroidJavaObject>("getFrom");
             var currStr = currJO.Call<string>("toString");
             var prevStr = prevJO.Call<string>("toString");
             var curr    = JsonUtility.FromJson<TState>(currStr);
