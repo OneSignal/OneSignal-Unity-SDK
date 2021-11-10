@@ -65,6 +65,26 @@ namespace OneSignalSDK {
 
             _sdkClass.CallStatic("initWithContext", context);
             _sdkClass.CallStatic("setAppId", appId);
+            
+            if (_instance != null)
+                SDKDebug.Error("Additional instance of OneSignalAndroid created.");
+            
+            // states
+            _sdkClass.CallStatic("addPermissionObserver", new OSPermissionObserver());
+            _sdkClass.CallStatic("addSubscriptionObserver", new OSSubscriptionObserver());
+            _sdkClass.CallStatic("addEmailSubscriptionObserver", new OSEmailSubscriptionObserver());
+            _sdkClass.CallStatic("addSMSSubscriptionObserver", new OSSMSSubscriptionObserver());
+            
+            // notifications
+            _sdkClass.CallStatic("setRemoteNotificationReceivedHandler", new OSRemoteNotificationReceivedHandler());
+            _sdkClass.CallStatic("setNotificationWillShowInForegroundHandler", new OSNotificationWillShowInForegroundHandler());
+            _sdkClass.CallStatic("setNotificationOpenedHandler", new OSNotificationOpenedHandler());
+
+            // iams
+            // _sdkClass.CallStatic("setInAppMessageLifecycleHandler", new OSInAppMessageLifecycleHandler());
+            _sdkClass.CallStatic("setInAppMessageClickHandler", new OSInAppMessageClickHandler());
+
+            _instance = this;
         }
 
         public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
