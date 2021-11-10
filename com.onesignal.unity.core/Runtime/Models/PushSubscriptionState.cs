@@ -31,7 +31,7 @@ namespace OneSignalSDK {
     /// <summary>
     /// todo - struct?
     /// </summary>
-    [Serializable] public sealed class PushSubscriptionState { // todo - should this be NotificationSubscriptionState?
+    [Serializable] public sealed class PushSubscriptionState {
         /// <summary>todo</summary>
         public bool isPushDisabled;
 
