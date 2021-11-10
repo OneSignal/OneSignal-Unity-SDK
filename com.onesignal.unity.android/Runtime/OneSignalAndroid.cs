@@ -106,9 +106,8 @@ namespace OneSignalSDK {
         }
 
         public override async Task<bool> SendTag(string key, object value) {
-            var proxy = new ChangeTagsUpdateHandler();
-            _sdkClass.CallStatic("sendTag", key, value.ToString(), proxy);
-            return await proxy;
+            _sdkClass.CallStatic("sendTag", key, value.ToString());
+            return await Task.FromResult(true); // no callback currently available on Android
         }
 
         public override async Task<bool> SendTags(Dictionary<string, object> tags) {
