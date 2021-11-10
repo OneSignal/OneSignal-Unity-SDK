@@ -30,9 +30,26 @@ using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     /// <summary>
+    /// 
+    /// </summary>
+    public enum URLActionType {
+        /// <summary>todo</summary>
+        Safari,
+        
+        /// <summary>todo</summary>
+        Webview,
+        
+        /// <summary>todo</summary>
+        ReplaceContent
+    }
+    
+    /// <summary>
     /// todo - struct?
     /// </summary>
     [Serializable] public sealed class InAppMessageAction {
+        /// <summary>The unique identifier for this click</summary>
+        public string clickId;
+
         /// <summary>todo</summary>
         [FormerlySerializedAs("click_name")]
         public string clickName;
@@ -41,6 +58,9 @@ namespace OneSignalSDK {
         [FormerlySerializedAs("click_url")]
         public string clickUrl;
         
+        /// <summary>The type of element that was clicked, button or image</summary>
+        public string clickType;
+        
         /// <summary>todo</summary>
         [FormerlySerializedAs("first_click")]
         public bool firstClick;
@@ -48,5 +68,8 @@ namespace OneSignalSDK {
         /// <summary>todo</summary>
         [FormerlySerializedAs("closes_message")]
         public bool closesMessage;
+
+        /// <summary>Determines where the URL is loaded, ie. app opens a webview</summary>
+        public URLActionType urlActionType;
     }
 }
