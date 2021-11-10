@@ -98,7 +98,7 @@ namespace OneSignalSDK {
             => _sdkClass.CallStatic<object>("getTriggerValueForKey", key) as string;
 
         public override Dictionary<string, string> GetTriggers()
-            => _sdkClass.CallStatic<AndroidJavaObject>("getTriggers").MapToDictionary<string, string>();
+            => _sdkClass.CallStatic<AndroidJavaObject>("getTriggers").MapToDictionary();
 
         public override bool InAppMessagesArePaused {
             get => _sdkClass.CallStatic<bool>("isInAppMessagingPaused");

@@ -64,15 +64,43 @@ namespace OneSignalSDK {
         /// <summary>
         /// Converts from a Java java.util.Map to a <see cref="Dictionary{TKey,TValue}"/>
         /// </summary>
-        public static Dictionary<TKey, TValue> MapToDictionary<TKey, TValue>(this AndroidJavaObject source) {
-            return null; // todo
+        public static Dictionary<string, string> MapToDictionary(this AndroidJavaObject source) {
+            if (source == null)
+                return null;
+            
+            var entries = source.Call<AndroidJavaObject>("entrySet");
+            var iter = entries.Call<AndroidJavaObject>("iterator");
+
+            var ret = new Dictionary<string, string>();
+
+            do {
+                var entry = iter.Call<AndroidJavaObject>("next");
+                var key = entry.Call<string>("getKey");
+                var valueJO = entry.Call<AndroidJavaObject>("getValue");
+                
+                ret[key] = valueJO.Call<string>("toString");
+            } while (iter.Call<bool>("hasNext"));
+            
+            return ret;
         }
 
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java java.util.Map
         /// </summary>
-        public static AndroidJavaObject ToMap<TKey, TValue>(this Dictionary<TKey, TValue> source) {
-            return null;
+        public static AndroidJavaObject ToMap(this Dictionary<string, string> source) {
+            var map = new AndroidJavaObject("java.util.HashMap");
+            var put = AndroidJNIHelper.GetMethodID(map.GetRawClass(), "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+            var entryArgs = new object[2];
+            foreach (var kv in source) {
+                using var key = new AndroidJavaObject("java.lang.String", kv.Key);
+                using var value = new AndroidJavaObject("java.lang.String", kv.Value);
+                entryArgs[0] = key;
+                entryArgs[1] = value;
+                AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
+            }
+            
+            return map;
         }
 
     }
