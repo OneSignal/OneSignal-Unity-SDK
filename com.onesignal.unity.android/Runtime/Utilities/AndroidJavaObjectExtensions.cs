@@ -39,7 +39,7 @@ namespace OneSignalSDK {
         /// object to a Serializable class in Unity
         /// </summary>
         public static TModel ToSerializable<TModel>(this AndroidJavaObject source)
-            => JsonUtility.FromJson<TModel>(source.Call<string>("toString"));
+            => source != default ? JsonUtility.FromJson<TModel>(source.Call<string>("toString")) : default;
         
         /*
          * JSONObject
@@ -49,7 +49,7 @@ namespace OneSignalSDK {
         /// Converts from a Java org.json.JSONObject to a <see cref="Dictionary{TKey,TValue}"/>
         /// </summary>
         public static Dictionary<string, object> JSONObjectToDictionary(this AndroidJavaObject source)
-            => Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object>;
+            => source != null ? Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object> : null;
 
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java org.json.JSONObject
