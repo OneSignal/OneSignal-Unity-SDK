@@ -28,6 +28,7 @@
 using System.Collections.Generic;
 using Laters;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -67,7 +68,7 @@ namespace OneSignalSDK {
             public OSPermissionObserver() : base("OSPermissionObserver") { }
 
             /// <param name="stateChanges">OSPermissionStateChanges</param>
-            public void onOSPermissionChanged(AndroidJavaObject stateChanges) {
+            [Preserve] public void onOSPermissionChanged(AndroidJavaObject stateChanges) {
                 var (curr, prev) = _getStatesChanges<PermissionState>(stateChanges);
                 _instance.PermissionStateChanged?.Invoke(curr, prev);
             }
@@ -77,7 +78,7 @@ namespace OneSignalSDK {
             public OSSubscriptionObserver() : base("OSSubscriptionObserver") { }
 
             /// <param name="stateChanges">OSSubscriptionStateChanges</param>
-            public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) {
+            [Preserve] public void onOSSubscriptionChanged(AndroidJavaObject stateChanges) {
                 var (curr, prev) = _getStatesChanges<PushSubscriptionState>(stateChanges);
                 _instance.PushSubscriptionStateChanged?.Invoke(curr, prev);
             }
@@ -87,7 +88,7 @@ namespace OneSignalSDK {
             public OSEmailSubscriptionObserver() : base("OSEmailSubscriptionObserver") { }
 
             /// <param name="stateChanges">OSEmailSubscriptionStateChanges</param>
-            public void onOSEmailSubscriptionChanged(AndroidJavaObject stateChanges) {
+            [Preserve] public void onOSEmailSubscriptionChanged(AndroidJavaObject stateChanges) {
                 var (curr, prev) = _getStatesChanges<EmailSubscriptionState>(stateChanges);
                 _instance.EmailSubscriptionStateChanged?.Invoke(curr, prev);
             }
@@ -97,7 +98,7 @@ namespace OneSignalSDK {
             public OSSMSSubscriptionObserver() : base("OSSMSSubscriptionObserver") { }
 
             /// <param name="stateChanges">OSSMSSubscriptionStateChanges</param>
-            public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) {
+            [Preserve] public void onSMSSubscriptionChanged(AndroidJavaObject stateChanges) {
                 var (curr, prev) = _getStatesChanges<SMSSubscriptionState>(stateChanges);
                 _instance.SMSSubscriptionStateChanged?.Invoke(curr, prev);
             }
@@ -108,7 +109,7 @@ namespace OneSignalSDK {
 
             /// <param name="context">Context</param>
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
-            public void remoteNotificationReceived(AndroidJavaObject context, AndroidJavaObject notificationReceivedEvent)
+            [Preserve] public void remoteNotificationReceived(AndroidJavaObject context, AndroidJavaObject notificationReceivedEvent)
                 => _instance.NotificationReceived?.Invoke(_notificationFromEventJavaObject(notificationReceivedEvent));
         }
 
@@ -116,7 +117,7 @@ namespace OneSignalSDK {
             public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler", true) { }
 
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
-            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent)
+            [Preserve] public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent)
                 => _instance.NotificationReceived?.Invoke(_notificationFromEventJavaObject(notificationReceivedEvent));
         }
 
@@ -124,7 +125,7 @@ namespace OneSignalSDK {
             public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler", true) { }
 
             /// <param name="result">OSNotificationOpenedResult</param>
-            public void notificationOpened(AndroidJavaObject result)
+            [Preserve] public void notificationOpened(AndroidJavaObject result)
                 => _instance.NotificationOpened?.Invoke(result.ToSerializable<NotificationOpenedResult>());
         }
         
@@ -132,19 +133,19 @@ namespace OneSignalSDK {
             public OSInAppMessageLifecycleHandler() : base("OSInAppMessageLifecycleHandler") { }
             
             /// <param name="message">OSInAppMessage</param>
-            public void onWillDisplayInAppMessage(AndroidJavaObject message)
+            [Preserve] public void onWillDisplayInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageWillDisplay?.Invoke(_inAppMessageFromJavaObject(message));
             
             /// <param name="message">OSInAppMessage</param>
-            public void onDidDisplayInAppMessage(AndroidJavaObject message)
+            [Preserve] public void onDidDisplayInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageDidDisplay?.Invoke(_inAppMessageFromJavaObject(message));
             
             /// <param name="message">OSInAppMessage</param>
-            public void onWillDismissInAppMessage(AndroidJavaObject message)
+            [Preserve] public void onWillDismissInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageWillDismiss?.Invoke(_inAppMessageFromJavaObject(message));
             
             /// <param name="message">OSInAppMessage</param>
-            public void onDidDismissInAppMessage(AndroidJavaObject message)
+            [Preserve] public void onDidDismissInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageDidDismiss?.Invoke(_inAppMessageFromJavaObject(message));
         }
 
@@ -152,7 +153,7 @@ namespace OneSignalSDK {
             public OSInAppMessageClickHandler() : base("OSInAppMessageClickHandler", true) { }
 
             /// <param name="result">OSInAppMessageAction</param>
-            public void inAppMessageClicked(AndroidJavaObject result) {
+            [Preserve] public void inAppMessageClicked(AndroidJavaObject result) {
                 _instance.InAppMessageTriggeredAction?.Invoke(null); // todo
             }
         }
@@ -165,7 +166,7 @@ namespace OneSignalSDK {
             public OSGetTagsHandler() : base("OSGetTagsHandler") { }
 
             /// <param name="tags">JSONObject of the device's tags</param>
-            public void tagsAvailable(AndroidJavaObject tags) // this is coming back from another thread
+            [Preserve] public void tagsAvailable(AndroidJavaObject tags) // this is coming back from another thread
                 => UnityMainThreadDispatch.Post(state => _complete(tags.JSONObjectToDictionary()));
         }
 
@@ -173,11 +174,11 @@ namespace OneSignalSDK {
             public ChangeTagsUpdateHandler() : base("ChangeTagsUpdateHandler") { }
 
             /// <param name="tags">JSONObject of the tags</param>
-            public void onSuccess(AndroidJavaObject tags)
+            [Preserve] public void onSuccess(AndroidJavaObject tags)
                 => _complete(true);
 
             /// <param name="error">SendTagsError</param>
-            public void onFailure(AndroidJavaObject error) {
+            [Preserve] public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
                 _complete(false);
             }
@@ -186,10 +187,10 @@ namespace OneSignalSDK {
         private sealed class EmailUpdateHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
             public EmailUpdateHandler() : base("EmailUpdateHandler") { }
 
-            public void onSuccess() => _complete(true);
+            [Preserve] public void onSuccess() => _complete(true);
 
             /// <param name="error">EmailUpdateError</param>
-            public void onFailure(AndroidJavaObject error) {
+            [Preserve] public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
                 _complete(false);
             }
@@ -199,10 +200,10 @@ namespace OneSignalSDK {
             public OSExternalUserIdUpdateCompletionHandler() : base("OSExternalUserIdUpdateCompletionHandler") { }
 
             /// <param name="results">JSONObject</param>
-            public void onSuccess(AndroidJavaObject results) => _complete(true);
+            [Preserve] public void onSuccess(AndroidJavaObject results) => _complete(true);
 
             /// <param name="error">ExternalIdError</param>
-            public void onFailure(AndroidJavaObject error) {
+            [Preserve] public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
                 _complete(false);
             }
@@ -212,10 +213,10 @@ namespace OneSignalSDK {
             public OSSMSUpdateHandler() : base("OSSMSUpdateHandler") { }
 
             /// <param name="result">JSONObject</param>
-            public void onSuccess(AndroidJavaObject result) => _complete(true);
+            [Preserve] public void onSuccess(AndroidJavaObject result) => _complete(true);
 
             /// <param name="error">OSSMSUpdateError</param>
-            public void onFailure(AndroidJavaObject error) {
+            [Preserve] public void onFailure(AndroidJavaObject error) {
                 SDKDebug.Error(error.Call<string>("toString"));
                 _complete(false);
             }
@@ -225,18 +226,18 @@ namespace OneSignalSDK {
             public OutcomeCallback() : base("OutcomeCallback") { }
 
             /// <param name="outcomeEvent">OSOutcomeEvent</param>
-            public void onSuccess(AndroidJavaObject outcomeEvent) => _complete(outcomeEvent != null);
+            [Preserve] public void onSuccess(AndroidJavaObject outcomeEvent) => _complete(outcomeEvent != null);
         }
 
         private sealed class PostNotificationResponseHandler : OneSignalAwaitableAndroidJavaProxy<Dictionary<string, object>> {
             public PostNotificationResponseHandler() : base("PostNotificationResponseHandler") { }
 
             /// <param name="response">JSONObject</param>
-            public void onSuccess(AndroidJavaObject response)
+            [Preserve] public void onSuccess(AndroidJavaObject response)
                 => _complete(response.JSONObjectToDictionary());
 
             /// <param name="response">JSONObject</param>
-            public void onFailure(AndroidJavaObject response) {
+            [Preserve] public void onFailure(AndroidJavaObject response) {
                 SDKDebug.Error(response.Call<string>("toString"));
                 _complete(null);
             }
