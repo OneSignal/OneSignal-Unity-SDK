@@ -90,7 +90,7 @@
     <setting name="packageDir" value="Assets/Plugins/Android" />
     <setting name="patchAndroidManifest" value="True" />
     <setting name="patchMainTemplateGradle" value="True" />
-    <setting name="projectExportEnabled" value="True" />
+    <setting name="projectExportEnabled" value="False" />
     <setting name="useJetifier" value="True" />
   </settings>
 </dependencies>
