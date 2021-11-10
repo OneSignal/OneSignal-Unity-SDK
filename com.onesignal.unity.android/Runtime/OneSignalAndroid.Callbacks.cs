@@ -45,13 +45,16 @@ namespace OneSignalSDK {
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
 
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
-            protected OneSignalAndroidJavaProxy(string listenerClassName)
-                : base(QualifiedSDKClass + "$" + listenerClassName) { }
+            protected OneSignalAndroidJavaProxy(string listenerClassName, bool innerClass = false)
+                : base(innerClass 
+                    ? QualifiedSDKClass + "$" + listenerClassName 
+                    : SDKPackage + "." + listenerClassName
+                ) { }
         }
 
         private abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
             protected OneSignalAwaitableAndroidJavaProxy(string listenerClassName)
-                : base(QualifiedSDKClass + "$" + listenerClassName) { }
+                : base(QualifiedSDKClass + "$" + listenerClassName ) { } // all inner class
         }
 
         /*
@@ -126,7 +129,7 @@ namespace OneSignalSDK {
         }
 
         private sealed class OSRemoteNotificationReceivedHandler : OneSignalAndroidJavaProxy {
-            public OSRemoteNotificationReceivedHandler() : base("OSRemoteNotificationReceivedHandler") { }
+            public OSRemoteNotificationReceivedHandler() : base("OSRemoteNotificationReceivedHandler", true) { }
 
             /// <param name="context">Context</param>
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
@@ -135,7 +138,7 @@ namespace OneSignalSDK {
         }
 
         private sealed class OSNotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
-            public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler") { }
+            public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler", true) { }
 
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
             public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent)
@@ -143,7 +146,7 @@ namespace OneSignalSDK {
         }
 
         private sealed class OSNotificationOpenedHandler : OneSignalAndroidJavaProxy {
-            public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler") { }
+            public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler", true) { }
 
             /// <param name="result">OSNotificationOpenedResult</param>
             public void notificationOpened(AndroidJavaObject result)
@@ -171,7 +174,7 @@ namespace OneSignalSDK {
         }
 
         private sealed class OSInAppMessageClickHandler : OneSignalAndroidJavaProxy {
-            public OSInAppMessageClickHandler() : base("OSInAppMessageClickHandler") { }
+            public OSInAppMessageClickHandler() : base("OSInAppMessageClickHandler", true) { }
 
             /// <param name="result">OSInAppMessageAction</param>
             public void inAppMessageClicked(AndroidJavaObject result) {
