@@ -75,15 +75,6 @@ namespace OneSignalSDK {
         private static readonly string PluginLibrariesPath = Path.Combine(PackageName, "Runtime", "Plugins", "iOS");
         private static readonly string PluginFilesPath = Path.Combine("Packages", PluginLibrariesPath);
 
-        private static readonly string[] RequiredFrameworks = {
-            "NotificationCenter.framework",
-            "UserNotifications.framework",
-            "UIKit.framework",
-            "SystemConfiguration.framework",
-            "CoreGraphics.framework",
-            "WebKit.framework"
-        };
-
         [Flags] private enum Entitlement {
             None = 0,
             ApsEnv = 1 << 0,
@@ -113,10 +104,6 @@ namespace OneSignalSDK {
             _outputPath = report.summary.outputPath;
             _projectPath = PBXProject.GetPBXProjectPath(_outputPath);
             _project.ReadFromString(File.ReadAllText(_projectPath));
-
-            // Add all the required frameworks
-            foreach (var frameworkName in RequiredFrameworks)
-                _project.AddFrameworkToProject(_project.GetFrameworkGuid(), frameworkName, false);
 
             // Add required entitlements
             UpdateEntitlements(Entitlement.ApsEnv | Entitlement.AppGroups);
