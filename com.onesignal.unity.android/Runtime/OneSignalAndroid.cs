@@ -61,9 +61,8 @@ namespace OneSignalSDK {
         public override void Initialize(string appId) {
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            var context     = activity.Call<AndroidJavaObject>("getApplicationContext");
 
-            _sdkClass.CallStatic("initWithContext", context);
+            _sdkClass.CallStatic("initWithContext", activity);
             _sdkClass.CallStatic("setAppId", appId);
         }
 
