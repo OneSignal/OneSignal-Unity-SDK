@@ -1,6 +1,6 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:OneSignal:[4.0.0, 4.99.99[</package>
+    <package>com.onesignal:OneSignal:[4.6.2, 4.6.99[</package>
   </packages>
   <files>
     <file>Assets/Plugins/Android/androidx.activity.activity-1.2.4.aar</file>
