@@ -296,7 +296,7 @@ namespace OneSignalSDK {
             if (extensionEntryRegex.IsMatch(podfile))
                 return;
 
-            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '>= 3.0.0'\nend\n";
+            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '~> 3.8.1'\nend\n";
             File.WriteAllText(podfilePath, podfile);
             
             // todo - detect if cocoapods is installed
