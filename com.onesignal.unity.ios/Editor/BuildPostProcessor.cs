@@ -214,9 +214,6 @@ namespace OneSignalSDK {
 
             ExtensionAddSourceFiles(extensionGuid);
 
-            foreach (var framework in RequiredFrameworks)
-                _project.AddFrameworkToProject(extensionGuid, framework, true);
-
             // Makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
             _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
