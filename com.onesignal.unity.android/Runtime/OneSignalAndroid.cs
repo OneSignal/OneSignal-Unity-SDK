@@ -157,7 +157,7 @@ namespace OneSignalSDK {
         }
 
         public override void PromptLocation()
-            => SDKDebug.Log("PromptLocation invoked on Android, does nothing.");
+            => _sdkClass.CallStatic("promptLocation");
 
         public override bool ShareLocation {
             get => _sdkClass.CallStatic<bool>("isLocationShared");
