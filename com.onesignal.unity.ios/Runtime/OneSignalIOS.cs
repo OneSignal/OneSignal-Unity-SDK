@@ -36,7 +36,7 @@ namespace OneSignalSDK {
     /// 
     /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
-        public override event NotificationLifecycleDelegate NotificationReceived;
+        public override event NotificationReceivedDelegate NotificationReceived;
         public override event NotificationActionDelegate NotificationOpened;
         public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;

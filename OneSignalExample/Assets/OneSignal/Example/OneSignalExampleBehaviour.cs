@@ -99,8 +99,10 @@ namespace OneSignalSDK {
             _log($"Notification was opened with result: {JsonUtility.ToJson(result)}");
         }
 
-        private void _notificationReceived(Notification notification) {
+        private bool _notificationReceived(Notification notification) {
             _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}");
+
+            return true; // show the notification in the foreground
         }
 
         private void IamTriggeredAction(InAppMessageAction inAppMessageAction) {

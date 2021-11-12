@@ -42,6 +42,8 @@ namespace OneSignalSDK {
         private delegate void StringListenerDelegate(string response);
         private delegate void StateListenerDelegate(string current, string previous);
 
+        private delegate bool NotificationWillShowDelegate(string notification);
+
         private static readonly Dictionary<int, ILater> WaitingProxies = new Dictionary<int, ILater>();
 
         private static (Later<TResult> proxy, int hashCode) _setupProxy<TResult>() {
@@ -94,10 +96,12 @@ namespace OneSignalSDK {
             
             _instance = this;
         }
-        
-        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onNotificationReceived(string response)
-            => _instance.NotificationReceived?.Invoke(JsonUtility.FromJson<Notification>(response));
+
+        [AOT.MonoPInvokeCallback(typeof(NotificationWillShowDelegate))]
+        private static bool _onNotificationReceived(string response) {
+            return _instance.NotificationReceived == null 
+                || _instance.NotificationReceived(JsonUtility.FromJson<Notification>(response));
+        }
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onNotificationOpened(string response)

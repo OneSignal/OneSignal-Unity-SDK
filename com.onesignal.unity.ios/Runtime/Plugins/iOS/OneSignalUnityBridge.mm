@@ -35,6 +35,8 @@ typedef void (*BooleanListenerDelegate)(bool response);
 typedef void (*StringListenerDelegate)(const char* response);
 typedef void (*StateListenerDelegate)(const char* current, const char* previous);
 
+typedef bool (*NotificationWillShowDelegate)(const char* notification)
+
 /*
  * Helpers
  */
@@ -166,10 +168,11 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
 
 extern "C" {
 
-    void _setNotificationReceivedCallback(StringListenerDelegate callback) {
+    void _setNotificationReceivedCallback(NotificationWillShowDelegate callback) {
         [OneSignal setNotificationWillShowInForegroundHandler:^(OSNotification *notification, OSNotificationDisplayResponse completion) {
             NSString *stringResponse = [notification stringify];
-            callback([stringResponse UTF8String]);
+            if (callback([stringResponse UTF8String]))
+                completion(notification);
         }];
     }
 

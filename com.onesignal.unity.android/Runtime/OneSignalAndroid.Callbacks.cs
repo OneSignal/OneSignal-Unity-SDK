@@ -142,8 +142,12 @@ namespace OneSignalSDK {
             public OSNotificationWillShowInForegroundHandler() : base("OSNotificationWillShowInForegroundHandler", true) { }
 
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
-            [Preserve] public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent)
-                => _instance.NotificationReceived?.Invoke(_notificationFromEventJavaObject(notificationReceivedEvent));
+            [Preserve] public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) {
+                var notifJO = notificationReceivedEvent.Call<AndroidJavaObject>("getNotification");
+                
+                if (_instance.NotificationReceived == null || _instance.NotificationReceived(notifJO.ToSerializable<Notification>()))
+                    notificationReceivedEvent.Call("complete", notifJO);
+            }
         }
 
         private sealed class OSNotificationOpenedHandler : OneSignalAndroidJavaProxy {
