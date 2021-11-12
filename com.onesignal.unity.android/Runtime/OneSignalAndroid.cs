@@ -66,11 +66,8 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("setAppId", appId);
         }
 
-        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
-            // cancels immediately, iOS only
-            // todo - is cancellation the right solution?
-            return Task.FromCanceled<NotificationPermission>(new CancellationToken());
-        }
+        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse()
+            => Task.FromResult(NotificationPermission.NotDetermined);
 
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
