@@ -25,13 +25,11 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
-using Laters;
 using UnityEngine;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// 
+    /// Helpers for converting from <see cref="AndroidJavaObject"/> to OneSignal C# model classes
     /// </summary>
     public sealed partial class OneSignalAndroid : OneSignal {
         private static (TState curr, TState prev) _getStatesChanges<TState>(AndroidJavaObject stateChanges) {

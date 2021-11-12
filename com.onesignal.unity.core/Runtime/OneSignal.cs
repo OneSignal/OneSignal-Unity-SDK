@@ -32,7 +32,7 @@ using UnityEngine;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// todo - desc
+    /// OneSignal SDK for Unity
     /// </summary>
     public abstract partial class OneSignal {
         public const string Version = "3.0.0";
@@ -66,23 +66,19 @@ namespace OneSignalSDK {
         public delegate void NotificationActionDelegate(NotificationOpenedResult result);
 
         /// <summary>
-        /// todo
+        /// When any client side event in an In-App Message's occurs there will be a corresponding event with this
+        /// delegate signature.
         /// </summary>
-        /// <param name="message">todo</param>
         public delegate void InAppMessageLifecycleDelegate(InAppMessage message);
         
         /// <summary>
         /// Sets a In App Message opened handler. The instance will be called when an In App Message action is tapped on.
         /// </summary>
-        /// <param name="action">todo</param>
         public delegate void InAppMessageActionDelegate(InAppMessageAction action);
 
         /// <summary>
-        /// todo - desc
+        /// Several states associated with the SDK can be changed can be changed in and outside of the application.
         /// </summary>
-        /// <typeparam name="TState"></typeparam>
-        /// <param name="current"></param>
-        /// <param name="previous"></param>
         public delegate void StateChangeDelegate<in TState>(TState current, TState previous);
     #endregion
 
@@ -106,27 +102,27 @@ namespace OneSignalSDK {
          */
 
         /// <summary>
-        /// todo
+        /// When an In-App Message is ready to be displayed to the screen
         /// </summary>
         public abstract event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
 
         /// <summary>
-        /// todo
+        /// When an In-App Message is has been displayed to the screen
         /// </summary>
         public abstract event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
 
         /// <summary>
-        /// todo
+        /// When a user has chosen to dismiss an In-App Message
         /// </summary>
         public abstract event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
 
         /// <summary>
-        /// todo
+        /// When an In-App Message has finished being dismissed
         /// </summary>
         public abstract event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
 
         /// <summary>
-        /// todo
+        /// When a user has triggered an action attached to an In-App Message
         /// </summary>
         public abstract event InAppMessageActionDelegate InAppMessageTriggeredAction;
 
@@ -135,34 +131,34 @@ namespace OneSignalSDK {
          */
 
         /// <summary>
-        /// todo - this
+        /// When this device's permissions for authorization of push notifications have changed.
         /// </summary>
         public abstract event StateChangeDelegate<PermissionState> PermissionStateChanged;
 
         /// <summary>
-        /// todo - this
+        /// When this device's subscription to push notifications has changed
         /// </summary>
         public abstract event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
 
         /// <summary>
-        /// todo - this
+        /// When this device's subscription to email has changed
         /// </summary>
         public abstract event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
 
         /// <summary>
-        /// todo - this
+        /// When this device's subscription to sms has changed
         /// </summary>
         public abstract event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
     #endregion
 
     #region SDK Setup
         /// <summary>
-        /// todo - custom level?
+        /// The minimum level of logs which will be logged to the console
         /// </summary>
         public LogType LogLevel { get; set; }
 
         /// <summary>
-        /// todo - custom level?
+        /// The minimum level of log events which will be converted into foreground alerts
         /// </summary>
         public LogType AlertLevel { get; set; }
 
@@ -172,15 +168,15 @@ namespace OneSignalSDK {
         public abstract bool PrivacyConsent { get; set; }
 
         /// <summary>
-        /// Allows you to delay the initialization of the SDK until the user provides privacy consent. The SDK will not
-        /// be fully initialized until 'PrivacyConsent = true'. Must be set before <see cref="Initialize"/> is called.
+        /// Allows you to delay the initialization of the SDK until <see cref="PrivacyConsent"/> is set to true. Must
+        /// be set before <see cref="Initialize"/> is called.
         /// </summary>
         public abstract bool RequiresPrivacyConsent { get; set; }
 
         /// <summary>
-        /// todo
+        /// Starts the OneSignal SDK
         /// </summary>
-        /// <param name="appId"></param>
+        /// <param name="appId">Your application id from the OneSignal dashboard</param>
         public abstract void Initialize(string appId);
     #endregion
 
@@ -261,15 +257,12 @@ namespace OneSignalSDK {
         /// <summary>
         /// Tag player with a key value pair to later create segments on them at onesignal.com
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendTag(string key, object value);
 
         /// <summary>
         /// Tag player with a key value pairs to later create segments on them at onesignal.com
         /// </summary>
-        /// <param name="tags"></param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendTags(Dictionary<string, object> tags);
 
@@ -282,14 +275,12 @@ namespace OneSignalSDK {
         /// <summary>
         /// Delete a Tag from current device record
         /// </summary>
-        /// <param name="key">todo</param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> DeleteTag(string key);
 
         /// <summary>
         /// Delete multiple Tags from current device record
         /// </summary>
-        /// <param name="keys">todo</param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> DeleteTags(params string[] keys);
     #endregion
@@ -299,7 +290,7 @@ namespace OneSignalSDK {
         /// Allows you to use your own application's user id to send OneSignal messages to your user. To tie the user
         /// to a given user id, you can use this method.
         /// </summary>
-        /// <param name="externalId">todo</param>
+        /// <param name="externalId">A unique id associated with the current user</param>
         /// <param name="authHash">If you have a backend server, we strongly recommend using
         /// <a href="https://documentation.onesignal.com/docs/identity-verification">Identity Verification</a> with
         /// your users. Your backend can generate an email authentication token and send it to your app.</param>
@@ -371,22 +362,18 @@ namespace OneSignalSDK {
         /// <summary>
         /// todo - desc
         /// </summary>
-        /// <param name="name"></param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
-        /// <param name="name"></param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendUniqueOutcome(string name);
 
         /// <summary>
         /// todo - desc
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendOutcomeWithValue(string name, float value);
     #endregion
