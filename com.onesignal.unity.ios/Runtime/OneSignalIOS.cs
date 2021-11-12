@@ -27,14 +27,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Laters;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
         public override event NotificationReceivedDelegate NotificationReceived;
         public override event NotificationActionDelegate NotificationOpened;

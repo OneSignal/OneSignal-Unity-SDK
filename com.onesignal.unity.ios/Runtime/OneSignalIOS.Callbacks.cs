@@ -30,10 +30,6 @@ using Laters;
 using UnityEngine;
 
 namespace OneSignalSDK {
-    
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
         private delegate void StringResponseDelegate(int hashCode, string response);

@@ -32,9 +32,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed partial class OneSignalAndroid : OneSignal {
         public override event NotificationReceivedDelegate NotificationReceived;
         public override event NotificationActionDelegate NotificationOpened;
