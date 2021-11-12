@@ -78,7 +78,6 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("addSMSSubscriptionObserver", new OSSMSSubscriptionObserver());
             
             // notifications
-            _sdkClass.CallStatic("setRemoteNotificationReceivedHandler", new OSRemoteNotificationReceivedHandler());
             _sdkClass.CallStatic("setNotificationWillShowInForegroundHandler", new OSNotificationWillShowInForegroundHandler());
             _sdkClass.CallStatic("setNotificationOpenedHandler", new OSNotificationOpenedHandler());
 
@@ -127,15 +126,6 @@ namespace OneSignalSDK {
                 var (curr, prev) = _getStatesChanges<SMSSubscriptionState>(stateChanges);
                 _instance.SMSSubscriptionStateChanged?.Invoke(curr, prev);
             }
-        }
-
-        private sealed class OSRemoteNotificationReceivedHandler : OneSignalAndroidJavaProxy {
-            public OSRemoteNotificationReceivedHandler() : base("OSRemoteNotificationReceivedHandler", true) { }
-
-            /// <param name="context">Context</param>
-            /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
-            [Preserve] public void remoteNotificationReceived(AndroidJavaObject context, AndroidJavaObject notificationReceivedEvent)
-                => _instance.NotificationReceived?.Invoke(_notificationFromEventJavaObject(notificationReceivedEvent));
         }
 
         private sealed class OSNotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
