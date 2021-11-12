@@ -50,15 +50,19 @@ namespace OneSignalSDK {
 
     #region Delegate Definitions
         /// <summary>
-        /// When a push notification is received while the application is currently
+        /// When a push notification is received and is ready to be shown.
         /// </summary>
-        /// <param name="notification">todo</param>
-        public delegate void NotificationLifecycleDelegate(Notification notification);
+        /// <param name="notification">Details of the notification to be shown</param>
+        /// <returns>True if the notification should be displayed</returns>
+        public delegate bool NotificationReceivedDelegate(Notification notification);
 
         /// <summary>
         /// When a push notification was acted on by the user.
         /// </summary>
-        /// <param name="result">The Notification open result describing: 1. The notification opened 2. The action taken by the user. </param>
+        /// <param name="result">The Notification open result describing:
+        ///     1. The notification opened
+        ///     2. The action taken by the user.
+        /// </param>
         public delegate void NotificationActionDelegate(NotificationOpenedResult result);
 
         /// <summary>
@@ -88,9 +92,9 @@ namespace OneSignalSDK {
          */
 
         /// <summary>
-        /// When an push notification has been received
+        /// When a push notification has been received while app is in the foreground
         /// </summary>
-        public abstract event NotificationLifecycleDelegate NotificationReceived;
+        public abstract event NotificationReceivedDelegate NotificationReceived;
 
         /// <summary>
         /// When a push notification has been opened by the user

@@ -47,10 +47,5 @@ namespace OneSignalSDK {
             
         private static InAppMessage _inAppMessageFromJavaObject(AndroidJavaObject message)
             => new InAppMessage { id = message.Call<string>("getMessageId") };
-
-        private static Notification _notificationFromEventJavaObject(AndroidJavaObject notifReceivedEvent) {
-            var notifJo = notifReceivedEvent.Call<AndroidJavaObject>("getNotification");
-            return notifJo.ToSerializable<Notification>();
-        }
     }
 }
