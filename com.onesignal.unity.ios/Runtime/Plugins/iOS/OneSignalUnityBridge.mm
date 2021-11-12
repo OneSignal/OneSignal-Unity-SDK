@@ -171,8 +171,8 @@ extern "C" {
     void _setNotificationReceivedCallback(NotificationWillShowDelegate callback) {
         [OneSignal setNotificationWillShowInForegroundHandler:^(OSNotification *notification, OSNotificationDisplayResponse completion) {
             NSString *stringResponse = [notification stringify];
-            if (callback([stringResponse UTF8String]))
-                completion(notification);
+            bool shouldDisplay = callback([stringResponse UTF8String]);
+            completion(shouldDisplay ? notification : nil);
         }];
     }
 
