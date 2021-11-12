@@ -135,8 +135,12 @@ namespace OneSignalSDK {
             [Preserve] public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) {
                 var notifJO = notificationReceivedEvent.Call<AndroidJavaObject>("getNotification");
                 
-                if (_instance.NotificationReceived == null || _instance.NotificationReceived(notifJO.ToSerializable<Notification>()))
+                if (_instance.NotificationReceived == null)
                     notificationReceivedEvent.Call("complete", notifJO);
+                else if (_instance.NotificationReceived(notifJO.ToSerializable<Notification>()))
+                    notificationReceivedEvent.Call("complete", notifJO);
+                else
+                    notificationReceivedEvent.Call("complete", null);
             }
         }
 
