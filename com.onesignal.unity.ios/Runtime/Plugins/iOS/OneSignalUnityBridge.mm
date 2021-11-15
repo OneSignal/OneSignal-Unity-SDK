@@ -359,6 +359,16 @@ extern "C" {
                     withSuccess:^(NSDictionary *results) { CALLBACK(YES); }
                     withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
+    
+    void _logoutEmail(int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal logoutEmailWithSuccess:^{ CALLBACK(YES); }
+                              withFailure:^(NSError *error) { CALLBACK(NO); }]
+    }
+    
+    void _logoutSMSNumber(int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) { CALLBACK(YES); }
+                                  withFailure:^(NSError *error) { CALLBACK(NO); }
+    }
 
     void _promptLocation() {
         [OneSignal promptLocation];

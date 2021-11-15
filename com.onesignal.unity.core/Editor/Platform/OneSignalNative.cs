@@ -128,10 +128,12 @@ namespace OneSignalSDK {
             return Task.FromResult(false);
         }
 
-        public override Task<Dictionary<string, object>> LogOut(
-            LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId
-        ) {
-            return Task.FromResult(new Dictionary<string, object>());
+        public override Task<bool> LogOutEmail() {
+            return Task.FromResult(false);
+        }
+
+        public override Task<bool> LogOutSMS() {
+            return Task.FromResult(false);
         }
 
         public override void PromptLocation() {

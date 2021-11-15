@@ -146,8 +146,16 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
-        public override async Task<Dictionary<string, object>> LogOut(LogOutOptions options = LogOutOptions.Email | LogOutOptions.SMS | LogOutOptions.ExternalUserId) {
-            throw new System.NotImplementedException();
+        public override async Task<bool> LogOutEmail() {
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _logoutEmail(hashCode, BooleanCallbackProxy);
+            return await proxy;
+        }
+
+        public override async Task<bool> LogOutSMS() {
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _logoutSMSNumber(hashCode, BooleanCallbackProxy);
+            return await proxy;
         }
 
         public override void PromptLocation()
