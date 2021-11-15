@@ -55,7 +55,7 @@ namespace OneSignalSDK {
 
         public override void Initialize(string appId) {
             _initialize(appId);
-            VspAttribution.SendAttributionEvent("Login", "OneSignal", appId);
+            _completedInit(appId);
         }
 
         public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {

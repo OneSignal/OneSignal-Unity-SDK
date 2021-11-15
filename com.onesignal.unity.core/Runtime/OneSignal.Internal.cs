@@ -30,6 +30,9 @@ using System.Linq;
 
 namespace OneSignalSDK {
     public abstract partial class OneSignal {
+        internal static event Action<string> OnInitialize;
+        protected static void _completedInit(string appId) => OnInitialize?.Invoke(appId);
+        
         private static OneSignal _default;
 
         private static OneSignal _getDefaultInstance() {

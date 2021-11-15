@@ -7,4 +7,8 @@
 [assembly: InternalsVisibleTo("OneSignal.UnityPackage.Attribution")]
 =======
 [assembly: InternalsVisibleTo("OneSignal.UnityPackage.Example")]
+<<<<<<< main
 >>>>>>> WIP on example scene and behaviour
+=======
+[assembly: InternalsVisibleTo("OneSignal.UnityPackage.Attribution")]
+>>>>>>> Updated VSP to only run from store plugin
