@@ -26,7 +26,6 @@
  */
 
 using System;
-using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     [Serializable] public sealed class PushSubscriptionState {
@@ -34,8 +33,7 @@ namespace OneSignalSDK {
         /// Unique id of this subscription
         /// </summary>
         /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
-        [FormerlySerializedAs("userId")]
-        public string id;
+        public string userId;
         
         /// <summary>
         /// Whether this subscription is currently active

@@ -32,18 +32,25 @@ namespace OneSignalSDK {
     /// Status of ability to send push notification as determined by the current user
     /// </summary>
     public enum NotificationPermission {
-        /// <summary>User has not yet been asked to grant permissions</summary>
+        /// <summary>The user has not yet made a choice regarding whether your app can show notifications.</summary>
         NotDetermined,
 
-        /// <summary>User has denied the application permission to send push notifications</summary>
+        /// <summary>The application is not authorized to post user notifications.</summary>
         Denied,
 
-        /// <summary>User has granted the application permission to send push notifications</summary>
-        Authorized
+        /// <summary>The application is authorized to post user notifications.</summary>
+        Authorized,
+        
+        /// <summary>The application is only authorized to post Provisional notifications (direct to history)</summary>
+        Provisional,
+        
+        /// <summary>The application is authorized to send notifications for 8 hours. Only used by App Clips.</summary>
+        Ephemeral
     }
 
     [Serializable] public sealed class PermissionState {
         public bool hasPrompted;
         public NotificationPermission status;
+        public bool provisional;
     }
 }
