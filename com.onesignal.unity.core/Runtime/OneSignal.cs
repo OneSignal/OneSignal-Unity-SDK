@@ -366,19 +366,19 @@ namespace OneSignalSDK {
 
     #region Outcomes
         /// <summary>
-        /// todo - desc
+        /// Send a trackable custom event which is tied to push notification campaigns
         /// </summary>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendOutcome(string name);
 
         /// <summary>
-        /// todo - desc
+        /// Send a trackable custom event which can only happen once and is tied to push notification campaigns
         /// </summary>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendUniqueOutcome(string name);
 
         /// <summary>
-        /// todo - desc
+        /// Send a trackable custom event with an attached value which is tied to push notification campaigns
         /// </summary>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SendOutcomeWithValue(string name, float value);
