@@ -178,9 +178,6 @@ namespace OneSignalSDK {
         private void UpdateEntitlements(Entitlement entitlements)
             => UpdateEntitlements(entitlements, _project.GetMainTargetGuid(), _project.GetMainTargetName());
 
-        /// <summary>
-        /// todo
-        /// </summary>
         private void AddPushCapability(string targetGuid, string targetName) {
             _project.AddCapability(targetGuid, PBXCapabilityType.PushNotifications);
             _project.AddCapability(targetGuid, PBXCapabilityType.BackgroundModes);

@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
 namespace OneSignalSDK {
+    /// <summary>
+    /// Example class to show how an application can utilize the public methods of the OneSignal SDK
+    /// </summary>
     public class OneSignalExampleBehaviour : MonoBehaviour {
         /// <summary>
         /// set to an email address you would like to test notifications against

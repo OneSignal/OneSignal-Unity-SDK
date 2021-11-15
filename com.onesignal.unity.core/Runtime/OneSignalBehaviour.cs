@@ -29,32 +29,35 @@ using UnityEngine;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// todo
+    /// Behaviour attached to the OneSignalController.prefab which can be dragged into your scene fora codeless init
     /// </summary>
     public class OneSignalBehaviour : MonoBehaviour {
         /// <summary>
-        /// todo
+        /// The unique identifier for your application from the OneSignal dashboard
+        /// https://documentation.onesignal.com/docs/accounts-and-keys#app-id
         /// </summary>
         public string AppId;
 
         /// <summary>
-        /// todo
+        /// The minimum level of logs which will be logged to the console
         /// </summary>
         public LogType LogLevel = LogType.Warning;
         
         /// <summary>
-        /// todo
+        /// The minimum level of log events which will be converted into foreground alerts
         /// </summary>
         public LogType AlertLevel = LogType.Exception;
 
         /// <summary>
-        /// todo
+        /// Allows you to delay the initialization of the SDK until <see cref="OneSignal.PrivacyConsent"/> is set to
+        /// true. Must be set before <see cref="OneSignal.Initialize"/> is called.
         /// </summary>
         public bool RequireUserConsent = false;
 
         /// <summary>
-        /// todo
+        /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>
+        /// <remarks>This method must be called before <see cref="OneSignal.Initialize"/> on iOS.</remarks>
         public bool ShareLocation = false;
 
         private void Start() {
