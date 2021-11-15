@@ -45,9 +45,6 @@ namespace OneSignalSDK {
         /// </summary>
         public string pushToken;
         
-        /// <summary>
-        /// todo
-        /// </summary>
         public bool isPushDisabled;
     }
 }
