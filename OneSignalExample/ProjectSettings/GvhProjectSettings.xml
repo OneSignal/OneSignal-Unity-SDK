@@ -16,6 +16,6 @@
   <projectSetting name="GooglePlayServices.PatchPropertiesTemplateGradle" value="True" />
   <projectSetting name="GooglePlayServices.PromptBeforeAutoResolution" value="False" />
   <projectSetting name="GooglePlayServices.UseGradleDaemon" value="True" />
-  <projectSetting name="GooglePlayServices.UseJetifier" value="True" />
+  <projectSetting name="GooglePlayServices.UseJetifier" value="False" />
   <projectSetting name="GooglePlayServices.VerboseLogging" value="True" />
 </projectSettings>
