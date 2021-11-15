@@ -45,10 +45,15 @@ public class LinkXMLStep : OneSignalSetupStep {
         => File.Exists(_destinationPath);
 
     protected override void _runStep() {
+        if (!Directory.Exists(_destinationDir))
+            Directory.CreateDirectory(_destinationDir);
+        
         if (!File.Exists(_destinationPath))
             File.Copy(_sourcePath, _destinationPath);
     }
     
+    private static readonly string _destinationDir = Path.Combine("Assets", "OneSignal");
+    
     private static readonly string _sourcePath = Path.Combine("Packages", "com.onesignal.unity.core", "Editor", "link.xml");
-    private static readonly string _destinationPath = Path.Combine("Assets", "OneSignal", "link.xml");
+    private static readonly string _destinationPath = Path.Combine(_destinationDir, "link.xml");
 }
