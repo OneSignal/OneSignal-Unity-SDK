@@ -61,6 +61,8 @@ namespace OneSignalSDK {
 
             _sdkClass.CallStatic("initWithContext", activity);
             _sdkClass.CallStatic("setAppId", appId);
+
+            VspAttribution.SendAttributionEvent("Login", "OneSignal", appId);
         }
 
         public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse()

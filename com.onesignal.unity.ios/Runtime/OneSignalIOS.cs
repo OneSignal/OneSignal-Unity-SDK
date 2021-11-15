@@ -53,8 +53,10 @@ namespace OneSignalSDK {
             set => _setRequiresPrivacyConsent(value);
         }
 
-        public override void Initialize(string appId)
-            => _initialize(appId);
+        public override void Initialize(string appId) {
+            _initialize(appId);
+            VspAttribution.SendAttributionEvent("Login", "OneSignal", appId);
+        }
 
         public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
             var (proxy, hashCode) = _setupProxy<bool>();
