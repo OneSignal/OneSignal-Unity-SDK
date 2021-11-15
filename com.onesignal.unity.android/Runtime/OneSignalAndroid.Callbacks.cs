@@ -157,19 +157,19 @@ namespace OneSignalSDK {
             
             /// <param name="message">OSInAppMessage</param>
             public void onWillDisplayInAppMessage(AndroidJavaObject message)
-                => _instance.InAppMessageWillDisplay?.Invoke(_inAppMessageFromJavaObject(message));
+                => _instance.InAppMessageWillDisplay?.Invoke(message.ToSerializable<InAppMessage>());
             
             /// <param name="message">OSInAppMessage</param>
             public void onDidDisplayInAppMessage(AndroidJavaObject message)
-                => _instance.InAppMessageDidDisplay?.Invoke(_inAppMessageFromJavaObject(message));
+                => _instance.InAppMessageDidDisplay?.Invoke(message.ToSerializable<InAppMessage>());
             
             /// <param name="message">OSInAppMessage</param>
             public void onWillDismissInAppMessage(AndroidJavaObject message)
-                => _instance.InAppMessageWillDismiss?.Invoke(_inAppMessageFromJavaObject(message));
+                => _instance.InAppMessageWillDismiss?.Invoke(message.ToSerializable<InAppMessage>());
             
             /// <param name="message">OSInAppMessage</param>
             public void onDidDismissInAppMessage(AndroidJavaObject message)
-                => _instance.InAppMessageDidDismiss?.Invoke(_inAppMessageFromJavaObject(message));
+                => _instance.InAppMessageDidDismiss?.Invoke(message.ToSerializable<InAppMessage>());
         }
 
         private sealed class OSInAppMessageClickHandler : OneSignalAndroidJavaProxy {

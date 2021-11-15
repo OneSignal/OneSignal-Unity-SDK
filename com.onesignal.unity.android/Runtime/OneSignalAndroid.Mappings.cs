@@ -42,8 +42,5 @@ namespace OneSignalSDK {
 
             return (curr, prev);
         }
-            
-        private static InAppMessage _inAppMessageFromJavaObject(AndroidJavaObject message)
-            => new InAppMessage { id = message.Call<string>("getMessageId") };
     }
 }
