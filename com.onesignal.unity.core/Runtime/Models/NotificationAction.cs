@@ -29,9 +29,6 @@ using System;
 using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// todo - desc
-    /// </summary>
     public enum NotificationActionType {
         /// <summary>Notification was tapped on.</summary>
         Opened,
@@ -40,15 +37,10 @@ namespace OneSignalSDK {
         ActionTaken
     }
 
-    /// <summary>
-    /// todo - struct?
-    /// </summary>
     [Serializable] public sealed class NotificationAction {
-        /// <summary>todo</summary>
-        [FormerlySerializedAs("actionID")] 
+        [FormerlySerializedAs("actionId")] 
         public string id;
 
-        /// <summary>todo</summary>
         public NotificationActionType type;
     }
 

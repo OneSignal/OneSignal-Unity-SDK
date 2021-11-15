@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    [Serializable] public class Notification {
+    [Serializable] public sealed class Notification {
         [FormerlySerializedAs("notificationId")]
         public string id;
         

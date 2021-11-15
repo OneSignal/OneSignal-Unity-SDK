@@ -29,27 +29,21 @@ using System;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// todo
+    /// Status of ability to send push notification as determined by the current user
     /// </summary>
     public enum NotificationPermission {
-        /// <summary>todo</summary>
+        /// <summary>User has not yet been asked to grant permissions</summary>
         NotDetermined,
 
-        /// <summary>todo</summary>
+        /// <summary>User has denied the application permission to send push notifications</summary>
         Denied,
 
-        /// <summary>todo</summary>
+        /// <summary>User has granted the application permission to send push notifications</summary>
         Authorized
     }
 
-    /// <summary>
-    /// todo - should this exist? OSNotificationPermission.NotDetermined should be the same as hasPrompted == false
-    /// </summary>
     [Serializable] public sealed class PermissionState {
-        /// <summary>todo</summary>
         public bool hasPrompted;
-
-        /// <summary>todo</summary>
         public NotificationPermission status;
     }
 }

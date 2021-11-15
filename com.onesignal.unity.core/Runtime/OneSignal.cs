@@ -319,18 +319,24 @@ namespace OneSignalSDK {
         public abstract Task<bool> SetSMSNumber(string smsNumber, string authHash = null);
 
         /// <summary>
-        /// todo
+        /// For determining which methods of user identification should be removed from the current OneSignal user
         /// </summary>
         [Flags] public enum LogOutOptions {
-            /// <summary>todo - desc</summary>
+            /// <summary>
+            /// If this user logs out of your app and/or you would like to disassociate their email with the current
+            /// OneSignal user
+            /// </summary>
             Email,
 
-            /// <summary>todo - desc</summary>
+            /// <summary>
+            /// If this user logs out of your app and/or you would like to disassociate their phone number with the
+            /// current OneSignal user
+            /// </summary>
             SMS,
 
             /// <summary>
-            /// If your user logs out of your app and you would like to disassociate their custom user ID from your
-            /// system with their OneSignal user ID
+            /// If this user logs out of your app and/or you would like to disassociate their external user id with
+            /// the current OneSignal user
             /// </summary>
             ExternalUserId
         }

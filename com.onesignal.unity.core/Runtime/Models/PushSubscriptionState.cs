@@ -26,22 +26,30 @@
  */
 
 using System;
+using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// todo - struct?
-    /// </summary>
     [Serializable] public sealed class PushSubscriptionState {
-        /// <summary>todo</summary>
-        public bool isPushDisabled;
-
-        /// <summary>todo</summary>
-        public string userId;
-
-        /// <summary>todo</summary>
-        public string pushToken;
-
-        /// <summary>todo</summary>
+        /// <summary>
+        /// Unique id of this subscription
+        /// </summary>
+        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
+        [FormerlySerializedAs("userId")]
+        public string id;
+        
+        /// <summary>
+        /// Whether this subscription is currently active
+        /// </summary>
         public bool isSubscribed;
+        
+        /// <summary>
+        /// The unique token provided by the device's operating system used to send push notifications
+        /// </summary>
+        public string pushToken;
+        
+        /// <summary>
+        /// todo
+        /// </summary>
+        public bool isPushDisabled;
     }
 }
