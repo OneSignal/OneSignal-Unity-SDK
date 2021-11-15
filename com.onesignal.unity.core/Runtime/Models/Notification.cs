@@ -26,42 +26,38 @@
  */
 
 using System;
+using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
-    public enum NotificationDisplayType {
-        /// <summary>Notification shown in the notification shade.</summary>
-        Notification,
-
-        /// <summary>Notification shown as an in app alert.</summary>
-        InAppAlert,
-
-        /// <summary>Notification was silent and not displayed.</summary>
-        None
-    }
-    
-    /// <summary>
-    /// todo - struct?
-    /// </summary>
-    [Serializable] public sealed class Notification {
-        /// <summary>todo</summary>
-        public bool isAppInFocus;
-
-        /// <summary>todo</summary>
-        public bool shown;
-
-        /// <summary>todo</summary>
-        public bool silentNotification;
-
-        /// <summary>todo</summary>
+    [Serializable] public class Notification {
+        [FormerlySerializedAs("notificationId")]
+        public string id;
+        
         public int androidNotificationId;
 
-        /// <summary>todo</summary>
-        public NotificationDisplayType displayType;
+        public string templateName;
+        public string templateId;
+        public string title;
+        public string body;
+        public string smallIcon;
+        public string largeIcon;
+        public string bigPicture;
+        public string smallIconAccentColor;
+        public string launchURL;
+        public string sound;
+        public string ledColor;
+        public int lockScreenVisibility;
+        public string groupKey;
+        public string groupMessage;
+        public string fromProjectNumber;
+        public string collapseId;
+        public int priority;
 
-        /// <summary>todo</summary>
-        public NotificationPayload payload;
+        public Dictionary<string, object> groupedNotifications;
+        public Dictionary<string, object> additionalData;
+        public Dictionary<string, object> actionButtons;
+        
+        public string rawPayload;
     }
 }
