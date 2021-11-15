@@ -26,19 +26,25 @@
  */
 
 using System;
+using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// todo - struct?
-    /// </summary>
     [Serializable] public sealed class EmailSubscriptionState {
-        /// <summary>todo</summary>
-        public string emailUserId;
-
-        /// <summary>todo</summary>
-        public string emailAddress;
-
-        /// <summary>todo</summary>
+        /// <summary>
+        /// Unique id of this subscription
+        /// </summary>
+        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
+        [FormerlySerializedAs("emailUserId")]
+        public string id;
+        
+        /// <summary>
+        /// Whether this subscription is currently active
+        /// </summary>
         public bool isSubscribed;
+        
+        /// <summary>
+        /// Email address of the user which this subscription was created for
+        /// </summary>
+        public string emailAddress;
     }
 }

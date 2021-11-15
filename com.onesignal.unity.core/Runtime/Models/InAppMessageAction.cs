@@ -29,43 +29,28 @@ using System;
 using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
     public enum URLActionType {
-        /// <summary>todo</summary>
         Safari,
-        
-        /// <summary>todo</summary>
         Webview,
-        
-        /// <summary>todo</summary>
         ReplaceContent
     }
     
-    /// <summary>
-    /// todo - struct?
-    /// </summary>
     [Serializable] public sealed class InAppMessageAction {
         /// <summary>The unique identifier for this click</summary>
         public string clickId;
 
-        /// <summary>todo</summary>
         [FormerlySerializedAs("click_name")]
         public string clickName;
         
-        /// <summary>todo</summary>
         [FormerlySerializedAs("click_url")]
         public string clickUrl;
         
         /// <summary>The type of element that was clicked, button or image</summary>
         public string clickType;
         
-        /// <summary>todo</summary>
         [FormerlySerializedAs("first_click")]
         public bool firstClick;
         
-        /// <summary>todo</summary>
         [FormerlySerializedAs("closes_message")]
         public bool closesMessage;
 

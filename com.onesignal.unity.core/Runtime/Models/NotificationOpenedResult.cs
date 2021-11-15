@@ -28,14 +28,8 @@
 using System;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// todo - desc
-    /// </summary>
     [Serializable] public sealed class NotificationOpenedResult {
-        /// <summary>todo</summary>
         public NotificationAction action;
-        
-        /// <summary>todo</summary>
         public Notification notification;
     }
 
