@@ -26,7 +26,6 @@
  */
 
 using System;
-using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     [Serializable] public sealed class EmailSubscriptionState {
@@ -34,8 +33,7 @@ namespace OneSignalSDK {
         /// Unique id of this subscription
         /// </summary>
         /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
-        [FormerlySerializedAs("emailUserId")]
-        public string id;
+        public string emailUserId;
         
         /// <summary>
         /// Whether this subscription is currently active

@@ -26,13 +26,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
     [Serializable] public sealed class Notification {
-        [FormerlySerializedAs("notificationId")]
-        public string id;
+        public string notificationId;
         
         public int androidNotificationId;
 
@@ -53,10 +50,6 @@ namespace OneSignalSDK {
         public string fromProjectNumber;
         public string collapseId;
         public int priority;
-
-        public Dictionary<string, object> groupedNotifications;
-        public Dictionary<string, object> additionalData;
-        public Dictionary<string, object> actionButtons;
         
         public string rawPayload;
     }

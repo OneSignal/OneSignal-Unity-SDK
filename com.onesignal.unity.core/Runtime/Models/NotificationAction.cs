@@ -38,10 +38,7 @@ namespace OneSignalSDK {
     }
 
     [Serializable] public sealed class NotificationAction {
-        [FormerlySerializedAs("actionId")] 
-        public string id;
-
+        public string actionID;
         public NotificationActionType type;
     }
-
 }

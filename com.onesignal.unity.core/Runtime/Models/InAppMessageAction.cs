@@ -26,35 +26,12 @@
  */
 
 using System;
-using UnityEngine.Serialization;
 
 namespace OneSignalSDK {
-    public enum URLActionType {
-        Safari,
-        Webview,
-        ReplaceContent
-    }
-    
     [Serializable] public sealed class InAppMessageAction {
-        /// <summary>The unique identifier for this click</summary>
-        public string clickId;
-
-        [FormerlySerializedAs("click_name")]
-        public string clickName;
-        
-        [FormerlySerializedAs("click_url")]
-        public string clickUrl;
-        
-        /// <summary>The type of element that was clicked, button or image</summary>
-        public string clickType;
-        
-        [FormerlySerializedAs("first_click")]
-        public bool firstClick;
-        
-        [FormerlySerializedAs("closes_message")]
-        public bool closesMessage;
-
-        /// <summary>Determines where the URL is loaded, ie. app opens a webview</summary>
-        public URLActionType urlActionType;
+        public string click_name;
+        public string click_url;
+        public bool first_click;
+        public bool closes_message;
     }
 }

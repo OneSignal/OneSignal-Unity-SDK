@@ -201,7 +201,7 @@ extern "C" {
 
     void _setInAppMessageClickedCallback(StringListenerDelegate callback) {
         [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction * _Nonnull action) {
-            NSString *stringResponse = [action propertiesAsJsonString];
+            NSString *stringResponse = jsonStringFromDictionary([action jsonRepresentation]);
             callback([stringResponse UTF8String]);
         }];
     }
