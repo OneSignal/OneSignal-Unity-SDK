@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.Analytics;
 
 namespace OneSignalSDK
@@ -92,5 +93,9 @@ namespace OneSignalSDK
 				return AnalyticsResult.AnalyticsDisabled;
 			}
 		}
+
+		[RuntimeInitializeOnLoadMethod]
+		public static void AttachToInit()
+			=> OneSignal.OnInitialize += appId => SendAttributionEvent("Login", "OneSignal", appId);
 	}
 }
