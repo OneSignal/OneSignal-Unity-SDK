@@ -87,7 +87,7 @@ namespace OneSignalSDK {
             => _sdkClass.CallStatic("removeTriggerForKey", key);
 
         public override void RemoveTriggers(params string[] keys)
-            => _sdkClass.CallStatic("removeTriggersForKeys", keys.ToList()); // todo - test me thoroughly
+            => _sdkClass.CallStatic("removeTriggersForKeys", Json.Serialize(keys));
 
         public override string GetTrigger(string key) {
             var triggerVal = _sdkClass.CallStatic<AndroidJavaObject>("getTriggerValueForKey", key);
