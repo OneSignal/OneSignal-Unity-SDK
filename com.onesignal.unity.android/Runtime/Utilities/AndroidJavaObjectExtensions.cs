@@ -35,11 +35,18 @@ namespace OneSignalSDK {
     /// </summary>
     internal static class AndroidJavaObjectExtensions {
         /// <summary>
-        /// Converts from a Java class which implements a toString method which returns a JSON representation of that
-        /// object to a Serializable class in Unity
+        /// Converts from a Java class which implements a toJSONObject method which returns a JSONObject representation
+        /// of that object to a Serializable class in Unity
         /// </summary>
-        public static TModel ToSerializable<TModel>(this AndroidJavaObject source)
-            => source != default ? JsonUtility.FromJson<TModel>(source.Call<string>("toString")) : default;
+        public static TModel ToSerializable<TModel>(this AndroidJavaObject source) {
+            if (source == default)
+                return default;
+
+            var json = source.Call<AndroidJavaObject>("toJSONObject");
+            var jsonStr = json.Call<string>("toString");
+            var serialized = JsonUtility.FromJson<TModel>(jsonStr);
+            return serialized;
+        }
         
         /*
          * JSONObject
