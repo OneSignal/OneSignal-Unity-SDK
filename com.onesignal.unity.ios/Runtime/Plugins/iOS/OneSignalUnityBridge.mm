@@ -26,7 +26,6 @@
  */
 
 #import <OneSignal/OneSignal.h>
-#import "NSObject+ReadProperties.h"
 
 typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
 typedef void (*StringResponseDelegate)(int hashCode, const char* response);
@@ -35,7 +34,7 @@ typedef void (*BooleanListenerDelegate)(bool response);
 typedef void (*StringListenerDelegate)(const char* response);
 typedef void (*StateListenerDelegate)(const char* current, const char* previous);
 
-typedef bool (*NotificationWillShowDelegate)(const char* notification)
+typedef bool (*NotificationWillShowDelegate)(const char* notification);
 
 /*
  * Helpers
@@ -201,8 +200,7 @@ extern "C" {
 
     void _setInAppMessageClickedCallback(StringListenerDelegate callback) {
         [OneSignal setInAppMessageClickHandler:^(OSInAppMessageAction * _Nonnull action) {
-            NSString *stringResponse = jsonStringFromDictionary([action jsonRepresentation]);
-            callback([stringResponse UTF8String]);
+            callback(jsonStringFromDictionary([action jsonRepresentation]));
         }];
     }
 
@@ -362,12 +360,12 @@ extern "C" {
     
     void _logoutEmail(int hashCode, BooleanResponseDelegate callback) {
         [OneSignal logoutEmailWithSuccess:^{ CALLBACK(YES); }
-                              withFailure:^(NSError *error) { CALLBACK(NO); }]
+                              withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
     
     void _logoutSMSNumber(int hashCode, BooleanResponseDelegate callback) {
         [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) { CALLBACK(YES); }
-                                  withFailure:^(NSError *error) { CALLBACK(NO); }
+                                  withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
     void _promptLocation() {
