@@ -105,19 +105,19 @@ namespace OneSignalSDK {
         
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageWillDisplay(string response)
-            => _instance.InAppMessageWillDisplay?.Invoke(new InAppMessage { id = response });
+            => _instance.InAppMessageWillDisplay?.Invoke(new InAppMessage { messageId = response });
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageDidDisplay(string response)
-            => _instance.InAppMessageDidDisplay?.Invoke(new InAppMessage { id = response });
+            => _instance.InAppMessageDidDisplay?.Invoke(new InAppMessage { messageId = response });
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageWillDismiss(string response)
-            => _instance.InAppMessageWillDismiss?.Invoke(new InAppMessage { id = response });
+            => _instance.InAppMessageWillDismiss?.Invoke(new InAppMessage { messageId = response });
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageDidDismiss(string response)
-            => _instance.InAppMessageDidDismiss?.Invoke(new InAppMessage { id = response });
+            => _instance.InAppMessageDidDismiss?.Invoke(new InAppMessage { messageId = response });
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageClicked(string response)
