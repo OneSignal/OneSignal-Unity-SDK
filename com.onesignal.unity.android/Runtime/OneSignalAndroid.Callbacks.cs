@@ -202,7 +202,9 @@ namespace OneSignalSDK {
 
             /// <param name="error">SendTagsError</param>
             public void onFailure(AndroidJavaObject error) {
-                SDKDebug.Error(error.Call<string>("toString"));
+                var code = error.Call<int>("getCode");
+                var msg  = error.Call<string>("getMessage");
+                SDKDebug.Error($"{code} - {msg}");
                 _complete(false);
             }
         }
@@ -214,7 +216,7 @@ namespace OneSignalSDK {
 
             /// <param name="error">EmailUpdateError</param>
             public void onFailure(AndroidJavaObject error) {
-                SDKDebug.Error(error.Call<string>("toString"));
+                _handleError(error);
                 _complete(false);
             }
         }
@@ -227,7 +229,7 @@ namespace OneSignalSDK {
 
             /// <param name="error">ExternalIdError</param>
             public void onFailure(AndroidJavaObject error) {
-                SDKDebug.Error(error.Call<string>("toString"));
+                _handleError(error);
                 _complete(false);
             }
         }
@@ -240,7 +242,7 @@ namespace OneSignalSDK {
 
             /// <param name="error">OSSMSUpdateError</param>
             public void onFailure(AndroidJavaObject error) {
-                SDKDebug.Error(error.Call<string>("toString"));
+                _handleError(error);
                 _complete(false);
             }
         }

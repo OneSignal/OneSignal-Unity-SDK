@@ -42,5 +42,11 @@ namespace OneSignalSDK {
 
             return (curr, prev);
         }
+
+        private static void _handleError(AndroidJavaObject error) {
+            var type = error.Call<int>("getType");
+            var msg  = error.Call<string>("getMessage");
+            SDKDebug.Error($"{type} - {msg}");
+        }
     }
 }
