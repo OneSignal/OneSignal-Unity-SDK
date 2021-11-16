@@ -91,7 +91,12 @@ namespace OneSignalSDK {
         
         private readonly PBXProject _project = new PBXProject();
 
-        public int callbackOrder => int.MaxValue;
+        /// <summary>
+        /// must be between 40 and 50 to ensure that it's not overriden by Podfile generation (40) and that it's
+        /// added before "pod install" (50)
+        /// https://github.com/googlesamples/unity-jar-resolver#appending-text-to-generated-podfile
+        /// </summary>
+        public int callbackOrder => 45;
 
         /// <summary>
         /// Entry for the build post processing necessary to get the OneSignal SDK iOS up and running
@@ -279,27 +284,6 @@ namespace OneSignalSDK {
 
             podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '~> 3.8.1'\nend\n";
             File.WriteAllText(podfilePath, podfile);
-
-            var installResult = _runShellCommand($"-c \"pod install --project-directory={_outputPath}\"");
-            if (!installResult.Contains("Installing OneSignalXCFramework"))
-                Debug.LogError($"Could not detect install with Cocoapods. {ServiceExtensionFilename} may have errors.");
-        }
-
-        private static string _runShellCommand(string command) {
-            var process = new Process {
-                StartInfo = new ProcessStartInfo {
-                    FileName = "/bin/sh",
-                    Arguments = command,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                }
-            };
-            
-            process.Start();
-            var ret = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            return ret;
         }
     }
 }
