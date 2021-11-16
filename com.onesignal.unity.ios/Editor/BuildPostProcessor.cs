@@ -279,13 +279,17 @@ namespace OneSignalSDK {
 
             podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '~> 3.8.1'\nend\n";
             File.WriteAllText(podfilePath, podfile);
-            
-            // todo - detect if cocoapods is installed
-            
+
+            var installResult = _runShellCommand($"-c \"pod install --project-directory={_outputPath}\"");
+            if (!installResult.Contains("Installing OneSignalXCFramework"))
+                Debug.LogError($"Could not detect install with Cocoapods. {ServiceExtensionFilename} may have errors.");
+        }
+
+        private static string _runShellCommand(string command) {
             var process = new Process {
                 StartInfo = new ProcessStartInfo {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"pod install --project-directory={_outputPath}\"",
+                    FileName = "/bin/sh",
+                    Arguments = command,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -293,8 +297,9 @@ namespace OneSignalSDK {
             };
             
             process.Start();
-            Debug.Log(process.StandardOutput.ReadToEnd());
+            var ret = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
+            return ret;
         }
     }
 }
