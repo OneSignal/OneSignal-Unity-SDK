@@ -82,7 +82,7 @@ namespace OneSignalSDK {
             
             // Setup the below to listen for and respond to events from notifications
             OneSignal.Default.NotificationOpened   += _notificationOpened;
-            OneSignal.Default.NotificationReceived += _notificationReceived;
+            OneSignal.Default.NotificationWillShow += _notificationReceived;
             
             // Setup the below to listen for and respond to events from in app messages
             OneSignal.Default.InAppMessageTriggeredAction += IamTriggeredAction;
@@ -102,10 +102,10 @@ namespace OneSignalSDK {
             _log($"Notification was opened with result: {JsonUtility.ToJson(result)}");
         }
 
-        private bool _notificationReceived(Notification notification) {
+        private Notification _notificationReceived(Notification notification) {
             _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}");
 
-            return true; // show the notification in the foreground
+            return notification; // show the notification
         }
 
         private void IamTriggeredAction(InAppMessageAction inAppMessageAction) {

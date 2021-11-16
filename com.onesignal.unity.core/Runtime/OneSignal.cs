@@ -50,11 +50,11 @@ namespace OneSignalSDK {
 
     #region Delegate Definitions
         /// <summary>
-        /// When a push notification is received and is ready to be shown.
+        /// When a push notification has been received and is about to be displayed
         /// </summary>
         /// <param name="notification">Details of the notification to be shown</param>
-        /// <returns>True if the notification should be displayed</returns>
-        public delegate bool NotificationReceivedDelegate(Notification notification);
+        /// <returns>The notification object or null if the notification should not be displayed</returns>
+        public delegate Notification NotificationWillShowDelegate(Notification notification);
 
         /// <summary>
         /// When a push notification was acted on by the user.
@@ -90,7 +90,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// When a push notification has been received while app is in the foreground
         /// </summary>
-        public abstract event NotificationReceivedDelegate NotificationReceived;
+        public abstract event NotificationWillShowDelegate NotificationWillShow;
 
         /// <summary>
         /// When a push notification has been opened by the user
@@ -322,12 +322,14 @@ namespace OneSignalSDK {
         /// If this user logs out of your app and/or you would like to disassociate their email with the current
         /// OneSignal user
         /// </summary>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> LogOutEmail();
         
         /// <summary>
         /// If this user logs out of your app and/or you would like to disassociate their phone number with the
         /// current OneSignal user
         /// </summary>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> LogOutSMS();
     #endregion
 

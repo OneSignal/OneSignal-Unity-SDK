@@ -33,7 +33,7 @@ using UnityEngine;
 
 namespace OneSignalSDK {
     public sealed partial class OneSignalAndroid : OneSignal {
-        public override event NotificationReceivedDelegate NotificationReceived;
+        public override event NotificationWillShowDelegate NotificationWillShow;
         public override event NotificationActionDelegate NotificationOpened;
         public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
