@@ -134,13 +134,16 @@ namespace OneSignalSDK {
             /// <param name="notificationReceivedEvent">OSNotificationReceivedEvent</param>
             public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) {
                 var notifJO = notificationReceivedEvent.Call<AndroidJavaObject>("getNotification");
+
+                if (_instance.NotificationWillShow == null) {
+                    notificationReceivedEvent.Call("complete", notifJO);
+                    return;
+                }
+
+                var notification = notifJO.ToSerializable<Notification>();
+                var resultNotif  = _instance.NotificationWillShow(notification);
                 
-                if (_instance.NotificationReceived == null)
-                    notificationReceivedEvent.Call("complete", notifJO);
-                else if (_instance.NotificationReceived(notifJO.ToSerializable<Notification>()))
-                    notificationReceivedEvent.Call("complete", notifJO);
-                else
-                    notificationReceivedEvent.Call("complete", null);
+                notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
             }
         }
 

@@ -34,7 +34,7 @@ namespace OneSignalSDK {
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>
     internal sealed class OneSignalNative : OneSignal {
-        public override event NotificationReceivedDelegate NotificationReceived;
+        public override event NotificationWillShowDelegate NotificationWillShow;
         public override event NotificationActionDelegate NotificationOpened;
         public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;

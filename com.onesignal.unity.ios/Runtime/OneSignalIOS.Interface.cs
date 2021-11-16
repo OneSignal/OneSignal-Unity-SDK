@@ -36,7 +36,7 @@ namespace OneSignalSDK {
          * Global callbacks
          */
         
-        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback(NotificationWillShowDelegate callback);
+        [DllImport("__Internal")] private static extern void _setNotificationReceivedCallback(NotificationWillShowInForegroundDelegate callback);
         [DllImport("__Internal")] private static extern void _setNotificationOpenedCallback(StringListenerDelegate callback);
         
         [DllImport("__Internal")] private static extern void _setInAppMessageWillDisplayCallback(StringListenerDelegate callback);
