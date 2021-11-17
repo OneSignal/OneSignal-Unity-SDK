@@ -5,11 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.0.0-beta.1]
+- Complete overhaul to the public API of the SDK. While this release is in beta please see our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs) for usage.
+- The included OneSignal Android SDK is now fully imported via EDM4U/gradle and will pull the latest version. Please see [OneSignal-Android-SDK Releases](https://github.com/OneSignal/OneSignal-Android-SDK/releases) for latest changes.
+- The included OneSignal iOS SDK is now fully imported via EDM4U/Cocoapods and will pull the latest version. Please see [OneSignal-iOS-SDK Releases](https://github.com/OneSignal/OneSignal-iOS-SDK/releases) for latest changes.
+
+If you run into any problems, please don’t hesitate to [open an issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/new)!
+
 ## [2.14.5]
 ### Changed
 - Updated included Android SDK to [3.16.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/3.16.2)
   - Fixes for background image not showing and text not rendering in the RTL direction when a RTL system language is set. [#1475](https://github.com/OneSignal/OneSignal-Android-SDK/pull/1475)
   - Fix IAM preview message returning NPE in a preview case, due to message id being null. [#1463](https://github.com/OneSignal/OneSignal-Android-SDK/pull/1463)
+
 ## [2.14.4]
 ### Fixed
 - Removed use of C# 8.0 features to maintain compatibility
@@ -18,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Avoid continuing with null IAM message Ids [#1386](https://github.com/OneSignal/OneSignal-Android-SDK/pull/1386)
 - Updated included iOS SDK to version [2.16.7](https://github.com/OneSignal/OneSignal-iOS-SDK/tree/2.16.7/)
   - In App Messaging now respects device orientation locks for Unity Applications [#1000](https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1000)
+
 ## [2.14.3]
 ### Fixed
 - Added a delayed call when attempting to reshow the `OneSignalSetupWindow` after importing packages.
@@ -40,13 +49,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.14.0]
 ### Added
 - A new Editor window under **Window > OneSignal** can be found which currently includes additional setup steps for installation.
-
 ### Changed
 - The OneSignal Unity SDK has now transitioned to [Unity Package Manager](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@1.8/manual/index.html) support
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.5...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.1...HEAD
+[3.0.0-beta.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.4...3.0.0-beta.1
 [2.14.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.4...2.14.5
 [2.14.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.3...2.14.4
 [2.14.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.2...2.14.3
