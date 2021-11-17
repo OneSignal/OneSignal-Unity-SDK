@@ -83,7 +83,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
    and click **Save**.
 3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu. You will see all of the OneSignal Unity SDK packages available
    on which you can then click **Install** for the platforms you would like to include. Dependencies will be added automatically.
-4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed
+4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed 
    in order to finalize the installation.
 
    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
@@ -97,16 +97,24 @@ There are two methods of installation available for the OneSignal Unity SDK:
 ### [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
 
 ## Usage
-You can find a complete implementation in our included [example MonoBehaviour](OneSignalExample/Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs). Additionally we have included a
-[sample scene](OneSignalExample/Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
+You can find a complete implementation in our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs). Additionally we have included a
+[sample scene](Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
 
 ### Initialization
+
+#### Prefab
+Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
+to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill 
+in the **App Id**, and you are immediately ready to go!
+
+#### Code
 To get started add the following code in an appropriate place such as the `Start` method of a `MonoBehaviour` early in your application's lifecycle.
 ```C#
 // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID from app.onesignal.com
-OneSignal.StartInit("YOUR_ONESIGNAL_APP_ID").EndInit();
+OneSignal.Default.Initialize("YOUR_ONESIGNAL_APP_ID");
 ```
-You are now ready to start sending and receiving messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).
+
+You are now ready to start sending and receiving notifications and in-app messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).
 
 ## API
 See OneSignal's [OneSignal Unity SDK API](https://documentation.onesignal.com/docs/unity-sdk) page for a list of all available methods.
