@@ -1,11 +1,4 @@
-OneSignalExample/Assets/Plugins
-OneSignalExample/Assets/Plugins.meta
-OneSignalExample/Assets/ExternalDependencyManager
-OneSignalExample/Assets/ExternalDependencyManager.meta
-
-builds/
-
-.DS_Store
-.DS_Store.meta
 
 OneSignalExample/.idea/
+
+.DS_Store

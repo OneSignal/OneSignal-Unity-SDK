@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Modified MIT License
  *
- * Copyright 2017 OneSignal
+ * Copyright 2021 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,296 +25,166 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using System.Collections.Generic;
-using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
 
+namespace OneSignalSDK {
+    public sealed partial class OneSignalAndroid : OneSignal {
+        public override event NotificationWillShowDelegate NotificationWillShow;
+        public override event NotificationActionDelegate NotificationOpened;
+        public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
+        public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
+        public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
+        public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
+        public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
+        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
+        public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
+        public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
-class OneSignalAndroid : IOneSignalPlatform
-{
-    private static AndroidJavaObject mOneSignal = null;
+        public override bool PrivacyConsent {
+            get => _sdkClass.CallStatic<bool>("userProvidedPrivacyConsent");
+            set => _sdkClass.CallStatic("provideUserConsent", value);
+        }
 
-    public void Init()
-    {
-        mOneSignal = new AndroidJavaObject("com.onesignal.OneSignalUnityProxy", OneSignal.GameObjectName,
-            OneSignal.builder.googleProjectNumber, OneSignal.builder.appID,
-            (int) OneSignal.logLevel, (int) OneSignal.visualLogLevel, OneSignal.requiresUserConsent);
+        public override bool RequiresPrivacyConsent {
+            get => _sdkClass.CallStatic<bool>("requiresUserPrivacyConsent");
+            set => _sdkClass.CallStatic("setRequiresUserPrivacyConsent", value);
+        }
 
-        SetInFocusDisplaying(OneSignal.inFocusDisplayType);
-    }
+        public override void Initialize(string appId) {
+            var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
-    public void SetLogLevel(OneSignal.LOG_LEVEL logLevel, OneSignal.LOG_LEVEL visualLevel)
-    {
-        mOneSignal.Call("setLogLevel", (int) logLevel, (int) visualLevel);
-    }
+            _sdkClass.CallStatic("initWithContext", activity);
+            _sdkClass.CallStatic("setAppId", appId);
 
-    public void SetLocationShared(bool shared)
-    {
-        mOneSignal.Call("setLocationShared", shared);
-    }
+            _completedInit(appId);
+        }
 
-    public void SendTag(string tagName, string tagValue)
-    {
-        mOneSignal.Call("sendTag", tagName, tagValue);
-    }
+        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse()
+            => Task.FromResult(NotificationPermission.NotDetermined);
 
-    public void SendTags(IDictionary<string, string> tags)
-    {
-        mOneSignal.Call("sendTags", Json.Serialize(tags));
-    }
+        public override void ClearOneSignalNotifications()
+            => _sdkClass.CallStatic("clearOneSignalNotifications");
 
-    public void GetTags(string delegateId)
-    {
-        mOneSignal.Call("getTags", delegateId);
-    }
+        public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
+            var proxy = new PostNotificationResponseHandler();
+            _sdkClass.CallStatic("postNotification", options.ToJSONObject(), proxy);
+            return await proxy;
+        }
 
-    public void DeleteTag(string key)
-    {
-        mOneSignal.Call("deleteTag", key);
-    }
+        public override void SetTrigger(string key, string value)
+            => _sdkClass.CallStatic("addTrigger", key, value);
 
-    public void DeleteTags(IList<string> keys)
-    {
-        mOneSignal.Call("deleteTags", Json.Serialize(keys));
-    }
+        public override void SetTriggers(Dictionary<string, string> triggers)
+            => _sdkClass.CallStatic("addTriggers", triggers.ToMap());
 
-    public void IdsAvailable(string delegateId)
-    {
-        mOneSignal.Call("idsAvailable", delegateId);
-    }
+        public override void RemoveTrigger(string key)
+            => _sdkClass.CallStatic("removeTriggerForKey", key);
 
-    // Doesn't apply to Android, doesn't have a native permission prompt
-    public void RegisterForPushNotifications()
-    {
-    }
+        public override void RemoveTriggers(params string[] keys)
+            => _sdkClass.CallStatic("removeTriggersForKeys", Json.Serialize(keys));
 
-    public void PromptForPushNotificationsWithUserResponse()
-    {
-    }
+        public override string GetTrigger(string key) {
+            var triggerVal = _sdkClass.CallStatic<AndroidJavaObject>("getTriggerValueForKey", key);
+            return triggerVal.Call<string>("toString");
+        }
 
-    public void EnableVibrate(bool enable)
-    {
-        mOneSignal.Call("enableVibrate", enable);
-    }
+        public override Dictionary<string, string> GetTriggers()
+            => _sdkClass.CallStatic<AndroidJavaObject>("getTriggers").MapToDictionary();
 
-    public void EnableSound(bool enable)
-    {
-        mOneSignal.Call("enableSound", enable);
-    }
+        public override bool InAppMessagesArePaused {
+            get => _sdkClass.CallStatic<bool>("isInAppMessagingPaused");
+            set => _sdkClass.CallStatic("pauseInAppMessages", value);
+        }
 
-    public void SetInFocusDisplaying(OneSignal.OSInFocusDisplayOption display)
-    {
-        mOneSignal.Call("setInFocusDisplaying", (int) display);
-    }
+        public override async Task<bool> SendTag(string key, object value) {
+            _sdkClass.CallStatic("sendTag", key, value.ToString());
+            return await Task.FromResult(true); // no callback currently available on Android
+        }
 
-    public void SetSubscription(bool enable)
-    {
-        mOneSignal.Call("setSubscription", enable);
-    }
+        public override async Task<bool> SendTags(Dictionary<string, object> tags) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("sendTags", tags.ToJSONObject(), proxy);
+            return await proxy;
+        }
 
-    public void PostNotification(string delegateIdSuccess, string delegateIdFailure,
-        Dictionary<string, object> data)
-    {
-        mOneSignal.Call("postNotification", delegateIdSuccess, delegateIdFailure, Json.Serialize(data));
-    }
+        public override async Task<Dictionary<string, object>> GetTags() {
+            var proxy = new OSGetTagsHandler();
+            _sdkClass.CallStatic("getTags", proxy);
+            return await proxy;
+        }
 
-    public void SyncHashedEmail(string email)
-    {
-        mOneSignal.Call("syncHashedEmail", email);
-    }
+        public override async Task<bool> DeleteTag(string key) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("deleteTag", key, proxy);
+            return await proxy;
+        }
 
-    public void PromptLocation()
-    {
-        mOneSignal.Call("promptLocation");
-    }
+        public override async Task<bool> DeleteTags(params string[] keys) {
+            var proxy = new ChangeTagsUpdateHandler();
+            _sdkClass.CallStatic("deleteTags", keys.ToList(), proxy);
+            return await proxy;
+        }
 
-    public void ClearOneSignalNotifications()
-    {
-        mOneSignal.Call("clearOneSignalNotifications");
-    }
+        public override async Task<bool> SetExternalUserId(string externalId, string authHash = null) {
+            var proxy = new OSExternalUserIdUpdateCompletionHandler();
+            _sdkClass.CallStatic("setExternalUserId", externalId, authHash, proxy);
+            return await proxy;
+        }
 
-    public void AddPermissionObserver()
-    {
-        mOneSignal.Call("addPermissionObserver");
-    }
+        public override async Task<bool> SetEmail(string email, string authHash = null) {
+            var proxy = new EmailUpdateHandler();
+            _sdkClass.CallStatic("setEmail", email, authHash, proxy);
+            return await proxy;
+        }
 
-    public void RemovePermissionObserver()
-    {
-        mOneSignal.Call("removePermissionObserver");
-    }
+        public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
+            var proxy = new OSSMSUpdateHandler();
+            _sdkClass.CallStatic("setSMSNumber", smsNumber, authHash, proxy);
+            return await proxy;
+        }
 
-    public void AddSubscriptionObserver()
-    {
-        mOneSignal.Call("addSubscriptionObserver");
-    }
+        public override async Task<bool> LogOutEmail() {
+            var proxy = new EmailUpdateHandler();
+            _sdkClass.CallStatic("logoutEmail", proxy);
+            return await proxy;
+        }
 
-    public void RemoveSubscriptionObserver()
-    {
-        mOneSignal.Call("removeSubscriptionObserver");
-    }
+        public override async Task<bool> LogOutSMS() {
+            var proxy = new OSSMSUpdateHandler();
+            _sdkClass.CallStatic("logoutSMSNumber", proxy);
+            return await proxy;
+        }
 
-    public void AddEmailSubscriptionObserver()
-    {
-        mOneSignal.Call("addEmailSubscriptionObserver");
-    }
+        public override void PromptLocation()
+            => _sdkClass.CallStatic("promptLocation");
 
-    public void RemoveEmailSubscriptionObserver()
-    {
-        mOneSignal.Call("removeEmailSubscriptionObserver");
-    }
+        public override bool ShareLocation {
+            get => _sdkClass.CallStatic<bool>("isLocationShared");
+            set => _sdkClass.CallStatic("setLocationShared", value);
+        }
 
-    public void UserDidProvideConsent(bool consent)
-    {
-        mOneSignal.Call("provideUserConsent", consent);
-    }
+        public override async Task<bool> SendOutcome(string name) {
+            var proxy = new OutcomeCallback();
+            _sdkClass.CallStatic("sendOutcome", name, proxy);
+            return await proxy;
+        }
 
-    public bool UserProvidedConsent()
-    {
-        return mOneSignal.Call<bool>("userProvidedPrivacyConsent");
-    }
+        public override async Task<bool> SendUniqueOutcome(string name) {
+            var proxy = new OutcomeCallback();
+            _sdkClass.CallStatic("sendUniqueOutcome", name, proxy);
+            return await proxy;
+        }
 
-    public void SetRequiresUserPrivacyConsent(bool required)
-    {
-        mOneSignal.Call("setRequiresUserPrivacyConsent", required);
-    }
-
-    public void SetExternalUserId(string delegateId, string externalId)
-    {
-        mOneSignal.Call("setExternalUserId", delegateId, externalId);
-    }
-
-    public void SetExternalUserId(string delegateId, string delegateIdFailure, string externalId,
-        string externalIdAuthHash)
-    {
-        mOneSignal.Call("setExternalUserId", delegateId, externalId, externalIdAuthHash);
-    }
-
-    public void RemoveExternalUserId(string delegateId)
-    {
-        mOneSignal.Call("removeExternalUserId", delegateId);
-    }
-
-    public OSPermissionSubscriptionState GetPermissionSubscriptionState()
-    {
-        return OneSignalPlatformHelper.ParsePermissionSubscriptionState(this,
-            mOneSignal.Call<string>("getPermissionSubscriptionState"));
-    }
-
-    public OSPermissionStateChanges ParseOSPermissionStateChanges(string jsonStat)
-    {
-        return OneSignalPlatformHelper.ParseOSPermissionStateChanges(this, jsonStat);
-    }
-
-    public OSSubscriptionStateChanges ParseOSSubscriptionStateChanges(string jsonStat)
-    {
-        return OneSignalPlatformHelper.ParseOSSubscriptionStateChanges(this, jsonStat);
-    }
-
-    public OSEmailSubscriptionStateChanges ParseOSEmailSubscriptionStateChanges(string jsonState)
-    {
-        return OneSignalPlatformHelper.ParseOSEmailSubscriptionStateChanges(this, jsonState);
-    }
-
-    public OSPermissionState ParseOSPermissionState(object stateDict)
-    {
-        var stateDictCasted = stateDict as Dictionary<string, object>;
-
-        var state = new OSPermissionState();
-        state.hasPrompted = true;
-        var toIsEnabled = Convert.ToBoolean(stateDictCasted["enabled"]);
-        state.status = toIsEnabled ? OSNotificationPermission.Authorized : OSNotificationPermission.Denied;
-
-        return state;
-    }
-
-    public OSSubscriptionState ParseOSSubscriptionState(object stateDict)
-    {
-        var stateDictCasted = stateDict as Dictionary<string, object>;
-
-        var state = new OSSubscriptionState();
-        state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
-        state.userSubscriptionSetting = Convert.ToBoolean(stateDictCasted["userSubscriptionSetting"]);
-        state.userId = stateDictCasted["userId"] as string;
-        state.pushToken = stateDictCasted["pushToken"] as string;
-
-        return state;
-    }
-
-    public OSEmailSubscriptionState ParseOSEmailSubscriptionState(object stateDict)
-    {
-        var stateDictCasted = stateDict as Dictionary<string, object>;
-
-        var state = new OSEmailSubscriptionState();
-        state.subscribed = Convert.ToBoolean(stateDictCasted["subscribed"]);
-        state.emailUserId = stateDictCasted["emailUserId"] as string;
-        state.emailAddress = stateDictCasted["emailAddress"] as string;
-
-        return state;
-    }
-
-    public void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email)
-    {
-        mOneSignal.Call("setEmail", delegateIdSuccess, delegateIdFailure, email, null);
-    }
-
-    public void SetEmail(string delegateIdSuccess, string delegateIdFailure, string email, string emailAuthCode)
-    {
-        mOneSignal.Call("setEmail", delegateIdSuccess, delegateIdFailure, email, emailAuthCode);
-    }
-
-    public void LogoutEmail(string delegateIdSuccess, string delegateIdFailure)
-    {
-        mOneSignal.Call("logoutEmail", delegateIdSuccess, delegateIdFailure);
-    }
-
-    public void AddTrigger(string key, object value)
-    {
-        mOneSignal.Call("addTrigger", key, value.ToString());
-    }
-
-    public void AddTriggers(IDictionary<string, object> triggers)
-    {
-        mOneSignal.Call("addTriggers", Json.Serialize(triggers));
-    }
-
-    public void RemoveTriggerForKey(string key)
-    {
-        mOneSignal.Call("removeTriggerForKey", key);
-    }
-
-    public void RemoveTriggersForKeys(IList<string> keys)
-    {
-        mOneSignal.Call("removeTriggersForKeys", Json.Serialize(keys));
-    }
-
-    public object GetTriggerValueForKey(string key)
-    {
-        var valueJsonStr = mOneSignal.Call<string>("getTriggerValueForKey", key);
-        if (valueJsonStr == null)
-            return null;
-        var valueDict = Json.Deserialize(valueJsonStr) as Dictionary<string, object>;
-        if (valueDict.ContainsKey("value"))
-            return valueDict["value"];
-        return null;
-    }
-
-    public void PauseInAppMessages(bool pause)
-    {
-        mOneSignal.Call("pauseInAppMessages", pause);
-    }
-
-    public void SendOutcome(string delegateId, string name)
-    {
-        mOneSignal.Call("sendOutcome", delegateId, name);
-    }
-
-    public void SendUniqueOutcome(string delegateId, string name)
-    {
-        mOneSignal.Call("sendUniqueOutcome", delegateId, name);
-    }
-
-    public void SendOutcomeWithValue(string delegateId, string name, float value)
-    {
-        mOneSignal.Call("sendOutcomeWithValue", delegateId, name, value);
+        public override async Task<bool> SendOutcomeWithValue(string name, float value) {
+            var proxy = new OutcomeCallback();
+            _sdkClass.CallStatic("sendOutcomeWithValue", name, value, proxy);
+            return await proxy;
+        }
     }
 }
