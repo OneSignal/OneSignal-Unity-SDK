@@ -85,7 +85,11 @@ namespace OneSignalSDK {
             OneSignal.Default.NotificationWillShow += _notificationReceived;
             
             // Setup the below to listen for and respond to events from in app messages
-            OneSignal.Default.InAppMessageTriggeredAction += IamTriggeredAction;
+            OneSignal.Default.InAppMessageWillDisplay += _iamWillDisplay;
+            OneSignal.Default.InAppMessageDidDisplay += _iamDidDisplay;
+            OneSignal.Default.InAppMessageWillDismiss += _iamWillDismiss;
+            OneSignal.Default.InAppMessageDidDismiss += _iamDidDismiss;
+            OneSignal.Default.InAppMessageTriggeredAction += _iamTriggeredAction;
             
             // Setup the below to listen for and respond to state changes
             OneSignal.Default.PermissionStateChanged        += _permissionStateChanged;
@@ -108,7 +112,23 @@ namespace OneSignalSDK {
             return notification; // show the notification
         }
 
-        private void IamTriggeredAction(InAppMessageAction inAppMessageAction) {
+        private void _iamWillDisplay(InAppMessage inAppMessage) {
+            _log($"IAM will display: {JsonUtility.ToJson(inAppMessage)}");
+        }
+
+        private void _iamDidDisplay(InAppMessage inAppMessage) {
+            _log($"IAM did display: {JsonUtility.ToJson(inAppMessage)}");
+        }
+
+        private void _iamWillDismiss(InAppMessage inAppMessage) {
+            _log($"IAM will dismiss: {JsonUtility.ToJson(inAppMessage)}");
+        }
+
+        private void _iamDidDismiss(InAppMessage inAppMessage) {
+            _log($"IAM did dismiss: {JsonUtility.ToJson(inAppMessage)}");
+        }
+
+        private void _iamTriggeredAction(InAppMessageAction inAppMessageAction) {
             _log($"IAM triggered action: {JsonUtility.ToJson(inAppMessageAction)}");
         }
 
