@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "2.14.5"
+        "com.onesignal.unity.core": "3.0.0-beta.1"
       }
     },
     "com.onesignal.unity.core": {
@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "2.14.5"
+        "com.onesignal.unity.core": "3.0.0-beta.1"
       }
     },
     "com.unity.collab-proxy": {
