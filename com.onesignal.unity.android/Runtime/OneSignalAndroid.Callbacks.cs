@@ -43,6 +43,9 @@ namespace OneSignalSDK {
         private const string SDKClassName = "OneSignal";
         private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
 
+        private const string IAMLifecycleClassName = "UnityIAMLifecycleHandler";
+        private const string QualifiedIAMLifecycleClass = SDKPackage + "." + IAMLifecycleClassName;
+
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
 
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
@@ -82,8 +85,10 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("setNotificationOpenedHandler", new OSNotificationOpenedHandler());
 
             // iams
-            _sdkClass.CallStatic("setInAppMessageLifecycleHandler", new OSInAppMessageLifecycleHandler());
             _sdkClass.CallStatic("setInAppMessageClickHandler", new OSInAppMessageClickHandler());
+            
+            var wrapperHandler = new AndroidJavaObject(QualifiedIAMLifecycleClass, new OSInAppMessageLifecycleHandler());
+            _sdkClass.CallStatic("setInAppMessageLifecycleHandler", wrapperHandler);
 
             _instance = this;
         }
@@ -156,7 +161,7 @@ namespace OneSignalSDK {
         }
         
         private sealed class OSInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
-            public OSInAppMessageLifecycleHandler() : base("OSInAppMessageLifecycleHandler") { }
+            public OSInAppMessageLifecycleHandler() : base(IAMLifecycleClassName + "$WrapperLifecycleHandler") { }
             
             /// <param name="message">OSInAppMessage</param>
             public void onWillDisplayInAppMessage(AndroidJavaObject message)
