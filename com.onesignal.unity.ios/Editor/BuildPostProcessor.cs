@@ -278,7 +278,7 @@ namespace OneSignalSDK {
 
             var podfile = File.ReadAllText(podfilePath);
 
-            var extensionEntryRegex = new Regex(@$"target '{ServiceExtensionTargetName}' do\n(.+)\nend");
+            var extensionEntryRegex = new Regex($@"target '{ServiceExtensionTargetName}' do\n(.+)\nend");
             if (extensionEntryRegex.IsMatch(podfile))
                 return;
 
