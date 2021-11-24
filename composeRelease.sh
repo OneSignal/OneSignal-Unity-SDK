@@ -92,17 +92,17 @@ unity_executable="${unity_path}/Unity.app/Contents/MacOS/Unity"
 
 # VERSION file will act as the source of truth
 version_filepath="OneSignalExample/Assets/OneSignal/VERSION"
-version=$(cat "$version_filepath")
+current_version=$(cat "$version_filepath")
 
-echo "Current Version is ${version}"
+echo "Current Version is ${current_version}"
 
 # loose semver checking; use official standard if going advanced
 # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 version_regex="([0-9]*)\.([0-9]*)\.([0-9]*)(-[A-z]*)?"
 
-current_major=$([[ ${version} =~ $version_regex ]] && echo "${BASH_REMATCH[1]}")
-current_minor=$([[ ${version} =~ $version_regex ]] && echo "${BASH_REMATCH[2]}")
-current_patch=$([[ ${version} =~ $version_regex ]] && echo "${BASH_REMATCH[3]}")
+current_major=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[1]}")
+current_minor=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[2]}")
+current_patch=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[3]}")
 
 # get new verison number
 if [[ "$to_bump" = "major" ]]
@@ -140,11 +140,11 @@ echo "Updated - ${version_filepath}"
 
 # update package.json files
 packagejson_path="com.onesignal.unity.*/package.json"
-packagejson_version_regex="\"version\": \"${version_regex}\","
+packagejson_version_regex="\"version\": \"${current_version}\","
 packagejson_new_version="\"version\": \"${new_version}\","
 
 # just going to keep these all in sync for now
-packagejson_core_regex="\"com.onesignal.unity.core\": \"${version_regex}\""
+packagejson_core_regex="\"com.onesignal.unity.core\": \"${current_version}\""
 packagejson_new_core="\"com.onesignal.unity.core\": \"${new_version}\""
 
 for packagejson_filepath in $packagejson_path
