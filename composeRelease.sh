@@ -10,13 +10,14 @@ manual="
       - Composes a GitHub release and uploads the *.unitypackage file
 
     Usage:
-      ./composeRelease.sh {version_to_bump} {postfix (optional)}
+      ./composeRelease.sh {bump_command} {postfix (optional)}
 
     Examples:
       (with an initial verison of 2.14.3) 
-      ./composeRelease.sh minor preview     Change all verison numbers to 2.15.0-preview
-      ./composeRelease.sh major             Change all verison numbers to 3.0.0
-      ./composeRelease.sh patch             Change all verison numbers to 2.14.4
+      ./composeRelease.sh minor preview                 Change all verison numbers to 2.15.0-preview
+      ./composeRelease.sh major                         Change all verison numbers to 3.0.0
+      ./composeRelease.sh patch                         Change all verison numbers to 2.14.4
+      ./composeRelease.sh specify 3.2.1-beta.123        Change all verison numbers to 3.2.1-beta.123
 "
 
 # check for help command before continuing
@@ -27,24 +28,33 @@ then
 fi
 
 # gather args
-to_bump=$1
+bump_command=$1
 postfix=$2
 
 # validate input
-if [[ -z "$to_bump" || ! "$to_bump" =~ ^(major|minor|patch)$ ]] 
+if [[ -z "$bump_command" || ! "$bump_command" =~ ^(major|minor|patch|specify)$ ]] 
 then
-    echo -e "bumpVersion must be run with one of the following arguments
+    echo -e "composeRelease must be run with one of the following arguments
      major      Increment the MAJOR version by 1 and reset MINOR and PATCH to 0
      minor      Increment the MINOR version by 1 and reset PATCH to 0
-     patch      Increment the PATCH version by 1"
+     patch      Increment the PATCH version by 1
+     specify    Provide a specific version number"
     exit 1
 fi
 
-if [[ -n "$postfix" && ! "$postfix" =~ ^(preview)$ ]] 
+if [[ "$bump_command" = "specify" ]]
+then
+    if [[ -z "$postfix" ]]
+    then
+        echo -e "a valid version must be specified"
+        exit 1
+    fi
+elif [[ -n "$postfix" && ! "$postfix" =~ ^(preview|beta)$ ]] 
 then
     echo -e "a postfix can be included with either of the following arguments
-      (none)    If no argument then no postfix will be added
-     preview    Attach the 'preview' postfix"
+     (none)     If no argument then no postfix will be added
+     preview    Attach the 'preview' postfix
+     beta       Attach the 'beta' postfix"
     exit 1
 fi
 
@@ -92,44 +102,50 @@ unity_executable="${unity_path}/Unity.app/Contents/MacOS/Unity"
 
 # VERSION file will act as the source of truth
 version_filepath="OneSignalExample/Assets/OneSignal/VERSION"
-version=$(cat "$version_filepath")
+current_version=$(cat "$version_filepath")
 
-echo "Current Version is ${version}"
+echo "Current Version is ${current_version}"
 
-# loose semver checking; use official standard if going advanced
-# https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-version_regex="([0-9]*)\.([0-9]*)\.([0-9]*)(-[A-z]*)?"
 
-current_major=$([[ ${version} =~ $version_regex ]] && echo "${BASH_REMATCH[1]}")
-current_minor=$([[ ${version} =~ $version_regex ]] && echo "${BASH_REMATCH[2]}")
-current_patch=$([[ ${version} =~ $version_regex ]] && echo "${BASH_REMATCH[3]}")
-
-# get new verison number
-if [[ "$to_bump" = "major" ]]
+if [[ "$bump_command" = "specify" ]]
 then
-    new_major=$((current_major + 1))
-    new_minor=0
-    new_patch=0
-elif [[ "$to_bump" = "minor" ]]
-then
-    new_major="${current_major}"
-    new_minor=$((current_minor + 1))
-    new_patch=0
-elif [[ "$to_bump" = "patch" ]]
-then
-    new_major="${current_major}"
-    new_minor="${current_minor}"
-    new_patch=$((current_patch + 1))
+    new_version="${postfix}"
 else
-    echo "How did we get here?"
-    exit 1
-fi
+    # loose semver checking; use official standard if going advanced
+    # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    version_regex="([0-9]*)\.([0-9]*)\.([0-9]*)(-[A-z]*)?"
 
-new_version="${new_major}.${new_minor}.${new_patch}"
+    current_major=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[1]}")
+    current_minor=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[2]}")
+    current_patch=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[3]}")
 
-if [[ -n "$postfix" ]]
-then
-    new_version="${new_version}-${postfix}"
+    # get new verison number
+    if [[ "$bump_command" = "major" ]]
+    then
+        new_major=$((current_major + 1))
+        new_minor=0
+        new_patch=0
+    elif [[ "$bump_command" = "minor" ]]
+    then
+        new_major="${current_major}"
+        new_minor=$((current_minor + 1))
+        new_patch=0
+    elif [[ "$bump_command" = "patch" ]]
+    then
+        new_major="${current_major}"
+        new_minor="${current_minor}"
+        new_patch=$((current_patch + 1))
+    else
+        echo "How did we get here?"
+        exit 1
+    fi
+
+    new_version="${new_major}.${new_minor}.${new_patch}"
+
+    if [[ -n "$postfix" ]]
+    then
+        new_version="${new_version}-${postfix}"
+    fi 
 fi
 
 echo "    New version is ${new_version}"
@@ -140,11 +156,11 @@ echo "Updated - ${version_filepath}"
 
 # update package.json files
 packagejson_path="com.onesignal.unity.*/package.json"
-packagejson_version_regex="\"version\": \"${version_regex}\","
+packagejson_version_regex="\"version\": \"${current_version}\","
 packagejson_new_version="\"version\": \"${new_version}\","
 
 # just going to keep these all in sync for now
-packagejson_core_regex="\"com.onesignal.unity.core\": \"${version_regex}\""
+packagejson_core_regex="\"com.onesignal.unity.core\": \"${current_version}\""
 packagejson_new_core="\"com.onesignal.unity.core\": \"${new_version}\""
 
 for packagejson_filepath in $packagejson_path
