@@ -135,10 +135,14 @@ PlayerSettings:
     16:9: 1
     Others: 1
 <<<<<<< main
+<<<<<<< main
   bundleVersion: 2.14.6
 =======
   bundleVersion: 3.0.0-beta.1
 >>>>>>> Bumped version to 3.0.0-beta.1
+=======
+  bundleVersion: 3.0.0-beta.2
+>>>>>>> Bumped version to 3.0.0-beta.2
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
