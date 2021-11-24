@@ -1,3 +1,4 @@
+#if ONE_SIGNAL_INSTALLED
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -439,3 +440,4 @@ namespace OneSignalSDK {
     #endregion
     }
 }
+#endif

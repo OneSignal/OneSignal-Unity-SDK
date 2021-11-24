@@ -15,6 +15,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.onesignal.unity.core",
+            "expression": "3.0.0-beta.1",
+            "define": "ONE_SIGNAL_INSTALLED"
+        }
+    ],
     "noEngineReferences": false
 }

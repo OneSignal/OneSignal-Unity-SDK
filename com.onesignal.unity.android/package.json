@@ -1,11 +1,11 @@
 {
   "name": "com.onesignal.unity.android",
   "displayName": "OneSignal Unity SDK - Android",
-  "version": "2.14.5",
+  "version": "3.0.0-beta.2",
   "unity": "2018.4",
   "description": "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.",
   "dependencies": {
-    "com.onesignal.unity.core": "2.14.5"
+    "com.onesignal.unity.core": "3.0.0-beta.2"
   },
   "keywords": [
     "push-notifications",
