@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.0.0-beta.2]
+### Fixed
+- Correctly namedspaced the common MiniJSON utility to fix [#404](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/404)
+- Ensured code distributed with unitypackage would not reference other packages if missing
+- Swapped out code that was only available in Unity 2020 for backwards compatible implementations
+
 ## [3.0.0-beta.1]
 - Complete overhaul to the public API of the SDK. While this release is in beta please see our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs) for usage.
 - The included OneSignal Android SDK is now fully imported via EDM4U/gradle and will pull the latest version. Please see [OneSignal-Android-SDK Releases](https://github.com/OneSignal/OneSignal-Android-SDK/releases) for latest changes.
@@ -58,7 +65,13 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
+<<<<<<< main
 [Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.5...HEAD
+=======
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.2...HEAD
+[3.0.0-beta.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.1...3.0.0-beta.2
+[3.0.0-beta.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.4...3.0.0-beta.1
+>>>>>>> Updated CHANGELOG
 [2.14.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.4...2.14.5
 [2.14.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.3...2.14.4
 [2.14.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/2.14.2...2.14.3
