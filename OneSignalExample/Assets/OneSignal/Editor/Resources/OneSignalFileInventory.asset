@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: OneSignalFileInventory
   m_EditorClassIdentifier: 
   DistributedPaths:
+  - Assets/OneSignal/Attribution.meta
   - Assets/OneSignal/CHANGELOG.md
   - Assets/OneSignal/CHANGELOG.md.meta
   - Assets/OneSignal/Editor.meta
@@ -23,6 +24,10 @@ MonoBehaviour:
   - Assets/OneSignal/README.md.meta
   - Assets/OneSignal/VERSION
   - Assets/OneSignal/VERSION.meta
+  - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef
+  - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef.meta
+  - Assets/OneSignal/Attribution/VSPAttribution.cs
+  - Assets/OneSignal/Attribution/VSPAttribution.cs.meta
   - Assets/OneSignal/Documentation~/asset_listing.png
   - Assets/OneSignal/Documentation~/menu_import_package.png
   - Assets/OneSignal/Documentation~/menu_import_package.png.meta
