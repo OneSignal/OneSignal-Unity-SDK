@@ -1,0 +1,26 @@
+{
+  "name": "OneSignal.UnityPackage.Attribution",
+  "rootNamespace": "",
+  "references": [
+    "OneSignal.Core"
+  ],
+  "includePlatforms": [
+    "Android",
+    "Editor",
+    "iOS"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.onesignal.unity.core",
+      "expression": "0.0.1-preview",
+      "define": "ONE_SIGNAL_INSTALLED"
+    }
+  ],
+  "noEngineReferences": false
+}

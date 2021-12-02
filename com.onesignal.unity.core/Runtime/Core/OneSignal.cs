@@ -383,6 +383,7 @@ public class OneSignal : MonoBehaviour
         public void EndInit()
         {
             Init();
+            OnInitialize?.Invoke(appID);
         }
 
         /// <summary>
@@ -400,6 +401,8 @@ public class OneSignal : MonoBehaviour
         }
     }
 
+
+    internal static event Action<string> OnInitialize;
     internal static UnityBuilder builder = null;
 
     /// <summary>
