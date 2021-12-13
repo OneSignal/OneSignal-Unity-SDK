@@ -37,6 +37,12 @@ namespace OneSignalSDK {
         Private = 0,    // Contents are hidden
         Public = 1      // (default) Fully visible
     }
+
+    [Serializable] public sealed class ActionButton {
+        public string id;
+        public string text;
+        public string icon;
+    }
     
     /// <summary>
     /// See full documentation at
@@ -149,10 +155,13 @@ namespace OneSignalSDK {
         public Dictionary<string, object> additionalData;
 
         /// <summary>
+        /// List of action buttons on the notification
+        /// </summary>
+        public List<ActionButton> actionButtons;
+
+        /// <summary>
         /// Raw JSON payload string received from OneSignal
         /// </summary>
         public string rawPayload;
-        
-        
     }
 }
