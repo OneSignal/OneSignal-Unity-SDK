@@ -37,8 +37,18 @@ namespace OneSignalSDK {
         ActionTaken
     }
 
+    /// <summary>
+    /// The action the user took on the notification
+    /// </summary>
     [Serializable] public sealed class NotificationAction {
+        /// <summary>
+        /// Notification button identifier
+        /// </summary>
         public string actionID;
+        
+        /// <summary>
+        /// Action type
+        /// </summary>
         public NotificationActionType type;
     }
 }
