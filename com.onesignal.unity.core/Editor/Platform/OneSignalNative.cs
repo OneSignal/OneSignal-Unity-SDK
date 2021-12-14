@@ -48,6 +48,11 @@ namespace OneSignalSDK {
 
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
+        
+        public override PermissionState PermissionState { get; }
+        public override PushSubscriptionState PushSubscriptionState { get; }
+        public override EmailSubscriptionState EmailSubscriptionState { get; }
+        public override SMSSubscriptionState SMSSubscriptionState { get; }
 
         public override void Initialize(string appId) {
             if (string.IsNullOrEmpty(appId)) {
