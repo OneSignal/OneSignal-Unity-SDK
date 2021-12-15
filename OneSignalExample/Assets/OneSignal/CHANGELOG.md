@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Added missing setter for language which will allow overriding of the default detected language
+- Added missing setter to override the detected language
 
 ## [3.0.0-beta.2]
 ### Fixed
