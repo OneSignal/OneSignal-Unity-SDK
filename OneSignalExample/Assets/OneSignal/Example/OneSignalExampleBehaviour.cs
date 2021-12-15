@@ -108,8 +108,11 @@ namespace OneSignalSDK {
         }
 
         private Notification _notificationReceived(Notification notification) {
-            _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}");
-
+            var additionalData = notification.additionalData != null 
+                ? Json.Serialize(notification.additionalData)
+                : null;
+            
+            _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}\n{additionalData}");
             return notification; // show the notification
         }
 

@@ -99,6 +99,10 @@ namespace OneSignalSDK {
                 return true;
 
             var notification = JsonUtility.FromJson<Notification>(response);
+
+            if (Json.Deserialize(response) is Dictionary<string, object> notifDict && notifDict.ContainsKey("additionalData"))
+                notification.additionalData = notifDict["additionalData"] as Dictionary<string, object>;
+            
             var resultNotif  = _instance.NotificationWillShow(notification);
             
             return resultNotif != null;
