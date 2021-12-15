@@ -54,6 +54,8 @@ namespace OneSignalSDK {
          * Direct methods
          */
         
+        [DllImport("__Internal")] private static extern string _getDeviceState();
+        
         [DllImport("__Internal")] private static extern void _setPrivacyConsent(bool consent);
         [DllImport("__Internal")] private static extern bool _getPrivacyConsent();
         [DllImport("__Internal")] private static extern void _setRequiresPrivacyConsent(bool required);
