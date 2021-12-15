@@ -43,7 +43,7 @@ namespace OneSignalSDK {
         public static OneSignal Default {
             get => _getDefaultInstance();
             internal set {
-                SDKDebug.Log($"OneSignal.Default set to platform SDK {value.GetType()}. Current version is {Version}");
+                SDKDebug.Info($"OneSignal.Default set to platform SDK {value.GetType()}. Current version is {Version}");
                 _default = value;
             }
         }
@@ -155,12 +155,12 @@ namespace OneSignalSDK {
         /// <summary>
         /// The minimum level of logs which will be logged to the console
         /// </summary>
-        public LogType LogLevel { get; set; }
+        public abstract LogLevel LogLevel { get; set; }
 
         /// <summary>
         /// The minimum level of log events which will be converted into foreground alerts
         /// </summary>
-        public LogType AlertLevel { get; set; }
+        public abstract LogLevel AlertLevel { get; set; }
 
         /// <summary>
         /// Provides privacy consent. OneSignal Unity SDK will not initialize until this is true.
