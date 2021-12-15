@@ -6,10 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Added in missing getters for the permission and subscription states
+- Add missing getters for permission and subscription states
 ### Changed
-- `PermissionState` has been removed and the `NotficationPermission` enum is reported in its place.
-  - Associated event `PermissionStateChanged` has been renamed to `NotificationPermissionChanged`
+- Removed `PermissionState` in favor of `NotificationPermission` enum
+  - Renamed `PermissionStateChanged` event to `NotificationPermissionChanged`
 
 ## [3.0.0-beta.2]
 ### Fixed
