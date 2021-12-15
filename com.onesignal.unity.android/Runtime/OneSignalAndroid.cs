@@ -196,6 +196,11 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("logoutSMSNumber", proxy);
             return await proxy;
         }
+        
+        public override async Task<bool> SetLanguage(string languageCode) {
+            _sdkClass.CallStatic("setLanguage", languageCode);
+            return await Task.FromResult(true); // no callback currently available on Android
+        }
 
         public override void PromptLocation()
             => _sdkClass.CallStatic("promptLocation");
