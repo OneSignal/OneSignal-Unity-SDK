@@ -219,6 +219,12 @@ extern "C" {
     void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
     }
+    
+    const char* _getDeviceState() {
+        auto deviceState = [OneSignal getDeviceState];
+        auto stateStr = jsonStringFromDictionary([deviceState jsonRepresentation]);
+        return strdup(stateStr);
+    }
 
     void _setPrivacyConsent(bool consent) {
         [OneSignal consentGranted: consent];
