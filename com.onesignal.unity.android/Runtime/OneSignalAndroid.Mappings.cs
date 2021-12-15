@@ -48,5 +48,10 @@ namespace OneSignalSDK {
             var msg  = error.Call<string>("getMessage");
             SDKDebug.Error($"{type} - {msg}");
         }
+
+        private static NotificationPermission _stateNotificationPermission(AndroidJavaObject stateWithPermissions) {
+            var enabled = stateWithPermissions.Call<bool>("areNotificationsEnabled");
+            return enabled ? NotificationPermission.Authorized : NotificationPermission.Denied;
+        }
     }
 }

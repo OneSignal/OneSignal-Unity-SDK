@@ -130,9 +130,20 @@ namespace OneSignalSDK {
 
         [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onPermissionStateChanged(string current, string previous) {
-            var curr = JsonUtility.FromJson<PermissionState>(current);
-            var prev = JsonUtility.FromJson<PermissionState>(previous);
-            _instance.PermissionStateChanged?.Invoke(curr, prev);
+            if (!(Json.Deserialize(current) is Dictionary<string, object> currState)) {
+                SDKDebug.Error("Could not deserialize current permission state");
+                return;
+            }
+
+            if (!(Json.Deserialize(previous) is Dictionary<string, object> prevState)) {
+                SDKDebug.Error("Could not deserialize previous permission state");
+                return;
+            }
+            
+            var curr = (NotificationPermission) currState["status"];
+            var prev = (NotificationPermission) prevState["status"];
+            
+            _instance.NotificationPermissionChanged?.Invoke(curr, prev);
         }
         
         [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
