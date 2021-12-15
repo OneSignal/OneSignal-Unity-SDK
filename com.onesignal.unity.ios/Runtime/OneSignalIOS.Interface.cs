@@ -84,6 +84,8 @@ namespace OneSignalSDK {
 
         [DllImport("__Internal")] private static extern void _logoutEmail(int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _logoutSMSNumber(int hashCode, BooleanResponseDelegate callback);
+        
+        [DllImport("__Internal")] private static extern void _setLanguage(string languageCode, int hashCode, BooleanResponseDelegate callback);
 
         [DllImport("__Internal")] private static extern void _promptLocation();
         [DllImport("__Internal")] private static extern void _setShareLocation(bool share);

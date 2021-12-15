@@ -373,6 +373,12 @@ extern "C" {
         [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) { CALLBACK(YES); }
                                   withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
+    
+    void _setLanguage(const char* languageCode, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal setLanguage:TO_NSSTRING(languageCode)
+                   withSuccess:^{ CALLBACK(YES); }
+                   withFailure:^(NSError *error) { CALLBACK(NO); }];
+    }
 
     void _promptLocation() {
         [OneSignal promptLocation];

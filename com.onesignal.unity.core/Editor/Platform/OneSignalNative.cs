@@ -141,6 +141,10 @@ namespace OneSignalSDK {
             return Task.FromResult(false);
         }
 
+        public override Task<bool> SetLanguage(string languageCode) {
+            return Task.FromResult(false);
+        }
+
         public override void PromptLocation() {
             
         }

@@ -215,6 +215,12 @@ namespace OneSignalSDK {
             _logoutSMSNumber(hashCode, BooleanCallbackProxy);
             return await proxy;
         }
+        
+        public override async Task<bool> SetLanguage(string languageCode) {
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _setLanguage(languageCode, hashCode, BooleanCallbackProxy);
+            return await proxy;
+        }
 
         public override void PromptLocation()
             => _promptLocation();
