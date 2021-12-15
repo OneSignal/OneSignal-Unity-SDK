@@ -46,6 +46,9 @@ namespace OneSignalSDK {
         public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
 
+        public override LogLevel LogLevel { get; set; }
+        public override LogLevel AlertLevel { get; set; }
+        
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
         

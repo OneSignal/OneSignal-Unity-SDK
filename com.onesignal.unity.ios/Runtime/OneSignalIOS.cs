@@ -99,6 +99,22 @@ namespace OneSignalSDK {
             }
         }
 
+        public override LogLevel LogLevel {
+            get => _logLevel;
+            set {
+                _logLevel = value;
+                _setLogLevel((int) _logLevel, (int) _alertLevel);
+            }
+        }
+
+        public override LogLevel AlertLevel {
+            get => _alertLevel;
+            set {
+                _alertLevel = value;
+                _setLogLevel((int) _logLevel, (int) _alertLevel);
+            }
+        }
+        
         public override bool PrivacyConsent {
             get => _getPrivacyConsent();
             set => _setPrivacyConsent(value);
@@ -121,7 +137,7 @@ namespace OneSignalSDK {
         }
 
         public override void ClearOneSignalNotifications()
-            => SDKDebug.Log("ClearOneSignalNotifications invoked on iOS, does nothing");
+            => SDKDebug.Info("ClearOneSignalNotifications invoked on iOS, does nothing");
 
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             var (proxy, hashCode) = _setupProxy<string>();

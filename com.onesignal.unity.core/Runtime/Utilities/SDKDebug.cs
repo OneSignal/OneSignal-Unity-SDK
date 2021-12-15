@@ -30,6 +30,19 @@ using UnityEngine;
 
 namespace OneSignalSDK {
     /// <summary>
+    /// Direct mapping of native SDK log levels
+    /// </summary> 
+    public enum LogLevel {
+        None = 0, 
+        Fatal, 
+        Error, 
+        Warn, 
+        Info, 
+        Debug, 
+        Verbose
+    }
+    
+    /// <summary>
     /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>
     internal static class SDKDebug {
@@ -37,24 +50,24 @@ namespace OneSignalSDK {
         public static event Action<object> WarnIntercept; 
         public static event Action<object> ErrorIntercept; 
 
-        public static void Log(string message) {
+        public static void Info(string message) {
             if (LogIntercept != null)
                 LogIntercept(message);
-            else if (OneSignal.Default.LogLevel >= LogType.Log)
+            else if (OneSignal.Default.LogLevel >= LogLevel.Info)
                 Debug.Log(_formatMessage(message));
         }
         
         public static void Warn(string message) {
             if (WarnIntercept != null)
                 WarnIntercept(message);
-            else if (OneSignal.Default.LogLevel >= LogType.Warning)
+            else if (OneSignal.Default.LogLevel >= LogLevel.Warn)
                 Debug.LogWarning(_formatMessage(message));
         }
         
         public static void Error(string message) {
             if (ErrorIntercept != null)
                 ErrorIntercept(message);
-            else  if (OneSignal.Default.LogLevel >= LogType.Error)
+            else  if (OneSignal.Default.LogLevel >= LogLevel.Error)
                 Debug.LogError(_formatMessage(message));
         }
         

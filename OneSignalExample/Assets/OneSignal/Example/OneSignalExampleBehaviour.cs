@@ -74,8 +74,8 @@ namespace OneSignalSDK {
         /// </summary>
         private void Start() {
             // Enable lines below to debug issues with OneSignal
-            OneSignal.Default.LogLevel   = LogType.Log;
-            OneSignal.Default.AlertLevel = LogType.Exception;
+            OneSignal.Default.LogLevel   = LogLevel.Info;
+            OneSignal.Default.AlertLevel = LogLevel.Fatal;
 
             // Setting RequiresPrivacyConsent to true will prevent the OneSignalSDK from operating until
             // PrivacyConsent is also set to true
