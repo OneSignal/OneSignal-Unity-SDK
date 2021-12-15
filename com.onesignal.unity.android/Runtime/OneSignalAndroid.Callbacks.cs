@@ -68,27 +68,11 @@ namespace OneSignalSDK {
         private static OneSignalAndroid _instance;
 
         /// <summary>
-        /// Used to provide a reference for and sets up the global callbacks
+        /// Used to provide a reference for the global callbacks
         /// </summary>
         public OneSignalAndroid() {
             if (_instance != null)
                 SDKDebug.Error("Additional instance of OneSignalAndroid created.");
-            
-            // states
-            _sdkClass.CallStatic("addPermissionObserver", new OSPermissionObserver());
-            _sdkClass.CallStatic("addSubscriptionObserver", new OSSubscriptionObserver());
-            _sdkClass.CallStatic("addEmailSubscriptionObserver", new OSEmailSubscriptionObserver());
-            _sdkClass.CallStatic("addSMSSubscriptionObserver", new OSSMSSubscriptionObserver());
-            
-            // notifications
-            _sdkClass.CallStatic("setNotificationWillShowInForegroundHandler", new OSNotificationWillShowInForegroundHandler());
-            _sdkClass.CallStatic("setNotificationOpenedHandler", new OSNotificationOpenedHandler());
-
-            // iams
-            _sdkClass.CallStatic("setInAppMessageClickHandler", new OSInAppMessageClickHandler());
-            
-            var wrapperHandler = new AndroidJavaObject(QualifiedIAMLifecycleClass, new OSInAppMessageLifecycleHandler());
-            _sdkClass.CallStatic("setInAppMessageLifecycleHandler", wrapperHandler);
 
             _instance = this;
         }

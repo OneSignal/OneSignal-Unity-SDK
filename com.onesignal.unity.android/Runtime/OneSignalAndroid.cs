@@ -112,6 +112,23 @@ namespace OneSignalSDK {
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
             _sdkClass.CallStatic("initWithContext", activity);
+                        
+            // states
+            _sdkClass.CallStatic("addPermissionObserver", new OSPermissionObserver());
+            _sdkClass.CallStatic("addSubscriptionObserver", new OSSubscriptionObserver());
+            _sdkClass.CallStatic("addEmailSubscriptionObserver", new OSEmailSubscriptionObserver());
+            _sdkClass.CallStatic("addSMSSubscriptionObserver", new OSSMSSubscriptionObserver());
+            
+            // notifications
+            _sdkClass.CallStatic("setNotificationWillShowInForegroundHandler", new OSNotificationWillShowInForegroundHandler());
+            _sdkClass.CallStatic("setNotificationOpenedHandler", new OSNotificationOpenedHandler());
+
+            // iams
+            _sdkClass.CallStatic("setInAppMessageClickHandler", new OSInAppMessageClickHandler());
+            
+            var wrapperHandler = new AndroidJavaObject(QualifiedIAMLifecycleClass, new OSInAppMessageLifecycleHandler());
+            _sdkClass.CallStatic("setInAppMessageLifecycleHandler", wrapperHandler);
+            
             _sdkClass.CallStatic("setAppId", appId);
 
             _completedInit(appId);
