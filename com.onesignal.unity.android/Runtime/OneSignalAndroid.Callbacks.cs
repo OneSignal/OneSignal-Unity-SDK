@@ -98,8 +98,12 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onOSPermissionChanged(AndroidJavaObject stateChanges) {
-                var (curr, prev) = _getStatesChanges<PermissionState>(stateChanges);
-                _instance.PermissionStateChanged?.Invoke(curr, prev);
+                var currJO  = stateChanges.Call<AndroidJavaObject>("getTo");
+                var prevJO  = stateChanges.Call<AndroidJavaObject>("getFrom");
+                var curr = _stateNotificationPermission(currJO);
+                var prev = _stateNotificationPermission(prevJO);
+                
+                _instance.NotificationPermissionChanged?.Invoke(curr, prev);
             }
         }
 

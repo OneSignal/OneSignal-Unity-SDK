@@ -93,7 +93,7 @@ namespace OneSignalSDK {
             OneSignal.Default.InAppMessageTriggeredAction += _iamTriggeredAction;
             
             // Setup the below to listen for and respond to state changes
-            OneSignal.Default.PermissionStateChanged        += _permissionStateChanged;
+            OneSignal.Default.NotificationPermissionChanged += _notificationPermissionChanged;
             OneSignal.Default.PushSubscriptionStateChanged  += _pushStateChanged;
             OneSignal.Default.EmailSubscriptionStateChanged += _emailStateChanged;
             OneSignal.Default.SMSSubscriptionStateChanged   += _smsStateChanged;
@@ -133,8 +133,8 @@ namespace OneSignalSDK {
             _log($"IAM triggered action: {JsonUtility.ToJson(inAppMessageAction)}");
         }
 
-        private void _permissionStateChanged(PermissionState current, PermissionState previous) {
-            _log($"Permission state changed to: {JsonUtility.ToJson(current)}");
+        private void _notificationPermissionChanged(NotificationPermission current, NotificationPermission previous) {
+            _log($"Notification Permissions changed to: {current}");
         }
 
         private void _pushStateChanged(PushSubscriptionState current, PushSubscriptionState previous) {

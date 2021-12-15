@@ -41,7 +41,7 @@ namespace OneSignalSDK {
         public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
         public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
         public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
         public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
@@ -49,7 +49,7 @@ namespace OneSignalSDK {
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
         
-        public override PermissionState PermissionState { get; }
+        public override NotificationPermission NotificationPermission { get; }
         public override PushSubscriptionState PushSubscriptionState { get; }
         public override EmailSubscriptionState EmailSubscriptionState { get; }
         public override SMSSubscriptionState SMSSubscriptionState { get; }

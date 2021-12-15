@@ -133,7 +133,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// When this device's permissions for authorization of push notifications have changed.
         /// </summary>
-        public abstract event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public abstract event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
 
         /// <summary>
         /// When this device's subscription to push notifications has changed
@@ -333,9 +333,9 @@ namespace OneSignalSDK {
         public abstract Task<bool> LogOutSMS();
         
         /// <summary>
-        /// Current status of this permissions granted by this device for push notifications
+        /// Current status of permissions granted by this device for push notifications
         /// </summary>
-        public abstract PermissionState PermissionState { get; }
+        public abstract NotificationPermission NotificationPermission { get; }
         
         /// <summary>
         /// Current status of this device's subscription to push notifications

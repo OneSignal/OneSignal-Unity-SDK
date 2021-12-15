@@ -27,7 +27,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -40,11 +39,14 @@ namespace OneSignalSDK {
         public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
         public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
         public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
         public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
-        
+
+        public override NotificationPermission NotificationPermission
+            => _stateNotificationPermission(_sdkClass.CallStatic<AndroidJavaObject>("getDeviceState"));
+
         public override PushSubscriptionState PushSubscriptionState {
             get {
                 var deviceStateJO = _sdkClass.CallStatic<AndroidJavaObject>("getDeviceState");
