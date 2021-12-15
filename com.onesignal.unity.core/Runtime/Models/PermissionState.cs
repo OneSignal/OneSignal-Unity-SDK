@@ -40,17 +40,29 @@ namespace OneSignalSDK {
 
         /// <summary>The application is authorized to post user notifications.</summary>
         Authorized,
-        
+
         /// <summary>The application is only authorized to post Provisional notifications (direct to history)</summary>
         Provisional,
-        
+
         /// <summary>The application is authorized to send notifications for 8 hours. Only used by App Clips.</summary>
         Ephemeral
     }
 
     [Serializable] public sealed class PermissionState {
+        /// <summary>
+        /// Whether or not the user has been asked for permission to receive push notifications. See
+        /// <see cref="OneSignal.PromptForPushNotificationsWithUserResponse"/> to acquire permission
+        /// </summary>
         public bool hasPrompted;
+
+        /// <summary>
+        /// Status of ability to send push notification as determined by the current user
+        /// </summary>
         public NotificationPermission status;
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public bool provisional;
     }
 }
