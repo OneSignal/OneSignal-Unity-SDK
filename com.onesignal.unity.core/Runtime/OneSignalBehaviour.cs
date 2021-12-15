@@ -41,12 +41,12 @@ namespace OneSignalSDK {
         /// <summary>
         /// The minimum level of logs which will be logged to the console
         /// </summary>
-        public LogType LogLevel = LogType.Warning;
+        public LogLevel LogLevel = LogLevel.Warn;
         
         /// <summary>
         /// The minimum level of log events which will be converted into foreground alerts
         /// </summary>
-        public LogType AlertLevel = LogType.Exception;
+        public LogLevel AlertLevel = LogLevel.None;
 
         /// <summary>
         /// Allows you to delay the initialization of the SDK until <see cref="OneSignal.PrivacyConsent"/> is set to

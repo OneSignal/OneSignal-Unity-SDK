@@ -81,6 +81,22 @@ namespace OneSignalSDK {
             }
         }
 
+        public override LogLevel LogLevel {
+            get => _logLevel;
+            set {
+                _logLevel = value;
+                _sdkClass.CallStatic("setLogLevel", _logLevel, _alertLevel);
+            }
+        }
+
+        public override LogLevel AlertLevel {
+            get => _alertLevel;
+            set {
+                _alertLevel = value;
+                _sdkClass.CallStatic("setLogLevel", _logLevel, _alertLevel);
+            }
+        }
+        
         public override bool PrivacyConsent {
             get => _sdkClass.CallStatic<bool>("userProvidedPrivacyConsent");
             set => _sdkClass.CallStatic("provideUserConsent", value);
