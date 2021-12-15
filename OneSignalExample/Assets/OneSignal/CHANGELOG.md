@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
+- Implemented missing `Notification` properties `additionalData` and `actionButtons`
 - Properly push `LogLevel` and `AlertLevel` settings to native SDKs
 - Added missing setter to override the detected language
 - Add missing getters for permission and subscription states
