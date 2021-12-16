@@ -100,11 +100,12 @@ namespace OneSignalSDK {
 
             var entryArgs = new object[2];
             foreach (var kv in source) {
-                using var key = new AndroidJavaObject("java.lang.String", kv.Key);
-                using var value = new AndroidJavaObject("java.lang.String", kv.Value);
-                entryArgs[0] = key;
-                entryArgs[1] = value;
-                AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
+                using (var key = new AndroidJavaObject("java.lang.String", kv.Key))
+                using (var value = new AndroidJavaObject("java.lang.String", kv.Value)) {
+                    entryArgs[0] = key;
+                    entryArgs[1] = value;
+                    AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
+                }    
             }
             
             return map;
