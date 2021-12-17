@@ -85,7 +85,7 @@ namespace OneSignalSDK {
             get => _logLevel;
             set {
                 _logLevel = value;
-                _sdkClass.CallStatic("setLogLevel", _logLevel, _alertLevel);
+                _sdkClass.CallStatic("setLogLevel", (int) _logLevel, (int) _alertLevel);
             }
         }
 
@@ -93,7 +93,7 @@ namespace OneSignalSDK {
             get => _alertLevel;
             set {
                 _alertLevel = value;
-                _sdkClass.CallStatic("setLogLevel", _logLevel, _alertLevel);
+                _sdkClass.CallStatic("setLogLevel", (int) _logLevel, (int) _alertLevel);
             }
         }
         
