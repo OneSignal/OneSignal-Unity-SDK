@@ -33,6 +33,9 @@ namespace OneSignalSDK {
         internal static event Action<string> OnInitialize;
         protected static void _completedInit(string appId) => OnInitialize?.Invoke(appId);
         
+        protected LogLevel _logLevel = LogLevel.Fatal;
+        protected LogLevel _alertLevel = LogLevel.None;
+        
         private static OneSignal _default;
 
         private static OneSignal _getDefaultInstance() {
@@ -43,7 +46,7 @@ namespace OneSignalSDK {
             var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignal>("OneSignal");
             if (Activator.CreateInstance(availableSDKs.First()) is OneSignal sdk) {
                 _default = sdk;
-                SDKDebug.Log($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
+                SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
             }
             else {
                 SDKDebug.Error("Could not find an implementation of OneSignal SDK to use!");

@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
+- Properly push `LogLevel` and `AlertLevel` settings to native SDKs
 - Added missing setter to override the detected language
 - Add missing getters for permission and subscription states
 ### Changed
+- `LogLevel` and `AlertLevel` now use a custom enum instead of the Unity `LogType`
 - Removed `PermissionState` in favor of `NotificationPermission` enum
   - Renamed `PermissionStateChanged` event to `NotificationPermissionChanged`
 
