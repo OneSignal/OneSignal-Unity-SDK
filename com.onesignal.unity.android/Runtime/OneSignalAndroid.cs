@@ -27,7 +27,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -40,10 +39,47 @@ namespace OneSignalSDK {
         public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
         public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
         public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
         public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+
+        public override NotificationPermission NotificationPermission
+            => _stateNotificationPermission(_sdkClass.CallStatic<AndroidJavaObject>("getDeviceState"));
+
+        public override PushSubscriptionState PushSubscriptionState {
+            get {
+                var deviceStateJO = _sdkClass.CallStatic<AndroidJavaObject>("getDeviceState");
+                return new PushSubscriptionState {
+                    userId         = deviceStateJO.Call<string>("getUserId"),
+                    pushToken      = deviceStateJO.Call<string>("getPushToken"),
+                    isSubscribed   = deviceStateJO.Call<bool>("isSubscribed"),
+                    isPushDisabled = deviceStateJO.Call<bool>("isPushDisabled"),
+                };
+            }
+        }
+        
+        public override EmailSubscriptionState EmailSubscriptionState {
+            get {
+                var deviceStateJO = _sdkClass.CallStatic<AndroidJavaObject>("getDeviceState");
+                return new EmailSubscriptionState {
+                    emailUserId  = deviceStateJO.Call<string>("getEmailUserId"),
+                    emailAddress = deviceStateJO.Call<string>("getEmailAddress"),
+                    isSubscribed = deviceStateJO.Call<bool>("isEmailSubscribed"),
+                };
+            }
+        }
+        
+        public override SMSSubscriptionState SMSSubscriptionState {
+            get {
+                var deviceStateJO = _sdkClass.CallStatic<AndroidJavaObject>("getDeviceState");
+                return new SMSSubscriptionState {
+                    smsUserId    = deviceStateJO.Call<string>("getSMSUserId"),
+                    smsNumber    = deviceStateJO.Call<string>("getSMSNumber"),
+                    isSubscribed = deviceStateJO.Call<bool>("isSMSSubscribed"),
+                };
+            }
+        }
 
         public override bool PrivacyConsent {
             get => _sdkClass.CallStatic<bool>("userProvidedPrivacyConsent");

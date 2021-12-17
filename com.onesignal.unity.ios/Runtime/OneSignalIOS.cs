@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Modified MIT License
  *
  * Copyright 2021 OneSignal
@@ -38,10 +38,66 @@ namespace OneSignalSDK {
         public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
         public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
         public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public override event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
         public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
         public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
         public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+        
+        public override NotificationPermission NotificationPermission {
+            get {
+                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState)
+                    return (NotificationPermission) deviceState["notificationPermissionStatus"];
+                
+                SDKDebug.Error("Could not deserialize device state for permissions");
+                return NotificationPermission.NotDetermined;
+            }
+        }
+        
+        public override PushSubscriptionState PushSubscriptionState {
+            get {
+                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
+                    return new PushSubscriptionState {
+                        userId         = deviceState["userId"] as string,
+                        pushToken      = deviceState["pushToken"] as string,
+                        isSubscribed   = (bool) deviceState["isSubscribed"],
+                        isPushDisabled = (bool) deviceState["isPushDisabled"],
+                    };
+                }
+
+                SDKDebug.Error("Could not deserialize device state for push");
+                return null;
+            }
+        }
+        
+        public override EmailSubscriptionState EmailSubscriptionState {
+            get {
+                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
+                    return new EmailSubscriptionState {
+                        emailUserId  = deviceState["emailUserId"] as string,
+                        emailAddress = deviceState["emailAddress"] as string,
+                        isSubscribed = (bool) deviceState["isEmailSubscribed"],
+                    };
+                }
+
+                SDKDebug.Error("Could not deserialize device state for email");
+                return null;
+            }
+        }
+        
+        public override SMSSubscriptionState SMSSubscriptionState {
+            get {
+                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
+                    return new SMSSubscriptionState {
+                        smsUserId    = deviceState["smsUserId"] as string,
+                        smsNumber    = deviceState["smsNumber"] as string,
+                        isSubscribed = (bool) deviceState["isSMSSubscribed"],
+                    };
+                }
+
+                SDKDebug.Error("Could not deserialize device state for sms");
+                return null;
+            }
+        }
 
         public override bool PrivacyConsent {
             get => _getPrivacyConsent();

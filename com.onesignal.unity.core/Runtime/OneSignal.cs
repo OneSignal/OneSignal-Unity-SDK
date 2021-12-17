@@ -133,7 +133,7 @@ namespace OneSignalSDK {
         /// <summary>
         /// When this device's permissions for authorization of push notifications have changed.
         /// </summary>
-        public abstract event StateChangeDelegate<PermissionState> PermissionStateChanged;
+        public abstract event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
 
         /// <summary>
         /// When this device's subscription to push notifications has changed
@@ -285,7 +285,7 @@ namespace OneSignalSDK {
         public abstract Task<bool> DeleteTags(params string[] keys);
     #endregion
 
-    #region User Identification
+    #region User & Device Properties
         /// <summary>
         /// Allows you to use your own application's user id to send OneSignal messages to your user. To tie the user
         /// to a given user id, you can use this method.
@@ -331,6 +331,26 @@ namespace OneSignalSDK {
         /// </summary>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> LogOutSMS();
+        
+        /// <summary>
+        /// Current status of permissions granted by this device for push notifications
+        /// </summary>
+        public abstract NotificationPermission NotificationPermission { get; }
+        
+        /// <summary>
+        /// Current status of this device's subscription to push notifications
+        /// </summary>
+        public abstract PushSubscriptionState PushSubscriptionState { get; }
+        
+        /// <summary>
+        /// Current status of this device's subscription to email
+        /// </summary>
+        public abstract EmailSubscriptionState EmailSubscriptionState { get; }
+        
+        /// <summary>
+        /// Current status of this device's subscription to sms
+        /// </summary>
+        public abstract SMSSubscriptionState SMSSubscriptionState { get; }
     #endregion
 
     #region Location
