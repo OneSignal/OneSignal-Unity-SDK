@@ -28,9 +28,19 @@
 using System;
 
 namespace OneSignalSDK {
+    /// <summary>
+    /// See full documentation at
+    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
+    /// </summary>
     [Serializable] public sealed class NotificationOpenedResult {
+        /// <summary>
+        /// Action the user took on the notification
+        /// </summary>
         public NotificationAction action;
+        
+        /// <summary>
+        /// Notification the user received
+        /// </summary>
         public Notification notification;
     }
-
 }

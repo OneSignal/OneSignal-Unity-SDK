@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added missing setter to override the detected language
 - Add missing getters for permission and subscription states
 ### Changed
+- Implemented missing `Notification` properties `additionalData` and `actionButtons`
 - `LogLevel` and `AlertLevel` now use a custom enum instead of the Unity `LogType`
 - Removed `PermissionState` in favor of `NotificationPermission` enum
   - Renamed `PermissionStateChanged` event to `NotificationPermissionChanged`

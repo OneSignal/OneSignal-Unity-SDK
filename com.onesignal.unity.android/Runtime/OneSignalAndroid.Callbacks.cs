@@ -150,6 +150,13 @@ namespace OneSignalSDK {
                 }
 
                 var notification = notifJO.ToSerializable<Notification>();
+                
+                var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
+                if (dataJson != null) {
+                    var dataJsonStr = dataJson.Call<string>("toString");
+                    notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
+                }
+                
                 var resultNotif  = _instance.NotificationWillShow(notification);
                 
                 notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
