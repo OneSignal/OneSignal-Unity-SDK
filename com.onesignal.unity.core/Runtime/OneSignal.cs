@@ -331,6 +331,15 @@ namespace OneSignalSDK {
         /// </summary>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> LogOutSMS();
+
+        /// <summary>
+        /// Change the system detected language by passing in the desired language code. See
+        /// https://documentation.onesignal.com/docs/language-localization#what-languages-are-supported
+        /// for supported languages.
+        /// </summary>
+        /// <param name="languageCode">ISO 639-1 code representation for user input language</param>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> SetLanguage(string languageCode);
         
         /// <summary>
         /// Current status of permissions granted by this device for push notifications

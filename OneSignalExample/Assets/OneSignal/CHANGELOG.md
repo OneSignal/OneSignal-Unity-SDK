@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
+- Added missing setter to override the detected language
 - Add missing getters for permission and subscription states
 ### Changed
 - Removed `PermissionState` in favor of `NotificationPermission` enum
