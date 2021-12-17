@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Eliminated syntax only supported on Unity 2020 or above
 - Global callbacks on Android are now correctly setup post `initWithContext`
 - Properly push `LogLevel` and `AlertLevel` settings to native SDKs
-- Added missing setter to override the detected language
+- Added missing setter to override the detected language. Fixes [#416](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/416)
 - Add missing getters for permission and subscription states
 ### Changed
 - Implemented missing `Notification` properties `additionalData` and `actionButtons`
