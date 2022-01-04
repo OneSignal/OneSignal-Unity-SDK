@@ -16,8 +16,8 @@ public class SetupManifestStep : OneSignalSetupStep
         => "Setup keys in Android manifest";
 
     public override string Details
-        => $"Adds the {PlayerSettings.applicationIdentifier} applicationIdentifier to the {_manifestPath}." +
-           $"If you intend to change this id then please re-run this step";
+        => $"Adds the {PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android)} applicationIdentifier to " +
+            $"the {_manifestPath}. If you intend to change this id then please re-run this step";
 
     public override bool IsRequired 
         => true;
@@ -33,7 +33,7 @@ public class SetupManifestStep : OneSignalSetupStep
 
         var matches = Regex.Matches(contents, _manifestRegex);
         foreach (var match in matches) {
-            if (match.ToString() != PlayerSettings.applicationIdentifier)
+            if (match.ToString() != PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android))
                 return false;
         }
         
@@ -44,7 +44,7 @@ public class SetupManifestStep : OneSignalSetupStep
     {
         var replacements = new Dictionary<string, string>
         {
-            [_manifestRegex] = PlayerSettings.applicationIdentifier
+            [_manifestRegex] = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android)
         };
 
         // modifies the manifest in place
