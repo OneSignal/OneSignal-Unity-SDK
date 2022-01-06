@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Use the Android app id when setting the imported Android manifest's ids instead of the current build platform
 ## [3.0.0-beta.3]
 ### Fixed
 - Eliminated syntax only supported on Unity 2020 or above
