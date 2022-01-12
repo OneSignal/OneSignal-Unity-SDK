@@ -45,8 +45,10 @@ namespace OneSignalSDK {
         
         public override NotificationPermission NotificationPermission {
             get {
-                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState)
-                    return (NotificationPermission) deviceState["notificationPermissionStatus"];
+                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
+                    if (deviceState["notificationPermissionStatus"] is long status)
+                        return (NotificationPermission) status;
+                }
                 
                 SDKDebug.Error("Could not deserialize device state for permissions");
                 return NotificationPermission.NotDetermined;
