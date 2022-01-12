@@ -27,6 +27,7 @@
 
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace OneSignalSDK {
     public abstract partial class OneSignal {
@@ -49,7 +50,7 @@ namespace OneSignalSDK {
                 SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
             }
             else {
-                SDKDebug.Error("Could not find an implementation of OneSignal SDK to use!");
+                Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
             }
             
             return _default;
