@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - `NotificationPermission` return from native SDK no longer raises a casting exception on iOS
+- Resolved infinite loop on logging error when OneSignal classes cannot be found
 
 ## [3.0.0-beta.3]
 ### Fixed
