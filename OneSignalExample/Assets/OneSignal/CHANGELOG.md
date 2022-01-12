@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Resolved infinite loop on logging error when OneSignal classes cannot be found
+- Resolved infinite loops on logging initialization conditions
 
 ## [3.0.0-beta.3]
 ### Fixed
