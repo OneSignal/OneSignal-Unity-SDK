@@ -134,9 +134,9 @@ namespace OneSignalSDK {
         /// Checks for existing entitlements file or creates a new one and returns the path
         /// </summary>
         private string GetEntitlementsPath(string targetGuid, string targetName) {
-            var relativePath = _project.GetBuildPropertyForConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
+            var relativePath = _project.GetBuildPropertyForAnyConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
             if (relativePath != null) {
-                var fullPath = Path.Combine(_projectPath, relativePath);
+                var fullPath = Path.Combine(_outputPath, relativePath);
                 if (File.Exists(fullPath))
                     return fullPath;
             }
