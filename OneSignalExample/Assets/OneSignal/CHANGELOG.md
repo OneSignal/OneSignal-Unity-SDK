@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - `NotificationPermission` return from native SDK no longer raises a casting exception on iOS
+- Resolved infinite loops on logging initialization conditions
 
 ## [3.0.0-beta.3]
 ### Fixed
