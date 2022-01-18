@@ -134,9 +134,9 @@ namespace OneSignalSDK {
         /// Checks for existing entitlements file or creates a new one and returns the path
         /// </summary>
         private string GetEntitlementsPath(string targetGuid, string targetName) {
-            var relativePath = _project.GetBuildPropertyForConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
+            var relativePath = _project.GetBuildPropertyForAnyConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
             if (relativePath != null) {
-                var fullPath = Path.Combine(_projectPath, relativePath);
+                var fullPath = Path.Combine(_outputPath, relativePath);
                 if (File.Exists(fullPath))
                     return fullPath;
             }
@@ -151,12 +151,10 @@ namespace OneSignalSDK {
             var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
             var entitlementsPlist = new PlistDocument();
 
-            if (File.Exists(entitlementsPath))
-                entitlementsPlist.ReadFromFile(entitlementsPath);
+            var existingEntitlements = File.Exists(entitlementsPath);
 
-            var apsKey = EntitlementKeys[Entitlement.ApsEnv];
-            if ((entitlements & Entitlement.ApsEnv) != 0 && entitlementsPlist.root[apsKey] == null)
-                entitlementsPlist.root.SetString(apsKey, "development");
+            if (existingEntitlements)
+                entitlementsPlist.ReadFromFile(entitlementsPath);
 
             var groupsKey = EntitlementKeys[Entitlement.AppGroups];
             if ((entitlements & Entitlement.AppGroups) != 0) {
@@ -171,13 +169,16 @@ namespace OneSignalSDK {
 
             entitlementsPlist.WriteToFile(entitlementsPath);
 
+            if (existingEntitlements) 
+                return;
+            
             // Copy the entitlement file to the xcode project
             var entitlementFileName = Path.GetFileName(entitlementsPath);
             var relativeDestination = targetName + "/" + entitlementFileName;
 
             // Add the pbx configs to include the entitlements files on the project
             _project.AddFile(relativeDestination, entitlementFileName);
-            _project.AddBuildProperty(targetGuid, "CODE_SIGN_ENTITLEMENTS", relativeDestination);
+            _project.SetBuildProperty(targetGuid, "CODE_SIGN_ENTITLEMENTS", relativeDestination);
         }
         
         private void UpdateEntitlements(Entitlement entitlements)
