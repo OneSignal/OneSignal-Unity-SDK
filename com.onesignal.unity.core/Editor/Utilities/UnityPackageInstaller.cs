@@ -30,29 +30,31 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// Helper to download and install packages
-/// </summary>
-public static class UnityPackageInstaller {
+namespace OneSignalSDK {
     /// <summary>
-    /// Downloads and install a unitypackage from the specified url
+    /// Helper to download and install packages
     /// </summary>
-    public static void DownloadAndInstall(string url, string progressMessage, Action<bool> onComplete) {
-        var request = EditorWebRequest.Get(url);
-        request.AddEditorProgressDialog(progressMessage);
-        request.Send(unityRequest => {
-            if (unityRequest.error != null) {
-                EditorUtility.DisplayDialog("Package Download failed.", unityRequest.error, "Ok");
-                onComplete(false);
-            }
+    public static class UnityPackageInstaller {
+        /// <summary>
+        /// Downloads and install a unitypackage from the specified url
+        /// </summary>
+        public static void DownloadAndInstall(string url, string progressMessage, Action<bool> onComplete) {
+            var request = EditorWebRequest.Get(url);
+            request.AddEditorProgressDialog(progressMessage);
+            request.Send(unityRequest => {
+                if (unityRequest.error != null) {
+                    EditorUtility.DisplayDialog("Package Download failed.", unityRequest.error, "Ok");
+                    onComplete(false);
+                }
 
-            var projectPath    = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
-            var tmpPackageFile = projectPath + FileUtil.GetUniqueTempPathInProject() + ".unityPackage";
+                var projectPath    = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
+                var tmpPackageFile = projectPath + FileUtil.GetUniqueTempPathInProject() + ".unityPackage";
 
-            File.WriteAllBytes(tmpPackageFile, unityRequest.downloadHandler.data);
-            AssetDatabase.ImportPackage(tmpPackageFile, false);
+                File.WriteAllBytes(tmpPackageFile, unityRequest.downloadHandler.data);
+                AssetDatabase.ImportPackage(tmpPackageFile, false);
 
-            onComplete(true);
-        });
+                onComplete(true);
+            });
+        }
     }
 }

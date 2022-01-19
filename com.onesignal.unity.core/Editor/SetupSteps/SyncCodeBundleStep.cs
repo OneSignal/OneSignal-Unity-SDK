@@ -27,59 +27,60 @@
 
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// Checks if this code bundle is of a mismatched version than the currently imported packages and updates
-/// </summary>
-public sealed class SyncCodeBundleStep : OneSignalSetupStep {
-    public override string Summary
-        => "Sync example code bundle";
+namespace OneSignalSDK {
+    /// <summary>
+    /// Checks if this code bundle is of a mismatched version than the currently imported packages and updates
+    /// </summary>
+    public sealed class SyncCodeBundleStep : OneSignalSetupStep {
+        public override string Summary
+            => "Sync example code bundle";
 
-    public override string Details
-        => "Checks if the project scope code bundle (example code) is of a mismatched version than the currently " +
-            "imported packages";
+        public override string Details
+            => "Checks if the project scope code bundle (example code) is of a mismatched version than the currently " +
+                "imported packages";
 
-    public override bool IsRequired
-        => false;
+        public override bool IsRequired
+            => false;
 
-    protected override bool _getIsStepCompleted() {
-        if (!File.Exists(_packageJsonPath)) {
-            Debug.LogError("Could not find package.json");
+        protected override bool _getIsStepCompleted() {
+            if (!File.Exists(_packageJsonPath)) {
+                Debug.LogError("Could not find package.json");
+
+                return true;
+            }
+
+            var packageJson = File.ReadAllText(_packageJsonPath);
+
+            if (Json.Deserialize(packageJson) is Dictionary<string, object> packageInfo) {
+                _sdkVersion = packageInfo["version"] as string;
+
+                return _bundleVersion == _sdkVersion;
+            }
+
+            Debug.LogError("Could not deserialize package.json");
 
             return true;
         }
 
-        var packageJson = File.ReadAllText(_packageJsonPath);
-
-        if (Json.Deserialize(packageJson) is Dictionary<string, object> packageInfo) {
-            _sdkVersion = packageInfo["version"] as string;
-
-            return _bundleVersion == _sdkVersion;
+        protected override void _runStep() {
+            var msg = $"Downloading OneSignal Unity SDK {_sdkVersion}";
+            UnityPackageInstaller.DownloadAndInstall(_onesignalUnityPackageDownloadUrl, msg, result => {
+                if (!result)
+                    _shouldCheckForCompletion = true;
+            });
         }
 
-        Debug.LogError("Could not deserialize package.json");
+        private static readonly string _versionPath = Path.Combine("Assets", "OneSignal", "VERSION");
+        private static string _bundleVersion => File.ReadAllText(_versionPath);
 
-        return true;
+        private static string _onesignalUnityPackageDownloadUrl
+            => $"https://github.com/OneSignal/OneSignal-Unity-SDK/blob/{_sdkVersion}/OneSignal-v{_sdkVersion}.unitypackage";
+
+        private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.core");
+        private static readonly string _packageJsonPath = Path.Combine(_packagePath, "package.json");
+
+        private static string _sdkVersion;
     }
-
-    protected override void _runStep() {
-        var msg = $"Downloading OneSignal Unity SDK {_sdkVersion}";
-        UnityPackageInstaller.DownloadAndInstall(_onesignalUnityPackageDownloadUrl, msg, result => {
-            if (!result)
-                _shouldCheckForCompletion = true;
-        });
-    }
-
-    private static readonly string _versionPath = Path.Combine("Assets", "OneSignal", "VERSION");
-    private static string _bundleVersion => File.ReadAllText(_versionPath);
-
-    private static string _onesignalUnityPackageDownloadUrl
-        => $"https://github.com/OneSignal/OneSignal-Unity-SDK/blob/{_sdkVersion}/OneSignal-v{_sdkVersion}.unitypackage";
-
-    private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.core");
-    private static readonly string _packageJsonPath = Path.Combine(_packagePath, "package.json");
-
-    private static string _sdkVersion;
 }

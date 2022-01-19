@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2021 OneSignal
+ * Copyright 2022 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ using UnityEditor.iOS.Xcode;
 
 namespace OneSignalSDK {
     public static class PBXProjectExtensions {
-#if UNITY_2019_3_OR_NEWER
-        public static string GetMainTargetName(this PBXProject project) 
+    #if UNITY_2019_3_OR_NEWER
+        public static string GetMainTargetName(this PBXProject project)
             => "Unity-iPhone";
 
         public static string GetMainTargetGuid(this PBXProject project)
@@ -38,7 +38,7 @@ namespace OneSignalSDK {
 
         public static string GetFrameworkGuid(this PBXProject project)
             => project.GetUnityFrameworkTargetGuid();
-#else
+    #else
         public static string GetMainTargetName(this PBXProject project) 
             => PBXProject.GetUnityTargetName();
          
@@ -47,6 +47,6 @@ namespace OneSignalSDK {
 
         public static string GetFrameworkGuid(this PBXProject project)
              => GetPBXProjectTargetGuid(project);
-#endif
+    #endif
     }
 }

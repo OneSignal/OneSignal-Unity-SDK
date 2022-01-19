@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2021 OneSignal
+ * Copyright 2022 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 /*
  * Testing Notes
  * When making any changes please test the following senerios
@@ -47,6 +48,7 @@
 //   can't be fix.
 // ADD_APP_GROUP is required for;
 //   Outcomes, Badge Increment, and possibly for future features
+
 #define ADD_APP_GROUP
 
 using System.IO;
@@ -82,7 +84,7 @@ namespace OneSignalSDK {
         }
 
         private static readonly Dictionary<Entitlement, string> EntitlementKeys = new Dictionary<Entitlement, string> {
-            [Entitlement.ApsEnv] = "aps-environment",
+            [Entitlement.ApsEnv]    = "aps-environment",
             [Entitlement.AppGroups] = "com.apple.security.application-groups"
         };
 
@@ -104,9 +106,9 @@ namespace OneSignalSDK {
         public void OnPostprocessBuild(BuildReport report) {
             if (report.summary.platform != BuildTarget.iOS)
                 return;
-            
+
             // Load the project
-            _outputPath = report.summary.outputPath;
+            _outputPath  = report.summary.outputPath;
             _projectPath = PBXProject.GetPBXProjectPath(_outputPath);
             _project.ReadFromString(File.ReadAllText(_projectPath));
 
@@ -135,8 +137,10 @@ namespace OneSignalSDK {
         /// </summary>
         private string GetEntitlementsPath(string targetGuid, string targetName) {
             var relativePath = _project.GetBuildPropertyForAnyConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
+
             if (relativePath != null) {
                 var fullPath = Path.Combine(_outputPath, relativePath);
+
                 if (File.Exists(fullPath))
                     return fullPath;
             }
@@ -148,7 +152,7 @@ namespace OneSignalSDK {
         /// Add or update the values of necessary entitlements
         /// </summary>
         private void UpdateEntitlements(Entitlement entitlements, string targetGuid, string targetName) {
-            var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
+            var entitlementsPath  = GetEntitlementsPath(targetGuid, targetName);
             var entitlementsPlist = new PlistDocument();
 
             var existingEntitlements = File.Exists(entitlementsPath);
@@ -157,8 +161,9 @@ namespace OneSignalSDK {
                 entitlementsPlist.ReadFromFile(entitlementsPath);
 
             var groupsKey = EntitlementKeys[Entitlement.AppGroups];
+
             if ((entitlements & Entitlement.AppGroups) != 0) {
-                var groups = entitlementsPlist.root[groupsKey] == null 
+                var groups = entitlementsPlist.root[groupsKey] == null
                     ? entitlementsPlist.root.CreateArray(groupsKey)
                     : entitlementsPlist.root[groupsKey].AsArray();
 
@@ -189,6 +194,7 @@ namespace OneSignalSDK {
             _project.AddCapability(targetGuid, PBXCapabilityType.BackgroundModes);
 
             var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
+
             // NOTE: ProjectCapabilityManager's 4th constructor param requires Unity 2019.3+
             var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, targetName);
             projCapability.AddBackgroundModes(BackgroundModesOptions.RemoteNotifications);
@@ -226,6 +232,7 @@ namespace OneSignalSDK {
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
                 $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
+
             _project.WriteToFile(_projectPath);
 
             UpdateEntitlements(Entitlement.AppGroups, extensionGuid, ServiceExtensionTargetName);
@@ -236,8 +243,8 @@ namespace OneSignalSDK {
         /// Add the swift source file required by the notification extension
         /// </summary>
         private void ExtensionAddSourceFiles(string extensionGuid) {
-            var buildPhaseID = _project.AddSourcesBuildPhase(extensionGuid);
-            var sourcePath = Path.Combine(PluginFilesPath, ServiceExtensionFilename);
+            var buildPhaseID     = _project.AddSourcesBuildPhase(extensionGuid);
+            var sourcePath       = Path.Combine(PluginFilesPath, ServiceExtensionFilename);
             var destPathRelative = Path.Combine(ServiceExtensionTargetName, ServiceExtensionFilename);
 
             var destPath = Path.Combine(_outputPath, destPathRelative);
@@ -256,7 +263,7 @@ namespace OneSignalSDK {
             var extensionPath = Path.Combine(path, ServiceExtensionTargetName);
             Directory.CreateDirectory(extensionPath);
 
-            var plistPath = Path.Combine(extensionPath, "Info.plist");
+            var plistPath     = Path.Combine(extensionPath, "Info.plist");
             var alreadyExists = File.Exists(plistPath);
 
             var notificationServicePlist = new PlistDocument();

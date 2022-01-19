@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2021 OneSignal
+ * Copyright 2022 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 
 using System.IO;
 
+namespace OneSignalSDK {
 /// <summary>
 /// Makes sure that the link.xml file for the OneSignal SDK exists
 /// </summary>
@@ -56,4 +57,5 @@ public class LinkXMLStep : OneSignalSetupStep {
     
     private static readonly string _sourcePath = Path.Combine("Packages", "com.onesignal.unity.core", "Editor", "link.xml");
     private static readonly string _destinationPath = Path.Combine(_destinationDir, "link.xml");
+    }
 }
