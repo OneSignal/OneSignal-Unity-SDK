@@ -93,10 +93,15 @@ namespace OneSignalSDK
 				return AnalyticsResult.AnalyticsDisabled;
 			}
 		}
+		
 #if ONE_SIGNAL_INSTALLED
-		[RuntimeInitializeOnLoadMethod]
-		public static void AttachToInit()
-			=> OneSignal.OnInitialize += appId => SendAttributionEvent("Login", "OneSignal", appId);
+		[RuntimeInitializeOnLoadMethod] 
+		public static void AttachToInit() {
+			if (string.IsNullOrEmpty(OneSignal.AppId))
+				OneSignal.OnInitialize += appId => SendAttributionEvent("Login", "OneSignal", appId);
+			else
+				SendAttributionEvent("Login", "OneSignal", OneSignal.AppId);
+		}
 #endif
 	}
 }
