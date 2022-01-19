@@ -31,8 +31,13 @@ using UnityEngine;
 
 namespace OneSignalSDK {
     public abstract partial class OneSignal {
+        internal static string AppId { get; private set; }
         internal static event Action<string> OnInitialize;
-        protected static void _completedInit(string appId) => OnInitialize?.Invoke(appId);
+
+        protected static void _completedInit(string appId) {
+            AppId = appId;
+            OnInitialize?.Invoke(AppId);
+        }
         
         protected LogLevel _logLevel = LogLevel.Fatal;
         protected LogLevel _alertLevel = LogLevel.None;
