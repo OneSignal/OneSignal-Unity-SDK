@@ -26,7 +26,6 @@
  */
 
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -43,8 +42,8 @@ namespace OneSignalSDK {
             var inventory = ScriptableObject.CreateInstance<OneSignalFileInventory>();
             inventory.DistributedPaths = OneSignalFileInventory.GetCurrentPaths();
 
-        Directory.CreateDirectory(OneSignalFileInventory.EditorResourcesPath);
-        AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);
+            Directory.CreateDirectory(OneSignalFileInventory.EditorResourcesPath);
+            AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);
         }
     }
 }

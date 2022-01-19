@@ -28,7 +28,6 @@
 using System.Collections.Generic;
 using Laters;
 using UnityEngine;
-using UnityEngine.Scripting;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -50,8 +49,8 @@ namespace OneSignalSDK {
 
         private abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
             protected OneSignalAndroidJavaProxy(string listenerClassName, bool innerClass = false)
-                : base(innerClass 
-                    ? QualifiedSDKClass + "$" + listenerClassName 
+                : base(innerClass
+                    ? QualifiedSDKClass + "$" + listenerClassName
                     : SDKPackage + "." + listenerClassName
                 ) { }
         }
@@ -76,7 +75,7 @@ namespace OneSignalSDK {
 
             _instance = this;
         }
-        
+
         private sealed class OSPermissionObserver : OneSignalAndroidJavaProxy {
             public OSPermissionObserver() : base("OSPermissionObserver") { }
 
@@ -140,9 +139,9 @@ namespace OneSignalSDK {
                     var dataJsonStr = dataJson.Call<string>("toString");
                     notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
                 }
-                
+
                 var resultNotif = _instance.NotificationWillShow(notification);
-                
+
                 notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
             }
         }
@@ -154,22 +153,22 @@ namespace OneSignalSDK {
             public void notificationOpened(AndroidJavaObject result)
                 => _instance.NotificationOpened?.Invoke(result.ToSerializable<NotificationOpenedResult>());
         }
-        
+
         private sealed class OSInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
             public OSInAppMessageLifecycleHandler() : base(IAMLifecycleClassName + "$WrapperLifecycleHandler") { }
-            
+
             /// <param name="message">OSInAppMessage</param>
             public void onWillDisplayInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageWillDisplay?.Invoke(message.ToSerializable<InAppMessage>());
-            
+
             /// <param name="message">OSInAppMessage</param>
             public void onDidDisplayInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageDidDisplay?.Invoke(message.ToSerializable<InAppMessage>());
-            
+
             /// <param name="message">OSInAppMessage</param>
             public void onWillDismissInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageWillDismiss?.Invoke(message.ToSerializable<InAppMessage>());
-            
+
             /// <param name="message">OSInAppMessage</param>
             public void onDidDismissInAppMessage(AndroidJavaObject message)
                 => _instance.InAppMessageDidDismiss?.Invoke(message.ToSerializable<InAppMessage>());
