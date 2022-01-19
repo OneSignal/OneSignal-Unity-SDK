@@ -158,7 +158,7 @@ public sealed class OneSignalSetupWindow : EditorWindow
         _requiredStyle = new GUIStyle(EditorStyles.miniBoldLabel);
         _requiredStyle.normal.textColor = Color.red;
 
-        _optionalStyle = new GUIStyle(EditorStyles.miniLabel);
+        _optionalStyle = new GUIStyle(EditorStyles.miniBoldLabel);
         _optionalStyle.normal.textColor = Color.yellow;
         _optionalStyle.fontStyle = FontStyle.Italic;
 

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Included a new setup step from the OneSignal Unity Editor menu (**Window > OneSignal**) which syncs the example code bundle with the core package version
 ### Fixed
 - `NotificationPermission` return from native SDK no longer raises a casting exception on iOS
 - Resolved infinite loops on logging initialization conditions
