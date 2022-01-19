@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
+namespace OneSignalSDK {
     /// <summary>
     /// Copies the OneSignalConfig.plugin to Assets/Plugins/Android/*
     /// </summary>
@@ -92,4 +93,5 @@ public sealed class ExportAndroidResourcesStep : OneSignalSetupStep
     private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
     private static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
     private static readonly string _pluginExportPath = Path.Combine(_androidPluginsPath, _pluginName);
+    }
 }

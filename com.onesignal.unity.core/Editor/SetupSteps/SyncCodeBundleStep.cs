@@ -30,6 +30,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+namespace OneSignalSDK {
 /// <summary>
 /// Checks if this code bundle is of a mismatched version than the currently imported packages and updates
 /// </summary>
@@ -82,4 +83,5 @@ public sealed class SyncCodeBundleStep : OneSignalSetupStep {
     private static readonly string _packageJsonPath = Path.Combine(_packagePath, "package.json");
 
     private static string _sdkVersion;
+    }
 }

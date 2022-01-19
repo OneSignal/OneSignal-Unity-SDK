@@ -24,6 +24,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+namespace OneSignalSDK {
     /// <summary>
     /// Abstract class which must be inherited from in order to create a new setup step
     /// </summary>
@@ -80,4 +82,5 @@ public abstract class OneSignalSetupStep
 
     private bool _isComplete = false;
     protected bool _shouldCheckForCompletion = true;
+    }
 }

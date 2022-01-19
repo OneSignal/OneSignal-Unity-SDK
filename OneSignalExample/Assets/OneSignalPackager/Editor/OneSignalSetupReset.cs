@@ -28,6 +28,7 @@
 using System.IO;
 using UnityEditor;
 
+namespace OneSignalSDK {
     /// <summary>
     /// For debugging all of the OneSignalSetupSteps
     /// </summary>
@@ -78,5 +79,6 @@ public static class OneSignalSetupReset
 #if UNITY_2020_1_OR_NEWER
         UnityEditor.PackageManager.Client.Resolve();
 #endif
+        }
     }
 }

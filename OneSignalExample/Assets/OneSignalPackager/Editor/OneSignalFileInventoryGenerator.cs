@@ -30,6 +30,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+namespace OneSignalSDK {
 /// <summary>
 /// Creates the <see cref="OneSignalFileInventory"/> resource to be distributed with the SDK *.unitypackage
 /// </summary>
@@ -46,5 +47,6 @@ public static class OneSignalFileInventoryGenerator
         
         Directory.CreateDirectory(OneSignalFileInventory.EditorResourcesPath);
         AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);
+        }
     }
 }

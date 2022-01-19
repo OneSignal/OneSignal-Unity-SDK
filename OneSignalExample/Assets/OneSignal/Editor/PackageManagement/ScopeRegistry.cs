@@ -28,6 +28,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+namespace OneSignalSDK {
     /// <summary>
     /// Representation of "scopeRegistries" entry of the manifest file.
     /// </summary>
@@ -147,5 +148,6 @@ class ScopeRegistry
         result.Add(k_KeyUrl, Url);
         result.Add(k_KeyScopes, Scopes.ToList());
         return result;
+        }
     }
 }

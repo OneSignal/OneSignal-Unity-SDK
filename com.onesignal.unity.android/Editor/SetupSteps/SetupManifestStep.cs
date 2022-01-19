@@ -34,6 +34,7 @@ using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
+namespace OneSignalSDK {
 /// <summary>
 /// Makes sure that the OneSignalConfig.plugin folder exists and is populated with the correct files within the project
 /// </summary>
@@ -109,6 +110,7 @@ public class SetupManifestStep : OneSignalSetupStep
         catch (Exception exception)
         {
             Debug.LogError($"could not replace strings of {sourcePath} because:\n{exception.Message}");
+            }
         }
     }
 }

@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 
+namespace OneSignalSDK {
     /// <summary>
     /// Representation of the manifest file "dependency" entry.
     /// </summary>
@@ -71,5 +72,6 @@ class Dependency
         Dictionary<string, object> result = new Dictionary<string, object>();
         result.Add(Name, Version);
         return result;
+        }
     }
 }

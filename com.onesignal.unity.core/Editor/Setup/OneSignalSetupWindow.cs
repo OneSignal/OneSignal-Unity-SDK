@@ -34,6 +34,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace OneSignalSDK {
 /// <summary>
 /// Pop up window which displays any additional required or optional setup steps by the SDK
 /// </summary>
@@ -196,5 +197,6 @@ public sealed class OneSignalSetupWindow : EditorWindow
         _boxTexture = boxContent.image;
         
         _guiSetupComplete = true;
+        }
     }
 }

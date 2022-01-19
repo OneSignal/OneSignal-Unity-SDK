@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using OneSignalPush.Utilities;
 
+namespace OneSignalSDK {
     /// <summary>
 /// Representation of Manifest JSON file.
 /// Can be used for adding dependencies, scopeRegistries, etc to .json file
@@ -212,5 +213,6 @@ class Manifest
     public bool IsDependencyPresent(string name)
     {
         return m_Dependencies.ContainsKey(name);
+        }
     }
 }

@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
+namespace OneSignalSDK {
     /// <summary>
 /// Handles if there are files within the Assets/OneSignal folder which should not be there. Typically this
 /// indicates the presence of legacy files.
@@ -80,4 +81,5 @@ public sealed class CleanUpLegacyStep : OneSignalSetupStep
     }
 
     private OneSignalFileInventory _inventory;
+    }
 }

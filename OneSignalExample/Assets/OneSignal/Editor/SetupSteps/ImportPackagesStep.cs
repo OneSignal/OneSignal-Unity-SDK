@@ -30,6 +30,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+namespace OneSignalSDK {
 /// <summary>
 /// Checks for whether the OneSignal Unity Core package has been added to the project and does so if not
 /// </summary>
@@ -124,4 +125,5 @@ public sealed class ImportPackagesStep : OneSignalSetupStep
 
     private static readonly HashSet<string> _scopes = new HashSet<string> { _packagesScope };
     private static readonly ScopeRegistry _scopeRegistry = new ScopeRegistry(_registryName, _registryUrl, _scopes);
+    }
 }

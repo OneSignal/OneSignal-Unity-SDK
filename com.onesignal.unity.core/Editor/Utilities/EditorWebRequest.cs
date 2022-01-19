@@ -29,6 +29,7 @@ using System;
 using UnityEditor;
 using UnityEngine.Networking;
 
+namespace OneSignalSDK {
 /// <summary>
 /// The EditorWebRequest is a wrapper around the `UnityWebRequest` that can work in Edit mode.
 /// </summary>
@@ -101,6 +102,7 @@ class EditorWebRequest {
 
             EditorApplication.update -= OnEditorUpdate;
             m_OnComplete.Invoke(UnityRequest);
+            }
         }
     }
 }

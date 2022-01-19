@@ -29,16 +29,17 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
+namespace OneSignalSDK {
     /// <summary>
     /// Creates a unitypackage file for publishing
     /// </summary>
-public static class OneSignalPackagePublisher {
-    public static void UpdateProjectVersion() {
-        var packageVersion = File.ReadAllText(VersionFilePath);
-        PlayerSettings.bundleVersion = packageVersion;
-    }
-    
-    [MenuItem("OneSignal/ExportUnityPackage")]
+    public static class OneSignalPackagePublisher {
+        public static void UpdateProjectVersion() {
+            var packageVersion = File.ReadAllText(VersionFilePath);
+            PlayerSettings.bundleVersion = packageVersion;
+        }
+
+        [MenuItem("OneSignal/ExportUnityPackage")]
     public static void ExportUnityPackage() {
         AssetDatabase.Refresh();
         var packageVersion = File.ReadAllText(VersionFilePath);
@@ -46,28 +47,29 @@ public static class OneSignalPackagePublisher {
 
         AssetDatabase.ExportPackage(
             _filePaths(),
-            packageName,
-            ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
-        );
-    }
+                packageName,
+                ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
+            );
+        }
 
-    private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
-    private static readonly string VersionFilePath = Path.Combine(PackagePath, "VERSION");
-    
-    private static readonly string[] Exclusions = {
-        Path.Combine(PackagePath, "Attribution"),
-        ".DS_Store"
-    };
+        private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
+        private static readonly string VersionFilePath = Path.Combine(PackagePath, "VERSION");
 
-    private static string[] _filePaths() {
-        var files = Directory.GetFileSystemEntries(PackagePath);
-        var pathsToInclude = files.Where(file => {
-            if (file.EndsWith(".meta"))
-                file = file.Substring(0, file.Length - 5);
+        private static readonly string[] Exclusions = {
+            Path.Combine(PackagePath, "Attribution"),
+            ".DS_Store"
+        };
 
-            return !Exclusions.Contains(file);
-        });
+        private static string[] _filePaths() {
+            var files = Directory.GetFileSystemEntries(PackagePath);
+            var pathsToInclude = files.Where(file => {
+                if (file.EndsWith(".meta"))
+                    file = file.Substring(0, file.Length - 5);
 
-        return pathsToInclude.ToArray();
+                return !Exclusions.Contains(file);
+            });
+
+            return pathsToInclude.ToArray();
+        }
     }
 }

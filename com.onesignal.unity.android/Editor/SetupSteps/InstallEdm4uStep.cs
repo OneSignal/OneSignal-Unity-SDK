@@ -28,6 +28,7 @@
 using System.Linq;
 using UnityEditor.Compilation;
 
+namespace OneSignalSDK {
     /// <summary>
     /// Checks for EDM4U assemblies and installs the package from its github releases
     /// </summary>
@@ -57,4 +58,5 @@ public sealed class InstallEdm4uStep : OneSignalSetupStep {
     private const string _edm4UVersion = "1.2.167";
     private static readonly string _edm4UPackageDownloadUrl
         = $"https://github.com/googlesamples/unity-jar-resolver/blob/v{_edm4UVersion}/external-dependency-manager-{_edm4UVersion}.unitypackage?raw=true";
+    }
 }

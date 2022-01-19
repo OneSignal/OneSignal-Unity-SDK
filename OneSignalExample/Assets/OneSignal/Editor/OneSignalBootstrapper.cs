@@ -28,6 +28,7 @@
 using System.Linq;
 using UnityEditor;
 
+namespace OneSignalSDK {
     /// <summary>
     /// Handles informing the user on startup/import if the legacy SDK has been detected
     /// </summary>
@@ -79,4 +80,5 @@ public static class OneSignalBootstrapper
     }
 
     private const string _sessionCheckKey = "onesignal.bootstrapper.check";
+    }
 }
