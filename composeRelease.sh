@@ -203,11 +203,11 @@ executeUnityMethod() {
 
 # update project version
 projectsettings_path="OneSignalExample/ProjectSettings/ProjectSettings.asset"
-executeUnityMethod "OneSignalExample" "Android" "OneSignalPackagePublisher.UpdateProjectVersion"
+executeUnityMethod "OneSignalExample" "Android" "OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion"
 
 # build a unitypackage for release
 package_path="OneSignalExample/OneSignal-v${new_version}.unitypackage"
-executeUnityMethod "OneSignalExample" "Android" "OneSignalPackagePublisher.ExportUnityPackage"
+executeUnityMethod "OneSignalExample" "Android" "OneSignalSDK.OneSignalPackagePublisher.ExportUnityPackage"
 
 # preserve current workspace
 current_branch=$(git branch --show-current)
