@@ -43,7 +43,7 @@ namespace OneSignalSDK {
         private static readonly Dictionary<int, ILater> WaitingProxies = new Dictionary<int, ILater>();
 
         private static (Later<TResult> proxy, int hashCode) _setupProxy<TResult>() {
-            var proxy = new Later<TResult>();
+            var proxy    = new Later<TResult>();
             var hashCode = proxy.GetHashCode();
             WaitingProxies[hashCode] = proxy;
             return (proxy, hashCode);
@@ -103,7 +103,7 @@ namespace OneSignalSDK {
             if (Json.Deserialize(response) is Dictionary<string, object> notifDict && notifDict.ContainsKey("additionalData"))
                 notification.additionalData = notifDict["additionalData"] as Dictionary<string, object>;
             
-            var resultNotif  = _instance.NotificationWillShow(notification);
+            var resultNotif = _instance.NotificationWillShow(notification);
             
             return resultNotif != null;
         }
@@ -144,8 +144,8 @@ namespace OneSignalSDK {
                 return;
             }
             
-            var curr = (NotificationPermission) currState["status"];
-            var prev = (NotificationPermission) prevState["status"];
+            var curr = (NotificationPermission)currState["status"];
+            var prev = (NotificationPermission)prevState["status"];
             
             _instance.NotificationPermissionChanged?.Invoke(curr, prev);
         }

@@ -40,13 +40,13 @@ namespace OneSignalSDK {
         }
 
         [MenuItem("OneSignal/ExportUnityPackage")]
-    public static void ExportUnityPackage() {
-        AssetDatabase.Refresh();
-        var packageVersion = File.ReadAllText(VersionFilePath);
-        var packageName = $"OneSignal-v{packageVersion}.unitypackage";
+        public static void ExportUnityPackage() {
+            AssetDatabase.Refresh();
+            var packageVersion = File.ReadAllText(VersionFilePath);
+            var packageName    = $"OneSignal-v{packageVersion}.unitypackage";
 
-        AssetDatabase.ExportPackage(
-            _filePaths(),
+            AssetDatabase.ExportPackage(
+                _filePaths(),
                 packageName,
                 ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
             );

@@ -110,16 +110,16 @@ namespace OneSignalSDK {
             
             // Setup the below to listen for and respond to events from notifications
             OneSignal.Default.NotificationOpened   += _notificationOpened;
-            OneSignal.Default.NotificationWillShow += _notificationReceived;
-            
-            // Setup the below to listen for and respond to events from in app messages
-            OneSignal.Default.InAppMessageWillDisplay += _iamWillDisplay;
-            OneSignal.Default.InAppMessageDidDisplay += _iamDidDisplay;
-            OneSignal.Default.InAppMessageWillDismiss += _iamWillDismiss;
-            OneSignal.Default.InAppMessageDidDismiss += _iamDidDismiss;
-            OneSignal.Default.InAppMessageTriggeredAction += _iamTriggeredAction;
-            
-            // Setup the below to listen for and respond to state changes
+        OneSignal.Default.NotificationWillShow += _notificationReceived;
+
+        // Setup the below to listen for and respond to events from in app messages
+        OneSignal.Default.InAppMessageWillDisplay     += _iamWillDisplay;
+        OneSignal.Default.InAppMessageDidDisplay      += _iamDidDisplay;
+        OneSignal.Default.InAppMessageWillDismiss     += _iamWillDismiss;
+        OneSignal.Default.InAppMessageDidDismiss      += _iamDidDismiss;
+        OneSignal.Default.InAppMessageTriggeredAction += _iamTriggeredAction;
+
+        // Setup the below to listen for and respond to state changes
             OneSignal.Default.NotificationPermissionChanged += _notificationPermissionChanged;
             OneSignal.Default.PushSubscriptionStateChanged  += _pushStateChanged;
             OneSignal.Default.EmailSubscriptionStateChanged += _emailStateChanged;

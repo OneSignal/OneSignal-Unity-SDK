@@ -58,7 +58,7 @@ namespace OneSignalSDK {
 
         private abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
             protected OneSignalAwaitableAndroidJavaProxy(string listenerClassName)
-                : base(QualifiedSDKClass + "$" + listenerClassName ) { } // all inner class
+                : base(QualifiedSDKClass + "$" + listenerClassName) { } // all inner class
         }
 
         /*
@@ -82,11 +82,11 @@ namespace OneSignalSDK {
 
             /// <param name="stateChanges">OSPermissionStateChanges</param>
             public void onOSPermissionChanged(AndroidJavaObject stateChanges) {
-                var currJO  = stateChanges.Call<AndroidJavaObject>("getTo");
-                var prevJO  = stateChanges.Call<AndroidJavaObject>("getFrom");
-                var curr = _stateNotificationPermission(currJO);
-                var prev = _stateNotificationPermission(prevJO);
-                
+                var currJO = stateChanges.Call<AndroidJavaObject>("getTo");
+                var prevJO = stateChanges.Call<AndroidJavaObject>("getFrom");
+                var curr   = _stateNotificationPermission(currJO);
+                var prev   = _stateNotificationPermission(prevJO);
+
                 _instance.NotificationPermissionChanged?.Invoke(curr, prev);
             }
         }
@@ -141,7 +141,7 @@ namespace OneSignalSDK {
                     notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
                 }
                 
-                var resultNotif  = _instance.NotificationWillShow(notification);
+                var resultNotif = _instance.NotificationWillShow(notification);
                 
                 notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
             }
