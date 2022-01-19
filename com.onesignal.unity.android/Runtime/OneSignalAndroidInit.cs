@@ -33,7 +33,10 @@ namespace OneSignalSDK {
     /// 
     /// </summary>
     internal static class OneSignalAndroidInit {
-        [RuntimeInitializeOnLoadMethod] public static void Init() => OneSignal.Default = new OneSignalAndroid();
+        [RuntimeInitializeOnLoadMethod] public static void Init() {
+            if (!OneSignal.DidInitialize) 
+                OneSignal.Default = new OneSignalAndroid();
+        }
     }
 }
 #endif
