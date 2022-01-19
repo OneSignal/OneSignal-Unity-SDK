@@ -32,10 +32,12 @@ using UnityEngine;
 namespace OneSignalSDK {
     public abstract partial class OneSignal {
         internal static string AppId { get; private set; }
+        internal static bool DidInitialize { get; private set; }
         internal static event Action<string> OnInitialize;
 
         protected static void _completedInit(string appId) {
-            AppId = appId;
+            AppId         = appId;
+            DidInitialize = true;
             OnInitialize?.Invoke(AppId);
         }
         
