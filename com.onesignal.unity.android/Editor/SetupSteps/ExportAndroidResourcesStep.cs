@@ -85,7 +85,7 @@ namespace OneSignalSDK {
             AssetDatabase.Refresh();
         }
 
-        private const string _pluginName = "OneSignalConfig.plugin";
+        private const string _pluginName = "OneSignalConfig";
         private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor");
         private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
         private static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
