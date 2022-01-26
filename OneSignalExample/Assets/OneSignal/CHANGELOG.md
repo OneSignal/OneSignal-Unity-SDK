@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Default export path for icons on Android changed to `Assets/Plugins/Android/OneSignalConfig/res`
+- Default export path for notification icons on Android changed to `Assets/Plugins/Android/res`
 ### Removed
 - Legacy AndroidManifest from past version of imported OneSignal Android SDK
+- Legacy Android notification icons
 
 ## [3.0.0-beta.4]
 ### Added
