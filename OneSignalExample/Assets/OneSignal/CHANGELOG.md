@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Default export path for notification icons on Android changed to `Assets/Plugins/Android/res`
+- Froze imported OneSignal iOS SDK to [3.10.0](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.10.0) release
+- Froze imported OneSignal Android SDK to [4.6.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.6.5) release
 ### Removed
 - Legacy AndroidManifest from past version of imported OneSignal Android SDK
 - Legacy Android notification icons
