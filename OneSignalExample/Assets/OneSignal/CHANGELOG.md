@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.0.0-beta.5]
 ### Changed
 - Default export path for notification icons on Android changed to `Assets/Plugins/Android/res`
 - Froze imported OneSignal iOS SDK to [3.10.0](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.10.0) release
@@ -94,7 +96,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.4...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.5...HEAD
+[3.0.0-beta.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.4...3.0.0-beta.5
 [3.0.0-beta.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.3...3.0.0-beta.4
 [3.0.0-beta.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.2...3.0.0-beta.3
 [3.0.0-beta.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.1...3.0.0-beta.2
