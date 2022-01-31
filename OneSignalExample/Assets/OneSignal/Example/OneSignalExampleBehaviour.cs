@@ -189,7 +189,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
     public void ToggleRequiresPrivacyConsent() {        
         if (OneSignal.Default.RequiresPrivacyConsent)
-            _log($"Cannot toggle RequiresPrivacyConsent from TRUE to FALSE");
+            _error($"Cannot toggle RequiresPrivacyConsent from TRUE to FALSE");
         else {
             _log($"Toggling RequiresPrivacyConsent to <b>{!OneSignal.Default.RequiresPrivacyConsent}</b>");
             OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
