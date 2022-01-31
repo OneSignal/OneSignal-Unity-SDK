@@ -55,7 +55,7 @@ namespace OneSignalSDK {
             });
         }
 
-        private const string _edm4UVersion = "1.2.167";
+        private const string _edm4UVersion = "1.2.169";
 
         private static readonly string _edm4UPackageDownloadUrl
             = $"https://github.com/googlesamples/unity-jar-resolver/blob/v{_edm4UVersion}/external-dependency-manager-{_edm4UVersion}.unitypackage?raw=true";
