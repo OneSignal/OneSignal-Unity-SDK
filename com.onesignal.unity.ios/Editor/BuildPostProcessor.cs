@@ -72,8 +72,10 @@ namespace OneSignalSDK {
     public class BuildPostProcessor : IPostprocessBuildWithReport {
         private const string ServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
         private const string ServiceExtensionFilename = "NotificationService.swift";
+        private const string DependenciesFilename = "OneSignalIOSDependencies.xml";
         private const string PackageName = "com.onesignal.unity.ios";
 
+        private static readonly string EditorFilesPath = Path.Combine("Packages", PackageName, "Editor");
         private static readonly string PluginLibrariesPath = Path.Combine(PackageName, "Runtime", "Plugins", "iOS");
         private static readonly string PluginFilesPath = Path.Combine("Packages", PluginLibrariesPath);
 
@@ -290,7 +292,25 @@ namespace OneSignalSDK {
             if (extensionEntryRegex.IsMatch(podfile))
                 return;
 
-            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '~> 3.8.1'\nend\n";
+            var versionRegex = new Regex("(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)");
+            var dependenciesFilePath = Path.Combine(EditorFilesPath, DependenciesFilename);
+
+            if (!File.Exists(dependenciesFilePath)) {
+                Debug.LogError($"Could not find {DependenciesFilename}");
+                return;
+            }
+            
+            var dependenciesFile = File.ReadAllText(dependenciesFilePath);
+
+            if (!versionRegex.IsMatch(dependenciesFile)) {
+                Debug.LogError($"Could not read current iOS framework dependency version from {DependenciesFilename}");
+                return;
+            }
+
+            var version = versionRegex.Match(dependenciesFile)
+                .ToString();
+            
+            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{version}'\nend\n";
             File.WriteAllText(podfilePath, podfile);
         }
     }
