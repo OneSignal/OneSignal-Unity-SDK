@@ -187,9 +187,13 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.Initialize(appId);
     }
 
-    public void ToggleRequiresPrivacyConsent() {
-        _log($"Toggling RequiresPrivacyConsent to <b>{!OneSignal.Default.RequiresPrivacyConsent}</b>");
-        OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
+    public void ToggleRequiresPrivacyConsent() {        
+        if (OneSignal.Default.RequiresPrivacyConsent)
+            _error($"Cannot toggle RequiresPrivacyConsent from TRUE to FALSE");
+        else {
+            _log($"Toggling RequiresPrivacyConsent to <b>{!OneSignal.Default.RequiresPrivacyConsent}</b>");
+            OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
+        }
     }
 
     public void TogglePrivacyConsent() {
