@@ -110,9 +110,6 @@ namespace OneSignalSDK {
             
             // Add the service extension
             AddNotificationServiceExtension();
-            
-            // Ensure the Pods target has been added to the extension
-            ExtensionAddPodsToTarget();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
@@ -203,6 +200,8 @@ namespace OneSignalSDK {
             projCapability.AddAppGroups(new[] { _appGroupName });
             
             projCapability.WriteToFile();
+            
+            ExtensionAddPodsToTarget();
 #endif
         }
 
