@@ -52,12 +52,8 @@
 #define ADD_APP_GROUP
 
 using System.IO;
-using System;
 using UnityEditor;
 using UnityEditor.iOS.Xcode;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
