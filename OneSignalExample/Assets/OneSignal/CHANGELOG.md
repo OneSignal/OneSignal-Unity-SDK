@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- `InstallEdm4uStep` now imports version [1.2.169](https://github.com/googlesamples/unity-jar-resolver/releases/tag/v1.2.169) of [EDM4U](https://github.com/googlesamples/unity-jar-resolver)
 - Log an error in the example app when `RequiresPrivacyConsent` is attempted to be set to false from true
 
 ## [3.0.0-beta.5]
