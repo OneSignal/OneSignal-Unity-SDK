@@ -48,20 +48,24 @@ namespace OneSignalSDK {
             WaitingProxies[hashCode] = proxy;
             return (proxy, hashCode);
         }
-        
-        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-        private static void BooleanCallbackProxy(int hashCode, bool response) {
-            if (WaitingProxies[hashCode] is Later<bool> later)
+
+        private static void ResolveCallbackProxy<TResponse>(int hashCode, TResponse response) {
+            if (!WaitingProxies.ContainsKey(hashCode))
+                return;
+            
+            if (WaitingProxies[hashCode] is Later<TResponse> later)
                 later.Complete(response);
+            
             WaitingProxies.Remove(hashCode);
         }
 
+        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
+        private static void BooleanCallbackProxy(int hashCode, bool response)
+            => ResolveCallbackProxy(hashCode, response);
+
         [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
-        private static void StringCallbackProxy(int hashCode, string response) {
-            if (WaitingProxies[hashCode] is Later<string> later)
-                later.Complete(response);
-            WaitingProxies.Remove(hashCode);
-        }
+        private static void StringCallbackProxy(int hashCode, string response)
+            => ResolveCallbackProxy(hashCode, response);
         
         /*
          * Global Callbacks
