@@ -28,6 +28,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OneSignalSDK {
     public sealed partial class OneSignalIOS : OneSignal {
@@ -45,61 +46,19 @@ namespace OneSignalSDK {
         
         public override NotificationPermission NotificationPermission {
             get {
-                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
-                    if (deviceState["notificationPermissionStatus"] is long status)
-                        return (NotificationPermission) status;
-                }
-                
-                SDKDebug.Error("Could not deserialize device state for permissions");
-                return NotificationPermission.NotDetermined;
+                var deviceState = JsonUtility.FromJson<DeviceState>(_getDeviceState());
+                return (NotificationPermission)deviceState.notificationPermissionStatus;
             }
         }
         
-        public override PushSubscriptionState PushSubscriptionState {
-            get {
-                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
-                    return new PushSubscriptionState {
-                        userId         = deviceState["userId"] as string,
-                        pushToken      = deviceState["pushToken"] as string,
-                        isSubscribed   = (bool) deviceState["isSubscribed"],
-                        isPushDisabled = (bool) deviceState["isPushDisabled"],
-                    };
-                }
-
-                SDKDebug.Error("Could not deserialize device state for push");
-                return null;
-            }
-        }
+        public override PushSubscriptionState PushSubscriptionState
+            => JsonUtility.FromJson<DeviceState>(_getDeviceState());
         
-        public override EmailSubscriptionState EmailSubscriptionState {
-            get {
-                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
-                    return new EmailSubscriptionState {
-                        emailUserId  = deviceState["emailUserId"] as string,
-                        emailAddress = deviceState["emailAddress"] as string,
-                        isSubscribed = (bool) deviceState["isEmailSubscribed"],
-                    };
-                }
-
-                SDKDebug.Error("Could not deserialize device state for email");
-                return null;
-            }
-        }
+        public override EmailSubscriptionState EmailSubscriptionState
+            => JsonUtility.FromJson<DeviceState>(_getDeviceState());
         
-        public override SMSSubscriptionState SMSSubscriptionState {
-            get {
-                if (Json.Deserialize(_getDeviceState()) is Dictionary<string, object> deviceState) {
-                    return new SMSSubscriptionState {
-                        smsUserId    = deviceState["smsUserId"] as string,
-                        smsNumber    = deviceState["smsNumber"] as string,
-                        isSubscribed = (bool) deviceState["isSMSSubscribed"],
-                    };
-                }
-
-                SDKDebug.Error("Could not deserialize device state for sms");
-                return null;
-            }
-        }
+        public override SMSSubscriptionState SMSSubscriptionState 
+            => JsonUtility.FromJson<DeviceState>(_getDeviceState());
 
         public override LogLevel LogLevel {
             get => _logLevel;
