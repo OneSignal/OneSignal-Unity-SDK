@@ -28,9 +28,6 @@
 using System.Runtime.InteropServices;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
         /*
          * Global callbacks

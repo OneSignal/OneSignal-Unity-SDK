@@ -28,9 +28,6 @@
 using System;
 
 namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed partial class OneSignalIOS : OneSignal {
         [Serializable] private sealed class DeviceState {
             public long notificationPermissionStatus;
