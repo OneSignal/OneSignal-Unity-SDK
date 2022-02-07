@@ -52,12 +52,8 @@
 #define ADD_APP_GROUP
 
 using System.IO;
-using System;
 using UnityEditor;
 using UnityEditor.iOS.Xcode;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -79,17 +75,8 @@ namespace OneSignalSDK {
         private static readonly string PluginLibrariesPath = Path.Combine(PackageName, "Runtime", "Plugins", "iOS");
         private static readonly string PluginFilesPath = Path.Combine("Packages", PluginLibrariesPath);
 
-        [Flags] private enum Entitlement {
-            None = 0,
-            ApsEnv = 1 << 0,
-            AppGroups = 1 << 1
-        }
-
-        private static readonly Dictionary<Entitlement, string> EntitlementKeys = new Dictionary<Entitlement, string> {
-            [Entitlement.ApsEnv]    = "aps-environment",
-            [Entitlement.AppGroups] = "com.apple.security.application-groups"
-        };
-
+        private readonly string _appGroupName = $"group.{PlayerSettings.applicationIdentifier}.onesignal";
+        
         private string _outputPath;
         private string _projectPath;
         
@@ -113,29 +100,19 @@ namespace OneSignalSDK {
             _outputPath  = report.summary.outputPath;
             _projectPath = PBXProject.GetPBXProjectPath(_outputPath);
             _project.ReadFromString(File.ReadAllText(_projectPath));
-
-            // Add required entitlements
-            UpdateEntitlements(Entitlement.ApsEnv | Entitlement.AppGroups);
+            
+            // Turn on capabilities required by OneSignal
+            AddProjectCapabilities();
             
             // Add the service extension
             AddNotificationServiceExtension();
-
-            // Reload file after changes from AddNotificationServiceExtension
-            _project.WriteToFile(_projectPath);
-            _project.ReadFromString(File.ReadAllText(_projectPath));
-
-            // Turn on push capabilities
-            AddPushCapability();
-
-            // Ensure the Pods target has been added to the extension
-            ExtensionAddPodsToTarget();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
         }
 
         /// <summary>
-        /// Checks for existing entitlements file or creates a new one and returns the path
+        /// Get existing entitlements file if exists or creates a new file, adds it to the project, and returns the path
         /// </summary>
         private string GetEntitlementsPath(string targetGuid, string targetName) {
             var relativePath = _project.GetBuildPropertyForAnyConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
@@ -146,38 +123,12 @@ namespace OneSignalSDK {
                 if (File.Exists(fullPath))
                     return fullPath;
             }
-
-            return Path.Combine(_outputPath, targetName, $"{targetName}.entitlements");
-        }
-
-        /// <summary>
-        /// Add or update the values of necessary entitlements
-        /// </summary>
-        private void UpdateEntitlements(Entitlement entitlements, string targetGuid, string targetName) {
-            var entitlementsPath  = GetEntitlementsPath(targetGuid, targetName);
+            
+            var entitlementsPath = Path.Combine(_outputPath, targetName, $"{targetName}.entitlements");
+            
+            // make new file
             var entitlementsPlist = new PlistDocument();
-
-            var existingEntitlements = File.Exists(entitlementsPath);
-
-            if (existingEntitlements)
-                entitlementsPlist.ReadFromFile(entitlementsPath);
-
-            var groupsKey = EntitlementKeys[Entitlement.AppGroups];
-
-            if ((entitlements & Entitlement.AppGroups) != 0) {
-                var groups = entitlementsPlist.root[groupsKey] == null
-                    ? entitlementsPlist.root.CreateArray(groupsKey)
-                    : entitlementsPlist.root[groupsKey].AsArray();
-
-                var group = $"group.{PlayerSettings.applicationIdentifier}.onesignal";
-                if (groups.values.All(elem => elem.AsString() != group))
-                    groups.AddString(group);
-            }
-
             entitlementsPlist.WriteToFile(entitlementsPath);
-
-            if (existingEntitlements) 
-                return;
             
             // Copy the entitlement file to the xcode project
             var entitlementFileName = Path.GetFileName(entitlementsPath);
@@ -186,25 +137,26 @@ namespace OneSignalSDK {
             // Add the pbx configs to include the entitlements files on the project
             _project.AddFile(relativeDestination, entitlementFileName);
             _project.SetBuildProperty(targetGuid, "CODE_SIGN_ENTITLEMENTS", relativeDestination);
+
+            return entitlementsPath;
         }
         
-        private void UpdateEntitlements(Entitlement entitlements)
-            => UpdateEntitlements(entitlements, _project.GetMainTargetGuid(), _project.GetMainTargetName());
-
-        private void AddPushCapability(string targetGuid, string targetName) {
-            _project.AddCapability(targetGuid, PBXCapabilityType.PushNotifications);
-            _project.AddCapability(targetGuid, PBXCapabilityType.BackgroundModes);
+        /// <summary>
+        /// Add the required capabilities and entitlements for OneSignal
+        /// </summary>
+        private void AddProjectCapabilities() {
+            var targetGuid = _project.GetMainTargetGuid();
+            var targetName = _project.GetMainTargetName();
 
             var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
-
-            // NOTE: ProjectCapabilityManager's 4th constructor param requires Unity 2019.3+
             var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, targetName);
+
             projCapability.AddBackgroundModes(BackgroundModesOptions.RemoteNotifications);
+            projCapability.AddPushNotifications(false);
+            projCapability.AddAppGroups(new[] { _appGroupName });
+            
             projCapability.WriteToFile();
         }
-
-        private void AddPushCapability() =>
-            AddPushCapability(_project.GetMainTargetGuid(), _project.GetMainTargetName());
         
         /// <summary>
         /// Create and add the notification extension to the project
@@ -237,7 +189,15 @@ namespace OneSignalSDK {
 
             _project.WriteToFile(_projectPath);
 
-            UpdateEntitlements(Entitlement.AppGroups, extensionGuid, ServiceExtensionTargetName);
+            // add capabilities + entitlements
+            var entitlementsPath = GetEntitlementsPath(extensionGuid, ServiceExtensionTargetName);
+            var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, ServiceExtensionTargetName);
+            
+            projCapability.AddAppGroups(new[] { _appGroupName });
+            
+            projCapability.WriteToFile();
+            
+            ExtensionAddPodsToTarget();
 #endif
         }
 
