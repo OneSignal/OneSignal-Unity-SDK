@@ -48,20 +48,24 @@ namespace OneSignalSDK {
             WaitingProxies[hashCode] = proxy;
             return (proxy, hashCode);
         }
-        
-        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-        private static void BooleanCallbackProxy(int hashCode, bool response) {
-            if (WaitingProxies[hashCode] is Later<bool> later)
+
+        private static void ResolveCallbackProxy<TResponse>(int hashCode, TResponse response) {
+            if (!WaitingProxies.ContainsKey(hashCode))
+                return;
+            
+            if (WaitingProxies[hashCode] is Later<TResponse> later)
                 later.Complete(response);
+            
             WaitingProxies.Remove(hashCode);
         }
 
+        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
+        private static void BooleanCallbackProxy(int hashCode, bool response)
+            => ResolveCallbackProxy(hashCode, response);
+
         [AOT.MonoPInvokeCallback(typeof(StringResponseDelegate))]
-        private static void StringCallbackProxy(int hashCode, string response) {
-            if (WaitingProxies[hashCode] is Later<string> later)
-                later.Complete(response);
-            WaitingProxies.Remove(hashCode);
-        }
+        private static void StringCallbackProxy(int hashCode, string response)
+            => ResolveCallbackProxy(hashCode, response);
         
         /*
          * Global Callbacks
@@ -134,19 +138,8 @@ namespace OneSignalSDK {
 
         [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onPermissionStateChanged(string current, string previous) {
-            if (!(Json.Deserialize(current) is Dictionary<string, object> currState)) {
-                SDKDebug.Error("Could not deserialize current permission state");
-                return;
-            }
-
-            if (!(Json.Deserialize(previous) is Dictionary<string, object> prevState)) {
-                SDKDebug.Error("Could not deserialize previous permission state");
-                return;
-            }
-            
-            var curr = (NotificationPermission)currState["status"];
-            var prev = (NotificationPermission)prevState["status"];
-            
+            var curr = JsonUtility.FromJson<NotificationPermissionState>(current);
+            var prev = JsonUtility.FromJson<NotificationPermissionState>(previous);
             _instance.NotificationPermissionChanged?.Invoke(curr, prev);
         }
         

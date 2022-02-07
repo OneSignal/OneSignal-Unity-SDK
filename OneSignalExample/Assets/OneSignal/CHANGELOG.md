@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - iOS build post processor will determine extension's imported OneSignalXCFramework from the package's dependencies xml
+- iOS callbacks for the `NotificationPermissionChanged` event will no longer cause an il2cpp exception
 ### Changed
 - Added AndroidManifest with location permissions to the example app to display `PromptLocation`
 - `InstallEdm4uStep` now imports version [1.2.169](https://github.com/googlesamples/unity-jar-resolver/releases/tag/v1.2.169) of [EDM4U](https://github.com/googlesamples/unity-jar-resolver)
 - Log an error in the example app when `RequiresPrivacyConsent` is attempted to be set to false from true
+- Internal state mappings on iOS now rely on class defined objects over dynamic Dictionary types
 
 ## [3.0.0-beta.5]
 ### Changed
