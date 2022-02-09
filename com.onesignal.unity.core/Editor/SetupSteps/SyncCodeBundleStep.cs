@@ -46,8 +46,12 @@ namespace OneSignalSDK {
 
         protected override bool _getIsStepCompleted() {
             if (!File.Exists(_packageJsonPath)) {
-                Debug.LogError("Could not find package.json");
+                Debug.LogError($"Could not find {_packageJsonPath}");
+                return true;
+            }
 
+            if (!File.Exists(_versionPath)) {
+                Debug.LogError($"Could not find {_versionPath}");
                 return true;
             }
 
