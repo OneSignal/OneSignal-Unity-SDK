@@ -50,10 +50,8 @@ namespace OneSignalSDK {
                 return true;
             }
 
-            if (!File.Exists(_versionPath)) {
-                Debug.LogError($"Could not find {_versionPath}");
+            if (!File.Exists(_versionPath))
                 return true;
-            }
 
             var packageJson = File.ReadAllText(_packageJsonPath);
 
