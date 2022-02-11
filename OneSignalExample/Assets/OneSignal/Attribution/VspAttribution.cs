@@ -7,7 +7,8 @@ namespace OneSignalSDK
 {
 	internal static class VspAttribution
 	{
-		const int k_MaxEventsPerHour = 1000;
+		const int k_VersionId = 4;
+		const int k_MaxEventsPerHour = 10;
 		const int k_MaxNumberOfElements = 1000;
 
 		const string k_VendorKey = "unity.vsp-attribution";
@@ -17,10 +18,10 @@ namespace OneSignalSDK
 		{
 #if UNITY_EDITOR
 			AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour,
-				k_MaxNumberOfElements, k_VendorKey);
+				k_MaxNumberOfElements, k_VendorKey, k_VersionId);
 #else // IF !UNITY_EDITOR
 			AnalyticsResult result = Analytics.RegisterEvent(k_EventName, k_MaxEventsPerHour,
-				k_MaxNumberOfElements, k_VendorKey);
+				k_MaxNumberOfElements, k_VendorKey, k_VersionId);
 #endif
 
 			bool isResultOk = result == AnalyticsResult.Ok;
@@ -81,9 +82,9 @@ namespace OneSignalSDK
 
 #if UNITY_EDITOR
 				// Send the Attribution Event
-				var eventResult = EditorAnalytics.SendEventWithLimit(k_EventName, eventData);
+				var eventResult = EditorAnalytics.SendEventWithLimit(k_EventName, eventData, k_VersionId);
 #else // IF !UNITY_EDITOR
-				var eventResult = Analytics.SendEvent(k_EventName, eventData);
+				var eventResult = Analytics.SendEvent(k_EventName, eventData, k_VersionId);
 #endif
 				return eventResult;
 			}
