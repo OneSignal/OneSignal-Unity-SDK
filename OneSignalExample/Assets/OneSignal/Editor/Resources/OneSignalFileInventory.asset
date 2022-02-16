@@ -20,12 +20,12 @@ MonoBehaviour:
   - Assets/OneSignal/Example.meta
   - Assets/OneSignal/LICENSE.md
   - Assets/OneSignal/LICENSE.md.meta
-  - Assets/OneSignal/link.xml
-  - Assets/OneSignal/link.xml.meta
   - Assets/OneSignal/README.md
   - Assets/OneSignal/README.md.meta
   - Assets/OneSignal/VERSION
   - Assets/OneSignal/VERSION.meta
+  - Assets/OneSignal/link.xml
+  - Assets/OneSignal/link.xml.meta
   - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef
   - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef.meta
   - Assets/OneSignal/Attribution/VspAttribution.cs
@@ -56,6 +56,7 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/Resources.meta
   - Assets/OneSignal/Editor/Setup.meta
   - Assets/OneSignal/Editor/SetupSteps.meta
+  - Assets/OneSignal/Editor/Utilities.meta
   - Assets/OneSignal/Editor/PackageManagement/Dependency.cs
   - Assets/OneSignal/Editor/PackageManagement/Dependency.cs.meta
   - Assets/OneSignal/Editor/PackageManagement/Manifest.cs
@@ -72,6 +73,10 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs.meta
   - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs
   - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs.meta
+  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
+  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
+  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs
+  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs.meta
   - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF
   - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta
   - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
