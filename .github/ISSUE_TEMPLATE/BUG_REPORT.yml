@@ -39,16 +39,16 @@ body:
         - Unity 2019.x
     validations:
       required: true
-  - type: dropdown
+  - type: checkboxes
     id: platform
     attributes:
       label: Platform
       description: Which platform are you having an issue with?
       options:
-        - iOS
-        - Android
-    validations:
-      required: true
+        - label: iOS
+          required: false
+        - label: Android
+          required: false
   - type: textarea
     id: logs
     attributes:
