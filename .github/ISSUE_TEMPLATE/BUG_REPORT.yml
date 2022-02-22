@@ -27,16 +27,13 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  - type: dropdown
+  - type: textarea
     id: unity-version
     attributes:
       label: Unity version
       description: What version of Unity are you running?
-      options:
-        - Unity 2021.2.12 (latest)
-        - Unity 2021.x
-        - Unity 2020.x
-        - Unity 2019.x
+      placeholder: 2021.2.x
+      value: 2021.2.12 (latest)
     validations:
       required: true
   - type: checkboxes
