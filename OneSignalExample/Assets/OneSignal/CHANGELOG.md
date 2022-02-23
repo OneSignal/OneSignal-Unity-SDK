@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Checks for VERSION file before attempting to read it
+- Added podfile amendments to iOS Append builds
 
 ## [3.0.0-beta.6]
 ### Fixed
