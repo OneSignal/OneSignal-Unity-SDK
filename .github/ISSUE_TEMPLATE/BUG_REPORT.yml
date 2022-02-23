@@ -36,16 +36,15 @@ body:
       value: 2021.2.12 (latest)
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     id: platform
     attributes:
       label: Platform
       description: Which platform are you having an issue with?
+      multiple: true
       options:
-        - label: iOS
-          required: false
-        - label: Android
-          required: false
+        - iOS
+        - Android
   - type: textarea
     id: logs
     attributes:
