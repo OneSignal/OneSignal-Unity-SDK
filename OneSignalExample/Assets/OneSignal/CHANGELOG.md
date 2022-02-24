@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Checks for VERSION file before attempting to read it
 - Added podfile amendments to iOS Append builds
+- Include utilities necessary for independent use of the initial unitypackage install
 
 ## [3.0.0-beta.6]
 ### Fixed
