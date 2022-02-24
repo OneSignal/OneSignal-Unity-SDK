@@ -166,8 +166,10 @@ namespace OneSignalSDK {
             // If file exists then the below has been completed before from another build
             // The below will not be updated on Append builds
             // Changes would most likely need to be made to support Append builds
-            if (ExtensionCreatePlist(_outputPath))
+            if (ExtensionCreatePlist(_outputPath)) {
+                ExtensionAddPodsToTarget();
                 return;
+            }
 
             var extensionGuid = _project.AddAppExtension(_project.GetMainTargetGuid(),
                 ServiceExtensionTargetName,
