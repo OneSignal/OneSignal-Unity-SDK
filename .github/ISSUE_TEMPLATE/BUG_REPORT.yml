@@ -35,8 +35,7 @@ body:
     attributes:
       label: What did you expect to happen?
       description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      placeholder: I expected the app to continue running no matter how many times I tap the screen.
     validations:
       required: true
   - type: textarea
