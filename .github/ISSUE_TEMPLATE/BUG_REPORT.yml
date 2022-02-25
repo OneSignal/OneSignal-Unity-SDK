@@ -57,6 +57,7 @@ body:
       options:
         - iOS
         - Android
+        - Other
   - type: textarea
     id: logs
     attributes:
