@@ -50,7 +50,7 @@ body:
   - type: textarea
     id: unity-sdk-version
     attributes:
-      label: Unity SDK version
+      label: OneSignal Unity SDK version
       description: The version of the OneSignal Unity SDK used in your app.
       placeholder: 3.0.0-beta.6 Release
       value: 2.14.6
