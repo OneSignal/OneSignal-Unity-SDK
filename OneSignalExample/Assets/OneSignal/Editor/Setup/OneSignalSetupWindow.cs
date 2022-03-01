@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using OneSignalSDK.Installer;
 using UnityEditor;
 using UnityEngine;
 
