@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated VSP Attribution with the latest version of script
 - Moved EDM4U installer step to the core package as it is needed for both platforms
+- Added support for `setLaunchURLsInApp`
 ### Fixed
 - Checks for VERSION file before attempting to read it
 - Added podfile amendments to iOS Append builds
