@@ -86,6 +86,11 @@ namespace OneSignalSDK {
             set => _setRequiresPrivacyConsent(value);
         }
 
+        public override bool LaunchURLsInApp {
+            get => _getLaunchURLsInApp();
+            set => _setLaunchURLsInApp(value);
+        }
+
         public override void Initialize(string appId) {
             _initialize(appId);
             _completedInit(appId);

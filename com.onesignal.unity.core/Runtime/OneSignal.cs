@@ -173,6 +173,12 @@ namespace OneSignalSDK {
         public abstract bool RequiresPrivacyConsent { get; set; }
 
         /// <summary>
+        /// Used to set if launch URLs should be opened in safari or within the application. Make sure to set before 
+        /// <see cref="Initialize"/> is called.
+        /// </summary>
+        public abstract bool LaunchURLsInApp { get; set; }
+
+        /// <summary>
         /// Starts the OneSignal SDK
         /// </summary>
         /// <param name="appId">Your application id from the OneSignal dashboard</param>
