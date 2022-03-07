@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using OneSignalSDK.Installer;
 
 namespace OneSignalSDK {
     /// <summary>
