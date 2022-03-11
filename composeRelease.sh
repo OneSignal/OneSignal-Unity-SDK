@@ -113,7 +113,7 @@ then
 else
     # loose semver checking; use official standard if going advanced
     # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-    version_regex="([0-9]*)\.([0-9]*)\.([0-9]*)(-[A-z]*)?"
+    version_regex="([0-9]+)\.([0-9]+)\.([0-9]+)(-([a-zA-Z]+))?(\.([0-9])+)?"
 
     current_major=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[1]}")
     current_minor=$([[ ${current_version} =~ $version_regex ]] && echo "${BASH_REMATCH[2]}")
