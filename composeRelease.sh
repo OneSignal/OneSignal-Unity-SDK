@@ -231,7 +231,7 @@ executeUnityMethod "OneSignalExample" "Android" "OneSignalSDK.OneSignalPackagePu
 
 # preserve current workspace
 current_branch=$(git branch --show-current)
-git add ${version_filepath} ${packagejson_path} ${projectsettings_path}
+git add ${version_filepath} ${packagejson_path} ${projectsettings_path} ${changelog_path}
 git stash push --keep-index
 
 # generate new release branch and commit all changes
