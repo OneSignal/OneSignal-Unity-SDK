@@ -35,18 +35,12 @@ namespace OneSignalSDK {
 
         public static string GetMainTargetGuid(this PBXProject project)
             => project.GetUnityMainTargetGuid();
-
-        public static string GetFrameworkGuid(this PBXProject project)
-            => project.GetUnityFrameworkTargetGuid();
     #else
         public static string GetMainTargetName(this PBXProject project) 
             => PBXProject.GetUnityTargetName();
          
         public static string GetMainTargetGuid(this PBXProject project)
              => project.TargetGuidByName(PBXProject.GetUnityTargetName());
-
-        public static string GetFrameworkGuid(this PBXProject project)
-             => GetPBXProjectTargetGuid(project);
     #endif
     }
 }
