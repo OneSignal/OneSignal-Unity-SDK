@@ -65,6 +65,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public bool requiresUserPrivacyConsent;
 
     /// <summary>
+    /// used to set if launch URLs should be opened in safari or within the application
+    /// </summary>
+    public bool launchURLsInApp;
+
+    /// <summary>
     /// 
     /// </summary>
     public string tagKey;
@@ -419,6 +424,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void ToggleShareLocation() {
         _log($"Toggling ShareLocation to <b>{!OneSignal.Default.ShareLocation}</b>");
         OneSignal.Default.ShareLocation = !OneSignal.Default.ShareLocation;
+    }
+
+    /*
+     * iOS
+     */
+
+    public void ToggleLaunchURLsInApp() {        
+        _log($"Toggling LaunchURLsInApp to <b>{!launchURLsInApp}</b>");
+        launchURLsInApp = !launchURLsInApp;
+        // Call setLaunchURLsInApp before the Initialize call
+        OneSignal.Default.SetLaunchURLsInApp(launchURLsInApp);
     }
 
 #region Rendering
