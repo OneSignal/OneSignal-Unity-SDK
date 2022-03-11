@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.0.0]
 ### Changed
 - Updated VSP Attribution with the latest version of script
 - Moved EDM4U installer step to the core package as it is needed for both platforms
@@ -115,7 +116,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.6...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.6...3.0.0
 [3.0.0-beta.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.5...3.0.0-beta.6
 [3.0.0-beta.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.4...3.0.0-beta.5
 [3.0.0-beta.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.3...3.0.0-beta.4
