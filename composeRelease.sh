@@ -177,6 +177,26 @@ do
     echo "Updated - ${packagejson_filepath}"
 done
 
+# update CHANGELOG
+changelog_path="OneSignalExample/Assets/OneSignal/CHANGELOG.md"
+changelog_file=$(cat "$changelog_path")
+
+# append new version to notes
+changelog_notes_unreleased="\#\# \[Unreleased\]"
+changelog_notes_new_version="## [Unreleased]
+## [${new_version}]"
+changelog_file="${changelog_file/${changelog_notes_unreleased}/$changelog_notes_new_version}"
+
+# update links
+compare_link_unreleased="\[Unreleased\]: https:\/\/github\.com\/OneSignal\/OneSignal-Unity-SDK\/compare\/${current_version}\.\.\.HEAD"
+compare_links_new_version="[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/${new_version}...HEAD
+[${new_version}]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/${current_version}...${new_version}"
+changelog_file="${changelog_file/${compare_link_unreleased}/${compare_links_new_version}}"
+
+# output changes
+echo "${changelog_file}" > ${changelog_path}
+echo "Updated - ${changelog_path}"
+
 executeUnityMethod() {
     local project_path=$1
     local build_target=$2
