@@ -430,7 +430,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * iOS
      */
 
-    public void ToggleLaunchURLsInApp() {        
+    public void ToggleLaunchURLsInApp() {
         _log($"Toggling LaunchURLsInApp to <b>{!launchURLsInApp}</b>");
         launchURLsInApp = !launchURLsInApp;
         // Call setLaunchURLsInApp before the Initialize call
