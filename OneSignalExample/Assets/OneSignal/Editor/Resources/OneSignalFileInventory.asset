@@ -24,10 +24,12 @@ MonoBehaviour:
   - Assets/OneSignal/README.md.meta
   - Assets/OneSignal/VERSION
   - Assets/OneSignal/VERSION.meta
+  - Assets/OneSignal/link.xml
+  - Assets/OneSignal/link.xml.meta
   - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef
   - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef.meta
-  - Assets/OneSignal/Attribution/VSPAttribution.cs
-  - Assets/OneSignal/Attribution/VSPAttribution.cs.meta
+  - Assets/OneSignal/Attribution/VspAttribution.cs
+  - Assets/OneSignal/Attribution/VspAttribution.cs.meta
   - Assets/OneSignal/Documentation~/asset_listing.png
   - Assets/OneSignal/Documentation~/menu_import_package.png
   - Assets/OneSignal/Documentation~/menu_import_package.png.meta
@@ -59,8 +61,6 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/PackageManagement/Dependency.cs.meta
   - Assets/OneSignal/Editor/PackageManagement/Manifest.cs
   - Assets/OneSignal/Editor/PackageManagement/Manifest.cs.meta
-  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistriesConfig.cs
-  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistriesConfig.cs.meta
   - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs
   - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs.meta
   - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset
@@ -73,15 +73,15 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs.meta
   - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs
   - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs.meta
-  - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs
-  - Assets/OneSignal/Editor/Utilities/GitHubUtility.cs.meta
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
+  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs
+  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs.meta
+  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF
+  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta
   - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
   - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef.meta
-  - Assets/OneSignal/Example/Scenes.meta
-  - Assets/OneSignal/Example/Scripts.meta
-  - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity
-  - Assets/OneSignal/Example/Scenes/OneSignalExampleScene.unity.meta
-  - Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs
-  - Assets/OneSignal/Example/Scripts/OneSignalExampleBehaviour.cs.meta
+  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs
+  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs.meta
+  - Assets/OneSignal/Example/OneSignalExampleScene.unity
+  - Assets/OneSignal/Example/OneSignalExampleScene.unity.meta

@@ -1,46 +1,75 @@
+/*
+ * Modified MIT License
+ *
+ * Copyright 2022 OneSignal
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * 1. The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * 2. All copies of substantial portions of the Software may only be used in connection
+ * with services provided by OneSignal.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 using System.IO;
 using System.Linq;
 using UnityEditor;
 
-/// <summary>
-/// Creates a unitypackage file for publishing
-/// </summary>
-public static class OneSignalPackagePublisher {
-    public static void UpdateProjectVersion() {
-        var packageVersion = File.ReadAllText(VersionFilePath);
-        PlayerSettings.bundleVersion = packageVersion;
-    }
-    
-    [MenuItem("OneSignal/ExportUnityPackage")]
-    public static void ExportUnityPackage() {
-        AssetDatabase.Refresh();
-        var packageVersion = File.ReadAllText(VersionFilePath);
-        var packageName = $"OneSignal-v{packageVersion}.unitypackage";
+namespace OneSignalSDK {
+    /// <summary>
+    /// Creates a unitypackage file for publishing
+    /// </summary>
+    public static class OneSignalPackagePublisher {
+        public static void UpdateProjectVersion() {
+            var packageVersion = File.ReadAllText(VersionFilePath);
+            PlayerSettings.bundleVersion = packageVersion;
+        }
 
-        AssetDatabase.ExportPackage(
-            _filePaths(),
-            packageName,
-            ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
-        );
-    }
+        [MenuItem("OneSignal/ExportUnityPackage")]
+        public static void ExportUnityPackage() {
+            AssetDatabase.Refresh();
+            var packageVersion = File.ReadAllText(VersionFilePath);
+            var packageName    = $"OneSignal-v{packageVersion}.unitypackage";
 
-    private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
-    private static readonly string VersionFilePath = Path.Combine(PackagePath, "VERSION");
-    
-    private static readonly string[] Exclusions = {
-        Path.Combine(PackagePath, "Attribution"),
-        ".DS_Store"
-    };
+            AssetDatabase.ExportPackage(
+                _filePaths(),
+                packageName,
+                ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
+            );
+        }
 
-    private static string[] _filePaths() {
-        var files = Directory.GetFileSystemEntries(PackagePath);
-        var pathsToInclude = files.Where(file => {
-            if (file.EndsWith(".meta"))
-                file = file.Substring(0, file.Length - 5);
+        private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
+        private static readonly string VersionFilePath = Path.Combine(PackagePath, "VERSION");
 
-            return !Exclusions.Contains(file);
-        });
+        private static readonly string[] Exclusions = {
+            Path.Combine(PackagePath, "Attribution"),
+            ".DS_Store"
+        };
 
-        return pathsToInclude.ToArray();
+        private static string[] _filePaths() {
+            var files = Directory.GetFileSystemEntries(PackagePath);
+            var pathsToInclude = files.Where(file => {
+                if (file.EndsWith(".meta"))
+                    file = file.Substring(0, file.Length - 5);
+
+                return !Exclusions.Contains(file);
+            });
+
+            return pathsToInclude.ToArray();
+        }
     }
 }

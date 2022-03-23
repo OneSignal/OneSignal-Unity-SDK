@@ -3,7 +3,7 @@
 </p>
 
 # OneSignal Unity SDK
-A free push notification and in app messaging solution for mobile applications built through Unity.
+A free email, sms, push notification and in app messaging solution for mobile applications built through Unity.
 
 [OneSignal](https://onesignal.com) provides a fully array of omni-channel messaging solutions across:
 
@@ -97,16 +97,24 @@ There are two methods of installation available for the OneSignal Unity SDK:
 ### [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
 
 ## Usage
-You can find a complete implementation in our included [example MonoBehaviour](Example/Scripts/OneSignalExampleBehaviour.cs). Additionally we have included a
+You can find a complete implementation in our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs). Additionally we have included a
 [sample scene](Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
 
 ### Initialization
+
+#### Prefab
+Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
+to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill 
+in the **App Id**, and you are immediately ready to go!
+
+#### Code
 To get started add the following code in an appropriate place such as the `Start` method of a `MonoBehaviour` early in your application's lifecycle.
 ```C#
 // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID from app.onesignal.com
-OneSignal.StartInit("YOUR_ONESIGNAL_APP_ID").EndInit();
+OneSignal.Default.Initialize("YOUR_ONESIGNAL_APP_ID");
 ```
-You are now ready to start sending and receiving messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).
+
+You are now ready to start sending and receiving notifications and in-app messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).
 
 ## API
 See OneSignal's [OneSignal Unity SDK API](https://documentation.onesignal.com/docs/unity-sdk) page for a list of all available methods.
