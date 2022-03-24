@@ -75,6 +75,11 @@ namespace OneSignalSDK {
         public string title;
         
         /// <summary>
+        /// Message Subtitle, iOS only.
+        /// </summary>
+        public string subtitle;
+        
+        /// <summary>
         /// Body text of the notification
         /// </summary>
         public string body;
@@ -163,5 +168,17 @@ namespace OneSignalSDK {
         /// Raw JSON payload string received from OneSignal
         /// </summary>
         public string rawPayload;
+
+        /// <summary>
+        /// True when the key content-available is set to 1 in the APNS payload. Used to wake your app when the payload is received.
+        /// See Apple's documenation for more details.
+        /// </summary>
+        public bool contentAvailable;
+
+        /// <summary>
+        /// The badge number assigned to the application icon.
+        /// </summary>
+        public int badge;
+
     }
 }
