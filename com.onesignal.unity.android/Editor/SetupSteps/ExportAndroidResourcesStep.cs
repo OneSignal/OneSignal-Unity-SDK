@@ -32,27 +32,28 @@ using UnityEditor;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// Copies the OneSignal SDK default Android resources to Assets/Plugins/Android/*
+    /// Copies the OneSignalConfig.plugin to Assets/Plugins/Android/*
     /// </summary>
     public sealed class ExportAndroidResourcesStep : OneSignalSetupStep {
         public override string Summary
-            => "Copy Android resources to Assets";
+            => "Copy Android plugin to Assets";
 
         public override string Details
-            => $"Will export necessary files (such as default notification icons) to {_androidPluginPath}";
+            => $"Will create a plugin directory of {_pluginExportPath} filled with files necessary for the OneSignal SDK " +
+                "to operate on Android.";
 
         public override bool IsRequired
-            => false;
+            => true;
 
         protected override bool _getIsStepCompleted() {
-            if (!Directory.Exists(_androidPluginPath))
+            if (!Directory.Exists(_pluginExportPath))
                 return false;
 
-            var packagePaths = Directory.GetFiles(_exportsPath, "*", SearchOption.AllDirectories)
-               .Select(path => path.Remove(0, _exportsPath.Length + 1));
+            var packagePaths = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories)
+               .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
 
-            var exportPaths = Directory.GetFiles(_androidPluginPath, "*", SearchOption.AllDirectories)
-               .Select(path => path.Remove(0, _androidPluginPath.Length + 1));
+            var exportPaths = Directory.GetFiles(_pluginExportPath, "*", SearchOption.AllDirectories)
+               .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
 
             var fileDiff = packagePaths.Except(exportPaths);
 
@@ -60,12 +61,12 @@ namespace OneSignalSDK {
         }
 
         protected override void _runStep() {
-            var files         = Directory.GetFiles(_exportsPath, "*", SearchOption.AllDirectories);
+            var files         = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
             var filteredFiles = files.Where(file => !file.EndsWith(".meta"));
 
             foreach (var file in filteredFiles) {
-                var trimmedPath    = file.Remove(0, _exportsPath.Length + 1);
-                var fileExportPath = Path.Combine(_androidPluginPath, trimmedPath);
+                var trimmedPath    = file.Remove(0, _pluginPackagePath.Length + 1);
+                var fileExportPath = Path.Combine(_pluginExportPath, trimmedPath);
                 var containingPath = fileExportPath.Remove(fileExportPath.LastIndexOf(Path.DirectorySeparatorChar));
 
                 /*
@@ -84,8 +85,10 @@ namespace OneSignalSDK {
             AssetDatabase.Refresh();
         }
 
-        
-        private static readonly string _exportsPath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor", "Exports");
-        private static readonly string _androidPluginPath = Path.Combine("Assets", "Plugins", "Android");
+        private const string _pluginName = "OneSignalConfig.plugin";
+        private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor");
+        private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
+        private static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
+        private static readonly string _pluginExportPath = Path.Combine(_androidPluginsPath, _pluginName);
     }
 }
