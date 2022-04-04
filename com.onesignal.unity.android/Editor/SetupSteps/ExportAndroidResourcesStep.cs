@@ -39,8 +39,7 @@ namespace OneSignalSDK {
             => "Copy Android plugin to Assets";
 
         public override string Details
-            => $"Will create a plugin directory of {_pluginExportPath} filled with files necessary for the OneSignal SDK " +
-                "to operate on Android.";
+            => $"Will create the {_pluginExportPath} directory filled with notification icons to be customized for your app";
 
         public override bool IsRequired
             => true;
