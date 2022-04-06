@@ -132,14 +132,7 @@ namespace OneSignalSDK {
                     return;
                 }
 
-                var notification = notifJO.ToSerializable<Notification>();
-                
-                var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
-                if (dataJson != null) {
-                    var dataJsonStr = dataJson.Call<string>("toString");
-                    notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
-                }
-
+                var notification = _getNotification(notifJO);
                 var resultNotif = _instance.NotificationWillShow(notification);
 
                 notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
@@ -150,8 +143,20 @@ namespace OneSignalSDK {
             public OSNotificationOpenedHandler() : base("OSNotificationOpenedHandler", true) { }
 
             /// <param name="result">OSNotificationOpenedResult</param>
-            public void notificationOpened(AndroidJavaObject result)
-                => _instance.NotificationOpened?.Invoke(result.ToSerializable<NotificationOpenedResult>());
+            public void notificationOpened(AndroidJavaObject result) {
+                var notifJO = result.Call<AndroidJavaObject>("getNotification");
+                var notification = _getNotification(notifJO);
+
+                var actionJO = result.Call<AndroidJavaObject>("getAction");
+                var action = actionJO.ToSerializable<NotificationAction>();
+
+                var notifOpenedResult = new NotificationOpenedResult {
+                    notification = notification,
+                    action = action
+                };
+
+                _instance.NotificationOpened?.Invoke(notifOpenedResult);
+            }
         }
 
         private sealed class OSInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
