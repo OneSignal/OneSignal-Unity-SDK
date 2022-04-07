@@ -18,21 +18,21 @@ And via many additional platforms. [Check them all out](https://documentation.on
 - [Requirements](#requirements)
 - [Push Notification Credentials](#push-notification-credentials)
 - [Installation](#installation)
-  - [Unity Asset Store](#installation)
-  - [Unity Package Manager](#installation)
+    - [Unity Asset Store](#installation)
+    - [Unity Package Manager](#installation)
 - [Platform Configuration](#platform-configuration)
-  - [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
-  - [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
+    - [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
+    - [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
 - [Usage](#usage)
-  - [Initialization](#initialization)
+    - [Initialization](#initialization)
 
 ## Requirements
 - A [OneSignal Account](https://app.onesignal.com/signup) if you do not already have one
 - Your OneSignal App ID which you can find under **Settings > Keys & IDs**
 - Unity 2018.4 or newer
 - In order to test push notifications you will need
-  - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
-  - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
+    - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
+    - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
 
 ## Push Notification Credentials
 You must generate the appropriate credentials for the platform(s) you are releasing on:
@@ -43,8 +43,8 @@ You must generate the appropriate credentials for the platform(s) you are releas
 
 ## Installation
 There are two methods of installation available for the OneSignal Unity SDK:
-> **Upgrading from 2.13.4 or older**</br>
-> It is recommended to use the **Asset Store** path for installation if you are upgrading from a version of the OneSignal Unity SDK 2.13.4 or older.
+> **Upgrading from 2.x.x to 3.x.x**</br>
+> Please check out our [migration guide](MIGRATION.md) for upgrading your OneSignal Unity SDK
 
 <details>
 <summary><b>Unity Asset Store</b> <i>(click to expand)</i></summary>
@@ -83,7 +83,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
    and click **Save**.
 3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu. You will see all of the OneSignal Unity SDK packages available
    on which you can then click **Install** for the platforms you would like to include. Dependencies will be added automatically.
-4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed 
+4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed
    in order to finalize the installation.
 
    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
@@ -104,7 +104,7 @@ You can find a complete implementation in our included [example MonoBehaviour](E
 
 #### Prefab
 Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
-to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill 
+to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill
 in the **App Id**, and you are immediately ready to go!
 
 #### Code
