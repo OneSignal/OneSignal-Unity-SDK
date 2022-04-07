@@ -1,5 +1,36 @@
 # OneSignal Unity SDK 2.0.0 to 3.0.0 Migration Guide
 
+## Requirements
+This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity SDK to the 3.x.x version. Additionally please ensure you are using Unity 2018.4 or newer.
+
+## Adding 3.0.0 to your project
+### Unity Package Manager
+If your previous installation of the OneSignal Unity SDK was via the Unity Package Manager then...
+1. In Unity open `Window > Package Manager`
+2. From the `Package Manager` window select `Packages:` in the top left and click on `In Project`
+3. Select the OneSignal Unity SDK(s) and press the `Upgrade to 3.x.x` button (make sure to update both Android and iOS packages)
+
+### Unity Asset Store
+Because a substantial amount of code has been changed in 3.x.x our recommendation is to completely remove the 2.x.x version of the OneSignal Unity SDK from your project.
+
+1. todo
+2. todo
+3. todo
+
+### Unitypackage distributable
+As with the [Unity Asset Store](#Unity Asset Store) directions we recommend completely removing the 2.x.x version of the OneSignal Unity SDK from your project.
+
+1. todo
+2. todo
+3. todo
+
+## Namespace
+You will notice that previous uses of OneSignal no longer can be found. In any file you are using the OneSignal Unity SDK please add to the top of the file:
+```c#
+using OneSignalSDK;
+```
+
+## Updating method calls
 - [Initialization](#Initialization)
 - [Debugging](#Debugging)
 - [Privacy](#Privacy)
@@ -14,7 +45,7 @@
 - [Lifecycle](#Lifecycle)
 - [Other](#Other)
 
-## Initialization
+### Initialization
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
 <td> <!-- init -->
@@ -32,7 +63,7 @@ OneSignal.Default.Initialize("your_app_id");
 </td>
 </table>
 
-## Debugging
+### Debugging
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -51,7 +82,7 @@ OneSignal.Default.AlertLevel = LogLevel.Error;
 </td>
 </table>
 
-## Privacy
+### Privacy
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
 <td> <!-- set privacy required -->
@@ -104,7 +135,7 @@ if (OneSignal.Default.PrivacyConsent) {
 </td>
 </table>
 
-## User Id
+### User Id
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -165,7 +196,7 @@ OneSignal.RemoveExternalUserId(
 </td>
 </table>
 
-## Push Notifications
+### Push Notifications
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -324,7 +355,7 @@ OneSignal.IdsAvailable((pushUserId, pushToken) => {
 </td>
 </table>
 
-## In App Messages
+### In App Messages
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -423,7 +454,7 @@ OneSignal.PauseInAppMessages(true);
 </td>
 </table>
 
-## Email
+### Email
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -532,7 +563,7 @@ OneSignal.SyncHashedEmail("user@email.com");
 </td>
 </table>
 
-## SMS
+### SMS
 A new feature of 3.0.0 is the ability to manage a SMS subscription
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -563,7 +594,7 @@ A new feature of 3.0.0 is the ability to manage a SMS subscription
 </td>
 </table>
 
-## Location
+### Location
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -594,7 +625,7 @@ OneSignal.Default.PromptLocation();
 </td>
 </table>
 
-## Tags
+### Tags
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -669,7 +700,7 @@ OneSignal.DeleteTags(new[] { "tag5", "tag6" });
 </td>
 </table>
 
-## Outcomes
+### Outcomes
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
@@ -713,7 +744,7 @@ OneSignal.SendOutcomeWithValue("outcomeWithVal", 4.2f);
 </td>
 </table>
 
-## Lifecycle
+### Lifecycle
 
 Previously setting up the callbacks for checking the 3 supported lifecycle methods had to be done exclusively during initialization. These are now available to be
 subscribed to at any time and several new lifecycle methods have been added.
@@ -797,7 +828,7 @@ void onIAMClicked(OSInAppMessageAction action) {
 <tr>
 </table>
 
-## Other
+### Other
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
