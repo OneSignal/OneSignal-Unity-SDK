@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
+- Added value to additionalData on Android for NotificationOpened
 - Updated example code for PostNotification to show an example that works without the API key
 
 ## [3.0.0]
