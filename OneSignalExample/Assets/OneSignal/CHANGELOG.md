@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Added support for OneSignal iOS functionality `setLaunchURLsInApp`
 - Improved included [README](../../../com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md) for changing the notification icons in the Android plugin.
 ### Fixed
 - Added value to actionId for Android
@@ -17,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated VSP Attribution with the latest version of script
 - Moved EDM4U installer step to the core package as it is needed for both platforms
-- Added support for OneSignal iOS functionality `setLaunchURLsInApp`
 ### Fixed
 - Checks for VERSION file before attempting to read it
 - Added podfile amendments to iOS Append builds
