@@ -139,7 +139,7 @@ if (OneSignal.Default.PrivacyConsent) {
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
-<td> <!-- todo -->
+<td> <!-- setting the external user id -->
 
 ```c#
 OneSignal.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4");
@@ -148,11 +148,11 @@ OneSignal.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4");
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- async setting the external user id -->
 
 ```c#
 OneSignal.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4",
@@ -163,11 +163,14 @@ OneSignal.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4",
 <td>
 
 ```c#
-// todo
+var result = await OneSignal.Default.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4");
+if (result) {
+    Debug.Log("success");
+}
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- removing the external user id -->
 
 ```c#
 OneSignal.RemoveExternalUserId();
@@ -180,7 +183,7 @@ OneSignal.RemoveExternalUserId();
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- async removing the external user id -->
 
 ```c#
 OneSignal.RemoveExternalUserId(
@@ -213,7 +216,10 @@ OneSignal.PromptForPushNotificationsWithUserResponse(response => {
 <td>
 
 ```c#
-// todo
+var response = await OneSignal.Default.PromptForPushNotificationsWithUserResponse();
+if (response) {
+    // user accepted
+}
 ```
 </td>
 <tr>
@@ -223,15 +229,18 @@ OneSignal.PromptForPushNotificationsWithUserResponse(response => {
 var currentDeviceState = OneSignal.GetPermissionSubscriptionState();
 var currentStatus      = currentDeviceState.permissionStatus.status;
 
-if (currentDeviceState.permissionStatus.hasPrompted) {
-    // do if user was prompted
+if (currentDeviceState.permissionStatus.hasPrompted == false) {
+    // do if user was not prompted
 }
 ```
 </td>
 <td>
 
 ```c#
-// todo
+var currentStatus = OneSignal.Default.NotificationPermission;
+if (currentStatus == NotificationPermission.NotDetermined) {
+    // do if user was not prompted
+}
 ```
 </td>
 <tr>
@@ -251,7 +260,11 @@ OneSignal.permissionObserver += changes => {
 <td>
 
 ```c#
-// todo
+OneSignal.Default.NotificationPermissionChanged += (current, previous) => {
+    if (current != NotificationPermission.NotDetermined) {
+        // do if user was prompted
+    }
+};
 ```
 </td>
 <tr>
@@ -266,7 +279,9 @@ var pushIsSubscribed   = currentDeviceState.subscriptionStatus.subscribed;
 <td>
 
 ```c#
-// todo
+var pushState        = OneSignal.Default.PushSubscriptionState;
+var pushUserId       = pushState.userId;
+var pushIsSubscribed = pushState.isSubscribed;
 ```
 </td>
 <tr>
@@ -285,7 +300,10 @@ OneSignal.subscriptionObserver += changes => {
 <td>
 
 ```c#
-// todo
+OneSignal.Default.PushSubscriptionStateChanged += (current, previous) => {
+    var pushToken   = current.pushToken;
+    var pushEnabled = !current.isPushDisabled;
+};
 ```
 </td>
 <tr>
@@ -311,7 +329,7 @@ OneSignal.ClearOneSignalNotifications();
 <td>
 
 ```c#
-// todo
+OneSignal.Default.ClearOneSignalNotifications();
 ```
 </td>
 <tr>
@@ -326,11 +344,12 @@ OneSignal.IdsAvailable((pushUserId, pushToken) => {
 <td>
 
 ```c#
-// todo
+var pushUserId = OneSignal.Default.PushSubscriptionState.userId;
+var pushToken = OneSignal.Default.PushSubscriptionState.pushToken;
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- sending a push to self -->
 
 ```c#
 OneSignal.IdsAvailable((pushUserId, pushToken) => {
@@ -350,7 +369,18 @@ OneSignal.IdsAvailable((pushUserId, pushToken) => {
 <td>
 
 ```c#
-// todo
+var pushUserId = OneSignal.Default.PushSubscriptionState.userId;
+var pushOptions = new Dictionary<string, object> {
+    ["contents"]           = new Dictionary<string, string> { ["en"] = "Test Message" },
+    ["include_player_ids"] = new List<string> { pushUserId },
+    ["send_after"]         = DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U")
+};
+
+var result = await OneSignal.Default.PostNotification(pushOptions);
+if (result != null)
+    Debug.Log("success");
+else
+    Debug.Log("error");
 ```
 </td>
 </table>
@@ -359,7 +389,7 @@ OneSignal.IdsAvailable((pushUserId, pushToken) => {
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
-<td> <!-- todo -->
+<td> <!-- adding an IAM trigger -->
 
 ```c#
 OneSignal.AddTrigger("triggerKey", 123);
@@ -368,11 +398,11 @@ OneSignal.AddTrigger("triggerKey", 123);
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SetTrigger("triggerKey", 123);
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- adding several IAM triggers -->
 
 ```c#
 OneSignal.AddTriggers(new Dictionary<string, object> {
@@ -384,11 +414,14 @@ OneSignal.AddTriggers(new Dictionary<string, object> {
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SetTriggers(new Dictionary<string, object> {
+    ["trigger1"] = "abc",
+    ["trigger2"] = 456
+});
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- removing an IAM trigger -->
 
 ```c#
 OneSignal.RemoveTriggerForKey("trigger3");
@@ -397,11 +430,11 @@ OneSignal.RemoveTriggerForKey("trigger3");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.RemoveTrigger("trigger3");
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- removing several IAM triggers -->
 
 ```c#
 OneSignal.RemoveTriggersForKeys(new[] { "trigger4", "trigger5" });
@@ -410,11 +443,11 @@ OneSignal.RemoveTriggersForKeys(new[] { "trigger4", "trigger5" });
 <td>
 
 ```c#
-// todo
+OneSignal.Default.RemoveTriggers(new[] { "trigger4", "trigger5" });
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- pause IAMs -->
 
 ```c#
 OneSignal.PauseInAppMessages(true);
@@ -423,7 +456,7 @@ OneSignal.PauseInAppMessages(true);
 <td>
 
 ```c#
-// todo
+OneSignal.Default.InAppMessagesArePaused = true;
 ```
 </td>
 <tr>
@@ -467,7 +500,7 @@ OneSignal.SetEmail("user@email.com");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SetEmail("user@email.com");
 ```
 </td>
 <tr>
@@ -483,7 +516,11 @@ OneSignal.SetEmail("user@email.com",
 <td>
 
 ```c#
-// todo
+var result = await OneSignal.Default.SetEmail("user@email.com");
+if (result)
+    Debug.Log("success");
+else
+    Debug.Log("error");
 ```
 </td>
 <tr>
@@ -496,7 +533,7 @@ OneSignal.LogoutEmail();
 <td>
 
 ```c#
-// todo
+OneSignal.Default.LogoutEmail();
 ```
 </td>
 <tr>
@@ -512,7 +549,11 @@ OneSignal.LogoutEmail(
 <td>
 
 ```c#
-// todo
+var result = await OneSignal.Default.LogoutEmail();
+if (result)
+    Debug.Log("success");
+else
+    Debug.Log("error");
 ```
 </td>
 <tr>
@@ -527,7 +568,9 @@ var emailAddress       = currentDeviceState.emailSubscriptionStatus.emailAddress
 <td>
 
 ```c#
-// todo
+var emailState = OneSignal.Default.EmailSubscriptionState;
+var emailUserId  = emailState.emailUserId;
+var emailAddress = emailState.emailAddress;
 ```
 </td>
 <tr>
@@ -545,7 +588,9 @@ OneSignal.emailSubscriptionObserver += changes => {
 <td>
 
 ```c#
-// todo
+OneSignal.Default.EmailSubscriptionStateChanged += (current, previous) => {
+    var emailSubscribed = current.isSubscribed;
+};
 ```
 </td>
 <tr>
@@ -567,29 +612,93 @@ OneSignal.SyncHashedEmail("user@email.com");
 A new feature of 3.0.0 is the ability to manage a SMS subscription
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
-<td> <!-- todo -->
+<td> <!-- set sms -->
 
 ```c#
-// todo
+// none
 ```
 </td>
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SetSMSNumber("+12345556789");
+```
+</td>
+<tr>
+<td> <!-- async set sms -->
+
+```c#
+// none
+```
+</td>
+<td>
+
+```c#
+var result = await OneSignal.Default.SetSMSNumber("+12345556789");
+if (result)
+    Debug.Log("success");
+else
+    Debug.Log("error");
 ```
 </td>
 <tr>
 <td> <!-- todo -->
 
 ```c#
-// todo
+// none
 ```
 </td>
 <td>
 
 ```c#
-// todo
+OneSignal.Default.LogOutSMS();
+```
+</td>
+<tr>
+<td> <!-- todo -->
+
+```c#
+// none
+```
+</td>
+<td>
+
+```c#
+var result = await OneSignal.Default.LogOutSMS();
+if (result)
+    Debug.Log("success");
+else
+    Debug.Log("error");
+```
+</td>
+<tr>
+<td> <!-- get current sms subscription data -->
+
+```c#
+// none
+```
+</td>
+<td>
+
+```c#
+var smsState  = OneSignal.Default.SMSSubscriptionState;
+var smsUserId = smsState.smsUserId;
+var smsNumber = smsState.smsNumber;
+```
+</td>
+<tr>
+<td> <!-- listen for sms subscription changes -->
+
+```c#
+// none
+```
+</td>
+<td>
+
+```c#
+OneSignal.Default.SMSSubscriptionStateChanged += (current, previous) => {
+    var smsSubscribed = current.isSubscribed;
+};
 ```
 </td>
 </table>
@@ -638,7 +747,7 @@ OneSignal.SendTag("tagName", "tagValue");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SendTag("tagName", "tagValue");
 ```
 </td>
 <tr>
@@ -654,7 +763,10 @@ OneSignal.SendTags(new Dictionary<string, string> {
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SendTags(new Dictionary<string, string> {
+    ["tag1"] = "123",
+    ["tag2"] = "abc"
+});
 ```
 </td>
 <tr>
@@ -669,7 +781,8 @@ OneSignal.GetTags(tags => {
 <td>
 
 ```c#
-// todo
+var tags = await OneSignal.Default.GetTags();
+var tag3Value = tags["tag3"];
 ```
 </td>
 <tr>
@@ -682,7 +795,7 @@ OneSignal.DeleteTag("tag4");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.DeleteTag("tag4");
 ```
 </td>
 <tr>
@@ -695,7 +808,7 @@ OneSignal.DeleteTags(new[] { "tag5", "tag6" });
 <td>
 
 ```c#
-// todo
+OneSignal.Default.DeleteTags(new[] { "tag5", "tag6" });
 ```
 </td>
 </table>
@@ -704,7 +817,7 @@ OneSignal.DeleteTags(new[] { "tag5", "tag6" });
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
-<td> <!-- todo -->
+<td> <!-- send outcome -->
 
 ```c#
 OneSignal.SendOutcome("outcomeName");
@@ -713,7 +826,7 @@ OneSignal.SendOutcome("outcomeName");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SendOutcome("outcomeName");
 ```
 </td>
 <tr>
@@ -726,7 +839,7 @@ OneSignal.SendUniqueOutcome("uniqueOutcomeName");
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SendUniqueOutcome("uniqueOutcomeName");
 ```
 </td>
 <tr>
@@ -739,7 +852,7 @@ OneSignal.SendOutcomeWithValue("outcomeWithVal", 4.2f);
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SendOutcomeWithValue("outcomeWithVal", 4.2f);
 ```
 </td>
 </table>
@@ -820,8 +933,8 @@ void onIAMClicked(OSInAppMessageAction action) {
 ```c#
  OneSignal.Default.InAppMessageTriggeredAction += onIAMTriggedAction;
  
- void onIAMTriggedAction() {
-    
+ void onIAMTriggedAction(InAppMessageAction inAppMessageAction) {
+    // todo
  }
 ```
 </td>
@@ -875,7 +988,7 @@ OneSignal.EnableVibrate(true);
 <td>
 
 ```c#
-// todo
+// removed
 ```
 </td>
 <tr>
@@ -888,7 +1001,7 @@ OneSignal.EnableSound(true);
 <td>
 
 ```c#
-// todo
+// removed
 ```
 </td>
 </table>
