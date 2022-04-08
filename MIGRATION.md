@@ -459,32 +459,6 @@ OneSignal.PauseInAppMessages(true);
 OneSignal.Default.InAppMessagesArePaused = true;
 ```
 </td>
-<tr>
-<td> <!-- todo -->
-
-```c#
-// todo
-```
-</td>
-<td>
-
-```c#
-// todo
-```
-</td>
-<tr>
-<td> <!-- todo -->
-
-```c#
-// todo
-```
-</td>
-<td>
-
-```c#
-// todo
-```
-</td>
 </table>
 
 ### Email
