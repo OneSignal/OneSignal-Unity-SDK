@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Added support for OneSignal iOS functionality `setLaunchURLsInApp`
 - Improved included [README](../../../com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md) for changing the notification icons in the Android plugin.
 ### Fixed
 - Added value to actionId for Android

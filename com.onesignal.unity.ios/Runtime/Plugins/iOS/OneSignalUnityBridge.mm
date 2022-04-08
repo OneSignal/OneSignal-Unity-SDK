@@ -247,6 +247,10 @@ bool _getRequiresPrivacyConsent() {
     return [OneSignal requiresUserPrivacyConsent];
 }
 
+void _setLaunchURLsInApp(bool launchInApp) {
+    [OneSignal setLaunchURLsInApp: launchInApp];
+}
+
 void _initialize(const char* appId) {
     [OneSignal setAppId:TO_NSSTRING(appId)];
     [OneSignal initWithLaunchOptions:nil];

@@ -51,6 +51,9 @@ namespace OneSignalSDK {
         
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
+        public override void SetLaunchURLsInApp(bool launchInApp) {
+            
+        }
         
         public override NotificationPermission NotificationPermission { get; }
         public override PushSubscriptionState PushSubscriptionState { get; }
