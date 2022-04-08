@@ -465,7 +465,7 @@ OneSignal.Default.InAppMessagesArePaused = true;
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
-<td> <!-- todo -->
+<td> <!-- set email -->
 
 ```c#
 OneSignal.SetEmail("user@email.com");
@@ -478,7 +478,7 @@ OneSignal.Default.SetEmail("user@email.com");
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- async set email -->
 
 ```c#
 OneSignal.SetEmail("user@email.com",
@@ -498,7 +498,7 @@ else
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- remove email subscription -->
 
 ```c#
 OneSignal.LogoutEmail();
@@ -511,7 +511,7 @@ OneSignal.Default.LogoutEmail();
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- async remove email subscription -->
 
 ```c#
 OneSignal.LogoutEmail(
@@ -616,7 +616,7 @@ else
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- remove sms subscription -->
 
 ```c#
 // none
@@ -629,7 +629,7 @@ OneSignal.Default.LogOutSMS();
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- async remove sms subscription -->
 
 ```c#
 // none
@@ -681,7 +681,7 @@ OneSignal.Default.SMSSubscriptionStateChanged += (current, previous) => {
 
 <table>
 <tr><td>2.0.0</td><td>3.0.0</td></tr>
-<td> <!-- todo -->
+<td> <!-- allow location sharing -->
 
 ```c#
 OneSignal.SetLocationShared(true);
@@ -694,7 +694,7 @@ OneSignal.Default.ShareLocation = true;
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- prompt user for if they would like to share their location -->
 
 ```c#
 OneSignal.PromptLocation();
@@ -804,7 +804,7 @@ OneSignal.Default.SendOutcome("outcomeName");
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- send unique outcome -->
 
 ```c#
 OneSignal.SendUniqueOutcome("uniqueOutcomeName");
@@ -817,7 +817,7 @@ OneSignal.Default.SendUniqueOutcome("uniqueOutcomeName");
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- send outcome with value -->
 
 ```c#
 OneSignal.SendOutcomeWithValue("outcomeWithVal", 4.2f);
