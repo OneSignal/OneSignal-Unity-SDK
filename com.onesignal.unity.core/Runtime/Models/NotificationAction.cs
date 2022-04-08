@@ -44,7 +44,6 @@ namespace OneSignalSDK {
         /// <summary>
         /// Notification button identifier
         /// </summary>
-        [FormerlySerializedAs("actionId")]
         public string actionID;
         
         /// <summary>

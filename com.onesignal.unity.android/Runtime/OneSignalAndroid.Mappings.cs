@@ -69,12 +69,7 @@ namespace OneSignalSDK {
 
         private static NotificationAction _getAction(AndroidJavaObject actionJO) {
             var action = actionJO.ToSerializable<NotificationAction>();
-                
-            var IDJson = actionJO.Call<AndroidJavaObject>("getActionId");
-            if (IDJson != null) {
-                var IDJsonStr = IDJson.Call<string>("toString");
-                action.actionID = IDJsonStr;
-            }
+            action.actionID = actionJO.Call<string>("getActionId");
 
             return action;
         }
