@@ -960,10 +960,8 @@ OneSignal.EnableVibrate(true);
 ```
 </td>
 <td>
-
-```c#
-// removed
-```
+<b>REMOVED</b> - Stopped working in Android 8+ due to a breaking change. To customize going forward, use 
+<a href="https://documentation.onesignal.com/docs/android-notification-categories">Notification Categories (Channels)</a>.
 </td>
 <tr>
 <td> <!-- enable sound -->
@@ -973,9 +971,7 @@ OneSignal.EnableSound(true);
 ```
 </td>
 <td>
-
-```c#
-// removed
-```
+<b>REMOVED</b> - Stopped working in Android 8+ due to a breaking change. To customize going forward, use 
+<a href="https://documentation.onesignal.com/docs/android-notification-categories">Notification Categories (Channels)</a>.
 </td>
 </table>
