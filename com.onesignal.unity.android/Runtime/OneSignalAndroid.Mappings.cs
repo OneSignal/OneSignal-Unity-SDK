@@ -66,5 +66,12 @@ namespace OneSignalSDK {
 
             return notification;
         }
+
+        private static NotificationAction _getAction(AndroidJavaObject actionJO) {
+            var action = actionJO.ToSerializable<NotificationAction>();
+            action.actionID = actionJO.Call<string>("getActionId");
+
+            return action;
+        }
     }
 }

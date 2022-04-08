@@ -148,7 +148,7 @@ namespace OneSignalSDK {
                 var notification = _getNotification(notifJO);
 
                 var actionJO = result.Call<AndroidJavaObject>("getAction");
-                var action = actionJO.ToSerializable<NotificationAction>();
+                var action = _getAction(actionJO);
 
                 var notifOpenedResult = new NotificationOpenedResult {
                     notification = notification,
