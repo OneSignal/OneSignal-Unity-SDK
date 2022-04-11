@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated example code for PostNotification to show an example that works without the API key
 - Reimplemented support for `RemoveExternalUserId`
 - Reimplemented `disablePush` as `PushEnabled`
+- iOS serialization of `Notification` type now accounts for `additionalData` and `rawPayload` in all cases
 
 ## [3.0.0]
 ### Changed
