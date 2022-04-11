@@ -139,6 +139,10 @@ namespace OneSignalSDK {
             return Task.FromResult(false);
         }
 
+        public override Task<bool> RemoveExternalUserId() {
+            return Task.FromResult(false);
+        }
+
         public override Task<bool> LogOutEmail() {
             return Task.FromResult(false);
         }

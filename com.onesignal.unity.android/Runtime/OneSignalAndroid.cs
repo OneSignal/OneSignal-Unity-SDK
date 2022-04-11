@@ -221,6 +221,12 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
+        public override async Task<bool> RemoveExternalUserId() {
+            var proxy = new OSExternalUserIdUpdateCompletionHandler();
+            _sdkClass.CallStatic("removeExternalUserId", proxy);
+            return await proxy;
+        }
+
         public override async Task<bool> LogOutEmail() {
             var proxy = new EmailUpdateHandler();
             _sdkClass.CallStatic("logoutEmail", proxy);

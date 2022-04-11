@@ -184,6 +184,12 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
+        public override async Task<bool> RemoveExternalUserId() {
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _removeExternalUserId(hashCode, BooleanCallbackProxy);
+            return await proxy;
+        }
+
         public override async Task<bool> LogOutEmail() {
             var (proxy, hashCode) = _setupProxy<bool>();
             _logoutEmail(hashCode, BooleanCallbackProxy);
