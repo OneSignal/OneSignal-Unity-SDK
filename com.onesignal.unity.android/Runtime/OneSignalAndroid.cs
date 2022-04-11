@@ -143,6 +143,14 @@ namespace OneSignalSDK {
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
 
+        public override bool PushEnabled {
+            get {
+                var deviceStateJO = _sdkClass.CallStatic<AndroidJavaObject>("getDeviceState");
+                return !deviceStateJO.Call<bool>("isPushDisabled");
+            }
+            set => _sdkClass.CallStatic("disablePush", !value);
+        }
+
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             var proxy = new PostNotificationResponseHandler();
             _sdkClass.CallStatic("postNotification", options.ToJSONObject(), proxy);
