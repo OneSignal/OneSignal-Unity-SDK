@@ -77,6 +77,8 @@ namespace OneSignalSDK {
             
         }
 
+        public override bool PushEnabled { get; set; }
+
         public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             return Task.FromResult(new Dictionary<string, object>());
         }
