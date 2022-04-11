@@ -97,24 +97,29 @@ namespace OneSignalSDK {
             _instance = this;
         }
 
+        /// <param name="response">OSNotification</param>
         [AOT.MonoPInvokeCallback(typeof(NotificationWillShowInForegroundDelegate))]
         private static bool _onNotificationReceived(string response) {
             if (_instance.NotificationWillShow == null)
                 return true;
 
             var notification = JsonUtility.FromJson<Notification>(response);
-
-            if (Json.Deserialize(response) is Dictionary<string, object> notifDict && notifDict.ContainsKey("additionalData"))
-                notification.additionalData = notifDict["additionalData"] as Dictionary<string, object>;
+            _fillNotifFromObj(ref notification, Json.Deserialize(response));
             
             var resultNotif = _instance.NotificationWillShow(notification);
-            
             return resultNotif != null;
         }
 
+        /// <param name="response">OSNotificationOpenedResult</param>
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onNotificationOpened(string response)
-            => _instance.NotificationOpened?.Invoke(JsonUtility.FromJson<NotificationOpenedResult>(response));
+        private static void _onNotificationOpened(string response) {
+            var notifOpenResult = JsonUtility.FromJson<NotificationOpenedResult>(response);
+
+            if (Json.Deserialize(response) is Dictionary<string, object> resultDict && resultDict.ContainsKey("notification"))
+                _fillNotifFromObj(ref notifOpenResult.notification, resultDict["notification"]);
+            
+            _instance.NotificationOpened?.Invoke(notifOpenResult);
+        }
         
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onInAppMessageWillDisplay(string response)
