@@ -103,6 +103,14 @@ namespace OneSignalSDK {
         public override void ClearOneSignalNotifications()
             => SDKDebug.Info("ClearOneSignalNotifications invoked on iOS, does nothing");
 
+        public override bool PushEnabled {
+            get {
+                var deviceState = JsonUtility.FromJson<DeviceState>(_getDeviceState());
+                return !deviceState.isPushDisabled;
+            }
+            set => _disablePush(!value);
+        }
+
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             var (proxy, hashCode) = _setupProxy<string>();
             _postNotification(Json.Serialize(options), hashCode, StringCallbackProxy);
