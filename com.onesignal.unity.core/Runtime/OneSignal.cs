@@ -198,7 +198,14 @@ namespace OneSignalSDK {
         /// <summary>
         /// Removes all OneSignal app notifications from the Notification Shade
         /// </summary>
+        /// <remarks>Android Only</remarks>
         public abstract void ClearOneSignalNotifications();
+
+        /// <summary>
+        /// Whether push notifications are currently enabled for an active push subscription.
+        /// </summary>
+        /// <remarks>Can be used to turn off push notifications for a user without removing their user data</remarks>
+        public abstract bool PushEnabled { get; set; }
 
         /// <summary>
         /// Allows you to send notifications from user to user or schedule ones in the future to be delivered to the

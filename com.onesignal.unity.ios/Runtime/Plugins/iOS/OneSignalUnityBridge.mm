@@ -262,6 +262,10 @@ void _promptForPushNotificationsWithUserResponse(int hashCode, BooleanResponseDe
     }];
 }
 
+void _disablePush(bool disable) {
+    [OneSignal disablePush:disable];
+}
+
 void _postNotification(const char* optionsJson, int hashCode, StringResponseDelegate callback) {
     NSDictionary *options = objFromJsonString<NSDictionary*>(optionsJson);
 
