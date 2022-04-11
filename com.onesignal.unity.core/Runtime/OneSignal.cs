@@ -325,6 +325,12 @@ namespace OneSignalSDK {
         public abstract Task<bool> SetSMSNumber(string smsNumber, string authHash = null);
 
         /// <summary>
+        /// Removes the current external user id from each known subscription
+        /// </summary>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> RemoveExternalUserId();
+
+        /// <summary>
         /// If this user logs out of your app and/or you would like to disassociate their email with the current
         /// OneSignal user
         /// </summary>
