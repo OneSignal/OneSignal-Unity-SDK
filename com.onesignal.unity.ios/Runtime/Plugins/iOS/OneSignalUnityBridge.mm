@@ -373,6 +373,11 @@ void _setSMSNumber(const char* smsNumber, const char* authHash, int hashCode, Bo
                 withFailure:^(NSError *error) { CALLBACK(NO); }];
 }
 
+void _removeExternalUserId(int hashCode, BooleanResponseDelegate callback) {
+    [OneSignal removeExternalUserId:^(NSDictionary *results) { CALLBACK(YES); }
+                        withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
+
 void _logoutEmail(int hashCode, BooleanResponseDelegate callback) {
     [OneSignal logoutEmailWithSuccess:^{ CALLBACK(YES); }
                           withFailure:^(NSError *error) { CALLBACK(NO); }];
@@ -380,18 +385,18 @@ void _logoutEmail(int hashCode, BooleanResponseDelegate callback) {
 
 void _logoutSMSNumber(int hashCode, BooleanResponseDelegate callback) {
     [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) { CALLBACK(YES); }
-                                  withFailure:^(NSError *error) { CALLBACK(NO); }];
-    }
+                              withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
     
-    void _setLanguage(const char* languageCode, int hashCode, BooleanResponseDelegate callback) {
-        [OneSignal setLanguage:TO_NSSTRING(languageCode)
-                   withSuccess:^{ CALLBACK(YES); }
-                   withFailure:^(NSError *error) { CALLBACK(NO); }];
-    }
+void _setLanguage(const char* languageCode, int hashCode, BooleanResponseDelegate callback) {
+    [OneSignal setLanguage:TO_NSSTRING(languageCode)
+               withSuccess:^{ CALLBACK(YES); }
+               withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
 
-    void _promptLocation() {
-        [OneSignal promptLocation];
-    }
+void _promptLocation() {
+    [OneSignal promptLocation];
+}
 
 void _setShareLocation(bool share) {
     [OneSignal setLocationShared:share];
