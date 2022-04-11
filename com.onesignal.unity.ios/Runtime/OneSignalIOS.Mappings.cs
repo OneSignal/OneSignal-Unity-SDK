@@ -26,6 +26,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace OneSignalSDK {
     public sealed partial class OneSignalIOS : OneSignal {
@@ -75,6 +77,17 @@ namespace OneSignalSDK {
 
             public static implicit operator NotificationPermission(NotificationPermissionState source)
                 => (NotificationPermission)source.status;
+        }
+
+        private static void _fillNotifFromObj(ref Notification notif, object notifObj) {
+            if (!(notifObj is Dictionary<string, object> notifDict)) 
+                return;
+            
+            if (notifDict.ContainsKey("additionalData"))
+                notif.additionalData = notifDict["additionalData"] as Dictionary<string, object>;
+            
+            if (notifDict.ContainsKey("rawPayload") && notifDict["rawPayload"] is Dictionary<string, object> payloadDict)
+                notif.rawPayload = Json.Serialize(payloadDict);
         }
     }
 }
