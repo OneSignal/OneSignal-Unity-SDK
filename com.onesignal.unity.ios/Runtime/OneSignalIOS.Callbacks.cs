@@ -117,8 +117,11 @@ namespace OneSignalSDK {
 
             if (Json.Deserialize(response) is Dictionary<string, object> resultDict && resultDict.ContainsKey("notification"))
                 _fillNotifFromObj(ref notifOpenResult.notification, resultDict["notification"]);
-            
-            _instance.NotificationOpened?.Invoke(notifOpenResult);
+
+            if (DidInitialize)
+                _instance.NotificationOpened?.Invoke(notifOpenResult);
+            else
+                OnInitialize += appId => _instance.NotificationOpened?.Invoke(notifOpenResult); 
         }
         
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
