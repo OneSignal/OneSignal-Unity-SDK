@@ -65,7 +65,7 @@ BOOL injectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSe
 
 static bool swizzled = false;
 
-@implementation UIApplication (OneSignal)
+@implementation UIApplication (OneSignalUnity)
 
 + (void)load {
     method_exchangeImplementations(

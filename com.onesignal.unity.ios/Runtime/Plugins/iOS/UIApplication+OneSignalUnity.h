@@ -27,6 +27,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIApplication (OneSignal)
+@interface UIApplication (OneSignalUnity)
 @end
 
