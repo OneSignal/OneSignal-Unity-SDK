@@ -216,15 +216,15 @@ void _setEmailSubscriptionStateChangedCallback(StateListenerDelegate callback) {
     [[OneSignalObserver sharedObserver] setEmailDelegate:callback];
 }
 
-    void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback) {
-        [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
-    }
-    
-    const char* _getDeviceState() {
-        auto deviceState = [OneSignal getDeviceState];
-        auto stateStr = jsonStringFromDictionary([deviceState jsonRepresentation]);
-        return strdup(stateStr);
-    }
+void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback) {
+    [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
+}
+
+const char* _getDeviceState() {
+    auto deviceState = [OneSignal getDeviceState];
+    auto stateStr = jsonStringFromDictionary([deviceState jsonRepresentation]);
+    return strdup(stateStr);
+}
 
 void _setLogLevel(int logLevel, int alertLevel) {
     [OneSignal setLogLevel:(ONE_S_LOG_LEVEL) logLevel
