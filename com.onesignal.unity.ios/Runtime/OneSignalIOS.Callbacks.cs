@@ -120,8 +120,14 @@ namespace OneSignalSDK {
 
             if (DidInitialize)
                 _instance.NotificationOpened?.Invoke(notifOpenResult);
-            else
-                OnInitialize += appId => _instance.NotificationOpened?.Invoke(notifOpenResult); 
+            else {
+                void invokeOpened(string appId) {
+                    OnInitialize -= invokeOpened;
+                    _instance.NotificationOpened?.Invoke(notifOpenResult);
+                }
+                
+                OnInitialize += invokeOpened; 
+            }
         }
         
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
