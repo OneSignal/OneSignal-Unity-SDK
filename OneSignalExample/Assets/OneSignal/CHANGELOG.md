@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reimplemented support for `RemoveExternalUserId`
 - Reimplemented `disablePush` as `PushEnabled`
 - iOS serialization of `Notification` type now accounts for `additionalData` and `rawPayload` in all cases
+- iOS notifications opened from cold start will be received via `NotificationOpened`
 
 ## [3.0.0]
 ### Changed
