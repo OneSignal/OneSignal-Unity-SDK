@@ -38,7 +38,7 @@ And via many additional platforms. [Check them all out](https://documentation.on
     - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
     - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
 
-## Push Notification Credentials
+### Push Notification Credentials
 You must generate the appropriate credentials for the platform(s) you are releasing on:
 
 - iOS - [Generate an iOS Push Certificate](https://documentation.onesignal.com/docs/generate-an-ios-push-certificate)
