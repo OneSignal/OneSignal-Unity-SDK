@@ -219,7 +219,7 @@ OneSignal.PromptForPushNotificationsWithUserResponse(response => {
 
 ```c#
 var response = await OneSignal.Default.PromptForPushNotificationsWithUserResponse();
-if (response) {
+if (response == NotificationPermission.Authorized) {
     // user accepted
 }
 ```
