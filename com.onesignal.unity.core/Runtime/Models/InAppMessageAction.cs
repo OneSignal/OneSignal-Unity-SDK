@@ -54,10 +54,10 @@ namespace OneSignalSDK {
         public bool closesMessage;
 
     #region Native Field Handling
-        public string click_name;
-        public string click_url;
-        public bool first_click;
-        public bool closes_message;
+        [Obsolete("Use clickName")] public string click_name;
+        [Obsolete("Use clickUrl")] public string click_url;
+        [Obsolete("Use firstClick")] public bool first_click;
+        [Obsolete("Use closesMessage")] public bool closes_message;
 
         public void OnBeforeSerialize() {
             // no operation
@@ -65,10 +65,12 @@ namespace OneSignalSDK {
 
         public void OnAfterDeserialize() {
             SDKDebug.Info("DESERIALIZING IAM ACTION");
+            #pragma warning disable CS0618
             clickName     = click_name;
             clickUrl      = click_url;
             firstClick    = first_click;
             closesMessage = closes_message;
+            #pragma warning restore CS0618
         }
     #endregion
 
