@@ -26,12 +26,53 @@
  */
 
 using System;
+using UnityEngine;
 
 namespace OneSignalSDK {
-    [Serializable] public sealed class InAppMessageAction {
-        public string click_name;
-        public string click_url;
-        public bool first_click;
-        public bool closes_message;
+    /// <summary>
+    /// Action associated with clicking a button in an In-App Message
+    /// </summary>
+    [Serializable] public sealed class InAppMessageAction : ISerializationCallbackReceiver {
+        /// <summary>
+        /// An optional click name defined for the action element
+        /// </summary>
+        public string clickName;
+
+        /// <summary>
+        /// An optional URL that opens when the action takes place
+        /// </summary>
+        public string clickUrl;
+
+        /// <summary>
+        /// Whether this is the first time the user has clicked any action on the In-App Message
+        /// </summary>
+        public bool firstClick;
+
+        /// <summary>
+        /// Whether this action will close the In-App Message
+        /// </summary>
+        public bool closesMessage;
+
+    #region Native Field Handling
+        [Obsolete("Use clickName")] public string click_name;
+        [Obsolete("Use clickUrl")] public string click_url;
+        [Obsolete("Use firstClick")] public bool first_click;
+        [Obsolete("Use closesMessage")] public bool closes_message;
+
+        public void OnBeforeSerialize() {
+            // no operation
+        }
+
+        public void OnAfterDeserialize() {
+            SDKDebug.Info("DESERIALIZING IAM ACTION");
+            #pragma warning disable CS0618
+            clickName     = click_name;
+            clickUrl      = click_url;
+            firstClick    = first_click;
+            closesMessage = closes_message;
+            #pragma warning restore CS0618
+        }
+    #endregion
+
     }
 }
