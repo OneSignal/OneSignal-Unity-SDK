@@ -908,11 +908,12 @@ void onIAMClicked(OSInAppMessageAction action) {
 <td>
 
 ```c#
- OneSignal.Default.InAppMessageTriggeredAction += onIAMTriggedAction;
- 
- void onIAMTriggedAction(InAppMessageAction inAppMessageAction) {
-    // todo
- }
+OneSignal.Default.InAppMessageTriggeredAction += onIAMTriggedAction;
+
+void onIAMTriggedAction(InAppMessageAction action) {
+    var clickName  = action.clickName;
+    var firstClick = action.firstClick;
+}
 ```
 </td>
 <tr>
