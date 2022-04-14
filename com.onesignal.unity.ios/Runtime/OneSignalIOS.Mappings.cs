@@ -86,6 +86,9 @@ namespace OneSignalSDK {
             if (notifDict.ContainsKey("additionalData"))
                 notif.additionalData = notifDict["additionalData"] as Dictionary<string, object>;
             
+            if (notifDict.ContainsKey("attachments"))
+                notif.attachments = notifDict["attachments"] as Dictionary<string, object>;
+
             if (notifDict.ContainsKey("rawPayload") && notifDict["rawPayload"] is Dictionary<string, object> payloadDict)
                 notif.rawPayload = Json.Serialize(payloadDict);
         }
