@@ -1,28 +1,37 @@
-# OneSignal Unity SDK 2.0.0 to 3.0.0 Migration Guide
+# OneSignal Unity SDK 2.x.x to 3.x.x Migration Guide
 
 ## Requirements
 This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity SDK to the 3.x.x version. Additionally please ensure you are using Unity 2018.4 or newer.
 
-## Adding 3.0.0 to your project
+## Adding 3.x.x to your project
+Follow one of the following sections based on your previous install method of the OneSignal SDK.
+
 ### Unity Package Manager
-If your previous installation of the OneSignal Unity SDK was via the Unity Package Manager then...
 1. In Unity open **Window > Package Manager**
 2. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
 3. Select the OneSignal Unity SDK(s) and press the **Upgrade to 3.x.x** button (make sure to update both Android and iOS packages)
+4. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
+5. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ### Unity Asset Store
-Because a substantial amount of code has been changed in 3.x.x our recommendation is to completely remove the 2.x.x version of the OneSignal Unity SDK from your project.
-
-1. todo
-2. todo
-3. todo
+1. Delete the directory at `Assets/OneSignal`
+2. In Unity open **Window > Package Manager**
+3. From the **Package Manager** window select **Packages:** in the top left and click on **My Assets**
+4. Select the **OneSignal SDK** from the list and press the **Update** button.
+5. Once the update has completed click the **Import** button
+6. Navigate to **Window > OneSignal SDK Setup**
+7. Click **Run All Steps**
+8. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
+9. Navigate back to the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ### Unitypackage distributable
-As with the [Unity Asset Store](#Unity Asset Store) directions we recommend completely removing the 2.x.x version of the OneSignal Unity SDK from your project.
-
-1. todo
-2. todo
-3. todo
+1. Delete the directory at `Assets/OneSignal`
+2. Download the latest release from our [releases page](https://github.com/OneSignal/OneSignal-Unity-SDK/releases)
+3. In Unity navigate to **Assets > Import Package > Custom Package...** and select the newly downloaded `*.unitypackage` file
+4. Navigate to **Window > OneSignal SDK Setup**
+7. Click **Run All Steps**
+8. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
+9. Navigate back to the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ## Namespace
 You will notice that previous uses of OneSignal no longer can be found. In any file you are using the OneSignal Unity SDK please add to the top of the file:

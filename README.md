@@ -25,7 +25,6 @@ And via many additional platforms. [Check them all out](https://documentation.on
     - [Android](#android)
 - [Usage](#usage)
     - [Initialization](#initialization)
-    - [Code](#code)
 - [API](#api)
 - [Change Log](#change-log)
 - [Support](#support)
