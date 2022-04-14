@@ -6,9 +6,9 @@ This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity
 ## Adding 3.0.0 to your project
 ### Unity Package Manager
 If your previous installation of the OneSignal Unity SDK was via the Unity Package Manager then...
-1. In Unity open `Window > Package Manager`
-2. From the `Package Manager` window select `Packages:` in the top left and click on `In Project`
-3. Select the OneSignal Unity SDK(s) and press the `Upgrade to 3.x.x` button (make sure to update both Android and iOS packages)
+1. In Unity open **Window > Package Manager**
+2. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
+3. Select the OneSignal Unity SDK(s) and press the **Upgrade to 3.x.x** button (make sure to update both Android and iOS packages)
 
 ### Unity Asset Store
 Because a substantial amount of code has been changed in 3.x.x our recommendation is to completely remove the 2.x.x version of the OneSignal Unity SDK from your project.
