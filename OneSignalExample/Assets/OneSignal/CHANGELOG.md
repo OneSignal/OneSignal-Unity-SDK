@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reimplemented `disablePush` as `PushEnabled`
 - iOS serialization of `Notification` type now accounts for `additionalData` and `rawPayload` in all cases
 - iOS notifications opened from cold start will be received via `NotificationOpened`
+- Added missing Notification fields
 
 ## [3.0.0]
 ### Changed
