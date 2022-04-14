@@ -179,7 +179,7 @@ OneSignal.RemoveExternalUserId();
 <td>
 
 ```c#
-// todo
+OneSignal.Default.RemoveExternalUserId();
 ```
 </td>
 <tr>
@@ -194,7 +194,9 @@ OneSignal.RemoveExternalUserId(
 <td>
 
 ```c#
-// todo
+var result = await OneSignal.Default.RemoveExternalUserId();
+if (result)
+    Debug.Log("success");
 ```
 </td>
 </table>
@@ -316,7 +318,7 @@ OneSignal.SetSubscription(false);
 <td>
 
 ```c#
-// todo
+OneSignal.Default.PushEnabled = false;
 ```
 </td>
 <tr>
@@ -857,7 +859,8 @@ void onNotificationOpened(OSNotificationOpenedResult result) {
 OneSignal.Default.NotificationOpened += onNotificationOpened;
 
 void onNotificationOpened(NotificationOpenedResult result) {
-    // todo
+    var notif = result.notification;
+    var action = result.action;
 }
 ```
 </td>
@@ -949,7 +952,7 @@ OneSignal.StartInit("your_app_id")
 <td>
 
 ```c#
-// todo
+OneSignal.Default.SetLaunchURLsInApp(true);
 ```
 </td>
 <tr>
