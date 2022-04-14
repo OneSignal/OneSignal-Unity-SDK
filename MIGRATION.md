@@ -31,19 +31,19 @@ using OneSignalSDK;
 ```
 
 ## Updating method calls
-- [Initialization](#Initialization)
-- [Debugging](#Debugging)
-- [Privacy](#Privacy)
-- [User Id](#User Id)
-- [Push Notifications](#Push Notifications)
-- [In App Messages](#In App Messages)
-- [Email](#Email)
-- [SMS](#SMS)
-- [Location](#Location)
-- [Tags](#Tags)
-- [Outcomes](#Outcomes)
-- [Lifecycle](#Lifecycle)
-- [Other](#Other)
+- [Initialization](#initialization)
+- [Debugging](#debugging)
+- [Privacy](#privacy)
+- [User Id](#user-id)
+- [Push Notifications](#push-notifications)
+- [In App Messages](#in-app-messages)
+- [Email](#email)
+- [SMS](#sms)
+- [Location](#location)
+- [Tags](#tags)
+- [Outcomes](#outcomes)
+- [Lifecycle](#lifecycle)
+- [Other](#other)
 
 ### Initialization
 <table>
