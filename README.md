@@ -43,8 +43,8 @@ You must generate the appropriate credentials for the platform(s) you are releas
 
 ## Installation
 There are two methods of installation available for the OneSignal Unity SDK:
-> **Upgrading from 2.x.x to 3.x.x**</br>
-> Please check out our [migration guide](MIGRATION.md) for upgrading your OneSignal Unity SDK
+> **Upgrading from 2.x.x to 3.x.x?**</br>
+> Please check out our [migration guide](MIGRATION.md).
 
 <details>
 <summary><b>Unity Asset Store</b> <i>(click to expand)</i></summary>
