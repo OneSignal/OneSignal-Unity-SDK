@@ -93,15 +93,37 @@ There are two methods of installation available for the OneSignal Unity SDK:
 </details>
 
 ## Platform Configuration
-### [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
-### [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
+### iOS
+After building in Unity and exporting the XCode project follow these steps:
+1. To open your project ensure that you use the `.xcworkspace` file and not the `.xcodeproj` to open the project.
+2. Click on the **Unity-iPhone** project and its similarly named target and select the **Signing & Capabilities** tab.
+3. From here check **Automatically manage signing**, on the prompt click **Enable Automatic**, and select your **Team**.
+
+   ![automatically manage signing](Documentation/ios_auto_sign.png)
+
+4. Scroll down to **App Groups** and click on the refresh button.
+    > NOTE: You may have to press this a few times as it will ask you for each signing type.
+
+   ![refresh app groups](Documentation/ios_refresh_app_groups.png)
+
+5. Repeat the same steps above but for the **OneSignalNotificationServiceExtension** target this time.
+
+   ![extension signing and groups](Documentation/ios_extension_sign_and_groups.png)
+
+6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
+
+### Android
+Most of the Android setup was already handled during installation!
+
+The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.plugin` 
+with your own. There is a complete guide for this [in the plugin's README](com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md). See our 
+[Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) page for additional details.
 
 ## Usage
 You can find a complete implementation in our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs). Additionally we have included a
 [sample scene](Example/Scenes/OneSignalExampleScene.unity) which you can run to test out the SDK.
 
 ### Initialization
-
 #### Prefab
 Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
 to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill
