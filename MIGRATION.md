@@ -156,7 +156,7 @@ OneSignal.Default.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4");
 
 ```c#
 OneSignal.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4",
-    response => Debug.Log("success")
+    result => Debug.Log("success")
 );
 ```
 </td>
@@ -187,7 +187,7 @@ OneSignal.Default.RemoveExternalUserId();
 
 ```c#
 OneSignal.RemoveExternalUserId(
-    response => Debug.Log("success")
+    result => Debug.Log("success")
 );
 ```
 </td>
@@ -886,7 +886,7 @@ Notification onNotificationWillShow(Notification notification) {
     if (someCheck)
         return null; // don't show the notificaiton
 
-    // you can now make modifications to the notification before showing
+    // COMING SOON - make modifications to the notification before showing
     
     return notification; // show the notification
 }
