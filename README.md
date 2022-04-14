@@ -21,10 +21,14 @@ And via many additional platforms. [Check them all out](https://documentation.on
     - [Unity Asset Store](#installation)
     - [Unity Package Manager](#installation)
 - [Platform Configuration](#platform-configuration)
-    - [iOS](https://documentation.onesignal.com/docs/unity-sdk-setup#step-5---ios-setup)
-    - [Android](https://documentation.onesignal.com/docs/unity-sdk-setup#step-6---android-setup)
+    - [iOS](#ios)
+    - [Android](#android)
 - [Usage](#usage)
     - [Initialization](#initialization)
+    - [Code](#code)
+- [API](#api)
+- [Change Log](#change-log)
+- [Support](#support)
 
 ## Requirements
 - A [OneSignal Account](https://app.onesignal.com/signup) if you do not already have one
