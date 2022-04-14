@@ -26,12 +26,33 @@
  */
 
 using System;
+using UnityEngine;
 
 namespace OneSignalSDK {
-    [Serializable] public sealed class InAppMessageAction {
+    [Serializable] public sealed class InAppMessageAction : ISerializationCallbackReceiver {
+        public string clickName;
+        public string clickUrl;
+        public bool firstClick;
+        public bool closesMessage;
+
+    #region Native Field Handling
         public string click_name;
         public string click_url;
         public bool first_click;
         public bool closes_message;
+
+        public void OnBeforeSerialize() {
+            // no operation
+        }
+
+        public void OnAfterDeserialize() {
+            SDKDebug.Info("DESERIALIZING IAM ACTION");
+            clickName     = click_name;
+            clickUrl      = click_url;
+            firstClick    = first_click;
+            closesMessage = closes_message;
+        }
+    #endregion
+
     }
 }
