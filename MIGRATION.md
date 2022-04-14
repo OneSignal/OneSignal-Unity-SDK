@@ -570,7 +570,7 @@ OneSignal.Default.EmailSubscriptionStateChanged += (current, previous) => {
 ```
 </td>
 <tr>
-<td> <!-- todo -->
+<td> <!-- sync hashed email -->
 
 ```c#
 OneSignal.SyncHashedEmail("user@email.com");
@@ -579,7 +579,7 @@ OneSignal.SyncHashedEmail("user@email.com");
 <td>
 
 ```c#
-// todo
+<b>REMOVED</b> - Please refer to our new Email methods/functionality such as setEmail()
 ```
 </td>
 </table>
@@ -936,10 +936,7 @@ OneSignal.StartInit("your_app_id")
 ```
 </td>
 <td>
-
-```c#
-// todo
-```
+Replaced by the feature of <b>onNotificationWillShow</b> to determine if a notification will show or not.
 </td>
 <tr>
 <td> <!-- url launch style -->
