@@ -143,7 +143,7 @@ OneSignal.Default.Initialize("YOUR_ONESIGNAL_APP_ID");
 You are now ready to start sending and receiving notifications and in-app messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).
 
 ## API
-See OneSignal's [OneSignal Unity SDK API](https://documentation.onesignal.com/docs/unity-sdk) page for a list of all available methods.
+See OneSignal's [OneSignal SDK Reference](https://documentation.onesignal.com/docs/sdk-reference) page for a list of all available methods.
 
 ## Change Log
 See this repository's [releases](https://github.com/OneSignal/OneSignal-Unity-SDK/releases) for a complete change log of every released version.
