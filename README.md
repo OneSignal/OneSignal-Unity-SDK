@@ -34,8 +34,8 @@ And via many additional platforms. [Check them all out](https://documentation.on
 - Your OneSignal App ID which you can find under **Settings > Keys & IDs**
 - Unity 2018.4 or newer
 - In order to test push notifications you will need
-    - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
-    - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
+  - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
+  - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
 
 ### Push Notification Credentials
 You must generate the appropriate credentials for the platform(s) you are releasing on:
@@ -75,7 +75,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
 
 1. From within the Unity Editor navigate to **Edit > Project Settings** and then to the **Package Manager** settings tab.
    
-   ![unity registry manager](Documentation/package_manager_tab.png)
+    ![unity registry manager](Documentation/package_manager_tab.png)
 
 2. Create a *New Scoped Registry* by entering 
     ```
@@ -89,9 +89,9 @@ There are two methods of installation available for the OneSignal Unity SDK:
 4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed
    in order to finalize the installation.
 
-   > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
+    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
 
-   ![my registries menu selection](Documentation/registry_menu.png)
+    ![my registries menu selection](Documentation/registry_menu.png)
 
 </details>
 
@@ -102,16 +102,16 @@ After building in Unity and exporting the XCode project follow these steps:
 2. Click on the **Unity-iPhone** project and its similarly named target and select the **Signing & Capabilities** tab.
 3. From here check **Automatically manage signing**, on the prompt click **Enable Automatic**, and select your **Team**.
 
-   ![automatically manage signing](Documentation/ios_auto_sign.png)
+    ![automatically manage signing](Documentation/ios_auto_sign.png)
 
 4. Scroll down to **App Groups** and click on the refresh button.
     > NOTE: You may have to press this a few times as it will ask you for each signing type.
 
-   ![refresh app groups](Documentation/ios_refresh_app_groups.png)
+    ![refresh app groups](Documentation/ios_refresh_app_groups.png)
 
 5. Repeat the same steps above but for the **OneSignalNotificationServiceExtension** target this time.
 
-   ![extension signing and groups](Documentation/ios_extension_sign_and_groups.png)
+    ![extension signing and groups](Documentation/ios_extension_sign_and_groups.png)
 
 6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
 
