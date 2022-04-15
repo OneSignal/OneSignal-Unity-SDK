@@ -45,9 +45,10 @@ namespace OneSignalSDK {
         }
 
         private static void _handleError(AndroidJavaObject error) {
-            var type = error.Call<int>("getType");
+            var type = error.Call<AndroidJavaObject>("getType");
+            var typeStr = type.Call<string>("name");
             var msg  = error.Call<string>("getMessage");
-            SDKDebug.Error($"{type} - {msg}");
+            SDKDebug.Error($"{typeStr} - {msg}");
         }
 
         private static NotificationPermission _stateNotificationPermission(AndroidJavaObject stateWithPermissions) {

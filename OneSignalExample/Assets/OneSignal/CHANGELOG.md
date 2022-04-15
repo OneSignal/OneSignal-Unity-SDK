@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iOS notifications opened from cold start will be received via `NotificationOpened`
 - Added missing Notification fields
 - Added prefix to the NSExtensionPrincipalClass in the NotificationServiceExtension Info.plist
+- Error deserialization for identity methods on Android
 
 ## [3.0.0]
 ### Changed
