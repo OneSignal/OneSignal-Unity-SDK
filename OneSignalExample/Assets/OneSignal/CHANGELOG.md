@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [Migration guide](../../../MIGRATION.md) for updating from 2.x.x to 3.x.x
 ### Changed
 - Added support for OneSignal iOS functionality `setLaunchURLsInApp`
 - Improved included [README](../../../com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md) for changing the notification icons in the Android plugin.
