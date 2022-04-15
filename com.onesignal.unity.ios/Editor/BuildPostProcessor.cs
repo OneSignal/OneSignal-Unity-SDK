@@ -234,7 +234,7 @@ namespace OneSignalSDK {
             notificationServicePlist.ReadFromFile(Path.Combine(PluginFilesPath, "Info.plist"));
             notificationServicePlist.root.SetString("CFBundleShortVersionString", PlayerSettings.bundleVersion);
             notificationServicePlist.root.SetString("CFBundleVersion", PlayerSettings.iOS.buildNumber);
-            
+
             notificationServicePlist.WriteToFile(plistPath);
             
             return alreadyExists;
