@@ -235,9 +235,6 @@ namespace OneSignalSDK {
             notificationServicePlist.root.SetString("CFBundleShortVersionString", PlayerSettings.bundleVersion);
             notificationServicePlist.root.SetString("CFBundleVersion", PlayerSettings.iOS.buildNumber);
 
-            string NSExtensionPrincipalClass = notificationServicePlist.root["NSExtension"]["NSExtensionPrincipalClass"].AsString();
-            notificationServicePlist.root["NSExtension"].AsDict().SetString("NSExtensionPrincipalClass", "$(PRODUCT_MODULE_NAME)." + NSExtensionPrincipalClass);
-
             notificationServicePlist.WriteToFile(plistPath);
             
             return alreadyExists;
