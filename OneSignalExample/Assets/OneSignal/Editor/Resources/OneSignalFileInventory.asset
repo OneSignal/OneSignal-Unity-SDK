@@ -20,6 +20,8 @@ MonoBehaviour:
   - Assets/OneSignal/Example.meta
   - Assets/OneSignal/LICENSE.md
   - Assets/OneSignal/LICENSE.md.meta
+  - Assets/OneSignal/MIGRATION.md
+  - Assets/OneSignal/MIGRATION.md.meta
   - Assets/OneSignal/README.md
   - Assets/OneSignal/README.md.meta
   - Assets/OneSignal/VERSION
@@ -31,18 +33,16 @@ MonoBehaviour:
   - Assets/OneSignal/Attribution/VspAttribution.cs
   - Assets/OneSignal/Attribution/VspAttribution.cs.meta
   - Assets/OneSignal/Documentation~/asset_listing.png
+  - Assets/OneSignal/Documentation~/ios_auto_sign.png
+  - Assets/OneSignal/Documentation~/ios_extension_sign_and_groups.png
+  - Assets/OneSignal/Documentation~/ios_refresh_app_groups.png
   - Assets/OneSignal/Documentation~/menu_import_package.png
-  - Assets/OneSignal/Documentation~/menu_import_package.png.meta
   - Assets/OneSignal/Documentation~/menu_my_assets.png
-  - Assets/OneSignal/Documentation~/menu_my_assets.png.meta
   - Assets/OneSignal/Documentation~/menu_package_manager.png
-  - Assets/OneSignal/Documentation~/menu_package_manager.png.meta
   - Assets/OneSignal/Documentation~/outdated_callout.png
   - Assets/OneSignal/Documentation~/package_import.png
   - Assets/OneSignal/Documentation~/package_manager_tab.png
-  - Assets/OneSignal/Documentation~/package_manager_tab.png.meta
   - Assets/OneSignal/Documentation~/registry_menu.png
-  - Assets/OneSignal/Documentation~/registry_menu.png.meta
   - Assets/OneSignal/Documentation~/setup_window.png
   - Assets/OneSignal/Editor/AssemblyInfo.cs
   - Assets/OneSignal/Editor/AssemblyInfo.cs.meta
@@ -57,6 +57,14 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/Setup.meta
   - Assets/OneSignal/Editor/SetupSteps.meta
   - Assets/OneSignal/Editor/Utilities.meta
+  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF
+  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta
+  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
+  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef.meta
+  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs
+  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs.meta
+  - Assets/OneSignal/Example/OneSignalExampleScene.unity
+  - Assets/OneSignal/Example/OneSignalExampleScene.unity.meta
   - Assets/OneSignal/Editor/PackageManagement/Dependency.cs
   - Assets/OneSignal/Editor/PackageManagement/Dependency.cs.meta
   - Assets/OneSignal/Editor/PackageManagement/Manifest.cs
@@ -77,11 +85,3 @@ MonoBehaviour:
   - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
   - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs
   - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs.meta
-  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF
-  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta
-  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
-  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef.meta
-  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs
-  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs.meta
-  - Assets/OneSignal/Example/OneSignalExampleScene.unity
-  - Assets/OneSignal/Example/OneSignalExampleScene.unity.meta
