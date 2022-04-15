@@ -65,7 +65,7 @@ namespace OneSignalSDK {
         private static void _showOpenSetupDialog() {
             var dialogResult = EditorUtility.DisplayDialog(
                 "OneSignal",
-                "The project contains an outdated version of OneSignal SDK! We recommend running the OneSignal SDK Setup.",
+                "The project contains an outdated or incomplete install of OneSignal SDK! We recommend running the OneSignal SDK Setup.",
                 "Open SDK Setup",
                 "Cancel"
             );

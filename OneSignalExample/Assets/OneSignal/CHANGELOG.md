@@ -5,6 +5,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.0.1]
+### Added
+- [Migration guide](../../../MIGRATION.md) for updating from 2.x.x to 3.x.x
+### Changed
+- Added support for OneSignal iOS functionality `setLaunchURLsInApp`
+- Improved included [README](../../../com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md) for changing the notification icons in the Android plugin.
+- Added inline documentation and Unity idiomatic fields to the `InAppMessageAction`
+### Fixed
+- Android deserialization of `NotificationAction` type now accounts for `actionID`
+- Android deserialization of `Notification` type now accounts for `additionalData` in all cases
+- Reverted [#430](https://github.com/OneSignal/OneSignal-Unity-SDK/pull/430) due to a deprecation of where Android resources can be stored in Unity. Notification icons to be changed for Android can again be found at `Assets/Plugins/Android/OneSignalConfig.plugin`. Fixes [#470](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/470)
+- Example code for `PostNotification` to show an example that works without the API key
+- Reimplemented support for `RemoveExternalUserId`
+- Reimplemented `disablePush` as `PushEnabled`
+- iOS deserialization of `Notification` type now accounts for `additionalData` and `rawPayload` in all cases
+- iOS notifications opened from cold start will be received via `NotificationOpened`
+- Added missing `Notification` fields
+- Added prefix to the NSExtensionPrincipalClass in the NotificationServiceExtension Info.plist
+- Error deserialization for identity methods on Android
+
 ## [3.0.0]
 ### Changed
 - Updated VSP Attribution with the latest version of script
@@ -116,7 +136,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.1...HEAD
+[3.0.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.6...3.0.0
 [3.0.0-beta.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.5...3.0.0-beta.6
 [3.0.0-beta.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.0-beta.4...3.0.0-beta.5

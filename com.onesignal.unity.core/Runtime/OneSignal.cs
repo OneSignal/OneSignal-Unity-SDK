@@ -173,6 +173,13 @@ namespace OneSignalSDK {
         public abstract bool RequiresPrivacyConsent { get; set; }
 
         /// <summary>
+        /// Used to set if launch URLs should be opened in safari or within the application. Make sure to set before 
+        /// <see cref="Initialize"/> is called.
+        /// </summary>
+        /// <remarks>iOS Only</remarks>
+        public abstract void SetLaunchURLsInApp(bool launchInApp);
+
+        /// <summary>
         /// Starts the OneSignal SDK
         /// </summary>
         /// <param name="appId">Your application id from the OneSignal dashboard</param>
@@ -191,7 +198,14 @@ namespace OneSignalSDK {
         /// <summary>
         /// Removes all OneSignal app notifications from the Notification Shade
         /// </summary>
+        /// <remarks>Android Only</remarks>
         public abstract void ClearOneSignalNotifications();
+
+        /// <summary>
+        /// Whether push notifications are currently enabled for an active push subscription.
+        /// </summary>
+        /// <remarks>Can be used to turn off push notifications for a user without removing their user data</remarks>
+        public abstract bool PushEnabled { get; set; }
 
         /// <summary>
         /// Allows you to send notifications from user to user or schedule ones in the future to be delivered to the
@@ -316,6 +330,12 @@ namespace OneSignalSDK {
         /// your users. Your backend can generate an email authentication token and send it to your app.</param>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
         public abstract Task<bool> SetSMSNumber(string smsNumber, string authHash = null);
+
+        /// <summary>
+        /// Removes the current external user id from each known subscription
+        /// </summary>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> RemoveExternalUserId();
 
         /// <summary>
         /// If this user logs out of your app and/or you would like to disassociate their email with the current

@@ -107,6 +107,9 @@ namespace OneSignalSDK {
             set => _sdkClass.CallStatic("setRequiresUserPrivacyConsent", value);
         }
 
+        public override void SetLaunchURLsInApp(bool launchInApp)
+            => SDKDebug.Warn("This feature is only available for iOS.");
+
         public override void Initialize(string appId) {
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
@@ -139,6 +142,14 @@ namespace OneSignalSDK {
 
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
+
+        public override bool PushEnabled {
+            get {
+                var deviceStateJO = _sdkClass.CallStatic<AndroidJavaObject>("getDeviceState");
+                return !deviceStateJO.Call<bool>("isPushDisabled");
+            }
+            set => _sdkClass.CallStatic("disablePush", !value);
+        }
 
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             var proxy = new PostNotificationResponseHandler();
@@ -215,6 +226,12 @@ namespace OneSignalSDK {
         public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
             var proxy = new OSSMSUpdateHandler();
             _sdkClass.CallStatic("setSMSNumber", smsNumber, authHash, proxy);
+            return await proxy;
+        }
+
+        public override async Task<bool> RemoveExternalUserId() {
+            var proxy = new OSExternalUserIdUpdateCompletionHandler();
+            _sdkClass.CallStatic("removeExternalUserId", proxy);
             return await proxy;
         }
 

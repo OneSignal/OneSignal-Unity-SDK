@@ -51,6 +51,9 @@ namespace OneSignalSDK {
         
         public override bool PrivacyConsent { get; set; }
         public override bool RequiresPrivacyConsent { get; set; }
+        public override void SetLaunchURLsInApp(bool launchInApp) {
+            
+        }
         
         public override NotificationPermission NotificationPermission { get; }
         public override PushSubscriptionState PushSubscriptionState { get; }
@@ -73,6 +76,8 @@ namespace OneSignalSDK {
         public override void ClearOneSignalNotifications() {
             
         }
+
+        public override bool PushEnabled { get; set; }
 
         public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             return Task.FromResult(new Dictionary<string, object>());
@@ -133,6 +138,10 @@ namespace OneSignalSDK {
         }
 
         public override Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
+            return Task.FromResult(false);
+        }
+
+        public override Task<bool> RemoveExternalUserId() {
             return Task.FromResult(false);
         }
 

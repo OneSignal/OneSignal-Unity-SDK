@@ -216,15 +216,15 @@ void _setEmailSubscriptionStateChangedCallback(StateListenerDelegate callback) {
     [[OneSignalObserver sharedObserver] setEmailDelegate:callback];
 }
 
-    void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback) {
-        [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
-    }
-    
-    const char* _getDeviceState() {
-        auto deviceState = [OneSignal getDeviceState];
-        auto stateStr = jsonStringFromDictionary([deviceState jsonRepresentation]);
-        return strdup(stateStr);
-    }
+void _setSMSSubscriptionStateChangedCallback(StateListenerDelegate callback) {
+    [[OneSignalObserver sharedObserver] setSmsDelegate:callback];
+}
+
+const char* _getDeviceState() {
+    auto deviceState = [OneSignal getDeviceState];
+    auto stateStr = jsonStringFromDictionary([deviceState jsonRepresentation]);
+    return strdup(stateStr);
+}
 
 void _setLogLevel(int logLevel, int alertLevel) {
     [OneSignal setLogLevel:(ONE_S_LOG_LEVEL) logLevel
@@ -247,6 +247,10 @@ bool _getRequiresPrivacyConsent() {
     return [OneSignal requiresUserPrivacyConsent];
 }
 
+void _setLaunchURLsInApp(bool launchInApp) {
+    [OneSignal setLaunchURLsInApp: launchInApp];
+}
+
 void _initialize(const char* appId) {
     [OneSignal setAppId:TO_NSSTRING(appId)];
     [OneSignal initWithLaunchOptions:nil];
@@ -256,6 +260,10 @@ void _promptForPushNotificationsWithUserResponse(int hashCode, BooleanResponseDe
     [OneSignal promptForPushNotificationsWithUserResponse:^(BOOL accepted) {
         CALLBACK(accepted);
     }];
+}
+
+void _disablePush(bool disable) {
+    [OneSignal disablePush:disable];
 }
 
 void _postNotification(const char* optionsJson, int hashCode, StringResponseDelegate callback) {
@@ -369,6 +377,11 @@ void _setSMSNumber(const char* smsNumber, const char* authHash, int hashCode, Bo
                 withFailure:^(NSError *error) { CALLBACK(NO); }];
 }
 
+void _removeExternalUserId(int hashCode, BooleanResponseDelegate callback) {
+    [OneSignal removeExternalUserId:^(NSDictionary *results) { CALLBACK(YES); }
+                        withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
+
 void _logoutEmail(int hashCode, BooleanResponseDelegate callback) {
     [OneSignal logoutEmailWithSuccess:^{ CALLBACK(YES); }
                           withFailure:^(NSError *error) { CALLBACK(NO); }];
@@ -376,18 +389,18 @@ void _logoutEmail(int hashCode, BooleanResponseDelegate callback) {
 
 void _logoutSMSNumber(int hashCode, BooleanResponseDelegate callback) {
     [OneSignal logoutSMSNumberWithSuccess:^(NSDictionary *results) { CALLBACK(YES); }
-                                  withFailure:^(NSError *error) { CALLBACK(NO); }];
-    }
+                              withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
     
-    void _setLanguage(const char* languageCode, int hashCode, BooleanResponseDelegate callback) {
-        [OneSignal setLanguage:TO_NSSTRING(languageCode)
-                   withSuccess:^{ CALLBACK(YES); }
-                   withFailure:^(NSError *error) { CALLBACK(NO); }];
-    }
+void _setLanguage(const char* languageCode, int hashCode, BooleanResponseDelegate callback) {
+    [OneSignal setLanguage:TO_NSSTRING(languageCode)
+               withSuccess:^{ CALLBACK(YES); }
+               withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
 
-    void _promptLocation() {
-        [OneSignal promptLocation];
-    }
+void _promptLocation() {
+    [OneSignal promptLocation];
+}
 
 void _setShareLocation(bool share) {
     [OneSignal setLocationShared:share];

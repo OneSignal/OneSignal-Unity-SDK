@@ -32,6 +32,7 @@ namespace OneSignalSDK {
     /// <summary>
     /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
     /// </summary>
+    /// <remarks>Android 5+ only</remarks>
     public enum LockScreenVisibility {
         Secret = -1,    // Not shown
         Private = 0,    // Contents are hidden
@@ -42,6 +43,16 @@ namespace OneSignalSDK {
         public string id;
         public string text;
         public string icon;
+    }
+
+    /// <summary>
+    /// If a background image was set, this object will be available
+    /// </summary>
+    /// <remarks>Android only</remarks>
+    [Serializable] public sealed class BackgroundImageLayout {
+        public string image;
+        public string titleTextColor;
+        public string bodyTextColor;
     }
     
     /// <summary>
@@ -54,11 +65,6 @@ namespace OneSignalSDK {
         /// </summary>
         public string notificationId;
         
-        /// <summary>
-        /// Unique Android Native API identifier
-        /// </summary>
-        public int androidNotificationId;
-
         /// <summary>
         /// Name of Template from <a href="https://documentation.onesignal.com/docs/templates">Templates</a>
         /// </summary>
@@ -78,28 +84,7 @@ namespace OneSignalSDK {
         /// Body text of the notification
         /// </summary>
         public string body;
-        
-        /// <summary>
-        /// Small icon resource name set on the notification
-        /// </summary>
-        public string smallIcon;
-        
-        /// <summary>
-        /// Large icon resource name set on the notification.
-        /// </summary>
-        public string largeIcon;
-        
-        /// <summary>
-        /// Big picture image set on the notification
-        /// </summary>
-        /// <remarks>iOS 10+ only. Attachments sent as part of the rich notification</remarks>
-        public string bigPicture;
-        
-        /// <summary>
-        /// Accent color shown around small notification icon on Android 5+ devices. ARGB format.
-        /// </summary>
-        public string smallIconAccentColor;
-        
+
         /// <summary>
         /// URL opened when opening the notification
         /// </summary>
@@ -110,44 +95,12 @@ namespace OneSignalSDK {
         /// https://documentation.onesignal.com/docs/customize-notification-sounds
         /// </summary>
         public string sound;
-        
-        /// <summary>
-        /// LED string. Devices that have a notification LED will blink in this color. ARGB format.
-        /// </summary>
-        public string ledColor;
-        
-        /// <summary>
-        /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
-        /// </summary>
-        public LockScreenVisibility lockScreenVisibility;
-        
-        /// <summary>
-        /// Notifications with this same key will be grouped together as a single summary notification
-        /// </summary>
-        public string groupKey;
-        
-        /// <summary>
-        /// Summary text displayed in the summary notification
-        /// </summary>
-        public string groupMessage;
-        
-        /// <summary>
-        /// Google project number the notification was sent under
-        /// </summary>
-        public string fromProjectNumber;
-        
+
         /// <summary>
         /// Collapse id for the notification
         /// </summary>
         public string collapseId;
         
-        /// <summary>
-        /// Priority of the notification. Values range from -2 to 2 (see
-        /// https://developer.android.com/reference/androidx/core/app/NotificationCompat for more info)
-        /// </summary>
-        /// <remarks>Android only</remarks>
-        public int priority;
-
         /// <summary>
         /// Gets custom additional data that was sent with the notification. Set on the dashboard under
         /// Options > Additional Data or with the data field on the REST API.
@@ -163,5 +116,154 @@ namespace OneSignalSDK {
         /// Raw JSON payload string received from OneSignal
         /// </summary>
         public string rawPayload;
+
+    #region Android
+        /// <summary>
+        /// Unique Android Native API identifier
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public int androidNotificationId;
+
+        /// <summary>
+        /// Small icon resource name set on the notification
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string smallIcon;
+        
+        /// <summary>
+        /// Large icon resource name set on the notification
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string largeIcon;
+        
+        /// <summary>
+        /// Big picture image set on the notification
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string bigPicture;
+        
+        /// <summary>
+        /// Accent color shown around small notification icon on Android 5+ devices. ARGB format.
+        /// </summary>
+        /// <remarks>Android 5+ only</remarks>
+        public string smallIconAccentColor;
+        
+        /// <summary>
+        /// LED string. Devices that have a notification LED will blink in this color. ARGB format.
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string ledColor;
+        
+        /// <summary>
+        /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
+        /// </summary>
+        /// <remarks>Android 5+ only</remarks>
+        public LockScreenVisibility lockScreenVisibility;
+        
+        /// <summary>
+        /// Notifications with this same key will be grouped together as a single summary notification
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string groupKey;
+        
+        /// <summary>
+        /// Summary text displayed in the summary notification
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string groupMessage;
+        
+        /// <summary>
+        /// Google project number the notification was sent under
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public string fromProjectNumber;
+        
+        /// <summary>
+        /// Priority of the notification. Values range from -2 to 2 (see
+        /// https://developer.android.com/reference/androidx/core/app/NotificationCompat for more info)
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public int priority;
+
+        /// <summary>
+        /// Gets the notification payloads a summary notification was created from
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public List<Notification> groupedNotifications;
+
+        /// </summary>
+        /// If a background image was set, this object will be available
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public BackgroundImageLayout backgroundImageLayout;
+    #endregion
+
+    #region iOS
+        /// <summary>
+        /// Message Subtitle, iOS only
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        public string subtitle;
+
+        /// <summary>
+        /// True when the key content-available is set to 1 in the APNS payload.
+        /// Used to wake your app when the payload is received.
+        /// See Apple's documentation for more details.
+        /// https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623013-application
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        public bool contentAvailable;
+
+        /// <summary>
+        /// True when the key content-available is set to 1 in the APNS payload.
+        /// Used to wake your Notification Service Extension to modify a notification.
+        /// See Apple's documentation for more details.
+        /// https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        public bool mutableContent;
+
+        /// <summary>
+        /// iOS Notification category key previously registered to display with
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        public string category;
+
+        /// <summary>
+        /// The badge number assigned to the application icon
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        public int badge;
+
+        /// <summary>
+        /// The amount to increment the badge icon number
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        public int badgeIncrement;
+
+        /// <summary>
+        /// Groups notifications into threads
+        /// </summary>
+        /// <remarks>iOS 10+ only</remarks>
+        public string threadId;
+
+        /// <summary>
+        /// Relevance Score for notification summary
+        /// </summary>
+        /// <remarks>iOS 15+ only</remarks>
+        public double relevanceScore;
+
+        /// <summary>
+        /// Interruption Level of the notification
+        /// </summary>
+        /// <remarks>iOS 15+ only</remarks>
+        public string interruptionLevel;
+
+        /// <summary>
+        /// Attachments sent as part of the rich notification
+        /// </summary>
+        /// <remarks>iOS 10+ only</remarks>
+        public Dictionary<string, object> attachments;
+    #endregion
     }
 }

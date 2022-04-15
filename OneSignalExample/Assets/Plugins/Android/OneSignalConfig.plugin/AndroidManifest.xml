@@ -1,0 +1,10 @@
+<!--
+   WARNING: Do NOT Modify! Changes will be overwritten by the OneSignal plugin.
+            Make your changes to Assets/Plugins/Android/AndroidManifest.xml instead.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.onesignal.onesignalsdk"
+    android:versionCode="1"
+    android:versionName="1.0" >
+</manifest>

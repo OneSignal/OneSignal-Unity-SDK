@@ -26,6 +26,7 @@
  */
 
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -44,14 +45,34 @@ namespace OneSignalSDK {
         }
 
         private static void _handleError(AndroidJavaObject error) {
-            var type = error.Call<int>("getType");
+            var type = error.Call<AndroidJavaObject>("getType");
+            var typeStr = type.Call<string>("name");
             var msg  = error.Call<string>("getMessage");
-            SDKDebug.Error($"{type} - {msg}");
+            SDKDebug.Error($"{typeStr} - {msg}");
         }
 
         private static NotificationPermission _stateNotificationPermission(AndroidJavaObject stateWithPermissions) {
             var enabled = stateWithPermissions.Call<bool>("areNotificationsEnabled");
             return enabled ? NotificationPermission.Authorized : NotificationPermission.Denied;
+        }
+
+        private static Notification _getNotification(AndroidJavaObject notifJO) {
+            var notification = notifJO.ToSerializable<Notification>();
+                
+            var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
+            if (dataJson != null) {
+                var dataJsonStr = dataJson.Call<string>("toString");
+                notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
+            }
+
+            return notification;
+        }
+
+        private static NotificationAction _getAction(AndroidJavaObject actionJO) {
+            var action = actionJO.ToSerializable<NotificationAction>();
+            action.actionID = actionJO.Call<string>("getActionId");
+
+            return action;
         }
     }
 }

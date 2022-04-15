@@ -65,6 +65,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public bool requiresUserPrivacyConsent;
 
     /// <summary>
+    /// used to set if launch URLs should be opened in safari or within the application
+    /// </summary>
+    public bool launchURLsInApp;
+
+    /// <summary>
     /// 
     /// </summary>
     public string tagKey;
@@ -274,6 +279,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public async void SendPushToSelf() {
         _log("Sending push notification to this device via PostNotification...");
 
+        // Use the id of the push subscription in order to send a push without needing an API key
+        var pushId = OneSignal.Default.PushSubscriptionState.userId;
+
         // Check out our API docs at https://documentation.onesignal.com/reference/create-notification
         // for a full list of possibilities for notification options.
         var pushOptions = new Dictionary<string, object> {
@@ -282,7 +290,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             },
 
             // Send notification to this user
-            ["include_external_user_ids"] = new List<string> { externalId },
+            ["include_player_ids"] = new List<string> { pushId },
 
             // Example of scheduling a notification in the future
             ["send_after"] = DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U")
@@ -416,6 +424,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void ToggleShareLocation() {
         _log($"Toggling ShareLocation to <b>{!OneSignal.Default.ShareLocation}</b>");
         OneSignal.Default.ShareLocation = !OneSignal.Default.ShareLocation;
+    }
+
+    /*
+     * iOS
+     */
+
+    public void ToggleLaunchURLsInApp() {
+        _log($"Toggling LaunchURLsInApp to <b>{!launchURLsInApp}</b>");
+        launchURLsInApp = !launchURLsInApp;
+        // Call setLaunchURLsInApp before the Initialize call
+        OneSignal.Default.SetLaunchURLsInApp(launchURLsInApp);
     }
 
 #region Rendering

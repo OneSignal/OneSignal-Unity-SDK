@@ -35,7 +35,7 @@ namespace OneSignalSDK {
     /// Pop up window which displays any additional required or optional setup steps by the SDK
     /// </summary>
     public sealed class OneSignalSetupWindow : EditorWindow {
-        [MenuItem("Window/OneSignal")] public static void ShowWindow() {
+        [MenuItem("Window/OneSignal SDK Setup")] public static void ShowWindow() {
             var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
             window.minSize = _minSize;
             window.Show();

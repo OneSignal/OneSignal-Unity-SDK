@@ -86,6 +86,9 @@ namespace OneSignalSDK {
             set => _setRequiresPrivacyConsent(value);
         }
 
+        public override void SetLaunchURLsInApp(bool launchInApp)
+            => _setLaunchURLsInApp(launchInApp);
+
         public override void Initialize(string appId) {
             _initialize(appId);
             _completedInit(appId);
@@ -99,6 +102,14 @@ namespace OneSignalSDK {
 
         public override void ClearOneSignalNotifications()
             => SDKDebug.Info("ClearOneSignalNotifications invoked on iOS, does nothing");
+
+        public override bool PushEnabled {
+            get {
+                var deviceState = JsonUtility.FromJson<DeviceState>(_getDeviceState());
+                return !deviceState.isPushDisabled;
+            }
+            set => _disablePush(!value);
+        }
 
         public override async Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
             var (proxy, hashCode) = _setupProxy<string>();
@@ -178,6 +189,12 @@ namespace OneSignalSDK {
         public override async Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
             var (proxy, hashCode) = _setupProxy<bool>();
             _setSMSNumber(smsNumber, authHash, hashCode, BooleanCallbackProxy);
+            return await proxy;
+        }
+
+        public override async Task<bool> RemoveExternalUserId() {
+            var (proxy, hashCode) = _setupProxy<bool>();
+            _removeExternalUserId(hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
