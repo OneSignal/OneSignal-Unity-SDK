@@ -222,8 +222,9 @@ OneSignal.RemoveExternalUserId(
 
 ```c#
 var result = await OneSignal.Default.RemoveExternalUserId();
-if (result)
+if (result) {
     Debug.Log("success");
+}
 ```
 </td>
 </table>
@@ -429,10 +430,12 @@ var pushOptions = new Dictionary<string, object> {
 };
 
 var result = await OneSignal.Default.PostNotification(pushOptions);
-if (result != null)
+if (result != null) {
     Debug.Log("success");
-else
+}
+else {
     Debug.Log("error");
+}
 ```
 </td>
 </table>
@@ -556,10 +559,12 @@ OneSignal.SetEmail("user@email.com",
 
 ```c#
 var result = await OneSignal.Default.SetEmail("user@email.com");
-if (result)
+if (result) {
     Debug.Log("success");
-else
+}
+else {
     Debug.Log("error");
+}
 ```
 </td>
 </table>
@@ -595,10 +600,12 @@ OneSignal.LogoutEmail(
 
 ```c#
 var result = await OneSignal.Default.LogoutEmail();
-if (result)
+if (result) {
     Debug.Log("success");
-else
+}
+else {
     Debug.Log("error");
+}
 ```
 </td>
 </table>
@@ -693,10 +700,12 @@ OneSignal.Default.SetSMSNumber("+12345556789");
 
 ```c#
 var result = await OneSignal.Default.SetSMSNumber("+12345556789");
-if (result)
+if (result) {
     Debug.Log("success");
-else
+}
+else {
     Debug.Log("error");
+}
 ```
 </td>
 </table>
@@ -729,10 +738,12 @@ OneSignal.Default.LogOutSMS();
 
 ```c#
 var result = await OneSignal.Default.LogOutSMS();
-if (result)
+if (result) {
     Debug.Log("success");
-else
+}
+else {
     Debug.Log("error");
+}
 ```
 </td>
 </table>
@@ -998,11 +1009,10 @@ void onNotificationReceived(OSNotification notification) {
 OneSignal.Default.NotificationWillShow += onNotificationWillShow;
 
 Notification onNotificationWillShow(Notification notification) {
-    if (someCheck)
+    if (someCheck) {
         return null; // don't show the notificaiton
-
+    }
     // COMING SOON - make modifications to the notification before showing
-    
     return notification; // show the notification
 }
 ```
