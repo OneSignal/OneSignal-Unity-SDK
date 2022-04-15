@@ -64,7 +64,6 @@ namespace OneSignalSDK {
         }
 
         public void OnAfterDeserialize() {
-            SDKDebug.Info("DESERIALIZING IAM ACTION");
             #pragma warning disable CS0618
             clickName     = click_name;
             clickUrl      = click_url;
