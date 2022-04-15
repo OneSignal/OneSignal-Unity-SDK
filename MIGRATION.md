@@ -569,7 +569,7 @@ else {
 </td>
 </table>
 
-#### Remove the user's Email subscription
+#### Unlink the Email subscription from the device so that it will no longer be updated
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -585,7 +585,7 @@ OneSignal.Default.LogoutEmail();
 </td>
 </table>
 
-#### Remove the user's Email subscription and get the result of the call
+#### Unlink the Email subscription from the device so that it will no longer be updated and get the result of the call
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -710,7 +710,7 @@ else {
 </td>
 </table>
 
-#### Remove the user's SMS subscription
+#### Unlink the SMS subscription from the device so that it will no longer be updated
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -726,7 +726,7 @@ OneSignal.Default.LogOutSMS();
 </td>
 </table>
 
-#### Remove the user's Email subscription and get the result of the call
+#### Unlink the SMS subscription from the device so that it will no longer be updated and get the result of the call
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -989,7 +989,7 @@ void onNotificationOpened(NotificationOpenedResult result) {
 </td>
 </table>
 
-#### Listen for when a push notification is about to display
+#### Listen for when a push notification is about to display while the app is in focus
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -1019,7 +1019,7 @@ Notification onNotificationWillShow(Notification notification) {
 </td>
 </table>
 
-#### Listen for when an action of an In-App Message was triggered
+#### Listen for when an action of an In-App Message was triggered by a button click
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -1063,7 +1063,7 @@ OneSignal.StartInit("your_app_id")
 ```
 </td>
 <td>
-Replaced by the feature of <b>onNotificationWillShow</b> to determine if a notification will show or not.
+Replaced by the feature of the <b>NotificationWillShow</b> event to determine if a notification will show or not.
 </td>
 </table>
 
