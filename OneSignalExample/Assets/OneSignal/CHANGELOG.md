@@ -13,15 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved included [README](../../../com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md) for changing the notification icons in the Android plugin.
 - Added inline documentation and Unity idiomatic fields to the `InAppMessageAction`
 ### Fixed
-- Added value to actionId for Android
-- Added value to additionalData on Android for NotificationOpened
-- Reverted [#430](https://github.com/OneSignal/OneSignal-Unity-SDK/pull/430) due to a deprecation of where Android resources can be stored in Unity. Notification icons to be changed for Android can again be found at `Assets/Plugins/Android/OneSignalConfig.plugin`.
-- Updated example code for PostNotification to show an example that works without the API key
+- Android deserialization of `NotificationAction` type now accounts for `actionID`
+- Android deserialization of `Notification` type now accounts for `additionalData` in all cases
+- Reverted [#430](https://github.com/OneSignal/OneSignal-Unity-SDK/pull/430) due to a deprecation of where Android resources can be stored in Unity. Notification icons to be changed for Android can again be found at `Assets/Plugins/Android/OneSignalConfig.plugin`. Fixes [#470](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/470)
+- Example code for `PostNotification` to show an example that works without the API key
 - Reimplemented support for `RemoveExternalUserId`
 - Reimplemented `disablePush` as `PushEnabled`
-- iOS serialization of `Notification` type now accounts for `additionalData` and `rawPayload` in all cases
+- iOS deserialization of `Notification` type now accounts for `additionalData` and `rawPayload` in all cases
 - iOS notifications opened from cold start will be received via `NotificationOpened`
-- Added missing Notification fields
+- Added missing `Notification` fields
 - Added prefix to the NSExtensionPrincipalClass in the NotificationServiceExtension Info.plist
 - Error deserialization for identity methods on Android
 
