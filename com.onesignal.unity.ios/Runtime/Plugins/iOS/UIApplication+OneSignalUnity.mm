@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-#import "UIApplication+OneSignal.h"
+#import "UIApplication+OneSignalUnity.h"
 #import <OneSignal/OneSignal.h>
 #import <objc/runtime.h>
 
