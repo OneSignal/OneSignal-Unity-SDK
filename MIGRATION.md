@@ -7,14 +7,15 @@ This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity
 Follow one of the following sections based on your previous install method of the OneSignal SDK.
 
 ### Unity Package Manager
-1. In Unity open **Window > Package Manager**
-2. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
-3. Select the OneSignal Unity SDK(s) and press the **Upgrade to 3.x.x** button (make sure to update both Android and iOS packages)
-4. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
-5. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
+1. If you have them delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
+2. In Unity open **Window > Package Manager**
+3. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
+4. Select the OneSignal Unity SDK(s) and press the **Upgrade to 3.x.x** button (make sure to update both Android and iOS packages)
+5. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
+6. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ### Unity Asset Store
-1. Delete the directory at `Assets/OneSignal`
+1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
 2. In Unity open **Window > Package Manager**
 3. From the **Package Manager** window select **Packages:** in the top left and click on **My Assets**
 4. Select the **OneSignal SDK** from the list and press the **Update** button.
@@ -25,7 +26,7 @@ Follow one of the following sections based on your previous install method of th
 9. Navigate back to the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ### Unitypackage distributable
-1. Delete the directory at `Assets/OneSignal`
+1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
 2. Download the latest release from our [releases page](https://github.com/OneSignal/OneSignal-Unity-SDK/releases)
 3. In Unity navigate to **Assets > Import Package > Custom Package...** and select the newly downloaded `*.unitypackage` file
 4. Navigate to **Window > OneSignal SDK Setup**
