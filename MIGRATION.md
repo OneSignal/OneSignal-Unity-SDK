@@ -7,14 +7,15 @@ This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity
 Follow one of the following sections based on your previous install method of the OneSignal SDK.
 
 ### Unity Package Manager
-1. In Unity open **Window > Package Manager**
-2. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
-3. Select the OneSignal Unity SDK(s) and press the **Upgrade to 3.x.x** button (make sure to update both Android and iOS packages)
-4. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
-5. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
+1. If you have them delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
+2. In Unity open **Window > Package Manager**
+3. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
+4. Select the OneSignal Unity SDK(s) and press the **Upgrade to 3.x.x** button (make sure to update both Android and iOS packages)
+5. Follow the guides below for adding a [Namespace](#namespace) and [Updating method calls](#updating-method-calls) to fix any compilation errors
+6. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ### Unity Asset Store
-1. Delete the directory at `Assets/OneSignal`
+1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
 2. In Unity open **Window > Package Manager**
 3. From the **Package Manager** window select **Packages:** in the top left and click on **My Assets**
 4. Select the **OneSignal SDK** from the list and press the **Update** button.
@@ -25,7 +26,7 @@ Follow one of the following sections based on your previous install method of th
 9. Navigate back to the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ### Unitypackage distributable
-1. Delete the directory at `Assets/OneSignal`
+1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
 2. Download the latest release from our [releases page](https://github.com/OneSignal/OneSignal-Unity-SDK/releases)
 3. In Unity navigate to **Assets > Import Package > Custom Package...** and select the newly downloaded `*.unitypackage` file
 4. Navigate to **Window > OneSignal SDK Setup**
@@ -40,21 +41,105 @@ using OneSignalSDK;
 ```
 
 ## Updating method calls
-- [Initialization](#initialization)
-- [Debugging](#debugging)
-- [Privacy](#privacy)
-- [User Id](#user-id)
-- [Push Notifications](#push-notifications)
-- [In App Messages](#in-app-messages)
-- [Email](#email)
-- [SMS](#sms)
-- [Location](#location)
-- [Tags](#tags)
-- [Outcomes](#outcomes)
-- [Lifecycle](#lifecycle)
-- [Other](#other)
+- [Added](#added)
+  - [SMS](#sms)
+- [Updated](#updated)
+  - [Initialization](#initialization)
+  - [Debugging](#debugging)
+  - [Privacy](#privacy)
+  - [User Id](#user-id)
+  - [Push Notifications](#push-notifications)
+  - [In App Messages](#in-app-messages)
+  - [Email](#email)
+  - [Location](#location)
+  - [Tags](#tags)
+  - [Outcomes](#outcomes)
+  - [Lifecycle](#lifecycle)
+  - [Other](#other)
+- [Removed](#removed)
 
-### Initialization
+### Added
+#### SMS
+A new feature of 3.x.x is the ability to manage a SMS subscription.
+
+Set the user's SMS Number
+<table>
+<td>
+
+```c#
+OneSignal.Default.SetSMSNumber("+12345556789");
+```
+</td>
+</table>
+
+Set the user's SMS Number and get the result of the call
+<table>
+<td>
+
+```c#
+var result = await OneSignal.Default.SetSMSNumber("+12345556789");
+if (result) {
+    Debug.Log("success");
+}
+else {
+    Debug.Log("error");
+}
+```
+</td>
+</table>
+
+Unlink the SMS subscription from the device so that it will no longer be updated
+<table>
+<td>
+
+```c#
+OneSignal.Default.LogOutSMS();
+```
+</td>
+</table>
+
+Unlink the SMS subscription from the device so that it will no longer be updated and get the result of the call
+<table>
+<td>
+
+```c#
+var result = await OneSignal.Default.LogOutSMS();
+if (result) {
+    Debug.Log("success");
+}
+else {
+    Debug.Log("error");
+}
+```
+</td>
+</table>
+
+Get the current SMS subscription status
+<table>
+<td>
+
+```c#
+var smsState  = OneSignal.Default.SMSSubscriptionState;
+var smsUserId = smsState.smsUserId;
+var smsNumber = smsState.smsNumber;
+```
+</td>
+</table>
+
+Listen for SMS subscription status changes
+<table>
+<td>
+
+```c#
+OneSignal.Default.SMSSubscriptionStateChanged += (current, previous) => {
+    var smsSubscribed = current.isSubscribed;
+};
+```
+</td>
+</table>
+
+### Updated
+#### Initialization
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -73,12 +158,10 @@ OneSignal.Default.Initialize("your_app_id");
 
 We also now include a prefab for codeless initialization!
 
-Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
-to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill
-in the **App Id**, and you are immediately ready to go!
+Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar to find `OneSignalController.prefab` and making sure to select All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill in the **App Id, and you are immediately ready to go!
 
-### Debugging
-#### Set the log and alert levels
+#### Debugging
+Set the log and alert levels
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -95,8 +178,8 @@ OneSignal.Default.AlertLevel = LogLevel.Error;
 </td>
 </table>
 
-### Privacy
-#### Set whether user consent is required to start the SDK
+#### Privacy
+Set whether user consent is required to start the SDK
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -118,7 +201,7 @@ OneSignal.Default.RequiresPrivacyConsent = true; // before init
 </td>
 </table>
 
-#### Set the status of the user's consent
+Set the status of the user's consent
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -134,7 +217,7 @@ OneSignal.Default.PrivacyConsent = true;
 </td>
 </table>
 
-#### Get the status of the user's consent
+Get the status of the user's consent
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -154,8 +237,8 @@ if (OneSignal.Default.PrivacyConsent) {
 </td>
 </table>
 
-### User Id
-#### Set the external user id
+#### User Id
+Set the external user id
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -171,7 +254,7 @@ OneSignal.Default.SetExternalUserId("3983ad1b-e31d-4df8-b063-85785ee34aa4");
 </td>
 </table>
 
-#### Set the external user id and get the result of the call
+Set the external user id and get the result of the call
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -192,7 +275,7 @@ if (result) {
 </td>
 </table>
 
-#### Remove the external user id
+Remove the external user id
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -208,7 +291,7 @@ OneSignal.Default.RemoveExternalUserId();
 </td>
 </table>
 
-#### Remove the external user id and get the result of the call
+Remove the external user id and get the result of the call
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -229,8 +312,8 @@ if (result) {
 </td>
 </table>
 
-### Push Notifications
-#### Prompt the user for permission to send push notifications
+#### Push Notifications
+Prompt the user for permission to send push notifications
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -253,7 +336,7 @@ if (response == NotificationPermission.Authorized) {
 </td>
 </table>
 
-#### Getting the current push notification permission status
+Getting the current push notification permission status
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -277,7 +360,7 @@ if (currentStatus == NotificationPermission.NotDetermined) {
 </td>
 </table>
 
-#### Listen for push notification permission status changes
+Listen for push notification permission status changes
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -304,7 +387,7 @@ OneSignal.Default.NotificationPermissionChanged += (current, previous) => {
 </td>
 </table>
 
-#### Get the current push notification subscription status
+Get the current push notification subscription status
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -324,7 +407,7 @@ var pushIsSubscribed = pushState.isSubscribed;
 </td>
 </table>
 
-#### Listen for push notification subscription status changes
+Listen for push notification subscription status changes
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -349,7 +432,7 @@ OneSignal.Default.PushSubscriptionStateChanged += (current, previous) => {
 </td>
 </table>
 
-#### Disabling push notifications without removing the push subscription
+Disabling push notifications without removing the push subscription
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -365,7 +448,7 @@ OneSignal.Default.PushEnabled = false;
 </td>
 </table>
 
-#### Clear all OneSignal notifications from the notification shade
+Clear all OneSignal notifications from the notification shade
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -381,7 +464,7 @@ OneSignal.Default.ClearOneSignalNotifications();
 </td>
 </table>
 
-#### Get the push notification subscription status' ids
+Get the push notification subscription status' ids
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -395,12 +478,12 @@ OneSignal.IdsAvailable((pushUserId, pushToken) => {
 
 ```c#
 var pushUserId = OneSignal.Default.PushSubscriptionState.userId;
-var pushToken = OneSignal.Default.PushSubscriptionState.pushToken;
+var pushToken  = OneSignal.Default.PushSubscriptionState.pushToken;
 ```
 </td>
 </table>
 
-#### Sending a push to the user
+Sending a push to the user
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -440,8 +523,8 @@ else {
 </td>
 </table>
 
-### In App Messages
-#### Set a trigger value
+#### In App Messages
+Set a trigger value
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -457,7 +540,7 @@ OneSignal.Default.SetTrigger("triggerKey", 123);
 </td>
 </table>
 
-#### Set several trigger values
+Set several trigger values
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -479,7 +562,7 @@ OneSignal.Default.SetTriggers(new Dictionary<string, object> {
 </td>
 </table>
 
-#### Removing a trigger value
+Removing a trigger value
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -495,7 +578,7 @@ OneSignal.Default.RemoveTrigger("trigger3");
 </td>
 </table>
 
-#### Removing several trigger values
+Removing several trigger values
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -511,7 +594,7 @@ OneSignal.Default.RemoveTriggers(new[] { "trigger4", "trigger5" });
 </td>
 </table>
 
-#### Pause In-App Messages
+Pause In-App Messages
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -527,8 +610,8 @@ OneSignal.Default.InAppMessagesArePaused = true;
 </td>
 </table>
 
-### Email
-#### Set the user's Email
+#### Email
+Set the user's Email
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -544,7 +627,7 @@ OneSignal.Default.SetEmail("user@email.com");
 </td>
 </table>
 
-#### Set the user's Email and get the result of the call
+Set the user's Email and get the result of the call
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -569,7 +652,7 @@ else {
 </td>
 </table>
 
-#### Unlink the Email subscription from the device so that it will no longer be updated
+Unlink the Email subscription from the device so that it will no longer be updated
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -585,7 +668,7 @@ OneSignal.Default.LogoutEmail();
 </td>
 </table>
 
-#### Unlink the Email subscription from the device so that it will no longer be updated and get the result of the call
+Unlink the Email subscription from the device so that it will no longer be updated and get the result of the call
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -610,7 +693,7 @@ else {
 </td>
 </table>
 
-#### Get the current Email subscription status
+Get the current Email subscription status
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -630,7 +713,7 @@ var emailAddress = emailState.emailAddress;
 </td>
 </table>
 
-#### Listen for Email subscription status changes
+Listen for Email subscription status changes
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -653,7 +736,7 @@ OneSignal.Default.EmailSubscriptionStateChanged += (current, previous) => {
 </td>
 </table>
 
-#### Sync a hashed email
+Sync a hashed email
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -669,123 +752,8 @@ OneSignal.SyncHashedEmail("user@email.com");
 </td>
 </table>
 
-### SMS
-A new feature of 3.x.x is the ability to manage a SMS subscription
-
-#### Set the user's SMS Number
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-// none
-```
-</td>
-<td>
-
-```c#
-OneSignal.Default.SetSMSNumber("+12345556789");
-```
-</td>
-</table>
-
-#### Set the user's SMS Number and get the result of the call
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-// none
-```
-</td>
-<td>
-
-```c#
-var result = await OneSignal.Default.SetSMSNumber("+12345556789");
-if (result) {
-    Debug.Log("success");
-}
-else {
-    Debug.Log("error");
-}
-```
-</td>
-</table>
-
-#### Unlink the SMS subscription from the device so that it will no longer be updated
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-// none
-```
-</td>
-<td>
-
-```c#
-OneSignal.Default.LogOutSMS();
-```
-</td>
-</table>
-
-#### Unlink the SMS subscription from the device so that it will no longer be updated and get the result of the call
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-// none
-```
-</td>
-<td>
-
-```c#
-var result = await OneSignal.Default.LogOutSMS();
-if (result) {
-    Debug.Log("success");
-}
-else {
-    Debug.Log("error");
-}
-```
-</td>
-</table>
-
-#### Get the current SMS subscription status
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-// none
-```
-</td>
-<td>
-
-```c#
-var smsState  = OneSignal.Default.SMSSubscriptionState;
-var smsUserId = smsState.smsUserId;
-var smsNumber = smsState.smsNumber;
-```
-</td>
-</table>
-
-#### Listen for SMS subscription status changes
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-// none
-```
-</td>
-<td>
-
-```c#
-OneSignal.Default.SMSSubscriptionStateChanged += (current, previous) => {
-    var smsSubscribed = current.isSubscribed;
-};
-```
-</td>
-</table>
-
-### Location
-#### Set whether location sharing is enabled
+#### Location
+Set whether location sharing is enabled
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -801,7 +769,7 @@ OneSignal.Default.ShareLocation = true;
 </td>
 </table>
 
-#### Prompt the user if they would like to share their location
+Prompt the user if they would like to share their location
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -817,8 +785,8 @@ OneSignal.Default.PromptLocation();
 </td>
 </table>
 
-### Tags
-#### Send a tag with a value
+#### Tags
+Send a tag with a value
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -834,7 +802,7 @@ OneSignal.Default.SendTag("tagName", "tagValue");
 </td>
 </table>
 
-#### Send multiple tags with values
+Send multiple tags with values
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -856,7 +824,7 @@ OneSignal.Default.SendTags(new Dictionary<string, string> {
 </td>
 </table>
 
-#### Get all tags
+Get all tags
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -875,7 +843,7 @@ var tag3Value = tags["tag3"];
 </td>
 </table>
 
-#### Delete a tag
+Delete a tag
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -891,7 +859,7 @@ OneSignal.Default.DeleteTag("tag4");
 </td>
 </table>
 
-#### Delete multiple tags
+Delete multiple tags
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -907,8 +875,8 @@ OneSignal.Default.DeleteTags(new[] { "tag5", "tag6" });
 </td>
 </table>
 
-### Outcomes
-#### Send an outcome
+#### Outcomes
+Send an outcome
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -924,7 +892,7 @@ OneSignal.Default.SendOutcome("outcomeName");
 </td>
 </table>
 
-#### Send a unique outcome
+Send a unique outcome
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -940,7 +908,7 @@ OneSignal.Default.SendUniqueOutcome("uniqueOutcomeName");
 </td>
 </table>
 
-#### Send an outcome with a float value
+Send an outcome with a float value
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -956,12 +924,10 @@ OneSignal.Default.SendOutcomeWithValue("outcomeWithVal", 4.2f);
 </td>
 </table>
 
-### Lifecycle
+#### Lifecycle
+Previously setting up the callbacks for checking the 3 supported lifecycle methods had to be done exclusively during initialization. These are now available to be subscribed to at any time and several new lifecycle methods have been added.
 
-Previously setting up the callbacks for checking the 3 supported lifecycle methods had to be done exclusively during initialization. These are now available to be
-subscribed to at any time and several new lifecycle methods have been added.
-
-#### Listen for when a push notification opened the app
+Listen for when a push notification opened the app
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -989,7 +955,7 @@ void onNotificationOpened(NotificationOpenedResult result) {
 </td>
 </table>
 
-#### Listen for when a push notification is about to display while the app is in focus
+Listen for when a push notification is about to display while the app is in focus
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -1019,7 +985,7 @@ Notification onNotificationWillShow(Notification notification) {
 </td>
 </table>
 
-#### Listen for when an action of an In-App Message was triggered by a button click
+Listen for when an action of an In-App Message was triggered by a button click
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -1047,8 +1013,28 @@ void onIAMTriggedAction(InAppMessageAction action) {
 <tr>
 </table>
 
-### Other
-#### Set whether or not push notifications show while the app is in focus
+#### Other
+
+Set whether URLs embedded in push notification open within the app or in a browser
+<table><td>2.x.x</td><td>3.x.x</td><tr>
+<td>
+
+```c#
+OneSignal.StartInit("your_app_id")
+   .Settings(new Dictionary<string, bool> { { OneSignal.kOSSettingsInAppLaunchURL, true } })
+   .EndInit();
+```
+</td>
+<td>
+
+```c#
+OneSignal.Default.SetLaunchURLsInApp(true);
+```
+</td>
+</table>
+
+### Removed
+Set whether or not push notifications show while the app is in focus
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -1067,25 +1053,7 @@ Replaced by the feature of the <b>NotificationWillShow</b> event to determine if
 </td>
 </table>
 
-#### Set whether URLs embedded in push notification open within the app or in a browser
-<table><td>2.x.x</td><td>3.x.x</td><tr>
-<td>
-
-```c#
-OneSignal.StartInit("your_app_id")
-   .Settings(new Dictionary<string, bool> { { OneSignal.kOSSettingsInAppLaunchURL, true } })
-   .EndInit();
-```
-</td>
-<td>
-
-```c#
-OneSignal.Default.SetLaunchURLsInApp(true);
-```
-</td>
-</table>
-
-#### Enable vibrate
+Enable vibrate
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
@@ -1099,7 +1067,7 @@ OneSignal.EnableVibrate(true);
 </td>
 </table>
 
-#### Enable sound
+Enable sound
 <table><td>2.x.x</td><td>3.x.x</td><tr>
 <td>
 
