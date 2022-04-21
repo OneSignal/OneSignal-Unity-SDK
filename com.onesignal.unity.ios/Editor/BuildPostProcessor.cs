@@ -87,7 +87,7 @@ namespace OneSignalSDK {
         /// added before "pod install" (50)
         /// https://github.com/googlesamples/unity-jar-resolver#appending-text-to-generated-podfile
         /// </summary>
-        public int callbackOrder => 45;
+        public int callbackOrder => 46;
 
         /// <summary>
         /// Entry for the build post processing necessary to get the OneSignal SDK iOS up and running
