@@ -295,6 +295,7 @@ namespace OneSignalSDK {
             _debug();
             podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{version}'\nend\n";
             File.WriteAllText(podfilePath, podfile);
+            _debug();
         }
         
         private static void _debug(string details = null, [CallerLineNumber] int line = default, [CallerMemberName] string caller = null)
