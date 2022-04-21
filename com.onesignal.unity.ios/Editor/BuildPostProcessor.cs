@@ -248,13 +248,6 @@ namespace OneSignalSDK {
                 return;
             }
 
-            var podfile = File.ReadAllText(podfilePath);
-
-            var extensionEntryRegex = new Regex($@"target '{ServiceExtensionTargetName}' do\n(.+)\nend");
-            if (extensionEntryRegex.IsMatch(podfile))
-                return;
-
-            var versionRegex = new Regex("(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)");
             var dependenciesFilePath = Path.Combine(EditorFilesPath, DependenciesFilename);
 
             if (!File.Exists(dependenciesFilePath)) {
@@ -263,16 +256,26 @@ namespace OneSignalSDK {
             }
             
             var dependenciesFile = File.ReadAllText(dependenciesFilePath);
+            var dependenciesRegex = new Regex("(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)");
 
-            if (!versionRegex.IsMatch(dependenciesFile)) {
+            if (!dependenciesRegex.IsMatch(dependenciesFile)) {
                 Debug.LogError($"Could not read current iOS framework dependency version from {DependenciesFilename}");
                 return;
             }
 
-            var version = versionRegex.Match(dependenciesFile)
-                .ToString();
+            var podfile = File.ReadAllText(podfilePath);
+            var podfileRegex = new Regex($@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '(.+)'\nend\n");
             
-            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{version}'\nend\n";
+            var requiredVersion = dependenciesRegex.Match(dependenciesFile).ToString();
+            var requiredTarget = $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{requiredVersion}'\nend\n";
+
+            if (!podfileRegex.IsMatch(podfile))
+                podfile += requiredTarget;
+            else {
+                var podfileTarget = podfileRegex.Match(podfile).ToString();
+                podfile = podfile.Replace(podfileTarget, requiredTarget);
+            }
+            
             File.WriteAllText(podfilePath, podfile);
         }
     }
