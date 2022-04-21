@@ -52,6 +52,7 @@
 #define ADD_APP_GROUP
 
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEditor.iOS.Xcode;
 using System.Text.RegularExpressions;
@@ -93,10 +94,12 @@ namespace OneSignalSDK {
         /// Entry for the build post processing necessary to get the OneSignal SDK iOS up and running
         /// </summary>
         public void OnPostprocessBuild(BuildReport report) {
+            _debug();
             if (report.summary.platform != BuildTarget.iOS)
                 return;
 
             // Load the project
+            _debug();
             _outputPath  = report.summary.outputPath;
             _projectPath = PBXProject.GetPBXProjectPath(_outputPath);
             _project.ReadFromString(File.ReadAllText(_projectPath));
@@ -108,6 +111,7 @@ namespace OneSignalSDK {
             AddNotificationServiceExtension();
 
             // Save the project back out
+            _debug();
             File.WriteAllText(_projectPath, _project.WriteToString());
         }
 
@@ -115,9 +119,11 @@ namespace OneSignalSDK {
         /// Get existing entitlements file if exists or creates a new file, adds it to the project, and returns the path
         /// </summary>
         private string GetEntitlementsPath(string targetGuid, string targetName) {
+            _debug();
             var relativePath = _project.GetBuildPropertyForAnyConfig(targetGuid, "CODE_SIGN_ENTITLEMENTS");
 
             if (relativePath != null) {
+                _debug();
                 var fullPath = Path.Combine(_outputPath, relativePath);
 
                 if (File.Exists(fullPath))
@@ -145,16 +151,19 @@ namespace OneSignalSDK {
         /// Add the required capabilities and entitlements for OneSignal
         /// </summary>
         private void AddProjectCapabilities() {
+            _debug();
             var targetGuid = _project.GetMainTargetGuid();
             var targetName = _project.GetMainTargetName();
 
             var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
             var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, targetName);
 
+            _debug();
             projCapability.AddBackgroundModes(BackgroundModesOptions.RemoteNotifications);
             projCapability.AddPushNotifications(false);
             projCapability.AddAppGroups(new[] { _appGroupName });
             
+            _debug();
             projCapability.WriteToFile();
         }
         
@@ -162,15 +171,18 @@ namespace OneSignalSDK {
         /// Create and add the notification extension to the project
         /// </summary>
         private void AddNotificationServiceExtension() {
+            _debug();
 #if !UNITY_CLOUD_BUILD
             // If file exists then the below has been completed before from another build
             // The below will not be updated on Append builds
             // Changes would most likely need to be made to support Append builds
+            _debug();
             if (ExtensionCreatePlist(_outputPath)) {
                 ExtensionAddPodsToTarget();
                 return;
             }
 
+            _debug();
             var extensionGuid = _project.AddAppExtension(_project.GetMainTargetGuid(),
                 ServiceExtensionTargetName,
                 PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS) + "." + ServiceExtensionTargetName,
@@ -180,6 +192,7 @@ namespace OneSignalSDK {
             ExtensionAddSourceFiles(extensionGuid);
 
             // Makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
+            _debug();
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
             _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
@@ -189,9 +202,11 @@ namespace OneSignalSDK {
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
                 $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
 
+            _debug();
             _project.WriteToFile(_projectPath);
 
             // add capabilities + entitlements
+            _debug();
             var entitlementsPath = GetEntitlementsPath(extensionGuid, ServiceExtensionTargetName);
             var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, ServiceExtensionTargetName);
             
@@ -224,6 +239,7 @@ namespace OneSignalSDK {
         /// </summary>
         /// <remarks>NOTE: File in Xcode project is replaced everytime, never appends</remarks>
         private bool ExtensionCreatePlist(string path) {
+            _debug();
             var extensionPath = Path.Combine(path, ServiceExtensionTargetName);
             Directory.CreateDirectory(extensionPath);
 
@@ -237,10 +253,12 @@ namespace OneSignalSDK {
 
             notificationServicePlist.WriteToFile(plistPath);
             
+            _debug(alreadyExists.ToString());
             return alreadyExists;
         }
 
         private void ExtensionAddPodsToTarget() {
+            _debug();
             var podfilePath = Path.Combine(_outputPath, "Podfile");
 
             if (!File.Exists(podfilePath)) {
@@ -251,8 +269,10 @@ namespace OneSignalSDK {
             var podfile = File.ReadAllText(podfilePath);
 
             var extensionEntryRegex = new Regex($@"target '{ServiceExtensionTargetName}' do\n(.+)\nend");
-            if (extensionEntryRegex.IsMatch(podfile))
+            if (extensionEntryRegex.IsMatch(podfile)) {
+                _debug();
                 return;
+            }
 
             var versionRegex = new Regex("(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)");
             var dependenciesFilePath = Path.Combine(EditorFilesPath, DependenciesFilename);
@@ -272,8 +292,12 @@ namespace OneSignalSDK {
             var version = versionRegex.Match(dependenciesFile)
                 .ToString();
             
+            _debug();
             podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{version}'\nend\n";
             File.WriteAllText(podfilePath, podfile);
         }
+        
+        private static void _debug(string details = null, [CallerLineNumber] int line = default, [CallerMemberName] string caller = null)
+            => Debug.Log($"[OneSignal] {line} BuildPostProcessor.{caller} {details}");
     }
 }
