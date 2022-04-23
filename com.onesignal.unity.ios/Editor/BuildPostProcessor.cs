@@ -138,7 +138,7 @@ namespace OneSignalSDK {
             _project.AddFile(relativeDestination, entitlementFileName);
             _project.SetBuildProperty(targetGuid, "CODE_SIGN_ENTITLEMENTS", relativeDestination);
 
-            return entitlementsPath;
+            return relativeDestination;
         }
         
         /// <summary>
