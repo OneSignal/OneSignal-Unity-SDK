@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Updated included Android SDK to [4.7.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.7.1)
+### Fixed
+- iOS builds on Unity on Windows failing on Entitlements file path. Fixes [#491](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/442)
 
 ## [3.0.1]
 ### Added
@@ -127,7 +129,7 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
 
 ## [2.14.1]
 ### Fixed
-- Corrected directory separators in post processor when building for iOS in a 
+- Corrected directory separators in post processor when building for iOS in a
   Windows environment. From PR [#376](https://github.com/OneSignal/OneSignal-Unity-SDK/pull/376)
   by [@SplenectomY](https://github.com/SplenectomY). Fixes [#375](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/375), [#377](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/377), [#380](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/380)
 
