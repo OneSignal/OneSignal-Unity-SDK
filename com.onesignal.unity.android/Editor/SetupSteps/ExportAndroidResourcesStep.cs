@@ -82,12 +82,11 @@ namespace OneSignalSDK {
 
                 if (!Directory.Exists(containingPath))
                     Directory.CreateDirectory(containingPath);
-
-                // don't copy over existing png files
-                if (fileExportPath.Contains(".png") && !File.Exists(fileExportPath))
-                    File.Copy(file, fileExportPath);
-                else // all other files should be refreshed
+                
+                if (!fileExportPath.Contains(".png")) // always refresh non-pngs
                     File.Copy(file, fileExportPath, true);
+                else if (!File.Exists(fileExportPath)) // don't copy over existing png files
+                    File.Copy(file, fileExportPath);
             }
 
             AssetDatabase.Refresh();
