@@ -67,8 +67,8 @@ namespace OneSignalSDK {
                 return false;
             }
 
-            if (files.Length == 0) {
-                SDKDebug.Warn("external-dependency-manager_version-{VERSION_NUMBER}_manifest.txt file does not exist.");
+            if (files.Length != 1) {
+                SDKDebug.Warn("EDM4U version number could not be determined.");
                 return false;
             }
 
