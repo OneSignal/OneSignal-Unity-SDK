@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated included Android SDK to [4.7.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.7.1)
 - Explicitly check for a diff and handle overwrites for the `AndroidManifest.xml` between the project's and package's `OneSignalConfig.plugin`
+- `InstallEdm4uStep` checks for version number to determine if step is completed
 ### Fixed
 - iOS builds on Unity on Windows failing on Entitlements file path. Fixes [#491](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/442)
 - `OneSignalXCFramework` pod version of `OneSignalNotificationServiceExtension` target in Podfile of iOS builds will be upgraded if target is present during post processing

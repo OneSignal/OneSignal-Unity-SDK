@@ -27,6 +27,9 @@
 
 using System.Linq;
 using UnityEditor.Compilation;
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -43,9 +46,41 @@ namespace OneSignalSDK {
         public override bool IsRequired
             => true;
 
-        protected override bool _getIsStepCompleted()
-            => CompilationPipeline.GetPrecompiledAssemblyNames()
+        protected override bool _getIsStepCompleted() {
+            var isInstalled = CompilationPipeline.GetPrecompiledAssemblyNames()
                .Any(assemblyName => assemblyName.StartsWith("Google.VersionHandler"));
+
+            if (!isInstalled)
+                return false;
+
+            var path = "Assets/ExternalDependencyManager/Editor";
+            var directoryInfo = new DirectoryInfo(path);
+
+            if (!directoryInfo.Exists)
+                return false;
+
+            FileInfo[] files;
+
+            try {
+                files = directoryInfo.GetFiles("external-dependency-manager_version-*_manifest.txt");
+            } catch (Exception) {
+                return false;
+            }
+
+            if (files.Length != 1) {
+                SDKDebug.Warn("EDM4U version number could not be determined.");
+                return false;
+            }
+
+            var file = files[0];
+            var pattern = @"external-dependency-manager_version-(.+)_manifest\.txt";
+            var match = Regex.Match(file.Name, pattern);
+            var version = new Version(match.Groups[1].Value);
+
+            var expectedVersion = new Version(_edm4UVersion);
+
+            return version >= expectedVersion;
+        }
 
         protected override void _runStep() {
             const string msg = "Downloading Google External Dependency Manager";
