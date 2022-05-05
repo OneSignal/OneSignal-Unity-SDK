@@ -1,7 +1,9 @@
 # OneSignal Unity SDK 2.x.x to 3.x.x Migration Guide
 
 ## Requirements
-This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity SDK to the 3.x.x version. Additionally please ensure you are using Unity 2018.4 or newer.
+This guide assumes you are upgrading from a 2.x.x version of the OneSignal Unity SDK to the 3.x.x version. Additionally please ensure you are using:
+* Unity 2018.4 or newer
+* For iOS builds: CocoaPods 1.11.3 or newer
 
 ## Adding 3.x.x to your project
 Follow one of the following sections based on your previous install method of the OneSignal SDK.
