@@ -254,6 +254,19 @@ namespace OneSignalSDK {
             }
         }
 
+        private sealed class OSSetLanguageCompletionHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
+            public OSSetLanguageCompletionHandler() : base("OSSetLanguageCompletionHandler") { }
+
+            /// <param name="results">string</param>
+            public void onSuccess(AndroidJavaObject results) => _complete(true);
+
+            /// <param name="error">OSLanguageError</param>
+            public void onFailure(AndroidJavaObject error) {
+                _handleError(error);
+                _complete(false);
+            }
+        }
+
         private sealed class OutcomeCallback : OneSignalAwaitableAndroidJavaProxy<bool> {
             public OutcomeCallback() : base("OutcomeCallback") { }
 
