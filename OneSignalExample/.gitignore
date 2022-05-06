@@ -58,3 +58,8 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Android dependencies downloaded from EDM4U
+[Aa]ssets/[Pp]lugins/[Aa]ndroid/*.aar
+[Aa]ssets/[Pp]lugins/[Aa]ndroid/*.aar.meta
+[Aa]ssets/[Pp]lugins/[Aa]ndroid/*.jar
+[Aa]ssets/[Pp]lugins/[Aa]ndroid/*.jar.meta
