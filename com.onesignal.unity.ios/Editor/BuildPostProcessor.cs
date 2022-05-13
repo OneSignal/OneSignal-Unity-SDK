@@ -138,7 +138,7 @@ namespace OneSignalSDK {
             _project.AddFile(relativeDestination, entitlementFileName);
             _project.SetBuildProperty(targetGuid, "CODE_SIGN_ENTITLEMENTS", relativeDestination);
 
-            return entitlementsPath;
+            return relativeDestination;
         }
         
         /// <summary>
@@ -163,15 +163,17 @@ namespace OneSignalSDK {
         /// </summary>
         private void AddNotificationServiceExtension() {
 #if !UNITY_CLOUD_BUILD
-            // If file exists then the below has been completed before from another build
-            // The below will not be updated on Append builds
-            // Changes would most likely need to be made to support Append builds
-            if (ExtensionCreatePlist(_outputPath)) {
-                ExtensionAddPodsToTarget();
-                return;
-            }
+            // refresh plist and podfile on appends
+            ExtensionCreatePlist(_outputPath);
+            ExtensionAddPodsToTarget();
 
-            var extensionGuid = _project.AddAppExtension(_project.GetMainTargetGuid(),
+            var extensionGuid = _project.TargetGuidByName(ServiceExtensionTargetName);
+
+            // skip target setup if already present
+            if (!string.IsNullOrEmpty(extensionGuid))
+                return;
+
+            extensionGuid = _project.AddAppExtension(_project.GetMainTargetGuid(),
                 ServiceExtensionTargetName,
                 PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS) + "." + ServiceExtensionTargetName,
                 ServiceExtensionTargetName + "/" + "Info.plist" // Unix path as it's used by Xcode
@@ -198,8 +200,6 @@ namespace OneSignalSDK {
             projCapability.AddAppGroups(new[] { _appGroupName });
             
             projCapability.WriteToFile();
-            
-            ExtensionAddPodsToTarget();
 #endif
         }
 
@@ -248,13 +248,6 @@ namespace OneSignalSDK {
                 return;
             }
 
-            var podfile = File.ReadAllText(podfilePath);
-
-            var extensionEntryRegex = new Regex($@"target '{ServiceExtensionTargetName}' do\n(.+)\nend");
-            if (extensionEntryRegex.IsMatch(podfile))
-                return;
-
-            var versionRegex = new Regex("(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)");
             var dependenciesFilePath = Path.Combine(EditorFilesPath, DependenciesFilename);
 
             if (!File.Exists(dependenciesFilePath)) {
@@ -263,16 +256,26 @@ namespace OneSignalSDK {
             }
             
             var dependenciesFile = File.ReadAllText(dependenciesFilePath);
+            var dependenciesRegex = new Regex("(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)");
 
-            if (!versionRegex.IsMatch(dependenciesFile)) {
+            if (!dependenciesRegex.IsMatch(dependenciesFile)) {
                 Debug.LogError($"Could not read current iOS framework dependency version from {DependenciesFilename}");
                 return;
             }
 
-            var version = versionRegex.Match(dependenciesFile)
-                .ToString();
+            var podfile = File.ReadAllText(podfilePath);
+            var podfileRegex = new Regex($@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '(.+)'\nend\n");
             
-            podfile += $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{version}'\nend\n";
+            var requiredVersion = dependenciesRegex.Match(dependenciesFile).ToString();
+            var requiredTarget = $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{requiredVersion}'\nend\n";
+
+            if (!podfileRegex.IsMatch(podfile))
+                podfile += requiredTarget;
+            else {
+                var podfileTarget = podfileRegex.Match(podfile).ToString();
+                podfile = podfile.Replace(podfileTarget, requiredTarget);
+            }
+            
             File.WriteAllText(podfilePath, podfile);
         }
     }

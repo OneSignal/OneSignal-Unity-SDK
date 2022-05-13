@@ -56,7 +56,13 @@ namespace OneSignalSDK {
 
             var fileDiff = packagePaths.Except(exportPaths);
 
-            return !fileDiff.Any();
+            if (fileDiff.Any())
+                return false;
+
+            var pluginManifest = File.ReadAllText(_manifestPackagePath);
+            var projectManifest = File.ReadAllText(_manifestExportPath);
+            
+            return pluginManifest == projectManifest;
         }
 
         protected override void _runStep() {
@@ -76,8 +82,10 @@ namespace OneSignalSDK {
 
                 if (!Directory.Exists(containingPath))
                     Directory.CreateDirectory(containingPath);
-
-                if (!File.Exists(fileExportPath))
+                
+                if (!fileExportPath.Contains(".png")) // always refresh non-pngs
+                    File.Copy(file, fileExportPath, true);
+                else if (!File.Exists(fileExportPath)) // don't copy over existing png files
                     File.Copy(file, fileExportPath);
             }
 
@@ -87,7 +95,11 @@ namespace OneSignalSDK {
         private const string _pluginName = "OneSignalConfig.plugin";
         private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor");
         private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
+        
         private static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
         private static readonly string _pluginExportPath = Path.Combine(_androidPluginsPath, _pluginName);
+        
+        private static readonly string _manifestPackagePath = Path.Combine(_pluginPackagePath, "AndroidManifest.xml");
+        private static readonly string _manifestExportPath = Path.Combine(_pluginExportPath, "AndroidManifest.xml");
     }
 }
