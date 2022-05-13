@@ -163,15 +163,17 @@ namespace OneSignalSDK {
         /// </summary>
         private void AddNotificationServiceExtension() {
 #if !UNITY_CLOUD_BUILD
-            // If file exists then the below has been completed before from another build
-            // The below will not be updated on Append builds
-            // Changes would most likely need to be made to support Append builds
-            if (ExtensionCreatePlist(_outputPath)) {
-                ExtensionAddPodsToTarget();
-                return;
-            }
+            // refresh plist and podfile on appends
+            ExtensionCreatePlist(_outputPath);
+            ExtensionAddPodsToTarget();
 
-            var extensionGuid = _project.AddAppExtension(_project.GetMainTargetGuid(),
+            var extensionGuid = _project.TargetGuidByName(ServiceExtensionTargetName);
+
+            // skip target setup if already present
+            if (!string.IsNullOrEmpty(extensionGuid))
+                return;
+
+            extensionGuid = _project.AddAppExtension(_project.GetMainTargetGuid(),
                 ServiceExtensionTargetName,
                 PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS) + "." + ServiceExtensionTargetName,
                 ServiceExtensionTargetName + "/" + "Info.plist" // Unix path as it's used by Xcode
@@ -198,8 +200,6 @@ namespace OneSignalSDK {
             projCapability.AddAppGroups(new[] { _appGroupName });
             
             projCapability.WriteToFile();
-            
-            ExtensionAddPodsToTarget();
 #endif
         }
 
