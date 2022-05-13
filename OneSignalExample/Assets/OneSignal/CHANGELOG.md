@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Explicitly check for a diff and handle overwrites for the `AndroidManifest.xml` between the project's and package's `OneSignalConfig.plugin`
 - `InstallEdm4uStep` checks for version number to determine if step is completed
 ### Fixed
+- iOS build post processor checks for complete presence of extension
 - iOS publishing error 90206 when uploading app to Apple.
 - iOS builds on Unity on Windows failing on Entitlements file path. Fixes [#491](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/442)
 - `OneSignalXCFramework` pod version of `OneSignalNotificationServiceExtension` target in Podfile of iOS builds will be upgraded if target is present during post processing
