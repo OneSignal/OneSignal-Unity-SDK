@@ -248,8 +248,9 @@ namespace OneSignalSDK {
         }
         
         public override async Task<bool> SetLanguage(string languageCode) {
-            _sdkClass.CallStatic("setLanguage", languageCode);
-            return await Task.FromResult(true); // no callback currently available on Android
+            var proxy = new OSSetLanguageCompletionHandler();
+            _sdkClass.CallStatic("setLanguage", languageCode, proxy);
+            return await proxy;
         }
 
         public override void PromptLocation()
