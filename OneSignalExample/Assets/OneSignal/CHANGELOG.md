@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Updated included iOS SDK to [3.11.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.11.2)
 - Added support for OneSignal Android `setLanguage` callbacks
 
 ## [3.0.2]
