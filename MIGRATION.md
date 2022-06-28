@@ -1014,6 +1014,11 @@ void onIAMTriggedAction(InAppMessageAction action) {
 </td>
 <tr>
 </table>
+  
+#### Android - Background Notification Control
+If you added native Android code to your app to handle notifications with the Notification Extender Service (NES) make sure to follow the 
+[Background Notification Control part of the native Android migration guide](https://documentation.onesignal.com/docs/40-api-android-native#background-notification-control).
+  * Search for `com.onesignal.NotificationExtender` in your `AndroidManifest.xml` as an indicator if you set this up in the 2.x.x SDK.
 
 #### Other
 
