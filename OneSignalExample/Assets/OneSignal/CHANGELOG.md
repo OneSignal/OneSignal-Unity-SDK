@@ -6,13 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Updated included Android SDK to [4.7.4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.7.4)
+- Added support for OneSignal Android functionality `promptForPushNotifications`
+- Updated included Android SDK to [4.8.0](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.7.4)
 - Updated included iOS SDK to [3.11.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.11.2)
 - Added support for OneSignal Android `setLanguage` callbacks
 
 ## [3.0.2]
 ### Changed
-- Updated included Android SDK to [4.7.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.7.1)
+- Updated included Android SDK to [4.7.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.0)
 - Explicitly check for a diff and handle overwrites for the `AndroidManifest.xml` between the project's and package's `OneSignalConfig.plugin`
 - `InstallEdm4uStep` checks for version number to determine if step is completed
 ### Fixed
