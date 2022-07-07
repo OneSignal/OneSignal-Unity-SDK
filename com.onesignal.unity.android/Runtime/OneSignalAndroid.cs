@@ -137,8 +137,11 @@ namespace OneSignalSDK {
             _completedInit(appId);
         }
 
-        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse()
-            => Task.FromResult(NotificationPermission.NotDetermined);
+        public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
+            var proxy = new PromptForPushNotificationPermissionResponseHandler();
+            _sdkClass.CallStatic("promptForPushNotifications", true, proxy);
+            return await proxy ? NotificationPermission.Authorized : NotificationPermission.Denied;
+        }
 
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");

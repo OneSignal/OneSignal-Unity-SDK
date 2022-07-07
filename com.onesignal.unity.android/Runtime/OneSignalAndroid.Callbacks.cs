@@ -287,5 +287,12 @@ namespace OneSignalSDK {
                 _complete(null);
             }
         }
+
+        private sealed class PromptForPushNotificationPermissionResponseHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
+            public PromptForPushNotificationPermissionResponseHandler() : base("PromptForPushNotificationPermissionResponseHandler") { }
+
+            /// <param name="accepted">boolean</param>
+            public void response(bool accepted) => _complete(accepted);
+        }
     }
 }
