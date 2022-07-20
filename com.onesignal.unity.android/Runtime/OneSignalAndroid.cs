@@ -137,8 +137,11 @@ namespace OneSignalSDK {
             _completedInit(appId);
         }
 
-        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse()
-            => Task.FromResult(NotificationPermission.NotDetermined);
+        public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
+            var proxy = new PromptForPushNotificationPermissionResponseHandler();
+            _sdkClass.CallStatic("promptForPushNotifications", true, proxy);
+            return await proxy ? NotificationPermission.Authorized : NotificationPermission.Denied;
+        }
 
         public override void ClearOneSignalNotifications()
             => _sdkClass.CallStatic("clearOneSignalNotifications");
@@ -248,8 +251,9 @@ namespace OneSignalSDK {
         }
         
         public override async Task<bool> SetLanguage(string languageCode) {
-            _sdkClass.CallStatic("setLanguage", languageCode);
-            return await Task.FromResult(true); // no callback currently available on Android
+            var proxy = new OSSetLanguageCompletionHandler();
+            _sdkClass.CallStatic("setLanguage", languageCode, proxy);
+            return await proxy;
         }
 
         public override void PromptLocation()

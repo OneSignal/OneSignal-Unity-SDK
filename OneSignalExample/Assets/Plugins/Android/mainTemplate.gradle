@@ -11,7 +11,6 @@
             url "https://repo.maven.apache.org/maven2" // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:5
         }
         mavenLocal()
-        jcenter()
         mavenCentral()
     }
 }
@@ -22,7 +21,7 @@ apply plugin: 'com.android.library'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.onesignal:OneSignal:4.6.5' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
+    implementation 'com.onesignal:OneSignal:4.8.1' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
 // Android Resolver Dependencies End
 **DEPS**}
 
