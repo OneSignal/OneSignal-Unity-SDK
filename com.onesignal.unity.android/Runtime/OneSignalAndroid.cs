@@ -170,7 +170,7 @@ namespace OneSignalSDK {
             => _sdkClass.CallStatic("removeTriggerForKey", key);
 
         public override void RemoveTriggers(params string[] keys)
-            => _sdkClass.CallStatic("removeTriggersForKeys", Json.Serialize(keys));
+            => _sdkClass.CallStatic("removeTriggersForKeys", keys.ToArrayList());
 
         public override string GetTrigger(string key) {
             var triggerVal = _sdkClass.CallStatic<AndroidJavaObject>("getTriggerValueForKey", key);
@@ -210,7 +210,7 @@ namespace OneSignalSDK {
 
         public override async Task<bool> DeleteTags(params string[] keys) {
             var proxy = new ChangeTagsUpdateHandler();
-            _sdkClass.CallStatic("deleteTags", keys.ToList(), proxy);
+            _sdkClass.CallStatic("deleteTags", keys.ToArrayList(), proxy);
             return await proxy;
         }
 

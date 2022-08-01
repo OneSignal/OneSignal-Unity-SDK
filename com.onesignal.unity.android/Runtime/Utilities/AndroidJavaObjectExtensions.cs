@@ -111,5 +111,15 @@ namespace OneSignalSDK {
             return map;
         }
 
+        public static AndroidJavaObject ToArrayList(this string[] keys) {
+            AndroidJavaObject arrayList = new AndroidJavaObject("java.util.ArrayList");
+
+            foreach(string key in keys) {
+                arrayList.Call<bool>("add", key);
+            }
+
+            return arrayList;
+        }
+
     }
 }
