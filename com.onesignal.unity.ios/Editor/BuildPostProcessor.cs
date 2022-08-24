@@ -1,3 +1,4 @@
+#if UNITY_IOS
 /*
  * Modified MIT License
  *
@@ -280,3 +281,4 @@ namespace OneSignalSDK {
         }
     }
 }
+#endif // UNITY_IOS
