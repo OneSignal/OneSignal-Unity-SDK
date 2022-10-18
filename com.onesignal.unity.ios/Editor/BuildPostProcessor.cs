@@ -187,6 +187,7 @@ namespace OneSignalSDK {
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
             _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(extensionGuid, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
+            _project.SetBuildProperty(extensionGuid, "ENABLE_BITCODE", "NO");
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
                 $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
