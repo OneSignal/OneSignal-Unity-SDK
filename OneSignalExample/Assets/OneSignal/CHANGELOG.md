@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Updated included Android SDK to [4.8.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.2)
+- Updated included Android SDK to [4.8.3](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.3)
 - Updated included iOS SDK to [3.11.5](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.11.5)
 ### Fixed
 - Fixed OneSignal.Version constant value
