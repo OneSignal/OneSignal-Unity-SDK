@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "3.0.1"
+        "com.onesignal.unity.core": "3.0.5"
       }
     },
     "com.unity.ext.nunit": {
