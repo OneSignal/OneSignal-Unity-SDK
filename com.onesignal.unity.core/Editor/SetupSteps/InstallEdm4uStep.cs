@@ -30,6 +30,7 @@ using UnityEditor.Compilation;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -46,36 +47,65 @@ namespace OneSignalSDK {
         public override bool IsRequired
             => true;
 
-        protected override bool _getIsStepCompleted() {
+        protected Version _getAssetsEDM4UVersion() {
             var isInstalled = CompilationPipeline.GetPrecompiledAssemblyNames()
                .Any(assemblyName => assemblyName.StartsWith("Google.VersionHandler"));
 
             if (!isInstalled)
-                return false;
+                return null;
 
             var path = "Assets/ExternalDependencyManager/Editor";
             var directoryInfo = new DirectoryInfo(path);
 
             if (!directoryInfo.Exists)
-                return false;
+                return null;
 
             FileInfo[] files;
 
             try {
                 files = directoryInfo.GetFiles("external-dependency-manager_version-*_manifest.txt");
             } catch (Exception) {
-                return false;
+                return null;
             }
 
             if (files.Length != 1) {
-                SDKDebug.Warn("EDM4U version number could not be determined.");
-                return false;
+                return null;
             }
 
             var file = files[0];
             var pattern = @"external-dependency-manager_version-(.+)_manifest\.txt";
             var match = Regex.Match(file.Name, pattern);
             var version = new Version(match.Groups[1].Value);
+
+            return version;
+        }
+
+        protected Version _getPackagesEDM4UVersion() {
+            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.GetName().Name.StartsWith("Google.PackageManagerResolver"));
+            if (assembly == null)
+                return null;
+
+            var type = assembly.GetType("Google.PackageManagerResolverVersionNumber", false);
+            if (type == null)
+                return null;
+
+            var property = type.GetProperty("Value", BindingFlags.Static | BindingFlags.Public);
+            if (property == null)
+                return null;
+
+            var version = (Version)property.GetValue(null);
+            return version;
+        }
+
+        protected override bool _getIsStepCompleted() {
+            var version = _getAssetsEDM4UVersion();
+            if (version == null)
+                version = _getPackagesEDM4UVersion();
+
+            if (version == null) {
+                SDKDebug.Warn("EDM4U version number could not be determined.");
+                return false;
+            }
 
             var expectedVersion = new Version(_edm4UVersion);
 
