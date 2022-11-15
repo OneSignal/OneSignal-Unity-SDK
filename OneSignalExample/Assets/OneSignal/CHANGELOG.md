@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated included iOS SDK to [3.11.5](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.11.5)
 ### Fixed
 - Log current version number of the OneSignal SDK
+- Fixed app group name to be a property. Fixes [#545](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/545)
 
 ## [3.0.4]
 ### Fixed
