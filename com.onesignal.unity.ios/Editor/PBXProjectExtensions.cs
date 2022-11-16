@@ -25,6 +25,7 @@
  * THE SOFTWARE.
  */
 
+#if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 
 namespace OneSignalSDK {
@@ -44,3 +45,4 @@ namespace OneSignalSDK {
     #endif
     }
 }
+#endif

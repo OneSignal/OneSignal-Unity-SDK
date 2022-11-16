@@ -42,6 +42,8 @@
  * 6. Observe Badge value is 1. (If it is 3 there is an App Group issue)
 */
 
+#if UNITY_IOS
+
 // Flag if an App Group should created for the main target and the NSE
 // Try renaming NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME below first before
 //   removing ADD_APP_GROUP if you run into Provisioning errors in Xcode that
@@ -280,3 +282,4 @@ namespace OneSignalSDK {
         }
     }
 }
+#endif
