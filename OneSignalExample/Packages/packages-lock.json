@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "3.0.1"
+        "com.onesignal.unity.core": "3.0.6"
       }
     },
     "com.onesignal.unity.core": {
@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "3.0.5"
+        "com.onesignal.unity.core": "3.0.6"
       }
     },
     "com.unity.ext.nunit": {

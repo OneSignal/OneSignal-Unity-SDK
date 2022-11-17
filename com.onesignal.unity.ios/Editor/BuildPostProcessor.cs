@@ -42,6 +42,8 @@
  * 6. Observe Badge value is 1. (If it is 3 there is an App Group issue)
 */
 
+#if UNITY_IOS
+
 // Flag if an App Group should created for the main target and the NSE
 // Try renaming NOTIFICATION_SERVICE_EXTENSION_TARGET_NAME below first before
 //   removing ADD_APP_GROUP if you run into Provisioning errors in Xcode that
@@ -75,12 +77,12 @@ namespace OneSignalSDK {
         private static readonly string PluginLibrariesPath = Path.Combine(PackageName, "Runtime", "Plugins", "iOS");
         private static readonly string PluginFilesPath = Path.Combine("Packages", PluginLibrariesPath);
 
-        private readonly string _appGroupName = $"group.{PlayerSettings.applicationIdentifier}.onesignal";
-        
         private string _outputPath;
         private string _projectPath;
-        
+
         private readonly PBXProject _project = new PBXProject();
+
+        private string _appGroupName => $"group.{PlayerSettings.applicationIdentifier}.onesignal";
 
         /// <summary>
         /// must be between 40 and 50 to ensure that it's not overriden by Podfile generation (40) and that it's
@@ -280,3 +282,4 @@ namespace OneSignalSDK {
         }
     }
 }
+#endif

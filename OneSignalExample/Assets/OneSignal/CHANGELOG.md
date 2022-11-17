@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.0.6]
+### Fixed
+- Android builds failing without the Unity iOS module
+- Fixed app group name to be a property. Fixes [#545](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/545)
+
 ## [3.0.5]
 ### Changed
 - Updated included Android SDK to [4.8.3](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.3)
@@ -165,7 +170,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.5...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.6...HEAD
+[3.0.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.5...3.0.6
 [3.0.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.2...3.0.3
