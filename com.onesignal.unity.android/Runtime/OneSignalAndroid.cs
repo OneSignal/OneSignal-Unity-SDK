@@ -281,5 +281,15 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("sendOutcomeWithValue", name, value, proxy);
             return await proxy;
         }
+
+        public override Task<bool> enterLiveActivity(string activityId, string token) {
+            SDKDebug.Warn("This feature is only available for iOS.");
+            return Task.FromResult(false);
+        }
+
+        public override Task<bool> exitLiveActivity(string activityId) {
+            SDKDebug.Warn("This feature is only available for iOS.");
+            return Task.FromResult(false);
+        }
     }
 }
