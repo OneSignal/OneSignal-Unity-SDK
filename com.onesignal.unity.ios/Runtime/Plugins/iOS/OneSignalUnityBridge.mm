@@ -425,6 +425,17 @@ void _sendOutcomeWithValue(const char* name, float value, int hashCode, BooleanR
                               value:@(value)
                           onSuccess:^(OSOutcomeEvent *outcome) { CALLBACK(outcome != nil); }];
 }
+
+void _enterLiveActivity(const char* activityId, const char* token, int hashCode, BooleanResponseDelegate callback) {
+    [OneSignal enterLiveActivity:TO_NSSTRING(activityId)
+                       withToken:TO_NSSTRING(token)
+                     withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                     withFailure:^(NSError *error) { CALLBACK(NO); }];
 }
 
-
+void _exitLiveActivity(const char* activityId, int hashCode, BooleanResponseDelegate callback) {
+    [OneSignal exitLiveActivity:TO_NSSTRING(activityId)
+                    withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                    withFailure:^(NSError *error) { CALLBACK(NO); }];
+}
+}

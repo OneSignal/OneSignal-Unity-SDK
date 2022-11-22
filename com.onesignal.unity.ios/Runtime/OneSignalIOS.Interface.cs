@@ -95,5 +95,8 @@ namespace OneSignalSDK {
         [DllImport("__Internal")] private static extern void _sendOutcome(string name, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _sendUniqueOutcome(string name, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _sendOutcomeWithValue(string name, float value, int hashCode, BooleanResponseDelegate callback);
+
+        [DllImport("__Internal")] private static extern void _enterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _exitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
     }
 }
