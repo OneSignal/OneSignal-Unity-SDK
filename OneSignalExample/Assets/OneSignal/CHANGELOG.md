@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## [3.0.7]
 ### Changed
-- Updated included iOS SDK to [3.12.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.12.2)
+- Updated included iOS SDK to [3.12.3](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.12.3)
 - Added support for OneSignal iOS functionality `enterLiveActivity` and `exitLiveActivity`
 
 ## [3.0.6]
