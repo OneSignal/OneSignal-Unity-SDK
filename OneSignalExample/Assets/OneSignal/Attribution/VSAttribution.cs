@@ -1,9 +1,7 @@
 using System;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.Analytics;
 
-namespace OneSignalSDK
+namespace UnityEditor.VSAttribution.OneSignalSDK
 {
 	public static class VSAttribution
 	{
