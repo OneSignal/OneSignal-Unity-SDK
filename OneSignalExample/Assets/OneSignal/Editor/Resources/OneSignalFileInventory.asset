@@ -30,8 +30,10 @@ MonoBehaviour:
   - Assets/OneSignal/link.xml.meta
   - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef
   - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef.meta
-  - Assets/OneSignal/Attribution/VspAttribution.cs
-  - Assets/OneSignal/Attribution/VspAttribution.cs.meta
+  - Assets/OneSignal/Attribution/VSAttribution.cs
+  - Assets/OneSignal/Attribution/VSAttribution.cs.meta
+  - Assets/OneSignal/Attribution/OneSignalVSAttribution.cs
+  - Assets/OneSignal/Attribution/OneSignalVSAttribution.cs.meta
   - Assets/OneSignal/Documentation~/asset_listing.png
   - Assets/OneSignal/Documentation~/ios_auto_sign.png
   - Assets/OneSignal/Documentation~/ios_extension_sign_and_groups.png
