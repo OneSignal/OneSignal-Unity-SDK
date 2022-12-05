@@ -59,7 +59,7 @@ namespace OneSignalSDK {
     /// See full documentation at
     /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#osnotification-class
     /// </summary>
-    [Serializable] public sealed class Notification {
+    [Serializable] public class NotificationBase {
         /// <summary>
         /// OneSignal notification UUID
         /// </summary>
@@ -185,12 +185,6 @@ namespace OneSignalSDK {
         /// <remarks>Android only</remarks>
         public int priority;
 
-        /// <summary>
-        /// Gets the notification payloads a summary notification was created from
-        /// </summary>
-        /// <remarks>Android only</remarks>
-        public List<Notification> groupedNotifications;
-
         /// </summary>
         /// If a background image was set, this object will be available
         /// </summary>
@@ -265,5 +259,13 @@ namespace OneSignalSDK {
         /// <remarks>iOS 10+ only</remarks>
         public Dictionary<string, object> attachments;
     #endregion
+    }
+
+    [Serializable] public sealed class Notification : NotificationBase {
+        /// <summary>
+        /// Gets the notification payloads a summary notification was created from
+        /// </summary>
+        /// <remarks>Android only</remarks>
+        public List<NotificationBase> groupedNotifications;
     }
 }
