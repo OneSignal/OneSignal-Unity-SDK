@@ -58,11 +58,17 @@ namespace OneSignalSDK {
 
         private static Notification _getNotification(AndroidJavaObject notifJO) {
             var notification = notifJO.ToSerializable<Notification>();
-                
+            
             var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
             if (dataJson != null) {
                 var dataJsonStr = dataJson.Call<string>("toString");
                 notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
+            }
+
+            var groupedNotificationsJson = notifJO.Call<AndroidJavaObject>("getGroupedNotifications");
+            if (groupedNotificationsJson != null) {
+                var groupedNotificationsStr = groupedNotificationsJson.Call<string>("toString");
+                notification.groupedNotifications = Json.Deserialize(groupedNotificationsStr) as List<NotificationBase>;
             }
 
             return notification;
