@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated Unity Verified Solutions Attribution script from VspAttribution to VSAttribution
 ### Fixed
+- Resolved serialization depth limit 10 exceeded warning log
 - Fixed InstallEdm4uStep to work with UPM EDM4U installations
 
 ## [3.0.7]
