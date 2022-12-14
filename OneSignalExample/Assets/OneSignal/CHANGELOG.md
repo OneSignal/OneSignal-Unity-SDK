@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.0.8]
+### Changed
+- Renamed `enterLiveActivity` to `EnterLiveActivity` and `exitLiveActivity` to `ExitLiveActivity`
+- Updated Unity Verified Solutions Attribution script from VspAttribution to VSAttribution
+### Fixed
+- Resolved serialization depth limit 10 exceeded warning log
+
 ## [3.0.7]
 ### Changed
 - Updated included iOS SDK to [3.12.3](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.12.3)
@@ -175,7 +182,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.7...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.8...HEAD
+[3.0.8]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.7...3.0.8
 [3.0.7]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.6...3.0.7
 [3.0.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.5...3.0.6
 [3.0.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.4...3.0.5
