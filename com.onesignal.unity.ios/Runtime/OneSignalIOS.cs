@@ -242,13 +242,13 @@ namespace OneSignalSDK {
             return await proxy;
         }
 
-        public override async Task<bool> enterLiveActivity(string activityId, string token) {
+        public override async Task<bool> EnterLiveActivity(string activityId, string token) {
             var (proxy, hashCode) = _setupProxy<bool>();
             _enterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
-        public override async Task<bool> exitLiveActivity(string activityId) {
+        public override async Task<bool> ExitLiveActivity(string activityId) {
             var (proxy, hashCode) = _setupProxy<bool>();
             _exitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
             return await proxy;

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Renamed `enterLiveActivity` to `EnterLiveActivity` and `exitLiveActivity` to `ExitLiveActivity`
 - Updated Unity Verified Solutions Attribution script from VspAttribution to VSAttribution
 ### Fixed
 - Resolved serialization depth limit 10 exceeded warning log
