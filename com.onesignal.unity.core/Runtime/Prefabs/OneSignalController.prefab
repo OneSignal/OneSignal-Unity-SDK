@@ -40,11 +40,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7086170862090619749}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd191667470c4b089358e23c0bdbe704, type: 3}
+  m_Script: {fileID: 11500000, guid: 07dedd81714c74946984561ce9cbf8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   AppId: 
-  LogLevel: 2
-  AlertLevel: 4
-  RequireUserConsent: 0
-  ShareLocation: 0
+  LogLevel: 3
+  AlertLevel: 0
+  RequiresPrivacyConsent: 0
+  IsLocationShared: 0
