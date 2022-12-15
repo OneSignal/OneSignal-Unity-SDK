@@ -28,23 +28,23 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDK; // TODO: OneSignalSDK.ReflectionHelpers
 
-namespace OneSignalSDKNew {
+namespace OneSignalSDK {
     public abstract partial class OneSignal {
-        private static OneSignal _default;
-
-        internal static event Action<string> OnInitialize;
-
         internal static string AppId { get; private set; }
         internal static bool DidInitialize { get; private set; }
+        internal static event Action<string> OnInitialize;
 
         protected static void _completedInit(string appId) {
             AppId         = appId;
             DidInitialize = true;
             OnInitialize?.Invoke(AppId);
         }
+        
+        protected LogLevel _logLevel = LogLevel.Fatal;
+        protected LogLevel _alertLevel = LogLevel.None;
+        
+        private static OneSignal _default;
 
         private static OneSignal _getDefaultInstance() {
             if (_default != null)
@@ -54,11 +54,10 @@ namespace OneSignalSDKNew {
             var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignal>("OneSignal");
             if (Activator.CreateInstance(availableSDKs.First()) is OneSignal sdk) {
                 _default = sdk;
-                OneSignalSDKNew.Debug.Utilities.SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
-                // TODO: OneSignalSDK.SDKDebug
+                SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
             }
             else {
-                UnityEngine.Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
+                Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
             }
             
             return _default;
