@@ -49,6 +49,6 @@ namespace OneSignalSDKNew.Location {
         /// Awaitable boolean of true if the user opted in to location permission or
         /// false if the user is opted out of location permission
         /// </returns>
-        Task<bool> RequestPermision(bool fallbackToSettings);
+        Task<bool> RequestPermisionAsync(bool fallbackToSettings);
     }
 }
