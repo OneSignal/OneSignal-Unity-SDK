@@ -92,7 +92,7 @@ namespace OneSignalSDKNew.Notifications {
         /// Awaitable boolean of true if the user opted in to push notifications or
         /// false if the user opted out of push notifications.
         /// </returns>
-        Task<bool> RequestPermision(bool fallbackToSettings);
+        Task<bool> RequestPermisionAsync(bool fallbackToSettings);
 
         /// <summary>
         /// Removes all OneSignal app notifications from the Notification Shade
