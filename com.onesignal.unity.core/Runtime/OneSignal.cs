@@ -139,7 +139,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         /// trust for the login operation.  Required when identity verification has been enabled. See
         /// [Identity Verification | OneSignal](https://documentation.onesignal.com/docs/identity-verification)
         /// </param>
-        public abstract Task Login(string externalId, string jwtBearerToken = null);
+        public abstract Task LoginAsync(string externalId, string jwtBearerToken = null);
 
         /// <summary>
         /// Logout the user previously logged in via [login]. The [user] property now references
