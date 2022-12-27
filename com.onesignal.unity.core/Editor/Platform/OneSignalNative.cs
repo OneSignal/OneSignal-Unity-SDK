@@ -27,38 +27,57 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OneSignalSDKNew.Notifications;
+using OneSignalSDKNew.InAppMessages;
+using OneSignalSDKNew.Debug;
+using OneSignalSDKNew.Debug.Utilities;
+using OneSignalSDKNew.Location;
+using OneSignalSDKNew.Session;
+using OneSignalSDKNew.User;
 
-#pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDK {
+namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete OneSignalNativeOld, OneSignalNativeInitOld
     /// <summary>
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>
     internal sealed class OneSignalNative : OneSignal {
-        public override event NotificationWillShowDelegate NotificationWillShow;
-        public override event NotificationActionDelegate NotificationOpened;
-        public override event InAppMessageLifecycleDelegate InAppMessageWillDisplay;
-        public override event InAppMessageLifecycleDelegate InAppMessageDidDisplay;
-        public override event InAppMessageLifecycleDelegate InAppMessageWillDismiss;
-        public override event InAppMessageLifecycleDelegate InAppMessageDidDismiss;
-        public override event InAppMessageActionDelegate InAppMessageTriggeredAction;
-        public override event StateChangeDelegate<NotificationPermission> NotificationPermissionChanged;
-        public override event StateChangeDelegate<PushSubscriptionState> PushSubscriptionStateChanged;
-        public override event StateChangeDelegate<EmailSubscriptionState> EmailSubscriptionStateChanged;
-        public override event StateChangeDelegate<SMSSubscriptionState> SMSSubscriptionStateChanged;
+        private UserManager _user = new UserManager();
+        private SessionManager _session = new SessionManager();
+        private NotificationsManager _notifications = new NotificationsManager();
+        private LocationManager _location = new LocationManager();
+        private InAppMessagesManager _iams = new InAppMessagesManager();
+        private DebugManager _debug = new DebugManager();
 
-        public override LogLevel LogLevel { get; set; }
-        public override LogLevel AlertLevel { get; set; }
-        
-        public override bool PrivacyConsent { get; set; }
-        public override bool RequiresPrivacyConsent { get; set; }
-        public override void SetLaunchURLsInApp(bool launchInApp) {
-            
+        public override IUserManager User {
+            get => _user;
         }
         
-        public override NotificationPermission NotificationPermission { get; }
-        public override PushSubscriptionState PushSubscriptionState { get; }
-        public override EmailSubscriptionState EmailSubscriptionState { get; }
-        public override SMSSubscriptionState SMSSubscriptionState { get; }
+        public override ISessionManager Session {
+            get => _session;
+        }
+        
+        public override INotificationsManager Notifications{
+            get => _notifications;
+        }
+        
+        public override ILocationManager Location {
+            get => _location;
+        }
+
+        public override IInAppMessagesManager InAppMessages {
+            get => _iams;
+        }
+
+        public override IDebugManager Debug {
+            get => _debug;
+        }
+
+        public override bool PrivacyConsent { get; set; }
+
+        public override bool RequiresPrivacyConsent { get; set; }
+
+        public override void SetLaunchURLsInApp(bool launchInApp) {
+
+        }
 
         public override void Initialize(string appId) {
             if (string.IsNullOrEmpty(appId)) {
@@ -69,118 +88,12 @@ namespace OneSignalSDK {
             SDKDebug.Warn("Native SDK is placeholder. Please run on supported platform (iOS or Android).");
         }
 
-        public override Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
-            return Task.FromResult(NotificationPermission.NotDetermined);
-        }
-
-        public override void ClearOneSignalNotifications() {
-            
-        }
-
-        public override bool PushEnabled { get; set; }
-
-        public override Task<Dictionary<string, object>> PostNotification(Dictionary<string, object> options) {
-            return Task.FromResult(new Dictionary<string, object>());
-        }
-
-        public override void SetTrigger(string key, string value) {
-            
-        }
-
-        public override void SetTriggers(Dictionary<string, string> triggers) {
-            
-        }
-
-        public override void RemoveTrigger(string key) {
-            
-        }
-
-        public override void RemoveTriggers(params string[] keys) {
-            
-        }
-
-        public override string GetTrigger(string key) {
-            return null;
-        }
-
-        public override Dictionary<string, string> GetTriggers() {
-            return new Dictionary<string, string>();
-        }
-
-        public override bool InAppMessagesArePaused { get; set; }
-
-        public override Task<bool> SendTag(string key, object value) {
+        public override Task LoginAsync(string externalId, string jwtBearerToken = null) {
             return Task.FromResult(false);
         }
 
-        public override Task<bool> SendTags(Dictionary<string, object> tags) {
-            return Task.FromResult(false);
-        }
+        public override void Logout() {
 
-        public override Task<Dictionary<string, object>> GetTags() {
-            return Task.FromResult(new Dictionary<string, object>());
-        }
-
-        public override Task<bool> DeleteTag(string key) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> DeleteTags(params string[] keys) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> SetExternalUserId(string externalId, string authHash = null) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> SetEmail(string email, string authHash = null) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> SetSMSNumber(string smsNumber, string authHash = null) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> RemoveExternalUserId() {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> LogOutEmail() {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> LogOutSMS() {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> SetLanguage(string languageCode) {
-            return Task.FromResult(false);
-        }
-
-        public override void PromptLocation() {
-            
-        }
-
-        public override bool ShareLocation  { get; set; }
-
-        public override Task<bool> SendOutcome(string name) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> SendUniqueOutcome(string name) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> SendOutcomeWithValue(string name, float value) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> EnterLiveActivity(string activityId, string token) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> ExitLiveActivity(string activityId) {
-            return Task.FromResult(false);
         }
     }
 }
