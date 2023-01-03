@@ -36,9 +36,7 @@ namespace OneSignalSDKNew.Notifications {
 
         public bool Permission { get; }
 
-        public bool PushEnabled { get; set; }
-
-        public Task<bool> RequestPermisionAsync(bool fallbackToSettings){
+        public Task<bool> RequestPermissionAsync(bool fallbackToSettings){
             return Task.FromResult(false);
         }
 

@@ -92,7 +92,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
             return Task.FromResult(false);
         }
 
-        public override void Logout() {
+        public override void LogoutAsync() {
 
         }
     }

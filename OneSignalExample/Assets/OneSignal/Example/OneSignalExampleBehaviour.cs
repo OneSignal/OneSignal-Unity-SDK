@@ -228,7 +228,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     
     public void LogoutOneSignalUser() {
         _log($"Logging out user ");
-        OneSignal.Default.Logout();
+        OneSignal.Default.LogoutAsync();
     }
 
     public void AddEmail() {
@@ -258,12 +258,12 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public async void PromptForPush() {
         _log("Opening permission prompt for push notifications and awaiting result...");
 
-        var result = await OneSignal.Default.Notifications.RequestPermisionAsync(true);
+        var result = await OneSignal.Default.Notifications.RequestPermissionAsync(true);
 
         if (result)
             _log("User opted in");
         else
-            _error("User opted out");
+            _log("User opted out");
     }
 
     public void ClearPush() {
@@ -335,17 +335,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public async void PromptLocation() {
         _log("Opening permission prompt for location and awaiting result...");
 
-        var result = await OneSignal.Default.Location.RequestPermisionAsync(true);
+        var result = await OneSignal.Default.Location.RequestPermissionAsync(true);
 
         if (result)
             _log("User opted in");
         else
-            _error("User opted out");
+            _log("User opted out");
     }
 
     public void ToggleShareLocation() {
-        _log($"Toggling ShareLocation to <b>{!OneSignal.Default.Location.IsLocationShared}</b>");
-        OneSignal.Default.Location.IsLocationShared = !OneSignal.Default.Location.IsLocationShared;
+        _log($"Toggling ShareLocation to <b>{!OneSignal.Default.Location.IsShared}</b>");
+        OneSignal.Default.Location.IsShared = !OneSignal.Default.Location.IsShared;
     }
 
     /*
