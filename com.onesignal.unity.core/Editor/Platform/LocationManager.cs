@@ -29,9 +29,9 @@ using System.Threading.Tasks;
 
 namespace OneSignalSDKNew.Location {
     internal sealed class LocationManager : ILocationManager {
-        public bool IsLocationShared { get; set; }
+        public bool IsShared { get; set; }
 
-        public Task<bool> RequestPermisionAsync(bool fallbackToSettings) {
+        public Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
             return Task.FromResult(false);
         }
     }
