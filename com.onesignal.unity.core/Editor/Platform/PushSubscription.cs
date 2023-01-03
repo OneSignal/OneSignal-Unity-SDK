@@ -34,6 +34,14 @@ namespace OneSignalSDKNew.User.Models {
 
         public string Token { get; }
 
-        public bool Enabled  { get; set; }
+        public bool OptedIn  { get; set; }
+
+        public void OptIn() {
+
+        }
+
+        public void OptOut() {
+
+        }
     }
 }
