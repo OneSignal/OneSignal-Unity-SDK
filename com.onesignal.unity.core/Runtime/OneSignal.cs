@@ -147,6 +147,6 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         /// be retrieved, except through this device as long as the app remains installed and the app
         /// data is not cleared.
         /// </summary>
-        public abstract void Logout();
+        public abstract void LogoutAsync();
     }
 }

@@ -60,13 +60,13 @@ namespace OneSignalSDKNew { // TODO: Change namespace and delete OneSignalBehavi
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>
         /// <remarks>This method must be called before <see cref="OneSignal.Initialize"/> on iOS.</remarks>
-        public bool IsLocationShared = false;
+        public bool IsShared = false;
 
         private void Start() {
             OneSignal.Default.Debug.LogLevel               = LogLevel;
             OneSignal.Default.Debug.AlertLevel             = AlertLevel;
             OneSignal.Default.RequiresPrivacyConsent       = RequiresPrivacyConsent;
-            OneSignal.Default.Location.IsLocationShared    = IsLocationShared;
+            OneSignal.Default.Location.IsShared            = IsShared;
             
             OneSignal.Default.Initialize(AppId);
         }

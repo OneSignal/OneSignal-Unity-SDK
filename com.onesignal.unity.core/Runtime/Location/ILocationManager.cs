@@ -36,7 +36,7 @@ namespace OneSignalSDKNew.Location {
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>
         /// <remarks>This method must be called before <see cref="OneSignal.Initialize"/> on iOS.</remarks>
-        bool IsLocationShared { get; set; }
+        bool IsShared { get; set; }
 
         /// <summary>
         /// Helper method to show the native prompt to ask the user for consent to share their location
@@ -49,6 +49,6 @@ namespace OneSignalSDKNew.Location {
         /// Awaitable boolean of true if the user opted in to location permission or
         /// false if the user is opted out of location permission
         /// </returns>
-        Task<bool> RequestPermisionAsync(bool fallbackToSettings);
+        Task<bool> RequestPermissionAsync(bool fallbackToSettings);
     }
 }

@@ -71,12 +71,6 @@ namespace OneSignalSDKNew.Notifications {
         event PermissionChangedDelegate PermissionChanged;
 
         /// <summary>
-        /// Whether push notifications are currently enabled for an active push subscription.
-        /// </summary>
-        /// <remarks>Can be used to turn off push notifications for a user without removing their user data</remarks>
-        bool PushEnabled { get; set; }
-
-        /// <summary>
         /// Current status of permissions granted by this device for push notifications
         /// </summary>
         bool Permission { get; }
@@ -92,7 +86,7 @@ namespace OneSignalSDKNew.Notifications {
         /// Awaitable boolean of true if the user opted in to push notifications or
         /// false if the user opted out of push notifications.
         /// </returns>
-        Task<bool> RequestPermisionAsync(bool fallbackToSettings);
+        Task<bool> RequestPermissionAsync(bool fallbackToSettings);
 
         /// <summary>
         /// Removes all OneSignal app notifications from the Notification Shade
