@@ -35,6 +35,7 @@ using OneSignalSDKNew.Debug.Models;
 using OneSignalSDKNew.Notifications.Models;
 using OneSignalSDKNew.InAppMessages.Models;
 using OneSignalSDKNew.User.Models;
+using System.Collections.Generic;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -76,6 +77,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// <summary>
     /// 
     /// </summary>
+    public string language;
+
+    /// <summary>
+    /// 
+    /// </summary>
     public string tagKey;
 
     /// <summary>
@@ -112,6 +118,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.Debug.LogLevel = LogLevel.Info;
         OneSignal.Default.Debug.AlertLevel = LogLevel.Fatal;
 
+        _log($"Initializing with appId <b>{appId}</b>");
+        OneSignal.Default.Initialize(appId);
+
         // Setting RequiresPrivacyConsent to true will prevent the OneSignalSDK from operating until
         // PrivacyConsent is also set to true
         OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
@@ -119,6 +128,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         // Setup the below to listen for and respond to events from notifications
         OneSignal.Default.Notifications.Clicked += _notificationOnClick;
         OneSignal.Default.Notifications.WillShow += _notificationOnDisplay;
+        OneSignal.Default.Notifications.PermissionChanged += _notificationPermissionChanged;
 
         // Setup the below to listen for and respond to events from in-app messages
         OneSignal.Default.InAppMessages.WillDisplay += _iamWillDisplay;
@@ -128,7 +138,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.InAppMessages.Clicked += _iamOnClick;
 
         // Setup the below to listen for and respond to state changes
-        OneSignal.Default.Notifications.PermissionChanged += _notificationPermissionChanged;
         OneSignal.Default.User.PushSubscription.Changed += _pushSubscriptionChanged;
     }
 
@@ -170,7 +179,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     private void _notificationPermissionChanged(bool permission) {
-        _log($"Notification Permissions changed to: {permission}");
+        _log($"Notification Permission changed to: {permission}");
     }
 
     private void _pushSubscriptionChanged(IPushSubscription subscription) {
@@ -180,11 +189,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /*
      * SDK setup
      */
-    
-    public void Initialize() {
-        _log($"Initializing with appId <b>{appId}</b>");
-        OneSignal.Default.Initialize(appId);
-    }
 
     public void ToggleRequiresPrivacyConsent() {
         if (OneSignal.Default.RequiresPrivacyConsent)
@@ -224,11 +228,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Logging in user (<b>{externalId}</b>) and awaiting result...");
 
         await OneSignal.Default.LoginAsync(externalId);
+
+        _log("User login complete");
     }
     
-    public void LogoutOneSignalUser() {
-        _log($"Logging out user ");
-        OneSignal.Default.LogoutAsync();
+    public async void LogoutOneSignalUser() {
+        _log($"Logging out user and awaiting result...");
+
+        await OneSignal.Default.LogoutAsync();
+
+        _log("User logout complete");
+
     }
 
     public void AddEmail() {
@@ -251,6 +261,25 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.User.RemoveSmsSubscription(phoneNumber);
     }
 
+    public void GetLanguage() {
+        _log($"Language set for the user is (<b>{OneSignal.Default.User.Language}</b>)");
+    }
+
+    public void SetLanguage() {
+        _log($"Setting language for the user to (<b>{language}</b>)");
+        OneSignal.Default.User.Language = language;
+    }
+
+    public void PushSubscriptionOptIn() {
+        _log($"Opting in push subscription");
+        OneSignal.Default.User.PushSubscription.OptIn();
+    }
+
+    public void PushSubscriptionOptOut() {
+        _log($"Opting out push subscription");
+        OneSignal.Default.User.PushSubscription.OptOut();
+    }
+
     /*
      * Push
      */
@@ -261,14 +290,19 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         var result = await OneSignal.Default.Notifications.RequestPermissionAsync(true);
 
         if (result)
-            _log("User opted in");
+            _log("Notification permission accpeted");
         else
-            _log("User opted out");
+            _log("Notification permission denied");
+
+        _log($"Notification permission is: {OneSignal.Default.Notifications.Permission}");
     }
 
-    public void ClearPush() {
-        _log("Clearing existing OneSignal push notifications...");
-        OneSignal.Default.Notifications.ClearAllNotifications();
+    public async void ClearPush() {
+        _log("Clearing existing OneSignal push notifications and awaiting result ...");
+        
+        await OneSignal.Default.Notifications.ClearAllNotificationsAsync();
+        
+        _log("Notifications cleared");
     }
 
     /*
@@ -344,7 +378,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     public void ToggleShareLocation() {
-        _log($"Toggling ShareLocation to <b>{!OneSignal.Default.Location.IsShared}</b>");
+        _log($"Toggling Location IsShared to <b>{!OneSignal.Default.Location.IsShared}</b>");
         OneSignal.Default.Location.IsShared = !OneSignal.Default.Location.IsShared;
     }
 
@@ -365,12 +399,14 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      */
 
     public Text console;
+    public Text appIdText;
 
     public void SetAppIdString(string newVal) => appId = newVal;
 
     public void SetExternalIdString(string newVal) => externalId = newVal;
     public void SetEmailString(string newVal) => email = newVal;
     public void SetPhoneNumberString(string newVal) => phoneNumber = newVal;
+    public void SetLanguageString(string newVal) => language = newVal;
 
     public void SetTriggerKey(string newVal) => triggerKey = newVal;
     public void SetTriggerValue(string newVal) => triggerValue = newVal;
@@ -385,21 +421,25 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         SDKDebug.LogIntercept   += _log;
         SDKDebug.WarnIntercept  += _warn;
         SDKDebug.ErrorIntercept += _error;
+        appIdText.text = appId;
     }
 
     private void _log(object message) {
+        string green = "#3BB674";
         UnityEngine.Debug.Log(message);
-        console.text += $"\n<color=green><b>I></b></color> {message}";
+        console.text += $"\n<color={green}><b>I></b></color> {message}";
     }
 
     private void _warn(object message) {
+        string yellow = "#FFA940";
         UnityEngine.Debug.LogWarning(message);
-        console.text += $"\n<color=orange><b>W></b></color> {message}";
+        console.text += $"\n<color={yellow}><b>W></b></color> {message}";
     }
 
     private void _error(object message) {
+        string red = "#E54B4D";
         UnityEngine.Debug.LogError(message);
-        console.text += $"\n<color=red><b>E></b></color> {message}";
+        console.text += $"\n<color={red}><b>E></b></color> {message}";
     }
 #endregion
 
