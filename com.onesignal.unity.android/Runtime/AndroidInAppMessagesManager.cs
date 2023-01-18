@@ -83,20 +83,20 @@ namespace OneSignalSDKNew.InAppMessages {
             }
 
             /// <param name="message">IInAppMessage</param>
-            public void onWillDisplayInAppMessage(AndroidJavaObject message) {
-                _parent.WillDisplay?.Invoke(message.ToSerializable<InAppMessage>());
-            }
+            public void onWillDisplayInAppMessage(AndroidJavaObject message)
+                => UnityMainThreadDispatch.Post(state => _parent.WillDisplay?.Invoke(message.ToSerializable<InAppMessage>()));
+
             /// <param name="message">IInAppMessage</param>
             public void onDidDisplayInAppMessage(AndroidJavaObject message)
-                => _parent.DidDisplay?.Invoke(message.ToSerializable<InAppMessage>());
+                => UnityMainThreadDispatch.Post(state => _parent.DidDisplay?.Invoke(message.ToSerializable<InAppMessage>()));
 
             /// <param name="message">IInAppMessage</param>
             public void onWillDismissInAppMessage(AndroidJavaObject message)
-                => _parent.WillDismiss?.Invoke(message.ToSerializable<InAppMessage>());
+                => UnityMainThreadDispatch.Post(state => _parent.WillDismiss?.Invoke(message.ToSerializable<InAppMessage>()));
 
             /// <param name="message">IInAppMessage</param>
             public void onDidDismissInAppMessage(AndroidJavaObject message)
-                => _parent.DidDismiss?.Invoke(message.ToSerializable<InAppMessage>());
+                => UnityMainThreadDispatch.Post(state => _parent.DidDismiss?.Invoke(message.ToSerializable<InAppMessage>()));
         }
 
         private sealed class IInAppMessageClickHandler : OneSignalAndroidJavaProxy {
@@ -107,9 +107,8 @@ namespace OneSignalSDKNew.InAppMessages {
             }
 
             /// <param name="result">IInAppMessageClickResult</param>
-            public void inAppMessageClicked(AndroidJavaObject result) {
-                _parent.Clicked?.Invoke(result.ToSerializable<InAppMessageClickedResult>());
-            }
+            public void inAppMessageClicked(AndroidJavaObject result)
+                => UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(result.ToSerializable<InAppMessageClickedResult>()));
         }
     }
 }
