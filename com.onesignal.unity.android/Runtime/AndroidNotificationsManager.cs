@@ -59,7 +59,7 @@ namespace OneSignalSDKNew.Notifications {
         }
 
         public void Initialize() {
-            _notifications.Call("addPermissionChangedHandler", new IPermissionChangedHandler(this)); // Notifications.PermissionChanged
+            _notifications.Call("addPermissionChangedHandler", new IPermissionChangedHandler(this));
             _notifications.Call("setNotificationWillShowInForegroundHandler", new INotificationWillShowInForegroundHandler(this));
             _notifications.Call("setNotificationClickHandler", new INotificationClickHandler(this));
         }
@@ -73,7 +73,7 @@ namespace OneSignalSDKNew.Notifications {
 
             /// <param name="permission">boolean</param>
             public void onPermissionChanged(bool permission) {
-                _parent.PermissionChanged?.Invoke(permission);
+                UnityMainThreadDispatch.Post(state => _parent.PermissionChanged?.Invoke(permission));
             }
         }
 
@@ -94,9 +94,8 @@ namespace OneSignalSDKNew.Notifications {
                 }
 
                 var notification = _getNotification(notifJO);
-                var resultNotif = _parent.WillShow(notification);
 
-                notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
+                UnityMainThreadDispatch.Post(state => notificationReceivedEvent.Call("complete", _parent.WillShow(notification) != null ? notifJO : null));
             }
         }
 
@@ -120,7 +119,7 @@ namespace OneSignalSDKNew.Notifications {
                     action = action
                 };
 
-                _parent.Clicked?.Invoke(notifClickResult);
+                UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(notifClickResult));
             }
         }
 
@@ -144,7 +143,7 @@ namespace OneSignalSDKNew.Notifications {
 
         private static NotificationAction _getAction(AndroidJavaObject actionJO) {
             var action = actionJO.ToSerializable<NotificationAction>();
-            action.actionID = actionJO.Call<string>("getActionId");
+            //action.actionID = actionJO.Call<string>("getActionId");
 
             return action;
         }
