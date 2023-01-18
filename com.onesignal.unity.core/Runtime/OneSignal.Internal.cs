@@ -29,7 +29,6 @@ using System;
 using System.Linq;
 using UnityEngine;
 using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDK; // TODO: OneSignalSDK.ReflectionHelpers
 
 namespace OneSignalSDKNew {
     public abstract partial class OneSignal {
@@ -54,8 +53,7 @@ namespace OneSignalSDKNew {
             var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignal>("OneSignal");
             if (Activator.CreateInstance(availableSDKs.First()) is OneSignal sdk) {
                 _default = sdk;
-                OneSignalSDKNew.Debug.Utilities.SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
-                // TODO: OneSignalSDK.SDKDebug
+                SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
             }
             else {
                 UnityEngine.Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
