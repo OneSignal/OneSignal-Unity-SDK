@@ -44,7 +44,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         private SessionManager _session = new SessionManager();
         private NotificationsManager _notifications = new NotificationsManager();
         private LocationManager _location = new LocationManager();
-        private InAppMessagesManager _iams = new InAppMessagesManager();
+        private InAppMessagesManager _inAppMessages = new InAppMessagesManager();
         private DebugManager _debug = new DebugManager();
 
         public override IUserManager User {
@@ -55,7 +55,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
             get => _session;
         }
         
-        public override INotificationsManager Notifications{
+        public override INotificationsManager Notifications {
             get => _notifications;
         }
         
@@ -64,7 +64,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         }
 
         public override IInAppMessagesManager InAppMessages {
-            get => _iams;
+            get => _inAppMessages;
         }
 
         public override IDebugManager Debug {
@@ -89,11 +89,11 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         }
 
         public override Task LoginAsync(string externalId, string jwtBearerToken = null) {
-            return Task.FromResult(false);
+            return Task.CompletedTask;
         }
 
-        public override void LogoutAsync() {
-
+        public override Task LogoutAsync() {
+            return Task.CompletedTask;
         }
     }
 }

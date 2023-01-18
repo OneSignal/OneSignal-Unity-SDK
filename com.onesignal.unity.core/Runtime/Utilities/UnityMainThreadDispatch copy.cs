@@ -25,23 +25,33 @@
  * THE SOFTWARE.
  */
 
-using System.Threading.Tasks;
+using System.Threading;
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-#pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDKNew.Notifications {
-    internal sealed class NotificationsManager : INotificationsManager {
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
+namespace OneSignalSDKNew {
+    /// <summary>
+    /// Helper class for ensuring a callback is invoked on the main Unity thread
+    /// </summary>
+    public static class UnityMainThreadDispatch {
+        /// <summary>
+        /// Synchronous; blocks until the callback completes
+        /// </summary>
+        public static void Send(SendOrPostCallback callback) => _context.Send(callback, null);
 
-        public bool Permission { get; }
+        /// <summary>
+        /// Asynchronous; send and forget
+        /// </summary>
+        public static void Post(SendOrPostCallback callback) => _context.Post(callback, null);
 
-        public Task<bool> RequestPermissionAsync(bool fallbackToSettings){
-            return Task.FromResult(false);
-        }
+        private static SynchronizationContext _context;
 
-        public Task ClearAllNotificationsAsync() {
-            return Task.CompletedTask;
-        }
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+#endif
+        [RuntimeInitializeOnLoadMethod]
+        private static void _initialize() => _context = _context ?? SynchronizationContext.Current;
     }
 }
