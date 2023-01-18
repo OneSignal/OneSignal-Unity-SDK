@@ -25,23 +25,23 @@
  * THE SOFTWARE.
  */
 
-using System.Threading.Tasks;
+using UnityEngine;
 
-#pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDKNew.Notifications {
-    internal sealed class NotificationsManager : INotificationsManager {
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
-
-        public bool Permission { get; }
-
-        public Task<bool> RequestPermissionAsync(bool fallbackToSettings){
-            return Task.FromResult(false);
+namespace OneSignalSDKNew.Session {
+    internal sealed class AndroidSessionManager : ISessionManager {
+        private readonly AndroidJavaObject _session;
+        
+        public AndroidSessionManager(AndroidJavaClass sdkClass) {
+            _session = sdkClass.CallStatic<AndroidJavaObject>("getSession");
         }
 
-        public Task ClearAllNotificationsAsync() {
-            return Task.CompletedTask;
-        }
+        public void AddOutcome(string name)
+            => _session.CallStatic("addOutcome", name);
+
+        public void AddUniqueOutcome(string name)
+            => _session.CallStatic("addUniqueOutcome", name);
+
+        public void AddOutcomeWithValue(string name, float value)
+            => _session.CallStatic("addOutcomeWithValue", name, value);
     }
 }
