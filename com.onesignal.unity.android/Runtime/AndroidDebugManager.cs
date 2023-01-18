@@ -25,23 +25,42 @@
  * THE SOFTWARE.
  */
 
-using System.Threading.Tasks;
+using UnityEngine;
+using OneSignalSDKNew.Debug.Models;
 
-#pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDKNew.Notifications {
-    internal sealed class NotificationsManager : INotificationsManager {
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
+namespace OneSignalSDKNew.Debug {
+    internal sealed class AndroidDebugManager : IDebugManager {
+        private readonly AndroidJavaObject _debug;
 
-        public bool Permission { get; }
+        private LogLevel _logLevel = LogLevel.Warn;
+        private LogLevel _alertLevel = LogLevel.None;
 
-        public Task<bool> RequestPermissionAsync(bool fallbackToSettings){
-            return Task.FromResult(false);
+        public AndroidDebugManager(AndroidJavaClass sdkClass) {
+            _debug = sdkClass.CallStatic<AndroidJavaObject>("getDebug");
         }
 
-        public Task ClearAllNotificationsAsync() {
-            return Task.CompletedTask;
+        public LogLevel LogLevel {
+            get => _logLevel;
+            set {
+                _logLevel = value;
+                var jLogLevel = ToLogLevel(value);
+                _debug.Call("setLogLevel", jLogLevel);
+            }
         }
+
+        public LogLevel AlertLevel {
+            get => _alertLevel;
+            set {
+                _alertLevel = value;
+                _debug.Call("setAlertLevel", ToLogLevel(value));
+            }
+        }
+
+        private AndroidJavaObject ToLogLevel(LogLevel value) {
+            var logLevelClass = new AndroidJavaClass("com.onesignal.debug.LogLevel");
+            var logLevelValue = logLevelClass.CallStatic<AndroidJavaObject>("valueOf", logLevelClass, value.ToString().ToUpper());
+            return logLevelValue;
+        }
+        
     }
 }

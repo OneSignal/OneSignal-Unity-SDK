@@ -1,0 +1,152 @@
+/*
+ * Modified MIT License
+ *
+ * Copyright 2022 OneSignal
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * 1. The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * 2. All copies of substantial portions of the Software may only be used in connection
+ * with services provided by OneSignal.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+using UnityEngine;
+using System.Threading.Tasks;
+using OneSignalSDKNew.Notifications.Models;
+using System.Collections.Generic;
+
+namespace OneSignalSDKNew.Notifications {
+    internal sealed class AndroidNotificationsManager : INotificationsManager {
+        private readonly AndroidJavaObject _notifications;
+        
+        public AndroidNotificationsManager(AndroidJavaClass sdkClass) {
+            _notifications = sdkClass.CallStatic<AndroidJavaObject>("getNotifications");
+        }
+
+        public event NotificationWillShowDelegate WillShow; //INotificationWillShowInForegroundHandler
+        public event NotificationClickedDelegate Clicked; //INotificationClickHandler
+        public event PermissionChangedDelegate PermissionChanged; //IPermissionChangedHandler
+
+        public bool Permission {
+            get => _notifications.Call<bool>("getPermission");
+        }
+
+        public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
+            var continuation = new BoolContinuation();
+            _notifications.Call<AndroidJavaObject>("requestPermission", fallbackToSettings, continuation.Proxy);
+            return await continuation;
+        }
+
+        public async Task ClearAllNotificationsAsync() {
+            var continuation = new Continuation();
+            _notifications.Call<AndroidJavaObject>("clearAllNotifications", continuation.Proxy);
+            await continuation;
+        }
+
+        public void Initialize() {
+            _notifications.Call("addPermissionChangedHandler", new IPermissionChangedHandler(this)); // Notifications.PermissionChanged
+            _notifications.Call("setNotificationWillShowInForegroundHandler", new INotificationWillShowInForegroundHandler(this));
+            _notifications.Call("setNotificationClickHandler", new INotificationClickHandler(this));
+        }
+
+        private sealed class IPermissionChangedHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
+            private AndroidNotificationsManager _parent;
+            
+            public IPermissionChangedHandler(AndroidNotificationsManager notificationsManager) : base("notifications.IPermissionChangedHandler") {
+                _parent = notificationsManager;
+            }
+
+            /// <param name="permission">boolean</param>
+            public void onPermissionChanged(bool permission) {
+                _parent.PermissionChanged?.Invoke(permission);
+            }
+        }
+
+        private sealed class INotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
+            private AndroidNotificationsManager _parent;
+
+            public INotificationWillShowInForegroundHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationWillShowInForegroundHandler") {
+                _parent = notificationsManager;
+            }
+
+            /// <param name="notificationReceivedEvent">INotificationReceivedEvent</param>
+            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) {
+                var notifJO = notificationReceivedEvent.Call<AndroidJavaObject>("getNotification");
+
+                if (_parent.WillShow == null) {
+                    notificationReceivedEvent.Call("complete", notifJO);
+                    return;
+                }
+
+                var notification = _getNotification(notifJO);
+                var resultNotif = _parent.WillShow(notification);
+
+                notificationReceivedEvent.Call("complete", resultNotif != null ? notifJO : null);
+            }
+        }
+
+        private sealed class INotificationClickHandler : OneSignalAndroidJavaProxy {
+            private AndroidNotificationsManager _parent;
+
+            public INotificationClickHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationClickHandler") {
+                _parent = notificationsManager;
+            }
+
+            /// <param name="result">INotificationClickResult</param>
+            public void notificationClicked(AndroidJavaObject result) {
+                var notifJO = result.Call<AndroidJavaObject>("getNotification");
+                var notification = _getNotification(notifJO);
+
+                var actionJO = result.Call<AndroidJavaObject>("getAction");
+                var action = _getAction(actionJO);
+
+                var notifClickResult = new NotificationClickedResult {
+                    notification = notification,
+                    action = action
+                };
+
+                _parent.Clicked?.Invoke(notifClickResult);
+            }
+        }
+
+        private static Notification _getNotification(AndroidJavaObject notifJO) {
+            var notification = notifJO.ToSerializable<Notification>();
+            
+            var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
+            if (dataJson != null) {
+                var dataJsonStr = dataJson.Call<string>("toString");
+                notification.additionalData = Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
+            }
+
+            var groupedNotificationsJson = notifJO.Call<AndroidJavaObject>("getGroupedNotifications");
+            if (groupedNotificationsJson != null) {
+                var groupedNotificationsStr = groupedNotificationsJson.Call<string>("toString");
+                notification.groupedNotifications = Json.Deserialize(groupedNotificationsStr) as List<NotificationBase>;
+            }
+
+            return notification;
+        }
+
+        private static NotificationAction _getAction(AndroidJavaObject actionJO) {
+            var action = actionJO.ToSerializable<NotificationAction>();
+            action.actionID = actionJO.Call<string>("getActionId");
+
+            return action;
+        }
+    }
+}

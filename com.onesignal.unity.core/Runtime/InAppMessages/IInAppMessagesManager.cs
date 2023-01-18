@@ -88,14 +88,14 @@ namespace OneSignalSDKNew.InAppMessages {
         /// </summary>
         /// <param name="key">Key for the trigger</param>
         /// <param name="value">Value for the trigger</param>
-        void AddTrigger(string key, string value);
+        void AddTrigger(string key, object value);
 
         /// <summary>
         /// Allows you to set multiple local trigger key/value pairs simultaneously. May show an In-App Message if its
         /// triggers conditions were met.
         /// </summary>
         /// <param name="triggers">The dictionary of triggers that are to be added to the current user.</param>
-        void AddTriggers(Dictionary<string, string> triggers);
+        void AddTriggers(Dictionary<string, object> triggers);
 
         /// <summary>
         /// Removes a single local trigger for the given key.
