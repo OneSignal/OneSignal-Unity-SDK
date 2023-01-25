@@ -92,6 +92,6 @@ namespace OneSignalSDKNew.Notifications {
         /// Removes all OneSignal app notifications from the Notification Shade
         /// </summary>
         /// <remarks>Android Only</remarks>
-        void ClearAllNotifications();
+        Task ClearAllNotificationsAsync();
     }
 }

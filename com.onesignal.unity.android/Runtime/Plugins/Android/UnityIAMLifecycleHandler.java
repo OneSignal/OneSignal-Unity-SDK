@@ -25,9 +25,9 @@
  * THE SOFTWARE.
  */
 
-package com.onesignal;
+package com.onesignal.inAppMessages;
 
-public final class UnityIAMLifecycleHandler extends OSInAppMessageLifecycleHandler {
+public final class UnityIAMLifecycleHandler implements IInAppMessageLifecycleHandler {
     private final WrapperLifecycleHandler wrapperLifeCycleHandler;
 
     public UnityIAMLifecycleHandler(WrapperLifecycleHandler handler) {
@@ -35,32 +35,28 @@ public final class UnityIAMLifecycleHandler extends OSInAppMessageLifecycleHandl
     }
 
     public interface WrapperLifecycleHandler {
-        void onWillDisplayInAppMessage(OSInAppMessage message);
-        void onDidDisplayInAppMessage(OSInAppMessage message);
-        void onWillDismissInAppMessage(OSInAppMessage message);
-        void onDidDismissInAppMessage(OSInAppMessage message);
+        void onWillDisplayInAppMessage(IInAppMessage message);
+        void onDidDisplayInAppMessage(IInAppMessage message);
+        void onWillDismissInAppMessage(IInAppMessage message);
+        void onDidDismissInAppMessage(IInAppMessage message);
     }
 
-    @Override
-    public void onWillDisplayInAppMessage(OSInAppMessage message) {
+    public void onWillDisplayInAppMessage(IInAppMessage message) {
         if (wrapperLifeCycleHandler != null)
             wrapperLifeCycleHandler.onWillDisplayInAppMessage(message);
     }
 
-    @Override
-    public void onDidDisplayInAppMessage(OSInAppMessage message) {
+    public void onDidDisplayInAppMessage(IInAppMessage message) {
         if (wrapperLifeCycleHandler != null)
             wrapperLifeCycleHandler.onDidDisplayInAppMessage(message);
     }
 
-    @Override
-    public void onWillDismissInAppMessage(OSInAppMessage message) {
+    public void onWillDismissInAppMessage(IInAppMessage message) {
         if (wrapperLifeCycleHandler != null)
             wrapperLifeCycleHandler.onWillDismissInAppMessage(message);
     }
 
-    @Override
-    public void onDidDismissInAppMessage(OSInAppMessage message) {
+    public void onDidDismissInAppMessage(IInAppMessage message) {
         if (wrapperLifeCycleHandler != null)
             wrapperLifeCycleHandler.onDidDismissInAppMessage(message);
     }

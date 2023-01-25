@@ -25,23 +25,26 @@
  * THE SOFTWARE.
  */
 
+using UnityEngine;
 using System.Threading.Tasks;
 
-#pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDKNew.Notifications {
-    internal sealed class NotificationsManager : INotificationsManager {
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
-
-        public bool Permission { get; }
-
-        public Task<bool> RequestPermissionAsync(bool fallbackToSettings){
-            return Task.FromResult(false);
+namespace OneSignalSDKNew.Location {
+    internal sealed class AndroidLocationManager : ILocationManager {
+        private readonly AndroidJavaObject _location;
+        
+        public AndroidLocationManager(AndroidJavaClass sdkClass) {
+            _location = sdkClass.CallStatic<AndroidJavaObject>("getLocation");
         }
 
-        public Task ClearAllNotificationsAsync() {
-            return Task.CompletedTask;
+        public bool IsShared {
+            get => _location.Call<bool>("isShared");
+            set => _location.Call("setShared", value);
+        }
+
+        public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
+            var continuation = new BoolContinuation();
+            _location.Call<AndroidJavaObject>("requestPermission", fallbackToSettings, continuation.Proxy);
+            return await continuation;
         }
     }
 }
