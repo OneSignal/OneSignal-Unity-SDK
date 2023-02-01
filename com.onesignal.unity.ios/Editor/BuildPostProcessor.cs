@@ -62,7 +62,9 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode.Extensions;
 using Debug = UnityEngine.Debug;
 
-namespace OneSignalSDK {
+using UnityEditor.Callbacks;
+
+namespace OneSignalSDKNew.iOS {
     /// <summary>
     /// Adds required frameworks to the iOS project, and adds the OneSignalNotificationServiceExtension. Also handles
     /// making sure both targets (app and extension service) have the correct dependencies
@@ -70,7 +72,7 @@ namespace OneSignalSDK {
     public class BuildPostProcessor : IPostprocessBuildWithReport {
         private const string ServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
         private const string ServiceExtensionFilename = "NotificationService.swift";
-        private const string DependenciesFilename = "OneSignalIOSDependencies.xml";
+        private const string DependenciesFilename = "OneSignaliOSDependencies.xml";
         private const string PackageName = "com.onesignal.unity.ios";
 
         private static readonly string EditorFilesPath = Path.Combine("Packages", PackageName, "Editor");

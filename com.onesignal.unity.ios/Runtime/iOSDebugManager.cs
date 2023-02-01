@@ -25,24 +25,33 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
+using UnityEngine;
+using System.Runtime.InteropServices;
+using OneSignalSDKNew.Debug;
+using OneSignalSDKNew.Debug.Models;
 
-namespace OneSignalSDKNew.iOS {
-    public static class PBXProjectExtensions {
-    #if UNITY_2019_3_OR_NEWER
-        public static string GetMainTargetName(this PBXProject project)
-            => "Unity-iPhone";
+namespace OneSignalSDKNew.iOS.Debug {
+    internal sealed class iOSDebugManager : IDebugManager {
+        [DllImport("__Internal")] private static extern void _debugSetLogLevel(int logLevel);
+        [DllImport("__Internal")] private static extern void _debugSetVisualLevel(int visualLevel);
 
-        public static string GetMainTargetGuid(this PBXProject project)
-            => project.GetUnityMainTargetGuid();
-    #else
-        public static string GetMainTargetName(this PBXProject project) 
-            => PBXProject.GetUnityTargetName();
-         
-        public static string GetMainTargetGuid(this PBXProject project)
-             => project.TargetGuidByName(PBXProject.GetUnityTargetName());
-    #endif
+        private LogLevel _logLevel = LogLevel.Warn;
+        private LogLevel _alertLevel = LogLevel.None;
+
+        public LogLevel LogLevel {
+            get => _logLevel;
+            set {
+                _logLevel = value;
+                _debugSetLogLevel((int) value);
+            }
+        }
+
+        public LogLevel AlertLevel {
+            get => _alertLevel;
+            set {
+                _alertLevel = value;
+                _debugSetVisualLevel((int) value);
+            }
+        }
     }
 }
-#endif

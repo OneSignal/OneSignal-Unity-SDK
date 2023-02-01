@@ -25,24 +25,28 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
+using Laters;
+using System.Collections.Generic;
 
-namespace OneSignalSDKNew.iOS {
-    public static class PBXProjectExtensions {
-    #if UNITY_2019_3_OR_NEWER
-        public static string GetMainTargetName(this PBXProject project)
-            => "Unity-iPhone";
+namespace OneSignalSDKNew.iOS.Utilities {
+    internal static class WaitingProxy {
+        private static readonly Dictionary<int, ILater> WaitingProxies = new Dictionary<int, ILater>();
 
-        public static string GetMainTargetGuid(this PBXProject project)
-            => project.GetUnityMainTargetGuid();
-    #else
-        public static string GetMainTargetName(this PBXProject project) 
-            => PBXProject.GetUnityTargetName();
-         
-        public static string GetMainTargetGuid(this PBXProject project)
-             => project.TargetGuidByName(PBXProject.GetUnityTargetName());
-    #endif
+        public static (Later<TResult> proxy, int hashCode) _setupProxy<TResult>() {
+            var proxy    = new Later<TResult>();
+            var hashCode = proxy.GetHashCode();
+            WaitingProxies[hashCode] = proxy;
+            return (proxy, hashCode);
+        }
+
+        public static void ResolveCallbackProxy<TResponse>(int hashCode, TResponse response) {
+            if (!WaitingProxies.ContainsKey(hashCode))
+                return;
+            
+            if (WaitingProxies[hashCode] is Later<TResponse> later)
+                later.Complete(response);
+            
+            WaitingProxies.Remove(hashCode);
+        }
     }
 }
-#endif

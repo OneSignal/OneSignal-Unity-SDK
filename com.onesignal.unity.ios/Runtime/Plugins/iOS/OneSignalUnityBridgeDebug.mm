@@ -25,24 +25,16 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
+#import <OneSignalNotifications/OneSignalNotifications.h>
+#import <OneSignalUser/OneSignalUser-Swift.h>
+#import <OneSignalFramework/OneSignalFramework.h>
 
-namespace OneSignalSDKNew.iOS {
-    public static class PBXProjectExtensions {
-    #if UNITY_2019_3_OR_NEWER
-        public static string GetMainTargetName(this PBXProject project)
-            => "Unity-iPhone";
+extern "C" {
+    void _debugSetLogLevel(int logLevel) {
+        [OneSignal.Debug setLogLevel:(ONE_S_LOG_LEVEL) logLevel];
+    }
 
-        public static string GetMainTargetGuid(this PBXProject project)
-            => project.GetUnityMainTargetGuid();
-    #else
-        public static string GetMainTargetName(this PBXProject project) 
-            => PBXProject.GetUnityTargetName();
-         
-        public static string GetMainTargetGuid(this PBXProject project)
-             => project.TargetGuidByName(PBXProject.GetUnityTargetName());
-    #endif
+    void _debugSetVisualLevel(int visualLevel) {
+        [OneSignal.Debug setVisualLevel:(ONE_S_LOG_LEVEL) visualLevel];
     }
 }
-#endif
