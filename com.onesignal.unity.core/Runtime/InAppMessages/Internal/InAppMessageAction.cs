@@ -26,28 +26,38 @@
  */
 
 using System;
+using UnityEngine;
 
-namespace OneSignalSDKNew.Notifications.Models {
-    public enum ActionType {
-        /// <summary>Notification was tapped on.</summary>
-        Opened,
-
-        /// <summary>User tapped on an action from the notification.</summary>
-        ActionTaken
-    }
-
+namespace OneSignalSDKNew.InAppMessages.Models {
     /// <summary>
-    /// The action the user took on the notification
+    /// Action associated with clicking a button in an In-App Message
     /// </summary>
-    [Serializable] public sealed class NotificationAction {
+    [Serializable] public sealed class InAppMessageAction {
         /// <summary>
-        /// Notification button identifier
+        /// An optional click name defined for the action element
         /// </summary>
-        public string actionId;
-        
+        public string ClickName => click_name;
+
         /// <summary>
-        /// Action type
+        /// An optional URL that opens when the action takes place
         /// </summary>
-        public ActionType type;
+        public string ClickUrl => click_url;
+
+        /// <summary>
+        /// Whether this is the first time the user has clicked any action on the In-App Message
+        /// </summary>
+        public bool IsFirstClick => first_click;
+
+        /// <summary>
+        /// Whether this action will close the In-App Message
+        /// </summary>
+        public bool ClosesMessage => closes_message;
+
+        #region Native Field Handling
+            public string click_name;
+            public string click_url;
+            public bool first_click;
+            public bool closes_message;
+        #endregion
     }
 }

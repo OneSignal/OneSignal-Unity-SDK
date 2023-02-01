@@ -109,7 +109,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         /// <see cref="Initialize"/> is called.
         /// </summary>
         /// <remarks>iOS Only</remarks>
-        public abstract void SetLaunchURLsInApp(bool launchInApp); // TODO: after init iOS
+        public abstract void SetLaunchURLsInApp(bool launchInApp);
 
         /// <summary>
         /// Starts the OneSignal SDK
@@ -139,7 +139,7 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         /// trust for the login operation.  Required when identity verification has been enabled. See
         /// [Identity Verification | OneSignal](https://documentation.onesignal.com/docs/identity-verification)
         /// </param>
-        public abstract Task LoginAsync(string externalId, string jwtBearerToken = null);
+        public abstract void Login(string externalId, string jwtBearerToken = null);
 
         /// <summary>
         /// Logout the user previously logged in via [login]. The [user] property now references
@@ -147,6 +147,21 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
         /// be retrieved, except through this device as long as the app remains installed and the app
         /// data is not cleared.
         /// </summary>
-        public abstract Task LogoutAsync();
+        public abstract void Logout();
+
+        /// <summary>
+        /// Associates a customer defined activityId with a live activity temporary push token on OneSignal's server
+        /// </summary>
+        /// <remarks>iOS Only</remarks>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> EnterLiveActivity(string activityId, string token);
+
+        /// <summary>
+        /// Deletes the association between a customer defined activityId with a Live Activity temporary push token on
+        /// OneSignal's server
+        /// </summary>
+        /// <remarks>iOS Only</remarks>
+        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        public abstract Task<bool> ExitLiveActivity(string activityId);
     }
 }

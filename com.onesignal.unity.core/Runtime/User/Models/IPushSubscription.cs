@@ -33,13 +33,13 @@ namespace OneSignalSDKNew.User.Models {
     /// <summary>
     /// Several states associated with the SDK can be changed in and outside of the application.
     /// </summary>
-    public delegate void SubscriptionChangedDelegate(IPushSubscription subscription);
+    public delegate void SubscriptionChangedDelegate(PushSubscriptionState current);
 
     /// <summary>
     /// A push subscription allows a user to receive notifications through the push
     /// channel.
     /// </summary>
-    public interface IPushSubscription { // TODO: class or interface ? AndroidPushSub : IPushSubscription
+    public interface IPushSubscription {
         /// <summary>
         /// When this uers's subscription to push notifications has changed
         /// </summary>
@@ -62,7 +62,7 @@ namespace OneSignalSDKNew.User.Models {
         /// user will not receive notifications through this subscription (even when the user has
         /// granted app permission).
         /// </summary>
-        bool OptedIn { get; set; }
+        bool OptedIn { get; }
 
         /// <summary>
         /// Opt the user into this push subscription.  If the application does not have permission,

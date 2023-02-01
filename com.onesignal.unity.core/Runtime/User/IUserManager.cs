@@ -51,7 +51,7 @@ namespace OneSignalSDKNew.User {
         /// https://documentation.onesignal.com/docs/language-localization#what-languages-are-supported
         /// for supported languages.
         /// </summary>
-        string Language { get; set;}
+        string Language { set; }
 
         /// <summary>
         /// Current user's subscription to push notifications
@@ -110,27 +110,33 @@ namespace OneSignalSDKNew.User {
         void RemoveAlias(string label);
 
         /// <summary>
+        /// Remove multiple aliases from the current user.
+        /// </summary>
+        /// <param name="labels">The collection of alias labels, all of which will be removed from the current user.</param>
+        void RemoveAliases(params string[] keys);
+
+        /// <summary>
         /// Add a new email subscription to the current user.
         /// </summary>
         /// <param name="email">The email that you want to subscribe and associate with the user</param>
-        void AddEmailSubscription(string email);
+        void AddEmail(string email);
 
         /// <summary>
         /// Remove an email subscription from the current user.
         /// </summary>
         /// <param name="email">The email address that the current user was subscribed for, and should no longer be.</param>
-        void RemoveEmailSubscription(string email);
+        void RemoveEmail(string email);
 
         /// <summary>
         /// Add a new SMS subscription to the current user.
         /// </summary>
         /// <param name="sms">The sms number that you want subscribe and associate with the user</param>
-        void AddSmsSubscription(string sms);
+        void AddSms(string sms);
 
         /// <summary>
         /// Remove an SMS subscription from the current user.
         /// </summary>
         /// <param name="sms">The sms address that the current user was subscribed for, and should no longer be.</param>
-        void RemoveSmsSubscription(string sms);
+        void RemoveSms(string sms);
     }
 }
