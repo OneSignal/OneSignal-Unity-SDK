@@ -26,9 +26,10 @@
  */
 
 using UnityEngine;
+using OneSignalSDKNew.Debug;
 using OneSignalSDKNew.Debug.Models;
 
-namespace OneSignalSDKNew.Debug {
+namespace OneSignalSDKNew.Android.Debug {
     internal sealed class AndroidDebugManager : IDebugManager {
         private readonly AndroidJavaObject _debug;
 
@@ -43,8 +44,7 @@ namespace OneSignalSDKNew.Debug {
             get => _logLevel;
             set {
                 _logLevel = value;
-                var jLogLevel = ToLogLevel(value);
-                _debug.Call("setLogLevel", jLogLevel);
+                _debug.Call("setLogLevel", ToLogLevel(value));
             }
         }
 
@@ -61,6 +61,5 @@ namespace OneSignalSDKNew.Debug {
             var logLevelValue = logLevelClass.CallStatic<AndroidJavaObject>("valueOf", logLevelClass, value.ToString().ToUpper());
             return logLevelValue;
         }
-        
     }
 }
