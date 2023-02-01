@@ -1,5 +1,5 @@
 import UserNotifications
-import OneSignal
+import OneSignalFramework
 
 class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
