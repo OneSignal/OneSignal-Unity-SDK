@@ -25,8 +25,10 @@
  * THE SOFTWARE.
  */
 
+#import <OneSignalNotifications/OneSignalNotifications.h>
+#import <OneSignalUser/OneSignalUser-Swift.h>
+#import <OneSignalFramework/OneSignalFramework.h>
 #import "UIApplication+OneSignalUnity.h"
-#import <OneSignal/OneSignal.h>
 #import <objc/runtime.h>
 
 // from OneSignalSelectorHelpers.m
@@ -94,7 +96,7 @@ static bool swizzled = false;
 
 - (BOOL)oneSignalApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [OneSignal setMSDKType:@"unity"];
-    [OneSignal initWithLaunchOptions:launchOptions];
+    [OneSignal setLaunchOptions:launchOptions];
 
     if ([self respondsToSelector:@selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
         return [self oneSignalApplication:application didFinishLaunchingWithOptions:launchOptions];

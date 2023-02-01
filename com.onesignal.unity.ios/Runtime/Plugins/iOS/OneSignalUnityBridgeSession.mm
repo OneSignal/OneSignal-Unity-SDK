@@ -25,24 +25,31 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
+#import <OneSignalNotifications/OneSignalNotifications.h>
+#import <OneSignalUser/OneSignalUser-Swift.h>
+#import <OneSignalFramework/OneSignalFramework.h>
 
-namespace OneSignalSDKNew.iOS {
-    public static class PBXProjectExtensions {
-    #if UNITY_2019_3_OR_NEWER
-        public static string GetMainTargetName(this PBXProject project)
-            => "Unity-iPhone";
+/*
+ * Helpers
+ */
 
-        public static string GetMainTargetGuid(this PBXProject project)
-            => project.GetUnityMainTargetGuid();
-    #else
-        public static string GetMainTargetName(this PBXProject project) 
-            => PBXProject.GetUnityTargetName();
-         
-        public static string GetMainTargetGuid(this PBXProject project)
-             => project.TargetGuidByName(PBXProject.GetUnityTargetName());
-    #endif
+#define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
+
+/*
+ * Bridge methods
+ */
+
+extern "C" {
+    void _sessionAddOutcome(const char* name) {
+        [OneSignal.Session addOutcome:TO_NSSTRING(name)];
+    }
+
+    void _sessionAddUniqueOutcome(const char* name) {
+        [OneSignal.Session addUniqueOutcome:TO_NSSTRING(name)];
+    }
+
+    void _sessionAddOutcomeWithValue(const char* name, float value) {
+        [OneSignal.Session addOutcomeWithValue:TO_NSSTRING(name)
+                                         value:@(value)];
     }
 }
-#endif

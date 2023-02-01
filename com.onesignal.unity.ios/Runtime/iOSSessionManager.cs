@@ -25,24 +25,23 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
+using UnityEngine;
+using OneSignalSDKNew.Session;
+using System.Runtime.InteropServices;
 
-namespace OneSignalSDKNew.iOS {
-    public static class PBXProjectExtensions {
-    #if UNITY_2019_3_OR_NEWER
-        public static string GetMainTargetName(this PBXProject project)
-            => "Unity-iPhone";
+namespace OneSignalSDKNew.iOS.Session {
+    internal sealed class iOSSessionManager : ISessionManager {
+        [DllImport("__Internal")] private static extern void _sessionAddOutcome(string name);
+        [DllImport("__Internal")] private static extern void _sessionAddUniqueOutcome(string name);
+        [DllImport("__Internal")] private static extern void _sessionAddOutcomeWithValue(string name, float value);
 
-        public static string GetMainTargetGuid(this PBXProject project)
-            => project.GetUnityMainTargetGuid();
-    #else
-        public static string GetMainTargetName(this PBXProject project) 
-            => PBXProject.GetUnityTargetName();
-         
-        public static string GetMainTargetGuid(this PBXProject project)
-             => project.TargetGuidByName(PBXProject.GetUnityTargetName());
-    #endif
+        public void AddOutcome(string name)
+            => _sessionAddOutcome(name);
+
+        public void AddUniqueOutcome(string name)
+            => _sessionAddUniqueOutcome(name);
+
+        public void AddOutcomeWithValue(string name, float value)
+            => _sessionAddOutcomeWithValue(name, value);
     }
 }
-#endif
