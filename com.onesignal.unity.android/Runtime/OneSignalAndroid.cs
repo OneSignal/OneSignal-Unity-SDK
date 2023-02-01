@@ -36,8 +36,14 @@ using OneSignalSDKNew.Debug.Utilities;
 using OneSignalSDKNew.Location;
 using OneSignalSDKNew.Session;
 using OneSignalSDKNew.User;
+using OneSignalSDKNew.Android.Notifications;
+using OneSignalSDKNew.Android.InAppMessages;
+using OneSignalSDKNew.Android.Debug;
+using OneSignalSDKNew.Android.Location;
+using OneSignalSDKNew.Android.Session;
+using OneSignalSDKNew.Android.User;
 
-namespace OneSignalSDKNew { // TODO: Fix namespace to OneSignalSDK
+namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
     public sealed partial class OneSignalAndroid : OneSignal {
         private const string SDKPackage = "com.onesignal";
         private const string SDKClassName = "OneSignal";
@@ -68,15 +74,15 @@ namespace OneSignalSDKNew { // TODO: Fix namespace to OneSignalSDK
         public override IUserManager User {
             get => _user;
         }
-        
+
         public override ISessionManager Session {
             get => _session;
         }
-        
+
         public override INotificationsManager Notifications {
             get => _notifications;
         }
-        
+
         public override ILocationManager Location {
             get => _location;
         }
@@ -136,16 +142,22 @@ namespace OneSignalSDKNew { // TODO: Fix namespace to OneSignalSDK
             _completedInit(appId);
         }
 
-        public override async Task LoginAsync(string externalId, string jwtBearerToken = null) {
-            var continuation = new Continuation();
-            _sdkClass.CallStatic<AndroidJavaObject>("login", externalId, continuation.Proxy);
-            await continuation;
+        public override void Login(string externalId, string jwtBearerToken = null) {
+            _sdkClass.CallStatic("login", externalId);
         }
 
-        public override async Task LogoutAsync() {
-            var continuation = new Continuation();
-            _sdkClass.CallStatic<AndroidJavaObject>("logout", continuation.Proxy);
-            await continuation;
+        public override void Logout() {
+            _sdkClass.CallStatic("logout");
+        }
+
+        public override Task<bool> EnterLiveActivity(string activityId, string token) {
+            SDKDebug.Warn("This feature is only available for iOS.");
+            return Task.FromResult(false);
+        }
+
+        public override Task<bool> ExitLiveActivity(string activityId) {
+            SDKDebug.Warn("This feature is only available for iOS.");
+            return Task.FromResult(false);
         }
     }
 }

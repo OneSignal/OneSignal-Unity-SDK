@@ -28,16 +28,14 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using OneSignalSDKNew.InAppMessages;
 using OneSignalSDKNew.InAppMessages.Models;
+using OneSignalSDKNew.Android.Utilities;
 
-namespace OneSignalSDKNew.InAppMessages {
+namespace OneSignalSDKNew.Android.InAppMessages {
     internal sealed class AndroidInAppMessagesManager : IInAppMessagesManager {
         private readonly AndroidJavaObject _inAppMessages;
 
-        private const string SDKPackage = "com.onesignal.inAppMessages";
-        private const string IAMLifecycleClassName = "UnityIAMLifecycleHandler";
-        private const string QualifiedIAMLifecycleClass = SDKPackage + "." + IAMLifecycleClassName;
-        
         public AndroidInAppMessagesManager(AndroidJavaClass sdkClass) {
             _inAppMessages = sdkClass.CallStatic<AndroidJavaObject>("getInAppMessages");
         }
@@ -70,15 +68,13 @@ namespace OneSignalSDKNew.InAppMessages {
 
         public void Initialize() {
             _inAppMessages.Call("setInAppMessageClickHandler", new IInAppMessageClickHandler(this));
-            
-            var wrapperHandler = new AndroidJavaObject(QualifiedIAMLifecycleClass, new IInAppMessageLifecycleHandler(this)); // com.onesignal.UnityIAMLifecycleHandler
-            _inAppMessages.Call("setInAppMessageLifecycleHandler", wrapperHandler);
+            _inAppMessages.Call("setInAppMessageLifecycleHandler", new IInAppMessageLifecycleHandler(this));
         }
 
         private sealed class IInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
             private AndroidInAppMessagesManager _parent;
 
-            public IInAppMessageLifecycleHandler(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages." + IAMLifecycleClassName + "$WrapperLifecycleHandler") {
+            public IInAppMessageLifecycleHandler(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageLifecycleHandler") {
                 _parent = inAppMessagesManager;
             }
 
@@ -107,8 +103,15 @@ namespace OneSignalSDKNew.InAppMessages {
             }
 
             /// <param name="result">IInAppMessageClickResult</param>
-            public void inAppMessageClicked(AndroidJavaObject result)
-                => UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(result.ToSerializable<InAppMessageClickedResult>()));
+            public void inAppMessageClicked(AndroidJavaObject result) {
+                var actionResult = result.Call<AndroidJavaObject>("getAction").ToSerializable<InAppMessageAction>(); // temp
+                //var messageResult = result.Call<AndroidJavaObject>("getMessage").ToSerializable<InAppMessage>();
+                var clickResult = new InAppMessageClickedResult() {
+                    action = actionResult,
+                    //message = messageResult
+                };
+                UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(clickResult));
+            }
         }
     }
 }
