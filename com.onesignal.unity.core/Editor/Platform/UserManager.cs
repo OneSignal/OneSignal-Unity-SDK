@@ -36,7 +36,11 @@ namespace OneSignalSDKNew.User {
             get => _subscription;
         }
 
-        public string Language { get; set;}
+        public string Language {
+            set {
+
+            }
+        }
 
 
         public void AddTag(string key, string value){
@@ -67,19 +71,23 @@ namespace OneSignalSDKNew.User {
 
         }
 
-        public void AddEmailSubscription(string email) {
+        public void RemoveAliases(params string[] labels) {
 
         }
 
-        public void RemoveEmailSubscription(string email) {
+        public void AddEmail(string email) {
 
         }
 
-        public void AddSmsSubscription(string sms) {
+        public void RemoveEmail(string email) {
 
         }
 
-        public void RemoveSmsSubscription(string sms) {
+        public void AddSms(string sms) {
+
+        }
+
+        public void RemoveSms(string sms) {
 
         }
     }

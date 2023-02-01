@@ -27,20 +27,22 @@
 
 using System;
 
-namespace OneSignalSDKNew.InAppMessages.Models {
-    /// <summary>
-    /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event // TODO: Update documentation url
-    /// </summary>
-    [Serializable] public sealed class InAppMessageClickedResult {
+namespace OneSignalSDKNew.User.Models {
+    [Serializable] public sealed class PushSubscriptionState {
         /// <summary>
-        /// Action the user took on the in-app message
+        /// Unique id of this subscription
         /// </summary>
-        public InAppMessageAction action;
+        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
+        public string id;
         
         /// <summary>
-        /// In-App Message the user received
+        /// Whether this subscription is currently active
         /// </summary>
-        //public InAppMessage message;
+        public bool optedIn;
+        
+        /// <summary>
+        /// The unique token provided by the device's operating system used to send push notifications
+        /// </summary>
+        public string token;
     }
 }
