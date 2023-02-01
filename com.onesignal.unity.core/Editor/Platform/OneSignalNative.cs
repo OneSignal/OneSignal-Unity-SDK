@@ -88,12 +88,20 @@ namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete
             SDKDebug.Warn("Native SDK is placeholder. Please run on supported platform (iOS or Android).");
         }
 
-        public override Task LoginAsync(string externalId, string jwtBearerToken = null) {
-            return Task.CompletedTask;
+        public override void Login(string externalId, string jwtBearerToken = null) {
+
         }
 
-        public override Task LogoutAsync() {
-            return Task.CompletedTask;
+        public override void Logout() {
+
+        }
+
+        public override Task<bool> EnterLiveActivity(string activityId, string token) {
+            return Task.FromResult(false);
+        }
+
+        public override Task<bool> ExitLiveActivity(string activityId) {
+            return Task.FromResult(false);
         }
     }
 }
