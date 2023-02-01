@@ -27,8 +27,10 @@
 
 using System;
 using UnityEngine;
+using OneSignalSDKNew.User.Models;
+using OneSignalSDKNew.Android.Utilities;
 
-namespace OneSignalSDKNew.User.Models {
+namespace OneSignalSDKNew.Android.User.Models {
     internal sealed class AndroidPushSubscription : IPushSubscription {
         public event SubscriptionChangedDelegate Changed;
 
@@ -46,12 +48,10 @@ namespace OneSignalSDKNew.User.Models {
 
         public string Token {
             get => _pushSubscription.Call<string>("getToken");
-            set => _pushSubscription.Call("setToken", value);
         }
 
         public bool OptedIn {
             get => _pushSubscription.Call<bool>("getOptedIn");
-            set => _pushSubscription.Call("setOptedIn", value);
         }
 
         public void OptIn()
@@ -61,19 +61,26 @@ namespace OneSignalSDKNew.User.Models {
             => _pushSubscription.Call("optOut");
 
         public void Initialize() {
-            _pushSubscription.Call("addChangeHandler", new ISubscriptionChangedHandler(this));
+            _pushSubscription.Call("addChangeHandler", new InternalSubscriptionChangedHandler(this));
         }
 
-        private sealed class ISubscriptionChangedHandler : OneSignalAndroidJavaProxy {
+        private sealed class InternalSubscriptionChangedHandler : OneSignalAndroidJavaProxy {
             private AndroidPushSubscription _parent;
 
-            public ISubscriptionChangedHandler(AndroidPushSubscription pushSubscription) : base("user.subscriptions.ISubscriptionChangedHandler") {
+            public InternalSubscriptionChangedHandler(AndroidPushSubscription pushSubscription) : base("user.subscriptions.ISubscriptionChangedHandler") {
                 _parent = pushSubscription;
             }
 
             /// <param name="subscription">ISubscription</param>
-            public void onSubscriptionChanged(AndroidJavaObject subscription)
-                => UnityMainThreadDispatch.Post(state => _parent.Changed?.Invoke(_parent));
+            public void onSubscriptionChanged(AndroidJavaObject subscription) {
+                PushSubscriptionState temp = new PushSubscriptionState(){ // temp
+                    id = subscription.Call<string>("getId"),
+                    optedIn = subscription.Call<bool>("getOptedIn"),
+                    token = subscription.Call<string>("getToken")
+                };
+
+                UnityMainThreadDispatch.Post(state => _parent.Changed?.Invoke(temp));
+            }
         }
     }
 }

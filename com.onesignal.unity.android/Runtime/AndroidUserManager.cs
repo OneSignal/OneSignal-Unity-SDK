@@ -28,9 +28,12 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using OneSignalSDKNew.User;
 using OneSignalSDKNew.User.Models;
+using OneSignalSDKNew.Android.User.Models;
+using OneSignalSDKNew.Android.Utilities;
 
-namespace OneSignalSDKNew.User {
+namespace OneSignalSDKNew.Android.User {
     internal sealed class AndroidUserManager : IUserManager {
         private readonly AndroidJavaObject _user;
         private AndroidPushSubscription _pushSubscription;
@@ -45,7 +48,6 @@ namespace OneSignalSDKNew.User {
         }
 
         public string Language {
-            get => _user.Call<string>("getLanguage");
             set => _user.Call("setLanguage", value);
         }
 
@@ -69,18 +71,21 @@ namespace OneSignalSDKNew.User {
 
         public void RemoveAlias(string label)
             => _user.Call("removeAlias", label);
+        
+        public void RemoveAliases(params string[] labels)
+            => _user.Call("removeAliases", labels.ToArrayList());
 
-        public void AddEmailSubscription(string email)
-            => _user.Call("addEmailSubscription", email);
+        public void AddEmail(string email)
+            => _user.Call("addEmail", email);
 
-        public void RemoveEmailSubscription(string email)
-            => _user.Call("removeEmailSubscription", email);
+        public void RemoveEmail(string email)
+            => _user.Call("removeEmail", email);
 
-        public void AddSmsSubscription(string sms)
-            => _user.Call("addSmsSubscription", sms);
+        public void AddSms(string sms)
+            => _user.Call("addSms", sms);
 
-        public void RemoveSmsSubscription(string sms)
-            => _user.Call("removeSmsSubscription", sms);
+        public void RemoveSms(string sms)
+            => _user.Call("removeSms", sms);
 
         public void Initialize() {
             _pushSubscription.Initialize();

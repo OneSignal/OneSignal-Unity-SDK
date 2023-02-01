@@ -26,8 +26,9 @@
  */
 
 using UnityEngine;
+using OneSignalSDKNew.Session;
 
-namespace OneSignalSDKNew.Session {
+namespace OneSignalSDKNew.Android.Session {
     internal sealed class AndroidSessionManager : ISessionManager {
         private readonly AndroidJavaObject _session;
         
