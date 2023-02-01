@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
-namespace OneSignalSDKNew {
+namespace OneSignalSDKNew.Android.Utilities {
     /// <summary>
     /// Conversion methods for common Java types wrapped by <see cref="AndroidJavaObject"/>
     /// </summary>
