@@ -25,18 +25,25 @@
  * THE SOFTWARE.
  */
 
-#if UNITY_IOS && !UNITY_EDITOR
-using UnityEngine;
+#import "OneSignalBridgeUtil.h"
 
-namespace OneSignalSDK {
-    /// <summary>
-    /// 
-    /// </summary>
-    internal static class OneSignalIOSInit {
-        [RuntimeInitializeOnLoadMethod] public static void Init() {
-            if (!OneSignal.DidInitialize) 
-                OneSignal.Default = new OneSignalIOS();
-        }
-    }
+@implementation OneSignalBridgeUtil
+const char* jsonStringFromDictionary(NSDictionary *dictionary) {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return [jsonString UTF8String];
 }
-#endif
+
+/*template <typename TObj>
+TObj objFromJsonString(const char* jsonString) {
+    NSData* jsonData = [[NSString stringWithUTF8String:jsonString] dataUsingEncoding:NSUTF8StringEncoding];
+    NSError* error = nil;
+    TObj arr = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+
+    if (error != nil)
+        return nil;
+
+    return arr;
+}*/
+@end
