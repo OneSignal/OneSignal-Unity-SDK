@@ -25,9 +25,9 @@
  * THE SOFTWARE.
  */
 
-using OneSignalSDKNew.Debug.Models;
+using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDKNew.Debug {
+namespace OneSignalSDK.Debug {
     /// <summary>
     /// Access to debug the SDK in the event additional information is required to diagnose any
     /// SDK-related issues.

@@ -28,7 +28,7 @@
 using System.Collections.Generic;
 
 #pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDKNew.InAppMessages {
+namespace OneSignalSDK.InAppMessages {
     internal sealed class InAppMessagesManager : IInAppMessagesManager {
         public event InAppMessageLifecycleDelegate WillDisplay;
         public event InAppMessageLifecycleDelegate DidDisplay;

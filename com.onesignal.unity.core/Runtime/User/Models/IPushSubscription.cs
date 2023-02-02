@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace OneSignalSDKNew.User.Models {
+namespace OneSignalSDK.User.Models {
     /// <summary>
     /// Several states associated with the SDK can be changed in and outside of the application.
     /// </summary>
@@ -48,7 +48,7 @@ namespace OneSignalSDKNew.User.Models {
         /// <summary>
         /// Unique id of this subscription
         /// </summary>
-        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks> // TODO: Update doc url
+        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
         string Id { get; }
 
         /// <summary>

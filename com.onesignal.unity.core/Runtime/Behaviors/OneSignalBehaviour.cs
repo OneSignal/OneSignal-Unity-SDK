@@ -26,10 +26,10 @@
  */
 
 using UnityEngine;
-using OneSignalSDKNew;
-using OneSignalSDKNew.Debug.Models;
+using OneSignalSDK;
+using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDKNew { // TODO: Change namespace and delete OneSignalBehaviourOld
+namespace OneSignalSDK {
     /// <summary>
     /// Behaviour attached to the OneSignalController.prefab which can be dragged into your scene fora codeless init
     /// </summary>

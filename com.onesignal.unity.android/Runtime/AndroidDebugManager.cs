@@ -26,10 +26,10 @@
  */
 
 using UnityEngine;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Debug.Models;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDKNew.Android.Debug {
+namespace OneSignalSDK.Android.Debug {
     internal sealed class AndroidDebugManager : IDebugManager {
         private readonly AndroidJavaObject _debug;
 

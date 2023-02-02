@@ -30,11 +30,11 @@ using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.Notifications.Models;
-using OneSignalSDKNew.iOS.Utilities;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.Notifications.Models;
+using OneSignalSDK.iOS.Utilities;
 
-namespace OneSignalSDKNew.iOS.Notifications {
+namespace OneSignalSDK.iOS.Notifications {
     internal sealed class iOSNotificationsManager : INotificationsManager {
         [DllImport("__Internal")] private static extern bool _notificationsGetPermission();
         //[DllImport("__Internal")] private static extern bool _notificationsGetCanRequestPermission(); // iOS only for now

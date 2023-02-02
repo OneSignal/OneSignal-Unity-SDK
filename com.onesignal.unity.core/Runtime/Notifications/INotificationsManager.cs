@@ -26,9 +26,9 @@
  */
 
 using System.Threading.Tasks;
-using OneSignalSDKNew.Notifications.Models;
+using OneSignalSDK.Notifications.Models;
 
-namespace OneSignalSDKNew.Notifications {
+namespace OneSignalSDK.Notifications {
     /// <summary>
     /// When a push notification has been received and is about to be displayed
     /// </summary>

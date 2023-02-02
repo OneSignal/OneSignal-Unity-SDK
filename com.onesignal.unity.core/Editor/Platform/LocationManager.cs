@@ -27,7 +27,7 @@
 
 using System.Threading.Tasks;
 
-namespace OneSignalSDKNew.Location {
+namespace OneSignalSDK.Location {
     internal sealed class LocationManager : ILocationManager {
         public bool IsShared { get; set; }
 
