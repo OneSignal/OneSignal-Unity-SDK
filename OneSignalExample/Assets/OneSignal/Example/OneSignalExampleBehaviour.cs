@@ -306,10 +306,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Notification permission is: {OneSignal.Default.Notifications.Permission}");
     }
 
-    public async void ClearPush() {
-        _log("Clearing existing OneSignal push notifications and awaiting result ...");
+    public void ClearPush() {
+        _log("Clearing existing OneSignal push notifications");
         
-        await OneSignal.Default.Notifications.ClearAllNotificationsAsync();
+        OneSignal.Default.Notifications.ClearAllNotifications();
         
         _log("Notifications cleared");
     }
@@ -375,15 +375,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * Location
      */
 
-    public async void PromptLocation() {
-        _log("Opening permission prompt for location and awaiting result...");
+    public void PromptLocation() {
+        _log("Opening permission prompt for location");
 
-        var result = await OneSignal.Default.Location.RequestPermissionAsync();
-
-        if (result)
-            _log("User opted in");
-        else
-            _log("User opted out");
+        OneSignal.Default.Location.RequestPermission();
     }
 
     public void ToggleShareLocation() {

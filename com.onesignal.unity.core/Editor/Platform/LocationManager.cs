@@ -31,8 +31,8 @@ namespace OneSignalSDKNew.Location {
     internal sealed class LocationManager : ILocationManager {
         public bool IsShared { get; set; }
 
-        public Task<bool> RequestPermissionAsync() {
-            return Task.FromResult(false);
+        public void RequestPermission() {
+
         }
     }
 }

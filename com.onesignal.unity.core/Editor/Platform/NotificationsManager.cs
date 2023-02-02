@@ -40,8 +40,8 @@ namespace OneSignalSDKNew.Notifications {
             return Task.FromResult(false);
         }
 
-        public Task ClearAllNotificationsAsync() {
-            return Task.CompletedTask;
+        public void ClearAllNotifications() {
+
         }
     }
 }
