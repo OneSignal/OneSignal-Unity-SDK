@@ -71,9 +71,8 @@ namespace OneSignalSDKNew.iOS.Notifications {
             return await proxy;
         }
 
-        public Task ClearAllNotificationsAsync() {
+        public void ClearAllNotifications() {
             _notificationsClearAll();
-            return Task.CompletedTask;
         }
 
         public void Initialize() {
