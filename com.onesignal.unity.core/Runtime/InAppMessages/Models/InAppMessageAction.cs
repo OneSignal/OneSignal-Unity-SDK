@@ -28,7 +28,7 @@
 using System;
 using UnityEngine;
 
-namespace OneSignalSDKNew.InAppMessages.Models {
+namespace OneSignalSDK.InAppMessages.Models {
     /// <summary>
     /// Action associated with clicking a button in an In-App Message
     /// </summary>

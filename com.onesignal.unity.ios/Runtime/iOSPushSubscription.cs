@@ -28,9 +28,9 @@
 using System;
 using UnityEngine;
 using System.Runtime.InteropServices;
-using OneSignalSDKNew.User.Models;
+using OneSignalSDK.User.Models;
 
-namespace OneSignalSDKNew.iOS.User.Models {
+namespace OneSignalSDK.iOS.User.Models {
     internal sealed class iOSPushSubscription : IPushSubscription {
         [DllImport("__Internal")] private static extern string _pushSubscriptionGetId();
         [DllImport("__Internal")] private static extern string _pushSubscriptionGetToken();

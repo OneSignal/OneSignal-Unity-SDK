@@ -27,7 +27,7 @@
 
 using System;
 
-namespace OneSignalSDKNew.Notifications.Models {
+namespace OneSignalSDK.Notifications.Models {
     public enum ActionType {
         /// <summary>Notification was tapped on.</summary>
         Opened,

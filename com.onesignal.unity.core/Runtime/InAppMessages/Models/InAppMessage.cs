@@ -27,7 +27,7 @@
 
 using System;
 
-namespace OneSignalSDKNew.InAppMessages.Models {
+namespace OneSignalSDK.InAppMessages.Models {
     [Serializable] public sealed class InAppMessage {
         /// <summary>
         /// Unique id of this in-app message

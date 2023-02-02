@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDKNew.Session {
+namespace OneSignalSDK.Session {
     internal sealed class SessionManager : ISessionManager {
         public void AddOutcome(string name) {
 

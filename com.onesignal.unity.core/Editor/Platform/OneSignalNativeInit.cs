@@ -28,7 +28,7 @@
 #if UNITY_EDITOR 
 using UnityEngine;
 
-namespace OneSignalSDKNew {
+namespace OneSignalSDK {
     /// <summary>
     /// Loads the Unity native SDK
     /// </summary>

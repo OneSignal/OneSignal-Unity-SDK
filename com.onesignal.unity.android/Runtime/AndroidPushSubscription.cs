@@ -27,10 +27,10 @@
 
 using System;
 using UnityEngine;
-using OneSignalSDKNew.User.Models;
-using OneSignalSDKNew.Android.Utilities;
+using OneSignalSDK.User.Models;
+using OneSignalSDK.Android.Utilities;
 
-namespace OneSignalSDKNew.Android.User.Models {
+namespace OneSignalSDK.Android.User.Models {
     internal sealed class AndroidPushSubscription : IPushSubscription {
         public event SubscriptionChangedDelegate Changed;
 

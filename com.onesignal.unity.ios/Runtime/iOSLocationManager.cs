@@ -27,10 +27,10 @@
 
 using UnityEngine;
 using System.Threading.Tasks;
-using OneSignalSDKNew.Location;
+using OneSignalSDK.Location;
 using System.Runtime.InteropServices;
 
-namespace OneSignalSDKNew.iOS.Location {
+namespace OneSignalSDK.iOS.Location {
     internal sealed class iOSLocationManager : ILocationManager {
         [DllImport("__Internal")] private static extern bool _locationGetIsShared();
         [DllImport("__Internal")] private static extern void _locationSetIsShared(bool shared);

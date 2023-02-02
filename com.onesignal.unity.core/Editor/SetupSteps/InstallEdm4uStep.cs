@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using OneSignalSDK.Debug.Utilities;
 
 namespace OneSignalSDK {
     /// <summary>
