@@ -26,9 +26,9 @@
  */
 
 using System.Collections.Generic;
-using OneSignalSDKNew.User.Models;
+using OneSignalSDK.User.Models;
 
-namespace OneSignalSDKNew.User {
+namespace OneSignalSDK.User {
     internal sealed class UserManager : IUserManager {
         private PushSubscription _subscription = new PushSubscription();
 

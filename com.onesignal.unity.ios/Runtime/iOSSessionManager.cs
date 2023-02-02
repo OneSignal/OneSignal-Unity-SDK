@@ -26,10 +26,10 @@
  */
 
 using UnityEngine;
-using OneSignalSDKNew.Session;
+using OneSignalSDK.Session;
 using System.Runtime.InteropServices;
 
-namespace OneSignalSDKNew.iOS.Session {
+namespace OneSignalSDK.iOS.Session {
     internal sealed class iOSSessionManager : ISessionManager {
         [DllImport("__Internal")] private static extern void _sessionAddOutcome(string name);
         [DllImport("__Internal")] private static extern void _sessionAddUniqueOutcome(string name);
