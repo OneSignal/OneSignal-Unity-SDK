@@ -54,10 +54,9 @@ namespace OneSignalSDKNew.Android.Notifications {
             return await continuation;
         }
 
-        public async Task ClearAllNotificationsAsync() {
+        public void ClearAllNotifications() {
             var continuation = new Continuation();
             _notifications.Call<AndroidJavaObject>("clearAllNotifications", continuation.Proxy);
-            await continuation;
         }
 
         public void Initialize() {
