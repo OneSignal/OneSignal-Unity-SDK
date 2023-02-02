@@ -28,11 +28,11 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.InAppMessages.Models;
-using OneSignalSDKNew.Android.Utilities;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.InAppMessages.Models;
+using OneSignalSDK.Android.Utilities;
 
-namespace OneSignalSDKNew.Android.InAppMessages {
+namespace OneSignalSDK.Android.InAppMessages {
     internal sealed class AndroidInAppMessagesManager : IInAppMessagesManager {
         private readonly AndroidJavaObject _inAppMessages;
 

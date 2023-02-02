@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDKNew.Session {
+namespace OneSignalSDK.Session {
     /// <summary>
     /// The OneSignal session manager is responsible for managing the current session state.
     /// </summary>

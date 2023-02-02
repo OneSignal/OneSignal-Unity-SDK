@@ -73,7 +73,7 @@ namespace OneSignalSDK {
                 if (Activator.CreateInstance(stepType) is OneSignalSetupStep step)
                     steps.Add(step);
                 else
-                    Debug.LogWarning($"could not create setup step from type {stepType.Name}");
+                    UnityEngine.Debug.LogWarning($"could not create setup step from type {stepType.Name}");
             }
 
             _setupSteps = steps;

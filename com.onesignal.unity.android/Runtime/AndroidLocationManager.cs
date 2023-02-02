@@ -27,12 +27,10 @@
 
 using UnityEngine;
 using System.Threading.Tasks;
-using OneSignalSDKNew.Location;
-using OneSignalSDKNew.Android.Utilities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Android.Utilities;
 
-using OneSignalSDKNew.Debug.Utilities;
-
-namespace OneSignalSDKNew.Android.Location {
+namespace OneSignalSDK.Android.Location {
     internal sealed class AndroidLocationManager : ILocationManager {
         private readonly AndroidJavaObject _location;
         

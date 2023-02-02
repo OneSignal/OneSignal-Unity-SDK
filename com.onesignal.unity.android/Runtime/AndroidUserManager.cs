@@ -28,12 +28,12 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using OneSignalSDKNew.User;
-using OneSignalSDKNew.User.Models;
-using OneSignalSDKNew.Android.User.Models;
-using OneSignalSDKNew.Android.Utilities;
+using OneSignalSDK.User;
+using OneSignalSDK.User.Models;
+using OneSignalSDK.Android.User.Models;
+using OneSignalSDK.Android.Utilities;
 
-namespace OneSignalSDKNew.Android.User {
+namespace OneSignalSDK.Android.User {
     internal sealed class AndroidUserManager : IUserManager {
         private readonly AndroidJavaObject _user;
         private AndroidPushSubscription _pushSubscription;

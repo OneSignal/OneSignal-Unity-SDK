@@ -31,7 +31,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace OneSignalSDKNew {
+namespace OneSignalSDK {
     /// <summary>
     /// Helper class for ensuring a callback is invoked on the main Unity thread
     /// </summary>

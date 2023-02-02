@@ -29,21 +29,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDKNew.Location;
-using OneSignalSDKNew.Session;
-using OneSignalSDKNew.User;
-using OneSignalSDKNew.Android.Notifications;
-using OneSignalSDKNew.Android.InAppMessages;
-using OneSignalSDKNew.Android.Debug;
-using OneSignalSDKNew.Android.Location;
-using OneSignalSDKNew.Android.Session;
-using OneSignalSDKNew.Android.User;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
+using OneSignalSDK.Android.Notifications;
+using OneSignalSDK.Android.InAppMessages;
+using OneSignalSDK.Android.Debug;
+using OneSignalSDK.Android.Location;
+using OneSignalSDK.Android.Session;
+using OneSignalSDK.Android.User;
 
-namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
+namespace OneSignalSDK.Android {
     public sealed partial class OneSignalAndroid : OneSignal {
         private const string SDKPackage = "com.onesignal";
         private const string SDKClassName = "OneSignal";

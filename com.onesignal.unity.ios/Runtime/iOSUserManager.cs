@@ -29,11 +29,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using OneSignalSDKNew.User;
-using OneSignalSDKNew.User.Models;
-using OneSignalSDKNew.iOS.User.Models;
+using OneSignalSDK.User;
+using OneSignalSDK.User.Models;
+using OneSignalSDK.iOS.User.Models;
 
-namespace OneSignalSDKNew.iOS.User {
+namespace OneSignalSDK.iOS.User {
     internal sealed class iOSUserManager : IUserManager {
         [DllImport("__Internal")] private static extern void _userSetLanguage(string languageCode);
         [DllImport("__Internal")] private static extern void _userAddAlias(string aliasLabel, string aliasId);

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
-namespace OneSignalSDK {
+namespace OneSignalSDK.Android.Utilities {
     /// <summary>
     /// Conversion methods for common Java types wrapped by <see cref="AndroidJavaObject"/>
     /// </summary>
@@ -45,6 +45,7 @@ namespace OneSignalSDK {
             var json = source.Call<AndroidJavaObject>("toJSONObject");
             var jsonStr = json.Call<string>("toString");
             var serialized = JsonUtility.FromJson<TModel>(jsonStr);
+
             return serialized;
         }
         
@@ -105,9 +106,25 @@ namespace OneSignalSDK {
                     entryArgs[0] = key;
                     entryArgs[1] = value;
                     AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
-                }    
+                }
             }
-            
+
+            return map;
+        }
+
+        public static AndroidJavaObject ToMap(this Dictionary<string, object> source) {
+            var map = new AndroidJavaObject("java.util.HashMap");
+            var put = AndroidJNIHelper.GetMethodID(map.GetRawClass(), "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+            var entryArgs = new object[2];
+            foreach (var kv in source) {
+                var key = new AndroidJavaObject("java.lang.String", kv.Key);
+                var value = new AndroidJavaClass("java.lang.String").CallStatic<string>("valueOf", kv.Value);
+                entryArgs[0] = key;
+                entryArgs[1] = value;
+                AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
+            }
+
             return map;
         }
 
@@ -120,6 +137,5 @@ namespace OneSignalSDK {
 
             return arrayList;
         }
-
     }
 }

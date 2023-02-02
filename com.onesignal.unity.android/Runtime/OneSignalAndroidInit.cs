@@ -28,7 +28,7 @@
 #if UNITY_ANDROID && !UNITY_EDITOR
 using UnityEngine;
 
-namespace OneSignalSDKNew.Android {
+namespace OneSignalSDK.Android {
     /// <summary>
     /// 
     /// </summary>

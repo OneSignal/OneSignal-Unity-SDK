@@ -26,9 +26,9 @@
  */
 
 using System.Collections.Generic;
-using OneSignalSDKNew.User.Models;
+using OneSignalSDK.User.Models;
 
-namespace OneSignalSDKNew.User {
+namespace OneSignalSDK.User {
     /// <summary>
     /// The OneSignal user manager is responsible for managing the current user state.  When
     /// an app starts up for the first time, it is defaulted to having a guest user that is only
@@ -63,7 +63,7 @@ namespace OneSignalSDKNew.User {
         /// </summary>
         /// <param name="key">The key of the data tag.</param>
         /// <param name="value">The new value of the data tag.</param>
-        void AddTag(string key, string value); // TODO: Switched value from object to string
+        void AddTag(string key, string value);
 
         /// <summary>
         /// Tag player with a key value pairs to later create segments on them at onesignal.com

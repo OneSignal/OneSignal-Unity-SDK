@@ -28,9 +28,9 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using OneSignalSDKNew.Debug.Utilities;
+using OneSignalSDK.Debug.Utilities;
 
-namespace OneSignalSDKNew {
+namespace OneSignalSDK {
     public abstract partial class OneSignal {
         private static OneSignal _default;
 

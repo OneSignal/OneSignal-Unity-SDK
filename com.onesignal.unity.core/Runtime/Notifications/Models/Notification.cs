@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OneSignalSDKNew.Notifications.Models {
+namespace OneSignalSDK.Notifications.Models {
     /// <summary>
     /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
     /// </summary>

@@ -27,14 +27,14 @@
 
 #if ONE_SIGNAL_INSTALLED
 using System;
-using OneSignalSDKNew; // TODO: Change namespace and delete MiniJson copy, OneSignalExampleBehaviourOld, OneSignalExampleSceneOld
+using OneSignalSDK;
 using UnityEngine;
 using UnityEngine.UI;
-using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDKNew.Debug.Models;
-using OneSignalSDKNew.Notifications.Models;
-using OneSignalSDKNew.InAppMessages.Models;
-using OneSignalSDKNew.User.Models;
+using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.Debug.Models;
+using OneSignalSDK.Notifications.Models;
+using OneSignalSDK.InAppMessages.Models;
+using OneSignalSDK.User.Models;
 using System.Collections.Generic;
 
 // ReSharper disable InconsistentNaming

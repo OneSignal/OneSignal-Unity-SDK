@@ -30,6 +30,7 @@ using UnityEditor.Compilation;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using OneSignalSDK.Debug.Utilities;
 
 namespace OneSignalSDK {
     /// <summary>

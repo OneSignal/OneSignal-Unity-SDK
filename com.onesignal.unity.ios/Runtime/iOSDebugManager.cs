@@ -27,10 +27,10 @@
 
 using UnityEngine;
 using System.Runtime.InteropServices;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Debug.Models;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDKNew.iOS.Debug {
+namespace OneSignalSDK.iOS.Debug {
     internal sealed class iOSDebugManager : IDebugManager {
         [DllImport("__Internal")] private static extern void _debugSetLogLevel(int logLevel);
         [DllImport("__Internal")] private static extern void _debugSetVisualLevel(int visualLevel);

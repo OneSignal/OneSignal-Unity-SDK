@@ -25,9 +25,9 @@
  * THE SOFTWARE.
  */
 
-using OneSignalSDKNew.Debug.Models;
+using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDKNew.Debug {
+namespace OneSignalSDK.Debug {
     internal sealed class DebugManager : IDebugManager {
         public LogLevel LogLevel { get; set; }
         public LogLevel AlertLevel { get; set; }

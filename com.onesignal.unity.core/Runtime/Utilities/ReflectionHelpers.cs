@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OneSignalSDKNew {
+namespace OneSignalSDK {
     public static class ReflectionHelpers {
         public static IEnumerable<Type> FindAllAssignableTypes<T>(string assemblyFilter) {
             var assignableType = typeof(T);

@@ -26,9 +26,9 @@
  */
 
 using System.Collections.Generic;
-using OneSignalSDKNew.InAppMessages.Models;
+using OneSignalSDK.InAppMessages.Models;
 
-namespace OneSignalSDKNew.InAppMessages {
+namespace OneSignalSDK.InAppMessages {
     /// <summary>
     /// When any client side event in an In-App Message's occurs there will be a corresponding event with this
     /// delegate signature.
@@ -112,7 +112,6 @@ namespace OneSignalSDKNew.InAppMessages {
         /// <summary>
         /// Clear all triggers from the current user.
         /// </summary>
-        /// <remarks>Android Only</remarks> // TODO: Android Only
         void ClearTriggers();
     }
 }
