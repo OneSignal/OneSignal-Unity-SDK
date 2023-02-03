@@ -30,7 +30,6 @@
 @interface OneSignalBridgeUtil
 
 const char* jsonStringFromDictionary(NSDictionary *dictionary);
-/*template <typename TObj>
-extern TObj objFromJsonString(const char* jsonString);*/
+// TObj objFromJsonString(const char* jsonString);
 
 @end
