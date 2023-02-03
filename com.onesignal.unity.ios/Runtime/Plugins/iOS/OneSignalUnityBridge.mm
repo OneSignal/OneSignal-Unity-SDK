@@ -51,6 +51,10 @@ extern "C" {
         [OneSignal login:TO_NSSTRING(externalId)];
     }
 
+    void _loginWithJwtBearerToken(const char* externalId, const char* token) {
+        [OneSignal login:TO_NSSTRING(externalId) withToken:TO_NSSTRING(token)];
+    }
+
     void _logout() {
         [OneSignal logout];
     }

@@ -143,7 +143,7 @@ namespace OneSignalSDK.Android {
         }
 
         public override void Login(string externalId, string jwtBearerToken = null) {
-            _sdkClass.CallStatic("login", externalId);
+            _sdkClass.CallStatic("login", externalId, jwtBearerToken);
         }
 
         public override void Logout() {
