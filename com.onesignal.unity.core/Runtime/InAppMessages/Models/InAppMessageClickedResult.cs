@@ -41,6 +41,6 @@ namespace OneSignalSDKNew.InAppMessages.Models {
         /// <summary>
         /// In-App Message the user received
         /// </summary>
-        public InAppMessage message;
+        //public InAppMessage message;
     }
 }

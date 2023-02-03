@@ -28,7 +28,7 @@
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 
-namespace OneSignalSDK {
+namespace OneSignalSDKNew.iOS {
     public static class PBXProjectExtensions {
     #if UNITY_2019_3_OR_NEWER
         public static string GetMainTargetName(this PBXProject project)

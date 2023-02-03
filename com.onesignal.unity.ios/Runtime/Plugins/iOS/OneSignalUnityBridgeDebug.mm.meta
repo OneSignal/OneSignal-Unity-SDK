@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 215a6f28cbd0647cdb7ed5184dc9b19e
+guid: 6b1860d6eff7d44bfa0c2c257233003d
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -12,11 +12,6 @@ PluginImporter:
   validateReferences: 1
   platformData:
   - first:
-      Android: Android
-    second:
-      enabled: 1
-      settings: {}
-  - first:
       Any: 
     second:
       enabled: 0
@@ -27,6 +22,16 @@ PluginImporter:
       enabled: 0
       settings:
         DefaultValueInitialized: true
+  - first:
+      iPhone: iOS
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      tvOS: tvOS
+    second:
+      enabled: 1
+      settings: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 

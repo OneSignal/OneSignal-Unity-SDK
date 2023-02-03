@@ -27,8 +27,12 @@
 
 using UnityEngine;
 using System.Threading.Tasks;
+using OneSignalSDKNew.Location;
+using OneSignalSDKNew.Android.Utilities;
 
-namespace OneSignalSDKNew.Location {
+using OneSignalSDKNew.Debug.Utilities;
+
+namespace OneSignalSDKNew.Android.Location {
     internal sealed class AndroidLocationManager : ILocationManager {
         private readonly AndroidJavaObject _location;
         
@@ -41,10 +45,9 @@ namespace OneSignalSDKNew.Location {
             set => _location.Call("setShared", value);
         }
 
-        public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
+        public void RequestPermission() {
             var continuation = new BoolContinuation();
-            _location.Call<AndroidJavaObject>("requestPermission", fallbackToSettings, continuation.Proxy);
-            return await continuation;
+            _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
         }
     }
 }

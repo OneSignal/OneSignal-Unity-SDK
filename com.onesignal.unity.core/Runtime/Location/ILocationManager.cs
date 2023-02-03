@@ -41,14 +41,6 @@ namespace OneSignalSDKNew.Location {
         /// <summary>
         /// Helper method to show the native prompt to ask the user for consent to share their location
         /// </summary>
-        /// <param name="fallbackToSettings">
-        /// Whether to direct the user to this app's settings to drive enabling of notifications,
-        /// when the in-app prompting is not possible.
-        /// </param>
-        /// <returns>
-        /// Awaitable boolean of true if the user opted in to location permission or
-        /// false if the user is opted out of location permission
-        /// </returns>
-        Task<bool> RequestPermissionAsync(bool fallbackToSettings);
+        void RequestPermission();
     }
 }

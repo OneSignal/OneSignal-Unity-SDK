@@ -34,7 +34,7 @@ namespace OneSignalSDKNew.User.Models {
 
         public string Token { get; }
 
-        public bool OptedIn  { get; set; }
+        public bool OptedIn  { get; }
 
         public void OptIn() {
 

@@ -27,10 +27,12 @@
 
 using UnityEngine;
 using System.Threading.Tasks;
+using OneSignalSDKNew.Notifications;
 using OneSignalSDKNew.Notifications.Models;
+using OneSignalSDKNew.Android.Utilities;
 using System.Collections.Generic;
 
-namespace OneSignalSDKNew.Notifications {
+namespace OneSignalSDKNew.Android.Notifications {
     internal sealed class AndroidNotificationsManager : INotificationsManager {
         private readonly AndroidJavaObject _notifications;
         
@@ -38,9 +40,9 @@ namespace OneSignalSDKNew.Notifications {
             _notifications = sdkClass.CallStatic<AndroidJavaObject>("getNotifications");
         }
 
-        public event NotificationWillShowDelegate WillShow; //INotificationWillShowInForegroundHandler
-        public event NotificationClickedDelegate Clicked; //INotificationClickHandler
-        public event PermissionChangedDelegate PermissionChanged; //IPermissionChangedHandler
+        public event NotificationWillShowDelegate WillShow;
+        public event NotificationClickedDelegate Clicked;
+        public event PermissionChangedDelegate PermissionChanged;
 
         public bool Permission {
             get => _notifications.Call<bool>("getPermission");
@@ -52,22 +54,21 @@ namespace OneSignalSDKNew.Notifications {
             return await continuation;
         }
 
-        public async Task ClearAllNotificationsAsync() {
+        public void ClearAllNotifications() {
             var continuation = new Continuation();
             _notifications.Call<AndroidJavaObject>("clearAllNotifications", continuation.Proxy);
-            await continuation;
         }
 
         public void Initialize() {
-            _notifications.Call("addPermissionChangedHandler", new IPermissionChangedHandler(this));
-            _notifications.Call("setNotificationWillShowInForegroundHandler", new INotificationWillShowInForegroundHandler(this));
-            _notifications.Call("setNotificationClickHandler", new INotificationClickHandler(this));
+            _notifications.Call("addPermissionChangedHandler", new InternalPermissionChangedHandler(this));
+            _notifications.Call("setNotificationWillShowInForegroundHandler", new InternalNotificationWillShowInForegroundHandler(this));
+            _notifications.Call("setNotificationClickHandler", new InternalNotificationClickHandler(this));
         }
 
-        private sealed class IPermissionChangedHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
+        private sealed class InternalPermissionChangedHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
             private AndroidNotificationsManager _parent;
             
-            public IPermissionChangedHandler(AndroidNotificationsManager notificationsManager) : base("notifications.IPermissionChangedHandler") {
+            public InternalPermissionChangedHandler(AndroidNotificationsManager notificationsManager) : base("notifications.IPermissionChangedHandler") {
                 _parent = notificationsManager;
             }
 
@@ -77,10 +78,10 @@ namespace OneSignalSDKNew.Notifications {
             }
         }
 
-        private sealed class INotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
+        private sealed class InternalNotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
             private AndroidNotificationsManager _parent;
 
-            public INotificationWillShowInForegroundHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationWillShowInForegroundHandler") {
+            public InternalNotificationWillShowInForegroundHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationWillShowInForegroundHandler") {
                 _parent = notificationsManager;
             }
 
@@ -99,10 +100,10 @@ namespace OneSignalSDKNew.Notifications {
             }
         }
 
-        private sealed class INotificationClickHandler : OneSignalAndroidJavaProxy {
+        private sealed class InternalNotificationClickHandler : OneSignalAndroidJavaProxy {
             private AndroidNotificationsManager _parent;
 
-            public INotificationClickHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationClickHandler") {
+            public InternalNotificationClickHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationClickHandler") {
                 _parent = notificationsManager;
             }
 
@@ -143,7 +144,7 @@ namespace OneSignalSDKNew.Notifications {
 
         private static NotificationAction _getAction(AndroidJavaObject actionJO) {
             var action = actionJO.ToSerializable<NotificationAction>();
-            //action.actionID = actionJO.Call<string>("getActionId");
+            action.type = (ActionType) actionJO.Call<AndroidJavaObject>("getType").Call<int>("ordinal");
 
             return action;
         }

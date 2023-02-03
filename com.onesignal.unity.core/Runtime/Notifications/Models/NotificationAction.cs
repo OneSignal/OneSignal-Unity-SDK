@@ -28,7 +28,7 @@
 using System;
 
 namespace OneSignalSDKNew.Notifications.Models {
-    public enum NotificationActionType {
+    public enum ActionType {
         /// <summary>Notification was tapped on.</summary>
         Opened,
 
@@ -43,11 +43,11 @@ namespace OneSignalSDKNew.Notifications.Models {
         /// <summary>
         /// Notification button identifier
         /// </summary>
-        public string actionID;
+        public string actionId;
         
         /// <summary>
         /// Action type
         /// </summary>
-        public NotificationActionType type;
+        public ActionType type;
     }
 }

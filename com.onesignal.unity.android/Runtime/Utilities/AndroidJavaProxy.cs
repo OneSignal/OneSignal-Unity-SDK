@@ -1,32 +1,22 @@
-using Laters;
 using UnityEngine;
 using System;
+using Laters;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace OneSignalSDKNew {
+namespace OneSignalSDKNew.Android.Utilities {
     public abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
         private const string SDKPackage = "com.onesignal";
-        private const string SDKClassName = "OneSignal";
-        private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
 
-        protected OneSignalAndroidJavaProxy(string listenerClassName, bool innerClass = false)
-            : base(innerClass
-                ? QualifiedSDKClass + "$" + listenerClassName // com.onesignal.OneSignal$[name], true
-                : SDKPackage + "." + listenerClassName // com.onesignal.[name], false
-            ) { }
+        protected OneSignalAndroidJavaProxy(string listenerClassName)
+            : base(SDKPackage + "." + listenerClassName) { }
     }
     
     public abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
         private const string SDKPackage = "com.onesignal";
-        private const string SDKClassName = "OneSignal";
-        private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
 
-        protected OneSignalAwaitableAndroidJavaProxy(string listenerClassName, bool innerClass = false)
-            : base(innerClass
-                ? QualifiedSDKClass + "$" + listenerClassName
-                : SDKPackage + "." + listenerClassName
-            ) { }
+        protected OneSignalAwaitableAndroidJavaProxy(string listenerClassName)
+            : base(SDKPackage + "." + listenerClassName) { }
     }
 
     public sealed class Continuation {

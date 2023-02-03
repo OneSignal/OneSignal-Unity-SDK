@@ -82,6 +82,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// <summary>
     /// 
     /// </summary>
+    public string aliasKey;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string aliasValue;
+
+    /// <summary>
+    /// 
+    /// </summary>
     public string tagKey;
 
     /// <summary>
@@ -182,8 +192,8 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Notification Permission changed to: {permission}");
     }
 
-    private void _pushSubscriptionChanged(IPushSubscription subscription) {
-        _log($"Push subscription changed to: {subscription.Id}");
+    private void _pushSubscriptionChanged(PushSubscriptionState current) {
+        _log($"Push subscription changed: {JsonUtility.ToJson(current)}");
     }
 
     /*
@@ -224,50 +234,14 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * User identification
      */
 
-    public async void LoginOneSignalUser() {
-        _log($"Logging in user (<b>{externalId}</b>) and awaiting result...");
-
-        await OneSignal.Default.LoginAsync(externalId);
-
-        _log("User login complete");
+    public void LoginOneSignalUser() {
+        _log($"Logging in user (<b>{externalId}</b>)");
+        OneSignal.Default.Login(externalId);
     }
     
-    public async void LogoutOneSignalUser() {
-        _log($"Logging out user and awaiting result...");
-
-        await OneSignal.Default.LogoutAsync();
-
-        _log("User logout complete");
-
-    }
-
-    public void AddEmail() {
-        _log($"Adding email (<b>{email}</b>)");
-        OneSignal.Default.User.AddEmailSubscription(email);
-    }
-    
-    public void RemoveEmail() {
-        _log($"Removing email (<b>{email}</b>)");
-        OneSignal.Default.User.RemoveEmailSubscription(email);
-    }
-
-    public void AddSms() {
-        _log($"Adding sms (<b>{phoneNumber}</b>)");
-        OneSignal.Default.User.AddSmsSubscription(phoneNumber);
-    }
-    
-    public void RemoveSms() {
-        _log($"Removing sms (<b>{phoneNumber}</b>)");
-        OneSignal.Default.User.RemoveSmsSubscription(phoneNumber);
-    }
-
-    public void GetLanguage() {
-        _log($"Language set for the user is (<b>{OneSignal.Default.User.Language}</b>)");
-    }
-
-    public void SetLanguage() {
-        _log($"Setting language for the user to (<b>{language}</b>)");
-        OneSignal.Default.User.Language = language;
+    public void LogoutOneSignalUser() {
+        _log($"Logging out user");
+        OneSignal.Default.Logout();
     }
 
     public void PushSubscriptionOptIn() {
@@ -280,6 +254,41 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.User.PushSubscription.OptOut();
     }
 
+    public void AddEmail() {
+        _log($"Adding email (<b>{email}</b>)");
+        OneSignal.Default.User.AddEmail(email);
+    }
+    
+    public void RemoveEmail() {
+        _log($"Removing email (<b>{email}</b>)");
+        OneSignal.Default.User.RemoveEmail(email);
+    }
+
+    public void AddSms() {
+        _log($"Adding sms (<b>{phoneNumber}</b>)");
+        OneSignal.Default.User.AddSms(phoneNumber);
+    }
+    
+    public void RemoveSms() {
+        _log($"Removing sms (<b>{phoneNumber}</b>)");
+        OneSignal.Default.User.RemoveSms(phoneNumber);
+    }
+
+    public void SetLanguage() {
+        _log($"Setting language for the user to (<b>{language}</b>)");
+        OneSignal.Default.User.Language = language;
+    }
+
+    public void AddAlias() {
+        _log($"Adding alias with label <b>{aliasKey}</b> and id <b>{aliasValue}</b>");
+        OneSignal.Default.User.AddAlias(aliasKey, aliasValue);
+    }
+
+    public void RemoveAlias() {
+        _log($"Removing alias with label <b>{aliasKey}</b>");
+        OneSignal.Default.User.RemoveAlias(aliasKey);
+    }
+
     /*
      * Push
      */
@@ -290,17 +299,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         var result = await OneSignal.Default.Notifications.RequestPermissionAsync(true);
 
         if (result)
-            _log("Notification permission accpeted");
+            _log("Notification permission accepeted");
         else
             _log("Notification permission denied");
 
         _log($"Notification permission is: {OneSignal.Default.Notifications.Permission}");
     }
 
-    public async void ClearPush() {
-        _log("Clearing existing OneSignal push notifications and awaiting result ...");
+    public void ClearPush() {
+        _log("Clearing existing OneSignal push notifications");
         
-        await OneSignal.Default.Notifications.ClearAllNotificationsAsync();
+        OneSignal.Default.Notifications.ClearAllNotifications();
         
         _log("Notifications cleared");
     }
@@ -366,15 +375,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * Location
      */
 
-    public async void PromptLocation() {
-        _log("Opening permission prompt for location and awaiting result...");
+    public void PromptLocation() {
+        _log("Opening permission prompt for location");
 
-        var result = await OneSignal.Default.Location.RequestPermissionAsync(true);
-
-        if (result)
-            _log("User opted in");
-        else
-            _log("User opted out");
+        OneSignal.Default.Location.RequestPermission();
     }
 
     public void ToggleShareLocation() {
@@ -407,6 +411,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void SetEmailString(string newVal) => email = newVal;
     public void SetPhoneNumberString(string newVal) => phoneNumber = newVal;
     public void SetLanguageString(string newVal) => language = newVal;
+
+    public void SetAliasKey(string newVal) => aliasKey = newVal;
+    public void SetAliasValue(string newVal) => aliasValue = newVal;
 
     public void SetTriggerKey(string newVal) => triggerKey = newVal;
     public void SetTriggerValue(string newVal) => triggerValue = newVal;
