@@ -113,7 +113,7 @@ namespace OneSignalSDK.User {
         /// Remove multiple aliases from the current user.
         /// </summary>
         /// <param name="labels">The collection of alias labels, all of which will be removed from the current user.</param>
-        void RemoveAliases(params string[] keys);
+        void RemoveAliases(params string[] labels);
 
         /// <summary>
         /// Add a new email subscription to the current user.
