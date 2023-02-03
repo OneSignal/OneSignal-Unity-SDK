@@ -51,6 +51,8 @@ namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
 
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
 
+        private readonly AndroidJavaClass _sdkWrapperClass = new AndroidJavaClass(SDKPackage + ".common.OneSignalWrapper");
+
         private static OneSignalAndroid _instance;
 
         private AndroidUserManager _user;
@@ -111,6 +113,9 @@ namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
         public override void Initialize(string appId) {
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            _sdkWrapperClass.CallStatic("setSdkType", "unity");
+            //_sdkWrapperClass.CallStatic("setSdkVersion", "050000");
 
             _sdkClass.CallStatic("initWithContext", activity, appId);
 
