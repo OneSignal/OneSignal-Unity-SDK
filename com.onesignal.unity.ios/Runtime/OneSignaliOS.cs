@@ -54,6 +54,7 @@ namespace OneSignalSDKNew.iOS {
         [DllImport("__Internal")] private static extern void _setLaunchURLsInApp(bool launchInApp);
         [DllImport("__Internal")] private static extern void _initialize(string appId);
         [DllImport("__Internal")] private static extern void _login(string externalId);
+        [DllImport("__Internal")] private static extern void _loginWithJwtBearerToken(string externalId, string jwtBearerToken);
         [DllImport("__Internal")] private static extern void _logout();
         [DllImport("__Internal")] private static extern void _enterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _exitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
@@ -147,7 +148,11 @@ namespace OneSignalSDKNew.iOS {
         }
 
         public override void Login(string externalId, string jwtBearerToken = null) {
-            _login(externalId);
+            if (jwtBearerToken == null) {
+                _login(externalId);
+            } else {
+                _loginWithJwtBearerToken(externalId, jwtBearerToken);
+            }
         }
 
         public override void Logout() {
