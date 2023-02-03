@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Overhauled public API of the SDK to a user-centered model. While this release is in beta please see our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs) for usage.
+- Updated included Android SDK to [5.0.0-beta1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta1) 
+- Updated included iOS SDK to [5.0.0-beta-01](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-01)
+
+If you run into any problems, please don’t hesitate to [open an issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/new)!
+
 ## [3.0.9]
 ### Fixed
 - Android - Lock OneSignal version so it doesn't get bumped to the next major version.
