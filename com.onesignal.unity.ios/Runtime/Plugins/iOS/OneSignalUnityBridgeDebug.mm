@@ -34,7 +34,7 @@ extern "C" {
         [OneSignal.Debug setLogLevel:(ONE_S_LOG_LEVEL) logLevel];
     }
 
-    void _debugSetVisualLevel(int visualLevel) {
-        [OneSignal.Debug setVisualLevel:(ONE_S_LOG_LEVEL) visualLevel];
+    void _debugSetAlertLevel(int alertLevel) {
+        [OneSignal.Debug setAlertLevel:(ONE_S_LOG_LEVEL) alertLevel];
     }
 }

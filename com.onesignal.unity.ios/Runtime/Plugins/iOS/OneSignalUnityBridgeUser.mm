@@ -133,16 +133,16 @@ extern "C" {
         [OneSignal.User addEmail:TO_NSSTRING(email)];
     }
 
-    void _userRemoveEmail(const char* email) { // iOS - returns bool
+    void _userRemoveEmail(const char* email) {
         [OneSignal.User removeEmail:TO_NSSTRING(email)];
     }
 
     void _userAddSms(const char* smsNumber) {
-        [OneSignal.User addSmsNumber:TO_NSSTRING(smsNumber)];
+        [OneSignal.User addSms:TO_NSSTRING(smsNumber)];
     }
 
-    void _userRemoveSms(const char* smsNumber) { // iOS - returns bool
-        [OneSignal.User removeSmsNumber:TO_NSSTRING(smsNumber)];
+    void _userRemoveSms(const char* smsNumber) {
+        [OneSignal.User removeSms:TO_NSSTRING(smsNumber)];
     }
 
     void _userAddTag(const char* key, const char* value) {

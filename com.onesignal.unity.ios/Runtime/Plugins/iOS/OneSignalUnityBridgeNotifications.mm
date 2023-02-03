@@ -32,7 +32,7 @@
 
 typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
 typedef void (*StringListenerDelegate)(const char* response);
-typedef void (*StateListenerDelegate)(const char* current, const char* previous);
+typedef void (*StateListenerDelegate)(const char* current);
 typedef bool (*NotificationWillShowDelegate)(const char* notification);
 
 /*
@@ -71,11 +71,10 @@ typedef bool (*NotificationWillShowDelegate)(const char* notification);
     return self;
 }
 
-- (void)onOSPermissionChanged:(OSPermissionStateChanges*)stateChanges {
+- (void)onOSPermissionChanged:(OSPermissionState*)state {
     if (_permissionDelegate != nil) {
-        auto curr = jsonStringFromDictionary([[stateChanges to] jsonRepresentation]);
-        auto prev = jsonStringFromDictionary([[stateChanges from] jsonRepresentation]);
-        _permissionDelegate(curr, prev);
+        auto curr = jsonStringFromDictionary([state jsonRepresentation]);
+        _permissionDelegate(curr);
     }
 }
 

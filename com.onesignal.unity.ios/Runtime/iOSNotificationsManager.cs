@@ -45,7 +45,7 @@ namespace OneSignalSDK.iOS.Notifications {
         [DllImport("__Internal")] private static extern void _notificationsSetWillShowHandler(NotificationWillShowInForegroundDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsSetOpenedHandler(StringListenerDelegate callback);
 
-        public delegate void StateListenerDelegate(string current, string previous);
+        public delegate void StateListenerDelegate(string current);
 
         private delegate bool NotificationWillShowInForegroundDelegate(string notification);
         private delegate void StringListenerDelegate(string response);
@@ -81,11 +81,10 @@ namespace OneSignalSDK.iOS.Notifications {
             _notificationsSetOpenedHandler(_onOpened);
         }
 
-        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))] // temp
-        private static void _onPermissionStateChanged(string current, string previous) {
+        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
+        private static void _onPermissionStateChanged(string current) {
             var curr = JsonUtility.FromJson<PermissionState>(current);
-            //var prev = JsonUtility.FromJson<PermissionState>(previous);
-            UnityMainThreadDispatch.Post(state => _instance.PermissionChanged?.Invoke(curr.reachable));
+            UnityMainThreadDispatch.Post(state => _instance.PermissionChanged?.Invoke(curr.permission));
         }
 
         /// <param name="response">OSNotification</param>
@@ -139,7 +138,7 @@ namespace OneSignalSDK.iOS.Notifications {
         }
 
         [Serializable] private sealed class PermissionState { // temp
-            public bool reachable;
+            public bool permission;
         }
 
         [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
