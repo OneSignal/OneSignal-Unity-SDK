@@ -98,6 +98,7 @@ namespace OneSignalSDK.iOS.Notifications {
             _fillNotifFromObj(ref notification, Json.Deserialize(response));
 
             Notification resultNotif = null;
+            // Blocks current thread using Send to wait for value to assign to resultNotif inorder to display
             UnityMainThreadDispatch.Send(state => { resultNotif = _instance.WillShow(notification);});
 
             return resultNotif != null;
