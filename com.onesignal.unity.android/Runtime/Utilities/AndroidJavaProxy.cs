@@ -4,7 +4,7 @@ using Laters;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace OneSignalSDKNew.Android.Utilities {
+namespace OneSignalSDK.Android.Utilities {
     public abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
         private const string SDKPackage = "com.onesignal";
 

@@ -28,7 +28,7 @@
 using System;
 using UnityEngine;
 
-namespace OneSignalSDKNew.InAppMessages.Models {
+namespace OneSignalSDK.InAppMessages.Models {
     /// <summary>
     /// Action associated with clicking a button in an In-App Message
     /// </summary>
@@ -36,21 +36,21 @@ namespace OneSignalSDKNew.InAppMessages.Models {
         /// <summary>
         /// An optional click name defined for the action element
         /// </summary>
-        public string ClickName { get; }
+        string ClickName { get; }
 
         /// <summary>
         /// An optional URL that opens when the action takes place
         /// </summary>
-        public string ClickUrl { get; }
+        string ClickUrl { get; }
 
         /// <summary>
         /// Whether this is the first time the user has clicked any action on the In-App Message
         /// </summary>
-        public bool IsFirstClick { get; }
+        bool IsFirstClick { get; }
 
         /// <summary>
         /// Whether this action will close the In-App Message
         /// </summary>
-        public bool ClosesMessage { get; }
+        bool ClosesMessage { get; }
     }
 }

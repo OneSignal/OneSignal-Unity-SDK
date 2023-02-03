@@ -27,15 +27,15 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDKNew.Location;
-using OneSignalSDKNew.Session;
-using OneSignalSDKNew.User;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
 
-namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete OneSignalNativeOld, OneSignalNativeInitOld
+namespace OneSignalSDK {
     /// <summary>
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>

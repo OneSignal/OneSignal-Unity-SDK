@@ -28,19 +28,19 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Location;
-using OneSignalSDKNew.Session;
-using OneSignalSDKNew.User;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Location;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
 
-namespace OneSignalSDKNew { // TODO: Change namespace to OneSignalSDK and delete OneSignalOld, OneSignalInternalOld
+namespace OneSignalSDK {
     /// <summary>
     /// OneSignal SDK for Unity
     /// </summary>
     public abstract partial class OneSignal {
-        public const string Version = "3.0.9";
+        public const string Version = "5.0.0-beta.1";
 
         /// <summary>
         /// The default static instance of the OneSignal Unity SDK

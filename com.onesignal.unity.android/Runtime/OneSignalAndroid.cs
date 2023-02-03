@@ -29,27 +29,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDKNew.Location;
-using OneSignalSDKNew.Session;
-using OneSignalSDKNew.User;
-using OneSignalSDKNew.Android.Notifications;
-using OneSignalSDKNew.Android.InAppMessages;
-using OneSignalSDKNew.Android.Debug;
-using OneSignalSDKNew.Android.Location;
-using OneSignalSDKNew.Android.Session;
-using OneSignalSDKNew.Android.User;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
+using OneSignalSDK.Android.Notifications;
+using OneSignalSDK.Android.InAppMessages;
+using OneSignalSDK.Android.Debug;
+using OneSignalSDK.Android.Location;
+using OneSignalSDK.Android.Session;
+using OneSignalSDK.Android.User;
 
-namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
+namespace OneSignalSDK.Android {
     public sealed partial class OneSignalAndroid : OneSignal {
         private const string SDKPackage = "com.onesignal";
         private const string SDKClassName = "OneSignal";
         private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
 
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
+
+        private readonly AndroidJavaClass _sdkWrapperClass = new AndroidJavaClass(SDKPackage + ".common.OneSignalWrapper");
 
         private static OneSignalAndroid _instance;
 
@@ -112,6 +114,9 @@ namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
+            _sdkWrapperClass.CallStatic("setSdkType", "unity");
+            //_sdkWrapperClass.CallStatic("setSdkVersion", "050000");
+
             _sdkClass.CallStatic("initWithContext", activity, appId);
 
             if (_inAppMessages == null) {
@@ -141,7 +146,7 @@ namespace OneSignalSDKNew.Android { // TODO: Fix namespace to OneSignalSDK
         }
 
         public override void Login(string externalId, string jwtBearerToken = null) {
-            _sdkClass.CallStatic("login", externalId);
+            _sdkClass.CallStatic("login", externalId, jwtBearerToken);
         }
 
         public override void Logout() {

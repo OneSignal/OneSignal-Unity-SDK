@@ -64,7 +64,7 @@ using Debug = UnityEngine.Debug;
 
 using UnityEditor.Callbacks;
 
-namespace OneSignalSDKNew.iOS {
+namespace OneSignalSDK.iOS {
     /// <summary>
     /// Adds required frameworks to the iOS project, and adds the OneSignalNotificationServiceExtension. Also handles
     /// making sure both targets (app and extension service) have the correct dependencies

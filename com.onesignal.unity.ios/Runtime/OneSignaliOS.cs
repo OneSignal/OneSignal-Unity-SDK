@@ -30,22 +30,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Runtime.InteropServices;
-using OneSignalSDKNew.iOS.Notifications;
-using OneSignalSDKNew.iOS.InAppMessages;
-using OneSignalSDKNew.iOS.Debug;
-using OneSignalSDKNew.iOS.Location;
-using OneSignalSDKNew.iOS.Session;
-using OneSignalSDKNew.iOS.User;
-using OneSignalSDKNew.iOS.Utilities;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.Debug;
-using OneSignalSDKNew.Debug.Utilities;
-using OneSignalSDKNew.Location;
-using OneSignalSDKNew.Session;
-using OneSignalSDKNew.User;
+using OneSignalSDK.iOS.Notifications;
+using OneSignalSDK.iOS.InAppMessages;
+using OneSignalSDK.iOS.Debug;
+using OneSignalSDK.iOS.Location;
+using OneSignalSDK.iOS.Session;
+using OneSignalSDK.iOS.User;
+using OneSignalSDK.iOS.Utilities;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
 
-namespace OneSignalSDKNew.iOS {
+namespace OneSignalSDK.iOS {
     public sealed partial class OneSignaliOS : OneSignal {
         [DllImport("__Internal")] private static extern bool _getPrivacyConsent();
         [DllImport("__Internal")] private static extern void _setPrivacyConsent(bool consent);
@@ -54,6 +54,7 @@ namespace OneSignalSDKNew.iOS {
         [DllImport("__Internal")] private static extern void _setLaunchURLsInApp(bool launchInApp);
         [DllImport("__Internal")] private static extern void _initialize(string appId);
         [DllImport("__Internal")] private static extern void _login(string externalId);
+        [DllImport("__Internal")] private static extern void _loginWithJwtBearerToken(string externalId, string jwtBearerToken);
         [DllImport("__Internal")] private static extern void _logout();
         [DllImport("__Internal")] private static extern void _enterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _exitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
@@ -147,7 +148,11 @@ namespace OneSignalSDKNew.iOS {
         }
 
         public override void Login(string externalId, string jwtBearerToken = null) {
-            _login(externalId);
+            if (jwtBearerToken == null) {
+                _login(externalId);
+            } else {
+                _loginWithJwtBearerToken(externalId, jwtBearerToken);
+            }
         }
 
         public override void Logout() {

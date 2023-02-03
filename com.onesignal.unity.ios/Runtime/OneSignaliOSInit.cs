@@ -28,7 +28,7 @@
 #if UNITY_IOS && !UNITY_EDITOR
 using UnityEngine;
 
-namespace OneSignalSDKNew.iOS {
+namespace OneSignalSDK.iOS {
     /// <summary>
     /// 
     /// </summary>

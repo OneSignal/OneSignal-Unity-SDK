@@ -26,9 +26,9 @@
  */
 
 using System;
-using OneSignalSDKNew.Debug.Models;
+using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDKNew.Debug.Utilities {
+namespace OneSignalSDK.Debug.Utilities {
     /// <summary>
     /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>

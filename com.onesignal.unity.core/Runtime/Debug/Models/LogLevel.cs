@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDKNew.Debug.Models {
+namespace OneSignalSDK.Debug.Models {
     /// <summary>
     /// Direct mapping of native SDK log levels
     /// </summary> 

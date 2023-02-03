@@ -29,10 +29,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using OneSignalSDKNew.InAppMessages;
-using OneSignalSDKNew.InAppMessages.Models;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.InAppMessages.Models;
 
-namespace OneSignalSDKNew.iOS.InAppMessages {
+namespace OneSignalSDK.iOS.InAppMessages {
     internal sealed class iOSInAppMessagesManager : IInAppMessagesManager {
         [DllImport("__Internal")] private static extern void _inAppMessagesSetWillDisplayCallback(StringListenerDelegate callback);
         [DllImport("__Internal")] private static extern void _inAppMessagesSetDidDisplayCallback(StringListenerDelegate callback);

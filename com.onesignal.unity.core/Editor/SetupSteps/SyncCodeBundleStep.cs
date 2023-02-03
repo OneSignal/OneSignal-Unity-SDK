@@ -46,7 +46,7 @@ namespace OneSignalSDK {
 
         protected override bool _getIsStepCompleted() {
             if (!File.Exists(_packageJsonPath)) {
-                Debug.LogError($"Could not find {_packageJsonPath}");
+                UnityEngine.Debug.LogError($"Could not find {_packageJsonPath}");
                 return true;
             }
 
@@ -61,7 +61,7 @@ namespace OneSignalSDK {
                 return _bundleVersion == _sdkVersion;
             }
 
-            Debug.LogError("Could not deserialize package.json");
+            UnityEngine.Debug.LogError("Could not deserialize package.json");
 
             return true;
         }

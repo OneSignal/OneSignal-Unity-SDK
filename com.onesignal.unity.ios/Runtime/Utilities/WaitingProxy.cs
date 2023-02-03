@@ -28,7 +28,7 @@
 using Laters;
 using System.Collections.Generic;
 
-namespace OneSignalSDKNew.iOS.Utilities {
+namespace OneSignalSDK.iOS.Utilities {
     internal static class WaitingProxy {
         private static readonly Dictionary<int, ILater> WaitingProxies = new Dictionary<int, ILater>();
 

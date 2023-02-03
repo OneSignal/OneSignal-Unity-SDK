@@ -27,7 +27,7 @@
 
 using System.Threading.Tasks;
 
-namespace OneSignalSDKNew.Location {
+namespace OneSignalSDK.Location {
     /// <summary>
     /// The entry point to the location SDK for OneSignal.
     /// </summary>

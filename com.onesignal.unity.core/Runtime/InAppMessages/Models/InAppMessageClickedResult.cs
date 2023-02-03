@@ -27,10 +27,10 @@
 
 using System;
 
-namespace OneSignalSDKNew.InAppMessages.Models {
+namespace OneSignalSDK.InAppMessages.Models {
     /// <summary>
     /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event // TODO: Update documentation url
+    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
     /// </summary>
     [Serializable] public sealed class InAppMessageClickedResult {
         /// <summary>

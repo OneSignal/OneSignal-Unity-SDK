@@ -27,12 +27,12 @@
 
 using UnityEngine;
 using System.Threading.Tasks;
-using OneSignalSDKNew.Notifications;
-using OneSignalSDKNew.Notifications.Models;
-using OneSignalSDKNew.Android.Utilities;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.Notifications.Models;
+using OneSignalSDK.Android.Utilities;
 using System.Collections.Generic;
 
-namespace OneSignalSDKNew.Android.Notifications {
+namespace OneSignalSDK.Android.Notifications {
     internal sealed class AndroidNotificationsManager : INotificationsManager {
         private readonly AndroidJavaObject _notifications;
         
@@ -55,8 +55,7 @@ namespace OneSignalSDKNew.Android.Notifications {
         }
 
         public void ClearAllNotifications() {
-            var continuation = new Continuation();
-            _notifications.Call<AndroidJavaObject>("clearAllNotifications", continuation.Proxy);
+            _notifications.Call("clearAllNotifications");
         }
 
         public void Initialize() {

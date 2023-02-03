@@ -28,7 +28,7 @@
 using System.Threading.Tasks;
 
 #pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDKNew.Notifications {
+namespace OneSignalSDK.Notifications {
     internal sealed class NotificationsManager : INotificationsManager {
         public event NotificationWillShowDelegate WillShow;
         public event NotificationClickedDelegate Clicked;
