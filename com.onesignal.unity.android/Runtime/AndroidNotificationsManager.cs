@@ -55,8 +55,7 @@ namespace OneSignalSDK.Android.Notifications {
         }
 
         public void ClearAllNotifications() {
-            var continuation = new Continuation();
-            _notifications.Call<AndroidJavaObject>("clearAllNotifications", continuation.Proxy);
+            _notifications.Call("clearAllNotifications");
         }
 
         public void Initialize() {
