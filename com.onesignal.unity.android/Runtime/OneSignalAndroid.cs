@@ -115,7 +115,7 @@ namespace OneSignalSDK.Android {
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
             _sdkWrapperClass.CallStatic("setSdkType", "unity");
-            //_sdkWrapperClass.CallStatic("setSdkVersion", "050000");
+            _sdkWrapperClass.CallStatic("setSdkVersion", VersionHeader);
 
             _sdkClass.CallStatic("initWithContext", activity, appId);
 
