@@ -1,4 +1,4 @@
-# Unity v5.0.0-beta.1 Migration Guide
+# Unity v5.0.0-beta.2 Migration Guide
 In this release, we are making a significant shift from a device-centered model to a user-centered model.  A user-centered model allows for more powerful omni-channel integrations within the OneSignal platform.
 
 This migration guide will walk you through the Unity SDK v5.0.0 changes as a result of this shift.
