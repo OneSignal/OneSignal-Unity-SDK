@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ## [5.0.0-beta.1]
+### Added
+- [Migration guide](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.1/MIGRATION_GUIDE_v3_to_v5.md
+) for updating from 3.x.x to 5.x.x
 ### Changed
-- Overhauled public API of the SDK to a user-centered model. While this release is in beta please see our included [example MonoBehaviour](Example/OneSignalExampleBehaviour.cs) for usage.
-- Updated included Android SDK to [5.0.0-beta1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta1) 
+- Overhauled public API of the SDK to a user-centered model. While this release is in beta please see our included [example MonoBehaviour](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.1/OneSignalExample/Assets/OneSignal/Example/OneSignalExampleBehaviour.cs) for usage.
+- Updated included Android SDK to [5.0.0-beta1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta1)
 - Updated included iOS SDK to [5.0.0-beta-01](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-01)
 
-If you run into any problems, please don’t hesitate to [open an issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/new)!
+If you run into any problems, please don’t hesitate to add to this [issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/585)!
 
 ## [3.0.9]
 ### Fixed
