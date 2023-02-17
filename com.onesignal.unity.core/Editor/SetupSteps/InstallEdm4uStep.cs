@@ -47,7 +47,7 @@ namespace OneSignalSDK {
         public override bool IsRequired
             => true;
 
-        protected Version _getAssetsEDM4UVersion() {
+        private Version _getAssetsEDM4UVersion() {
             var isInstalled = CompilationPipeline.GetPrecompiledAssemblyNames()
                .Any(assemblyName => assemblyName.StartsWith("Google.VersionHandler"));
 
@@ -80,7 +80,7 @@ namespace OneSignalSDK {
             return version;
         }
 
-        protected Version _getPackagesEDM4UVersion() {
+        private Version _getPackagesEDM4UVersion() {
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.GetName().Name.StartsWith("Google.PackageManagerResolver"));
             if (assembly == null)
                 return null;
