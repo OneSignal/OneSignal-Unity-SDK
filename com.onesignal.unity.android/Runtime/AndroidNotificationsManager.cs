@@ -138,6 +138,12 @@ namespace OneSignalSDK.Android.Notifications {
                 notification.groupedNotifications = Json.Deserialize(groupedNotificationsStr) as List<NotificationBase>;
             }
 
+            var rawPayloadJson = notifJO.Call<AndroidJavaObject>("getRawPayload");
+            if (rawPayloadJson != null) {
+                var rawPayloadJsonStr = rawPayloadJson.Call<string>("toString");
+                notification.rawPayload = rawPayloadJsonStr;
+            }
+
             return notification;
         }
 
