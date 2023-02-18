@@ -1,6 +1,6 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:OneSignal:5.0.0-beta1</package>
+    <package>com.onesignal:OneSignal:5.0.0-beta2</package>
   </packages>
   <files />
   <settings>
