@@ -40,7 +40,7 @@ namespace OneSignalSDK {
     /// OneSignal SDK for Unity
     /// </summary>
     public abstract partial class OneSignal {
-        public const string Version = "5.0.0-beta.1";
+        public const string Version = "5.0.0-beta.2";
         public const string VersionHeader = "050000";
 
         /// <summary>
