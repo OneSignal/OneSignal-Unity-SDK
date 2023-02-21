@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.0.0-beta.2]
 ### Added
 - Sdk type and version to api headers
 ### Changed
@@ -203,7 +204,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.1...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.2...HEAD
+[5.0.0-beta.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.1...5.0.0-beta.2
 [5.0.0-beta.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.9...5.0.0-beta.1
 [3.0.9]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.8...3.0.9
 [3.0.8]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.7...3.0.8
