@@ -38,18 +38,6 @@ typedef void (*StateListenerDelegate)(const char* current, const char* previous)
 
 #define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
 
-template <typename TObj>
-TObj objFromJsonString2(const char* jsonString) {
-    NSData* jsonData = [[NSString stringWithUTF8String:jsonString] dataUsingEncoding:NSUTF8StringEncoding];
-    NSError* error = nil;
-    TObj arr = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
-
-    if (error != nil)
-        return nil;
-
-    return arr;
-}
-
 /*
  * Observer singleton for global callbacks
  */
@@ -109,7 +97,7 @@ extern "C" {
     }
 
     void _userAddAliases(const char* aliasesJson) {
-        NSDictionary *aliases = objFromJsonString2<NSDictionary*>(aliasesJson);
+        NSDictionary *aliases = dictionaryFromJsonString(aliasesJson);
 
         [OneSignal.User addAliases:aliases];
     }
@@ -119,7 +107,7 @@ extern "C" {
     }
 
     void _userRemoveAliases(const char* aliasesJson) {
-        NSArray *aliases = objFromJsonString2<NSArray*>(aliasesJson);
+        NSArray *aliases = arrayFromJsonString(aliasesJson);
 
         if (aliases == nil) {
             NSLog(@"[Onesignal] Could not parse aliases to delete");
@@ -151,7 +139,7 @@ extern "C" {
     }
 
     void _userAddTags(const char* tagsJson) {
-        NSDictionary *tags = objFromJsonString2<NSDictionary*>(tagsJson);
+        NSDictionary *tags = dictionaryFromJsonString(tagsJson);
 
         [OneSignal.User addTags:tags];
     }
@@ -161,7 +149,7 @@ extern "C" {
     }
 
     void _userRemoveTags(const char* tagsJson) {
-        NSArray *tags = objFromJsonString2<NSArray*>(tagsJson);
+        NSArray *tags = arrayFromJsonString(tagsJson);
 
         if (tags == nil) {
             NSLog(@"[Onesignal] Could not parse tags to delete");
