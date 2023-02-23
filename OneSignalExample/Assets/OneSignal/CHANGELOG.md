@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Added helper methods in the iOS OneSignal bridge
+
 ## [5.0.0-beta.2]
 ### Added
 - Sdk type and version to api headers
@@ -32,7 +35,6 @@ If you run into any problems, please don’t hesitate to add to this [issue](htt
 - Updated Unity Verified Solutions Attribution script from VspAttribution to VSAttribution
 ### Fixed
 - Resolved serialization depth limit 10 exceeded warning log
-- Fixed InstallEdm4uStep to work with UPM EDM4U installations
 
 ## [3.0.7]
 ### Changed
