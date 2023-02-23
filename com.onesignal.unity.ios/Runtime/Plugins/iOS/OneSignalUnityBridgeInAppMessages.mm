@@ -39,18 +39,6 @@ typedef void (*StringListenerDelegate)(const char* response);
 #define CALLBACK(value) callback(hashCode, value)
 #define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
 
-template <typename TObj>
-TObj objFromJsonString(const char* jsonString) {
-    NSData* jsonData = [[NSString stringWithUTF8String:jsonString] dataUsingEncoding:NSUTF8StringEncoding];
-    NSError* error = nil;
-    TObj arr = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
-
-    if (error != nil)
-        return nil;
-
-    return arr;
-}
-
 /*
  * Observer singleton for global callbacks
  */
@@ -146,7 +134,7 @@ extern "C" {
     }
 
     void _inAppMessagesAddTriggers(const char* triggersJson) {
-        NSDictionary *triggers = objFromJsonString<NSDictionary*>(triggersJson);
+        NSDictionary *triggers = dictionaryFromJsonString(triggersJson);
 
         [OneSignal.InAppMessages addTriggers:triggers];
     }
@@ -156,7 +144,7 @@ extern "C" {
     }
 
     void _inAppMessagesRemoveTriggers(const char* triggersJson) {
-        NSArray *triggers = objFromJsonString<NSArray*>(triggersJson);
+        NSArray *triggers = arrayFromJsonString(triggersJson);
 
         [OneSignal.InAppMessages removeTriggers:triggers];
     }
