@@ -28,6 +28,7 @@
 #import "OneSignalBridgeUtil.h"
 
 @implementation OneSignalBridgeUtil
+
 const char* jsonStringFromDictionary(NSDictionary *dictionary) {
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
@@ -35,15 +36,24 @@ const char* jsonStringFromDictionary(NSDictionary *dictionary) {
     return [jsonString UTF8String];
 }
 
-// template <typename TObj>
-// TObj objFromJsonString(const char* jsonString) {
-//     NSData* jsonData = [[NSString stringWithUTF8String:jsonString] dataUsingEncoding:NSUTF8StringEncoding];
-//     NSError* error = nil;
-//     TObj arr = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+template <typename TObj>
+TObj objFromJsonString(const char* jsonString) {
+    NSData* jsonData = [[NSString stringWithUTF8String:jsonString] dataUsingEncoding:NSUTF8StringEncoding];
+    NSError* error = nil;
+    TObj arr = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
 
-//     if (error != nil)
-//         return nil;
+    if (error != nil)
+        return nil;
 
-//     return arr;
-// }
+    return arr;
+}
+
+NSDictionary* dictionaryFromJsonString(const char* jsonString) {
+    return objFromJsonString<NSDictionary*>(jsonString);
+}
+
+NSArray* arrayFromJsonString(const char* jsonString) {
+    return objFromJsonString<NSArray*>(jsonString);
+}
+
 @end
