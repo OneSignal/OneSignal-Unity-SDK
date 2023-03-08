@@ -106,10 +106,7 @@ namespace OneSignalSDK.Android.InAppMessages {
             public void inAppMessageClicked(AndroidJavaObject result) {
                 var actionResult = result.Call<AndroidJavaObject>("getAction").ToSerializable<InAppMessageAction>(); // temp
                 //var messageResult = result.Call<AndroidJavaObject>("getMessage").ToSerializable<InAppMessage>();
-                var clickResult = new InAppMessageClickedResult() {
-                    action = actionResult,
-                    //message = messageResult
-                };
+                var clickResult = new InAppMessageClickedResult(actionResult);
                 UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(clickResult));
             }
         }
