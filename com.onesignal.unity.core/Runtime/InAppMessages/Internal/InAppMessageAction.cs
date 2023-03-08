@@ -32,7 +32,7 @@ namespace OneSignalSDK.InAppMessages.Models {
     /// <summary>
     /// Action associated with clicking a button in an In-App Message
     /// </summary>
-    [Serializable] public sealed class InAppMessageAction {
+    [Serializable] public sealed class InAppMessageAction : IInAppMessageAction {
         /// <summary>
         /// An optional click name defined for the action element
         /// </summary>

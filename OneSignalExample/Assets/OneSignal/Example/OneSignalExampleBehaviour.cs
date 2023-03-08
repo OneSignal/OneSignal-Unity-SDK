@@ -168,19 +168,19 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         return notification; // show the notification
     }
 
-    private void _iamWillDisplay(InAppMessage inAppMessage) {
+    private void _iamWillDisplay(IInAppMessage inAppMessage) {
         _log($"IAM will display: {JsonUtility.ToJson(inAppMessage)}");
     }
 
-    private void _iamDidDisplay(InAppMessage inAppMessage) {
+    private void _iamDidDisplay(IInAppMessage inAppMessage) {
         _log($"IAM did display: {JsonUtility.ToJson(inAppMessage)}");
     }
 
-    private void _iamWillDismiss(InAppMessage inAppMessage) {
+    private void _iamWillDismiss(IInAppMessage inAppMessage) {
         _log($"IAM will dismiss: {JsonUtility.ToJson(inAppMessage)}");
     }
 
-    private void _iamDidDismiss(InAppMessage inAppMessage) {
+    private void _iamDidDismiss(IInAppMessage inAppMessage) {
         _log($"IAM did dismiss: {JsonUtility.ToJson(inAppMessage)}");
     }
 

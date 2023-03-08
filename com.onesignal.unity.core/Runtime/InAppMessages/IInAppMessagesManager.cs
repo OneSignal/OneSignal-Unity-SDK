@@ -34,7 +34,7 @@ namespace OneSignalSDK.InAppMessages {
     /// delegate signature.
     /// </summary>
     /// <param name="message">In-app message to be displayed and dismissed</param>
-    public delegate void InAppMessageLifecycleDelegate(InAppMessage message);
+    public delegate void InAppMessageLifecycleDelegate(IInAppMessage message);
     
     /// <summary>
     /// Sets a In-App Message opened handler. The instance will be called when an In-App Message action is tapped on.

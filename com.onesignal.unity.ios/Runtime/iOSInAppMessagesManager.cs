@@ -93,25 +93,24 @@ namespace OneSignalSDK.iOS.InAppMessages {
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onWillDisplay(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.WillDisplay?.Invoke(new InAppMessage { messageId = response }));
+            =>  UnityMainThreadDispatch.Post(state => _instance.WillDisplay?.Invoke(new InAppMessage(response)));
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onDidDisplay(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.DidDisplay?.Invoke(new InAppMessage { messageId = response }));
+            =>  UnityMainThreadDispatch.Post(state => _instance.DidDisplay?.Invoke(new InAppMessage(response)));
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onWillDismiss(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.WillDismiss?.Invoke(new InAppMessage { messageId = response }));
+            =>  UnityMainThreadDispatch.Post(state => _instance.WillDismiss?.Invoke(new InAppMessage(response)));
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
         private static void _onDidDismiss(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.DidDismiss?.Invoke(new InAppMessage { messageId = response }));
+            =>  UnityMainThreadDispatch.Post(state => _instance.DidDismiss?.Invoke(new InAppMessage(response)));
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))] // iOS returns InAppMessageAction. Android returns InAppMessageClickedResult
         private static void _onClicked(string response) {
-            InAppMessageClickedResult temp = new InAppMessageClickedResult();
-            temp.action = JsonUtility.FromJson<InAppMessageAction>(response);
-            //temp.message = new InAppMessage { messageId = "messageIdTemp" };
+            var action = JsonUtility.FromJson<InAppMessageAction>(response);
+            InAppMessageClickedResult temp = new InAppMessageClickedResult(action);
             UnityMainThreadDispatch.Post(state => _instance.Clicked?.Invoke(temp));
         }
     }

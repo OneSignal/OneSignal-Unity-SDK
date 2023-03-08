@@ -28,10 +28,20 @@
 using System;
 
 namespace OneSignalSDK.InAppMessages.Models {
-    [Serializable] public sealed class InAppMessage {
+    [Serializable] public sealed class InAppMessage : IInAppMessage {
         /// <summary>
         /// Unique id of this in-app message
         /// </summary>
-        public string messageId;
+        public string MessageId => messageId;
+
+        public InAppMessage() {}
+
+        public InAppMessage(string messageId) {
+            this.messageId = messageId;
+        }
+
+        #region Native Field Handling
+            public string messageId;
+        #endregion
     }
 }
