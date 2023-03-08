@@ -32,15 +32,19 @@ namespace OneSignalSDK.InAppMessages.Models {
     /// See full documentation at
     /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
     /// </summary>
-    [Serializable] public sealed class InAppMessageClickedResult {
+    public sealed class InAppMessageClickedResult {
         /// <summary>
         /// Action the user took on the in-app message
         /// </summary>
-        public InAppMessageAction action;
-        
+        public IInAppMessageAction Action { get; }
+
         /// <summary>
         /// In-App Message the user received
         /// </summary>
         //public InAppMessage message;
+
+        public InAppMessageClickedResult(IInAppMessageAction action) {
+            Action = action;
+        }
     }
 }
