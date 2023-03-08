@@ -33,7 +33,7 @@ namespace OneSignalSDK.User.Models {
     /// <summary>
     /// Several states associated with the SDK can be changed in and outside of the application.
     /// </summary>
-    public delegate void SubscriptionChangedDelegate(PushSubscriptionState current);
+    public delegate void SubscriptionChangedDelegate(IPushSubscriptionState current);
 
     /// <summary>
     /// A push subscription allows a user to receive notifications through the push
