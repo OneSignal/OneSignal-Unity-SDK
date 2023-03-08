@@ -34,7 +34,7 @@ namespace OneSignalSDK.Notifications {
     /// </summary>
     /// <param name="notification">Details of the notification to be shown</param>
     /// <returns>The notification object or null if the notification should not be displayed</returns>
-    public delegate Notification NotificationWillShowDelegate(Notification notification);
+    public delegate INotification NotificationWillShowDelegate(INotification notification);
 
     /// <summary>
     /// When a push notification was acted on by the user.
@@ -43,7 +43,7 @@ namespace OneSignalSDK.Notifications {
     ///     1. The notification opened
     ///     2. The action taken by the user.
     /// </param>
-    public delegate void NotificationClickedDelegate(NotificationClickedResult result);
+    public delegate void NotificationClickedDelegate(INotificationClickedResult result);
 
     /// <summary>
     /// When the user enables or disables notifications for your app from the system settings outside of your app. 

@@ -114,10 +114,7 @@ namespace OneSignalSDK.Android.Notifications {
                 var actionJO = result.Call<AndroidJavaObject>("getAction");
                 var action = _getAction(actionJO);
 
-                var notifClickResult = new NotificationClickedResult {
-                    notification = notification,
-                    action = action
-                };
+                var notifClickResult = new NotificationClickedResult(notification, action);
 
                 UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(notifClickResult));
             }

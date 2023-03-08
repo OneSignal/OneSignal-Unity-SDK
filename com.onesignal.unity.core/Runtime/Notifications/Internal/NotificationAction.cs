@@ -29,18 +29,22 @@ using System;
 
 namespace OneSignalSDK.Notifications.Models {
     /// <summary>
-    /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
+    /// The action the user took on the notification
     /// </summary>
-    [Serializable] public sealed class NotificationClickedResult {
+    [Serializable] public sealed class NotificationAction : INotificationAction {
         /// <summary>
-        /// Action the user took on the notification
+        /// Notification button identifier
         /// </summary>
-        public NotificationAction action;
+        public string ActionId => actionId;
         
         /// <summary>
-        /// Notification the user received
+        /// Action type
         /// </summary>
-        public Notification notification;
+        public ActionType Type => type;
+
+        #region Native Field Handling
+            public string actionId;
+            public ActionType type;
+        #endregion
     }
 }

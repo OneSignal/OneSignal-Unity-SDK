@@ -39,157 +39,157 @@ namespace OneSignalSDK.Notifications.Models {
         Public = 1      // (default) Fully visible
     }
 
-    [Serializable] public sealed class ActionButton {
-        public string id;
-        public string text;
-        public string icon;
+    public interface IActionButton {
+        string Id { get; }
+        string Text { get; }
+        string Icon { get; }
     }
 
     /// <summary>
     /// If a background image was set, this object will be available
     /// </summary>
     /// <remarks>Android only</remarks>
-    [Serializable] public sealed class BackgroundImageLayout {
-        public string image;
-        public string titleTextColor;
-        public string bodyTextColor;
+    public interface IBackgroundImageLayout {
+        public string Image { get; }
+        public string TitleTextColor { get; }
+        public string BodyTextColor { get; }
     }
     
     /// <summary>
     /// See full documentation at
     /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#osnotification-class
     /// </summary>
-    [Serializable] public class NotificationBase {
+    public interface INotificationBase {
         /// <summary>
         /// OneSignal notification UUID
         /// </summary>
-        public string notificationId;
+        string NotificationId { get; }
         
         /// <summary>
         /// Name of Template from <a href="https://documentation.onesignal.com/docs/templates">Templates</a>
         /// </summary>
-        public string templateName;
+        string TemplateName { get; }
         
         /// <summary>
         /// Unique Template Identifier from <a href="https://documentation.onesignal.com/docs/templates">Templates</a>
         /// </summary>
-        public string templateId;
+        string TemplateId { get; }
         
         /// <summary>
         /// Title text of the notification
         /// </summary>
-        public string title;
+        string Title { get; }
         
         /// <summary>
         /// Body text of the notification
         /// </summary>
-        public string body;
+        string Body { get; }
 
         /// <summary>
         /// URL opened when opening the notification
         /// </summary>
-        public string launchURL;
+        string LaunchURL { get; }
         
         /// <summary>
         /// Sound resource played when the notification is shown
         /// https://documentation.onesignal.com/docs/customize-notification-sounds
         /// </summary>
-        public string sound;
+        string Sound { get; }
 
         /// <summary>
         /// Collapse id for the notification
         /// </summary>
-        public string collapseId;
+        string CollapseId { get; }
         
         /// <summary>
         /// Gets custom additional data that was sent with the notification. Set on the dashboard under
         /// Options > Additional Data or with the data field on the REST API.
         /// </summary>
-        public Dictionary<string, object> additionalData;
+        Dictionary<string, object> AdditionalData { get; }
 
         /// <summary>
         /// List of action buttons on the notification
         /// </summary>
-        public List<ActionButton> actionButtons;
+        List<IActionButton> ActionButtons { get; }
 
         /// <summary>
         /// Raw JSON payload string received from OneSignal
         /// </summary>
-        public string rawPayload;
+        string RawPayload { get; }
 
     #region Android
         /// <summary>
         /// Unique Android Native API identifier
         /// </summary>
         /// <remarks>Android only</remarks>
-        public int androidNotificationId;
+        int AndroidNotificationId { get; }
 
         /// <summary>
         /// Small icon resource name set on the notification
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string smallIcon;
+        string SmallIcon { get; }
         
         /// <summary>
         /// Large icon resource name set on the notification
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string largeIcon;
+        string LargeIcon { get; }
         
         /// <summary>
         /// Big picture image set on the notification
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string bigPicture;
+        string BigPicture { get; }
         
         /// <summary>
         /// Accent color shown around small notification icon on Android 5+ devices. ARGB format.
         /// </summary>
         /// <remarks>Android 5+ only</remarks>
-        public string smallIconAccentColor;
+        string SmallIconAccentColor { get; }
         
         /// <summary>
         /// LED string. Devices that have a notification LED will blink in this color. ARGB format.
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string ledColor;
+        string LedColor { get; }
         
         /// <summary>
         /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
         /// </summary>
         /// <remarks>Android 5+ only</remarks>
-        public LockScreenVisibility lockScreenVisibility;
+        LockScreenVisibility LockScreenVisibility { get; }
         
         /// <summary>
         /// Notifications with this same key will be grouped together as a single summary notification
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string groupKey;
+        string GroupKey { get; }
         
         /// <summary>
         /// Summary text displayed in the summary notification
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string groupMessage;
+        string GroupMessage { get; }
         
         /// <summary>
         /// Google project number the notification was sent under
         /// </summary>
         /// <remarks>Android only</remarks>
-        public string fromProjectNumber;
+        string FromProjectNumber { get; }
         
         /// <summary>
         /// Priority of the notification. Values range from -2 to 2 (see
         /// https://developer.android.com/reference/androidx/core/app/NotificationCompat for more info)
         /// </summary>
         /// <remarks>Android only</remarks>
-        public int priority;
+        int Priority { get; }
 
         /// </summary>
         /// If a background image was set, this object will be available
         /// </summary>
         /// <remarks>Android only</remarks>
-        public BackgroundImageLayout backgroundImageLayout;
+        IBackgroundImageLayout BackgroundImageLayout { get; }
     #endregion
 
     #region iOS
@@ -197,7 +197,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// Message Subtitle, iOS only
         /// </summary>
         /// <remarks>iOS only</remarks>
-        public string subtitle;
+        string Subtitle { get; }
 
         /// <summary>
         /// True when the key content-available is set to 1 in the APNS payload.
@@ -206,7 +206,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623013-application
         /// </summary>
         /// <remarks>iOS only</remarks>
-        public bool contentAvailable;
+        bool ContentAvailable { get; }
 
         /// <summary>
         /// True when the key content-available is set to 1 in the APNS payload.
@@ -215,57 +215,57 @@ namespace OneSignalSDK.Notifications.Models {
         /// https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension
         /// </summary>
         /// <remarks>iOS only</remarks>
-        public bool mutableContent;
+        bool MutableContent { get; }
 
         /// <summary>
         /// iOS Notification category key previously registered to display with
         /// </summary>
         /// <remarks>iOS only</remarks>
-        public string category;
+        string Category { get; }
 
         /// <summary>
         /// The badge number assigned to the application icon
         /// </summary>
         /// <remarks>iOS only</remarks>
-        public int badge;
+        int Badge { get; }
 
         /// <summary>
         /// The amount to increment the badge icon number
         /// </summary>
         /// <remarks>iOS only</remarks>
-        public int badgeIncrement;
+        int BadgeIncrement { get; }
 
         /// <summary>
         /// Groups notifications into threads
         /// </summary>
         /// <remarks>iOS 10+ only</remarks>
-        public string threadId;
+        string ThreadId { get; }
 
         /// <summary>
         /// Relevance Score for notification summary
         /// </summary>
         /// <remarks>iOS 15+ only</remarks>
-        public double relevanceScore;
+        double RelevanceScore { get; }
 
         /// <summary>
         /// Interruption Level of the notification
         /// </summary>
         /// <remarks>iOS 15+ only</remarks>
-        public string interruptionLevel;
+        string InterruptionLevel { get; }
 
         /// <summary>
         /// Attachments sent as part of the rich notification
         /// </summary>
         /// <remarks>iOS 10+ only</remarks>
-        public Dictionary<string, object> attachments;
+        Dictionary<string, object> Attachments { get; }
     #endregion
     }
 
-    [Serializable] public sealed class Notification : NotificationBase {
+    public interface INotification : INotificationBase {
         /// <summary>
         /// Gets the notification payloads a summary notification was created from
         /// </summary>
         /// <remarks>Android only</remarks>
-        public List<NotificationBase> groupedNotifications;
+        List<INotificationBase> GroupedNotifications { get; }
     }
 }
