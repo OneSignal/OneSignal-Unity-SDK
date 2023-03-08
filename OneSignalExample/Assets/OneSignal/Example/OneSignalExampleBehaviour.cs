@@ -155,13 +155,13 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * SDK events
      */
     
-    private void _notificationOnClick(NotificationClickedResult result) {
+    private void _notificationOnClick(INotificationClickedResult result) {
         _log($"Notification was clicked with result: {JsonUtility.ToJson(result)}");
     }
 
-    private Notification _notificationOnDisplay(Notification notification) {
-        var additionalData = notification.additionalData != null
-            ? Json.Serialize(notification.additionalData)
+    private INotification _notificationOnDisplay(INotification notification) {
+        var additionalData = notification.AdditionalData != null
+            ? Json.Serialize(notification.AdditionalData)
                 : null;
 
         _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}\n{additionalData}");

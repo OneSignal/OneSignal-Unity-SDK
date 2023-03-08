@@ -28,26 +28,19 @@
 using System;
 
 namespace OneSignalSDK.Notifications.Models {
-    public enum ActionType {
-        /// <summary>Notification was tapped on.</summary>
-        Opened,
-
-        /// <summary>User tapped on an action from the notification.</summary>
-        ActionTaken
-    }
-
     /// <summary>
-    /// The action the user took on the notification
+    /// See full documentation at
+    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
     /// </summary>
-    [Serializable] public sealed class NotificationAction {
+    public interface INotificationClickedResult {
         /// <summary>
-        /// Notification button identifier
+        /// Action the user took on the notification
         /// </summary>
-        public string actionId;
+        INotificationAction Action { get; }
         
         /// <summary>
-        /// Action type
+        /// Notification the user received
         /// </summary>
-        public ActionType type;
+        INotification Notification { get; }
     }
 }
