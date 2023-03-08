@@ -192,7 +192,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Notification Permission changed to: {permission}");
     }
 
-    private void _pushSubscriptionChanged(PushSubscriptionState current) {
+    private void _pushSubscriptionChanged(IPushSubscriptionState current) {
         _log($"Push subscription changed: {JsonUtility.ToJson(current)}");
     }
 
