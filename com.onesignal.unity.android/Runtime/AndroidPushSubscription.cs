@@ -73,13 +73,12 @@ namespace OneSignalSDK.Android.User.Models {
 
             /// <param name="subscription">ISubscription</param>
             public void onSubscriptionChanged(AndroidJavaObject subscription) {
-                PushSubscriptionState temp = new PushSubscriptionState(){ // temp
-                    id = subscription.Call<string>("getId"),
-                    optedIn = subscription.Call<bool>("getOptedIn"),
-                    token = subscription.Call<string>("getToken")
-                };
+                string id = subscription.Call<string>("getId");
+                bool optedIn = subscription.Call<bool>("getOptedIn");
+                string token = subscription.Call<string>("getToken");
+                PushSubscriptionState pushSubcriptionState = new PushSubscriptionState(id, optedIn, token);
 
-                UnityMainThreadDispatch.Post(state => _parent.Changed?.Invoke(temp));
+                UnityMainThreadDispatch.Post(state => _parent.Changed?.Invoke(pushSubcriptionState));
             }
         }
     }
