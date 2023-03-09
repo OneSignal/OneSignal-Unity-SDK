@@ -155,32 +155,32 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * SDK events
      */
     
-    private void _notificationOnClick(NotificationClickedResult result) {
+    private void _notificationOnClick(INotificationClickedResult result) {
         _log($"Notification was clicked with result: {JsonUtility.ToJson(result)}");
     }
 
-    private Notification _notificationOnDisplay(Notification notification) {
-        var additionalData = notification.additionalData != null
-            ? Json.Serialize(notification.additionalData)
+    private INotification _notificationOnDisplay(INotification notification) {
+        var additionalData = notification.AdditionalData != null
+            ? Json.Serialize(notification.AdditionalData)
                 : null;
 
         _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}\n{additionalData}");
         return notification; // show the notification
     }
 
-    private void _iamWillDisplay(InAppMessage inAppMessage) {
+    private void _iamWillDisplay(IInAppMessage inAppMessage) {
         _log($"IAM will display: {JsonUtility.ToJson(inAppMessage)}");
     }
 
-    private void _iamDidDisplay(InAppMessage inAppMessage) {
+    private void _iamDidDisplay(IInAppMessage inAppMessage) {
         _log($"IAM did display: {JsonUtility.ToJson(inAppMessage)}");
     }
 
-    private void _iamWillDismiss(InAppMessage inAppMessage) {
+    private void _iamWillDismiss(IInAppMessage inAppMessage) {
         _log($"IAM will dismiss: {JsonUtility.ToJson(inAppMessage)}");
     }
 
-    private void _iamDidDismiss(InAppMessage inAppMessage) {
+    private void _iamDidDismiss(IInAppMessage inAppMessage) {
         _log($"IAM did dismiss: {JsonUtility.ToJson(inAppMessage)}");
     }
 
@@ -192,7 +192,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Notification Permission changed to: {permission}");
     }
 
-    private void _pushSubscriptionChanged(PushSubscriptionState current) {
+    private void _pushSubscriptionChanged(IPushSubscriptionState current) {
         _log($"Push subscription changed: {JsonUtility.ToJson(current)}");
     }
 
