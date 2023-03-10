@@ -5,12 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated `Notifications`, `InAppMessages`, and `User` models to have Pascal Case properties
 ### Fixed
 - Added helper methods in the iOS OneSignal bridge
 
 ## [5.0.0-beta.2]
 ### Added
-- Sdk type and version to api headers
+- SDK type and version to api headers
 ### Changed
 - Updated included Android SDK to [5.0.0-beta2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta2)
 - Updated included iOS SDK to [5.0.0-beta-02](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-02)
@@ -29,6 +31,7 @@ If you run into any problems, please don’t hesitate to add to this [issue](htt
 ## [3.0.9]
 ### Fixed
 - Android - Lock OneSignal version so it doesn't get bumped to the next major version.
+
 ## [3.0.8]
 ### Changed
 - Renamed `enterLiveActivity` to `EnterLiveActivity` and `exitLiveActivity` to `ExitLiveActivity`
