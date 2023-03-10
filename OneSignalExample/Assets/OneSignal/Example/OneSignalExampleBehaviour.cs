@@ -156,7 +156,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      */
     
     private void _notificationOnClick(INotificationClickedResult result) {
-        _log($"Notification was clicked with result: {JsonUtility.ToJson(result)}");
+        _log($"Notification was clicked with Action: {JsonUtility.ToJson(result.Action)}");
     }
 
     private INotification _notificationOnDisplay(INotification notification) {
@@ -185,7 +185,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     private void _iamOnClick(InAppMessageClickedResult result) {
-        _log($"IAM was clicked with result: {JsonUtility.ToJson(result)}");
+        _log($"IAM was clicked with Action: {JsonUtility.ToJson(result.Action)}");
     }
 
     private void _notificationPermissionChanged(bool permission) {
