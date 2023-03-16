@@ -5,16 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Fixed InstallEdm4uStep to work with UPM EDM4U installations
+
 ## [3.0.9]
 ### Fixed
 - Android - Lock OneSignal version so it doesn't get bumped to the next major version.
+
 ## [3.0.8]
 ### Changed
 - Renamed `enterLiveActivity` to `EnterLiveActivity` and `exitLiveActivity` to `ExitLiveActivity`
 - Updated Unity Verified Solutions Attribution script from VspAttribution to VSAttribution
 ### Fixed
 - Resolved serialization depth limit 10 exceeded warning log
-- Fixed InstallEdm4uStep to work with UPM EDM4U installations
 
 ## [3.0.7]
 ### Changed
