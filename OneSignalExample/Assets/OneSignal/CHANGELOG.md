@@ -5,16 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK to [4.8.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.5)
+- Updated included iOS SDK to [3.12.4](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/3.12.4)
+### Fixed
+- Fixed InstallEdm4uStep to work with UPM EDM4U installations
+
 ## [3.0.9]
 ### Fixed
 - Android - Lock OneSignal version so it doesn't get bumped to the next major version.
+
 ## [3.0.8]
 ### Changed
 - Renamed `enterLiveActivity` to `EnterLiveActivity` and `exitLiveActivity` to `ExitLiveActivity`
 - Updated Unity Verified Solutions Attribution script from VspAttribution to VSAttribution
 ### Fixed
 - Resolved serialization depth limit 10 exceeded warning log
-- Fixed InstallEdm4uStep to work with UPM EDM4U installations
 
 ## [3.0.7]
 ### Changed
