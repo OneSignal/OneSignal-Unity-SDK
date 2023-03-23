@@ -38,11 +38,11 @@ namespace OneSignalSDK.User.Models {
         /// <summary>
         /// Whether this subscription is currently active
         /// </summary>
-        public bool OptedIn { get; }
+        bool OptedIn { get; }
         
         /// <summary>
         /// The unique token provided by the device's operating system used to send push notifications
         /// </summary>
-        public string Token { get; }
+        string Token { get; }
     }
 }
