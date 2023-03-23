@@ -30,6 +30,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.InAppMessages.Models;
+using OneSignalSDK.InAppMessages.Internal;
 using OneSignalSDK.Android.Utilities;
 
 namespace OneSignalSDK.Android.InAppMessages {

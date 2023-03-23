@@ -29,6 +29,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.Notifications.Models;
+using OneSignalSDK.Notifications.Internal;
 using OneSignalSDK.Android.Utilities;
 using System.Collections.Generic;
 

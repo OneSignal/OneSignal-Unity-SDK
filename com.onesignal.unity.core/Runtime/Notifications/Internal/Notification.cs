@@ -28,8 +28,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using OneSignalSDK.Notifications.Models;
 
-namespace OneSignalSDK.Notifications.Models {
+namespace OneSignalSDK.Notifications.Internal {
     [Serializable] public sealed class ActionButton : IActionButton {
         public string Id => id;
         public string Text => text;
