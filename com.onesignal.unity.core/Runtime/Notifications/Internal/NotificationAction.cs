@@ -26,8 +26,9 @@
  */
 
 using System;
+using OneSignalSDK.Notifications.Models;
 
-namespace OneSignalSDK.Notifications.Models {
+namespace OneSignalSDK.Notifications.Internal {
     /// <summary>
     /// The action the user took on the notification
     /// </summary>

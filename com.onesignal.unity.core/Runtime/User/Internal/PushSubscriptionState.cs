@@ -26,8 +26,9 @@
  */
 
 using System;
+using OneSignalSDK.User.Models;
 
-namespace OneSignalSDK.User.Models {
+namespace OneSignalSDK.User.Internal {
     [Serializable] public sealed class PushSubscriptionState : IPushSubscriptionState {
         /// <summary>
         /// Unique id of this subscription
