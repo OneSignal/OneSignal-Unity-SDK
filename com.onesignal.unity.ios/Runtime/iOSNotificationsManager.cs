@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.Notifications.Models;
+using OneSignalSDK.Notifications.Internal;
 using OneSignalSDK.iOS.Utilities;
 
 namespace OneSignalSDK.iOS.Notifications {

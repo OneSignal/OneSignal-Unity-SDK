@@ -29,6 +29,7 @@ using System;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using OneSignalSDK.User.Models;
+using OneSignalSDK.User.Internal;
 
 namespace OneSignalSDK.iOS.User.Models {
     internal sealed class iOSPushSubscription : IPushSubscription {

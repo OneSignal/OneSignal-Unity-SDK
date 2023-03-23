@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.InAppMessages.Models;
+using OneSignalSDK.InAppMessages.Internal;
 
 namespace OneSignalSDK.iOS.InAppMessages {
     internal sealed class iOSInAppMessagesManager : IInAppMessagesManager {
@@ -69,9 +70,9 @@ namespace OneSignalSDK.iOS.InAppMessages {
         }
 
         public void AddTrigger(string key, object value)
-            => _inAppMessagesAddTrigger(key, value.ToString()); // test
+            => _inAppMessagesAddTrigger(key, value.ToString());
 
-        public void AddTriggers(Dictionary<string, object> triggers) // <string, string> to <string, object>
+        public void AddTriggers(Dictionary<string, object> triggers)
             => _inAppMessagesAddTriggers(Json.Serialize(triggers));
 
         public void RemoveTrigger(string key)
