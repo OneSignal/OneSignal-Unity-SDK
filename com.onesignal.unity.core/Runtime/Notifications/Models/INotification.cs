@@ -50,9 +50,9 @@ namespace OneSignalSDK.Notifications.Models {
     /// </summary>
     /// <remarks>Android only</remarks>
     public interface IBackgroundImageLayout {
-        public string Image { get; }
-        public string TitleTextColor { get; }
-        public string BodyTextColor { get; }
+        string Image { get; }
+        string TitleTextColor { get; }
+        string BodyTextColor { get; }
     }
     
     /// <summary>
