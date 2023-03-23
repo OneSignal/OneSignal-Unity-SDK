@@ -28,6 +28,7 @@
 using System;
 using UnityEngine;
 using OneSignalSDK.User.Models;
+using OneSignalSDK.User.Internal;
 using OneSignalSDK.Android.Utilities;
 
 namespace OneSignalSDK.Android.User.Models {
