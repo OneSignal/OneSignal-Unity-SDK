@@ -193,8 +193,8 @@ The debug namespace is accessible via `OneSignal.Default.Debug` and provides acc
 
 | **Kotlin**            | **Description**                                                                                    |
 | --------------------- | -------------------------------------------------------------------------------------------------- |
-| `LogLevel LogLevel`   | *The log level the OneSignal SDK should be writing to the Unity log. Defaults to [LogLevel.WARN].* |
-| `LogLevel AlertLevel` | *The log level the OneSignal SDK should be showing as a modal. Defaults to [LogLevel.NONE].*       |
+| `LogLevel LogLevel`   | *The log level the OneSignal SDK should be writing to the Unity log. Defaults to [LogLevel.Warn].* |
+| `LogLevel AlertLevel` | *The log level the OneSignal SDK should be showing as a modal. Defaults to [LogLevel.None].*       |
 
 
 
