@@ -109,7 +109,7 @@ namespace OneSignalSDK.Notifications.Internal {
         /// Gets custom additional data that was sent with the notification. Set on the dashboard under
         /// Options > Additional Data or with the data field on the REST API.
         /// </summary>
-        public Dictionary<string, object> AdditionalData => additionalData;
+        public IDictionary<string, object> AdditionalData => additionalData;
 
         /// <summary>
         /// List of action buttons on the notification
@@ -261,7 +261,7 @@ namespace OneSignalSDK.Notifications.Internal {
         /// Attachments sent as part of the rich notification
         /// </summary>
         /// <remarks>iOS 10+ only</remarks>
-        public Dictionary<string, object> Attachments => attachments;
+        public IDictionary<string, object> Attachments => attachments;
     #endregion
 
         #region Native Field Handling
@@ -273,7 +273,7 @@ namespace OneSignalSDK.Notifications.Internal {
             public string launchURL;
             public string sound;
             public string collapseId;
-            public Dictionary<string, object> additionalData;
+            public IDictionary<string, object> additionalData;
             public List<ActionButton> actionButtons;
             public string rawPayload;
             public int androidNotificationId;
@@ -297,7 +297,7 @@ namespace OneSignalSDK.Notifications.Internal {
             public string threadId;
             public double relevanceScore;
             public string interruptionLevel;
-            public Dictionary<string, object> attachments;
+            public IDictionary<string, object> attachments;
         #endregion
     }
 
