@@ -96,11 +96,11 @@ namespace OneSignalSDK {
 
         }
 
-        public override Task<bool> EnterLiveActivity(string activityId, string token) {
+        public override Task<bool> EnterLiveActivityAsync(string activityId, string token) {
             return Task.FromResult(false);
         }
 
-        public override Task<bool> ExitLiveActivity(string activityId) {
+        public override Task<bool> ExitLiveActivityAsync(string activityId) {
             return Task.FromResult(false);
         }
     }
