@@ -105,7 +105,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// Gets custom additional data that was sent with the notification. Set on the dashboard under
         /// Options > Additional Data or with the data field on the REST API.
         /// </summary>
-        Dictionary<string, object> AdditionalData { get; }
+        IDictionary<string, object> AdditionalData { get; }
 
         /// <summary>
         /// List of action buttons on the notification
@@ -257,7 +257,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// Attachments sent as part of the rich notification
         /// </summary>
         /// <remarks>iOS 10+ only</remarks>
-        Dictionary<string, object> Attachments { get; }
+        IDictionary<string, object> Attachments { get; }
     #endregion
     }
 
