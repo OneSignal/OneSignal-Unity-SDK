@@ -153,12 +153,12 @@ namespace OneSignalSDK.Android {
             _sdkClass.CallStatic("logout");
         }
 
-        public override Task<bool> EnterLiveActivity(string activityId, string token) {
+        public override Task<bool> EnterLiveActivityAsync(string activityId, string token) {
             SDKDebug.Warn("This feature is only available for iOS.");
             return Task.FromResult(false);
         }
 
-        public override Task<bool> ExitLiveActivity(string activityId) {
+        public override Task<bool> ExitLiveActivityAsync(string activityId) {
             SDKDebug.Warn("This feature is only available for iOS.");
             return Task.FromResult(false);
         }
