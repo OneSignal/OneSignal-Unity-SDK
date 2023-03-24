@@ -155,7 +155,7 @@ namespace OneSignalSDK {
         /// </summary>
         /// <remarks>iOS Only</remarks>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
-        public abstract Task<bool> EnterLiveActivity(string activityId, string token);
+        public abstract Task<bool> EnterLiveActivityAsync(string activityId, string token);
 
         /// <summary>
         /// Deletes the association between a customer defined activityId with a Live Activity temporary push token on
@@ -163,6 +163,6 @@ namespace OneSignalSDK {
         /// </summary>
         /// <remarks>iOS Only</remarks>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
-        public abstract Task<bool> ExitLiveActivity(string activityId);
+        public abstract Task<bool> ExitLiveActivityAsync(string activityId);
     }
 }

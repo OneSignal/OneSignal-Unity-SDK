@@ -159,13 +159,13 @@ namespace OneSignalSDK.iOS {
             _logout();
         }
 
-        public override async Task<bool> EnterLiveActivity(string activityId, string token) {
+        public override async Task<bool> EnterLiveActivityAsync(string activityId, string token) {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
             _enterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
-        public override async Task<bool> ExitLiveActivity(string activityId) {
+        public override async Task<bool> ExitLiveActivityAsync(string activityId) {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
             _exitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
             return await proxy;
