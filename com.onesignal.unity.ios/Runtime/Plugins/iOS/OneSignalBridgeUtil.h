@@ -27,9 +27,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface OneSignalBridgeUtil
+@interface OneSignalBridgeUtil : NSObject
 
 const char* jsonStringFromDictionary(NSDictionary *dictionary);
-// TObj objFromJsonString(const char* jsonString);
+NSDictionary* dictionaryFromJsonString(const char* jsonString);
+NSArray* arrayFromJsonString(const char* jsonString);
 
 @end
