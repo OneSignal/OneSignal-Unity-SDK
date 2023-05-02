@@ -375,10 +375,15 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * Location
      */
 
-    public void PromptLocation() {
-        _log("Opening permission prompt for location");
+    public async void PromptLocation() {
+        _log("Opening permission prompt for location and awaiting result...");
 
-        OneSignal.Default.Location.RequestPermission();
+        var result = await OneSignal.Default.Location.RequestPermissionAsync();
+
+        if (result)
+            _log("Location permission accepeted");
+        else
+            _log("Location permission denied");
     }
 
     public void ToggleShareLocation() {

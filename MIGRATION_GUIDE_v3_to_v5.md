@@ -170,7 +170,7 @@ The location namespace is accessible via `OneSignal.Default.Llocation`and provid
 | **C#**                     | **Description**                                                                                                                                          |
 | ---------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bool IsShared`            | *Whether location is currently shared with OneSignal.*                                                                                                   |
-| `void RequestPermission()` | *Use this method to manually prompt the user for location permissions. This allows for geotagging so you send notifications to users based on location.* |
+| `Task<bool> RequestPermissionAsync()` | *Use this method to manually prompt the user for location permissions. This allows for geotagging so you send notifications to users based on location.* |
 
 
 **InAppMessages Namespace**

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated `Notifications`, `InAppMessages`, and `User` models to have Pascal Case properties
 - Renamed `EnterLiveActivity` and `ExitLiveActivity` to `EnterLiveActivityAsync` and `ExitLiveActivityAsync`
+- Updated Location `RequestPermission` to `RequestPermissionAsync`
 ### Fixed
 - Added helper methods in the iOS OneSignal bridge
 
