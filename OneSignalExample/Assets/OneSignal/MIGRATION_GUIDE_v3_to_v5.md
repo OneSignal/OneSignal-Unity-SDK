@@ -1,4 +1,4 @@
-# Unity v5.0.0-beta.2 Migration Guide
+# Unity v5.0.0-beta.3 Migration Guide
 In this release, we are making a significant shift from a device-centered model to a user-centered model.  A user-centered model allows for more powerful omni-channel integrations within the OneSignal platform.
 
 This migration guide will walk you through the Unity SDK v5.0.0 changes as a result of this shift.
@@ -31,14 +31,15 @@ OneSignal uses a built-in **alias label** called `external_id` which supports ex
 
 The OneSignal SDK has been updated to be more modular in nature.  The SDK has been split into namespaces and functionality previously in the static `OneSignal.Default` class has been moved to the appropriate namespace.  The namespaces, their containing modules, and how to access them in code are as follows:
 
-| Namespace     | C#                                |
-| ------------- | ----------------------------------|
-| User          | `OneSignal.Default.User`          |
-| Session       | `OneSignal.Default.Session`       |
-| Notifications | `OneSignal.Default.Notifications` |
-| Location      | `OneSignal.Default.Location`      |
-| InAppMessages | `OneSignal.Default.InAppMessages` |
-| Debug         | `OneSignal.Default.Debug`         |
+| Namespace      | C#                                 |
+| -------------- | -----------------------------------|
+| User           | `OneSignal.Default.User`           |
+| Session        | `OneSignal.Default.Session`        |
+| Notifications  | `OneSignal.Default.Notifications`  |
+| Location       | `OneSignal.Default.Location`       |
+| InAppMessages  | `OneSignal.Default.InAppMessages`  |
+| LiveActivities | `OneSignal.Default.LiveActivities` |
+| Debug          | `OneSignal.Default.Debug`          |
 
 
 
@@ -110,14 +111,13 @@ The SDK is still accessible via a `OneSignal.Default` static class, it provides 
 
 | **C#**                                                          | **Description**                                                                                                                                                                                                                                                                                                     |
 | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bool RequiresPrivacyConsent`                                   | *Determines whether a user must consent to privacy prior to their user data being sent up to OneSignal.  This should be set to `true` prior to the invocation of [Initialize] to ensure compliance.*                                                                                                                |
-| `bool PrivacyConsent`                                           | *Indicates whether privacy consent has been granted. This field is only relevant when the application has opted into data privacy protections. See [RequiresPrivacyConsent].*                                                                                                                                       |
+| `bool ConsentRequired`                                          | *Determines whether a user must consent to privacy prior to their user data being sent up to OneSignal.  This should be set to `true` prior to the invocation of [Initialize] to ensure compliance.*                                                                                                                |
+| `bool ConsentGiven`                                             | *Indicates whether privacy consent has been granted. This field is only relevant when the application has opted into data privacy protections. See [ConsentRequired].*                                                                                                                                              |
 | `void Initialize(string appId)`                                 | *Initialize the OneSignal SDK.  This should be called during startup of the application.*                                                                                                                                                                                                                           |
 | `void Login(string externalId, string jwtBearerToken = null)`   | *Login to OneSignal under the user identified by the [externalId] provided. The act of logging a user into the OneSignal SDK will switch the [user] context to that specific user.*<br><br>- *If the [externalId] exists the user will be retrieved and the context set from that user information. If operations have already been performed under a guest user, they* ***will not*** *be applied to the now logged in user (they will be lost).*<br>- *If the [externalId] does not exist the user will be created and the context set from the current local state. If operations have already been performed under a guest user those operations* ***will*** *be applied to the newly created user.*<br><br>***Push Notifications and In App Messaging***<br>*Logging in a new user will automatically transfer push notification and in app messaging subscriptions from the current user (if there is one) to the newly logged in user.  This is because both Push and IAM are owned by the device.* |
 | `void Logout()`                                                 | *Logout the user previously logged in via [login]. The [user] property now references a new device-scoped user. A device-scoped user has no user identity that can later be retrieved, except through this device as long as the app remains installed and the app data is not cleared.*  |
 | `void SetLaunchURLsInApp(bool launchInApp)`                     | ***Note:*** *This method is for iOS only<br>This method can be used to set if launch URLs should be opened in Safari or within the application. Set to true to launch all notifications with a URL in the app instead of the default web browser. Make sure to call SetLaunchURLsInApp before the initialize call.* |
-| `Task<bool> EnterLiveActivityAsync(string activityId, string token)` | ***Note:*** *This method is for iOS only<br>Entering a Live Activity associates an activityId with a live activity temporary push token on OneSignal's server. The activityId is then used with the OneSignal REST API to update one or multiple Live Activities at one time.*                                      |
-| `Task<bool> ExitLiveActivityAsync(string activityId)`                | ***Note:*** *This method is for iOS only<br>Exiting a Live activity deletes the association between a customer defined activityId with a Live Activity temporary push token on OneSignal's server.*                                                                                                                 |
+
 
 **User Namespace**
 The user name space is accessible via `OneSignal.Default.User` and provides access to user-scoped functionality.
@@ -156,16 +156,16 @@ The notification namespace is accessible via `OneSignal.Default.Notifications` a
 
  | **C#**                                                                                                                                | **Description**                                                                                                                                                                                                                            |
 | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `bool Permission: Boolean`                                                                                                              | *Whether this app has push notification permission.*                                                                                                                                                                                       |
-| `Task<bool> RequestPermissionAsync(bool fallbackToSettings)`                                                                            | *Prompt the user for permission to push notifications.  This will display the native OS prompt to request push notification permission.  If the user enables, a push subscription to this device will be automatically added to the user.* |
-| `void ClearAllNotifications()`                                                                                                          | *Removes all OneSignal notifications.*                                                                                                                                                                                                     |
-| `delegate void PermissionChangedDelegate(bool permission)` <br><br> `event PermissionChangedDelegate PermissionChanged`                 | *The [PermissionChanged] event will be fired when a notification permission setting changes. This happens when the user enables or disables notifications for your app from the system settings outside of your app.*                      |
-| `delegate Notification NotificationWillShowDelegate(INotification notification)` <br><br> `event NotificationWillShowDelegate WillShow` | *Set an event to fire before displaying a notification while the app is in focus. Use this event to read notification data or decide if the notification should show or not.*                                                              |
-| `delegate void NotificationClickedDelegate(INotificationClickedResult result)` <br><br> `event NotificationClickedDelegate Clicked`     | *Set an event that will fire whenever a notification is clicked on by the user.*                                                                                                                                                           |
+| `bool Permission: Boolean`                                                                                                                                   | *Whether this app has push notification permission.*                                                                                                                                                                                       |
+| `Task<bool> RequestPermissionAsync(bool fallbackToSettings)`                                                                                                 | *Prompt the user for permission to push notifications.  This will display the native OS prompt to request push notification permission.  If the user enables, a push subscription to this device will be automatically added to the user.* |
+| `void ClearAllNotifications()`                                                                                                                               | *Removes all OneSignal notifications.*                                                                                                                                                                                                     |
+| `event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged` <br><br> `NotificationPermissionChangedEventArgs { bool Permission }`         | *The [PermissionChanged] event will be fired when a notification permission setting changes. This happens when the user enables or disables notifications for your app from the system settings outside of your app.*                      |
+| `event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay` <br><br> `NotificationWillDisplayEventArgs { Notification Notification }`       | *Set an event to fire before displaying a notification while the app is in focus. Use this event to read notification data or decide if the notification should show or not.*                                                              |
+| `event EventHandler<NotificationClickEventArgs> Clicked` <br><br> `NotificationClickEventArgs { Notification Notification, NotificationClickResult Result }` | *Set an event that will fire whenever a notification is clicked on by the user.*                                                                                                                                                           |
 
 
 **Location Namespace**
-The location namespace is accessible via `OneSignal.Default.Llocation`and provides access to location-scoped functionality.
+The location namespace is accessible via `OneSignal.Default.Location` and provides access to location-scoped functionality.
 
 | **C#**                     | **Description**                                                                                                                                          |
 | ---------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -174,7 +174,7 @@ The location namespace is accessible via `OneSignal.Default.Llocation`and provid
 
 
 **InAppMessages Namespace**
-The In App Messages namespace is accessible via `OneSignal.Default.InAppMessages` provides access to in app messages-scoped functionality.
+The In App Messages namespace is accessible via `OneSignal.Default.InAppMessages` and provides access to in app messages-scoped functionality.
 
 | **C#**                                                                                                                             | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -184,20 +184,26 @@ The In App Messages namespace is accessible via `OneSignal.Default.InAppMessages
 | `void RemoveTrigger(string key)`                                                                                                   | *Remove the trigger with the provided key from the current user.*                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `void RemoveTriggers(params string[] keys)`                                                                                        | *Remove multiple triggers from the current user.*                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `void ClearTriggers()`                                                                                                             | *Clear all triggers from the current user.*                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `delegate void InAppMessageLifecycleDelegate(IInAppMessage message)` <br><br> `event InAppMessageLifecycleDelegate WillDisplay` <br> `event InAppMessageLifecycleDelegate DidDisplay` <br> `event InAppMessageLifecycleDelegate WillDismiss` <br> `event InAppMessageLifecycleDelegate DidDismiss`| *Set the IAM lifecycle events.*                                                                                                                                                                                                                                                                     |
-| `delegate void InAppMessageClickedDelegate(InAppMessageClickedResult result)` <br><br> `event InAppMessageClickedDelegate Clicked` | *Set the IAM click events.*                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay` <br><br>  `event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay` <br><br> `event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss` <br><br> `event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss` <br><br><br> `InAppMessageWillDisplayEventArgs { InAppMessage Message }` <br><br> `InAppMessageDidDisplayEventArgs { InAppMessage Message }` <br><br> `InAppMessageWillDismissEventArgs { InAppMessage Message }` <br><br> `InAppMessageDidDismissEventArgs { InAppMessage Message }`| *Set the IAM lifecycle events.*                                                                                                                                                                                                                                                                     |
+| `event EventHandler<InAppMessageClickEventArgs> Clicked` <br><br> `InAppMessageClickEventArgs { InAppMessage Message, InAppMessageClickResult Result }` | *Set the IAM click events.*                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+
+**LiveActivities Namespace**
+The Live Activities namespace is accessible via `OneSignal.Default.LiveActivities` and provides access to live activities-scoped functionality.
+
+| **C#**                                                   | **Description**                                                                                                                                                                                                                                                                 |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Task<bool> EnterAsync(string activityId, string token)` | ***Note:*** *This method is for iOS only<br>Entering a Live Activity associates an activityId with a live activity temporary push token on OneSignal's server. The activityId is then used with the OneSignal REST API to update one or multiple Live Activities at one time.*  |
+| `Task<bool> ExitAsync(string activityId)`                | ***Note:*** *This method is for iOS only<br>Exiting a Live activity deletes the association between a customer defined activityId with a Live Activity temporary push token on OneSignal's server.*                                                                             |
 
 
 **Debug Namespace**
 The debug namespace is accessible via `OneSignal.Default.Debug` and provides access to debug-scoped functionality.
 
-| **Kotlin**            | **Description**                                                                                    |
+| **C#**                | **Description**                                                                                    |
 | --------------------- | -------------------------------------------------------------------------------------------------- |
 | `LogLevel LogLevel`   | *The log level the OneSignal SDK should be writing to the Unity log. Defaults to [LogLevel.Warn].* |
 | `LogLevel AlertLevel` | *The log level the OneSignal SDK should be showing as a modal. Defaults to [LogLevel.None].*       |
-
-
-
 
 
 # Limitations 
