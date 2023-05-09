@@ -33,27 +33,20 @@ namespace OneSignalSDK.Notifications.Internal {
     /// See full documentation at
     /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
     /// </summary>
-    [Serializable] public sealed class NotificationClickedResult : INotificationClickedResult {
+    [Serializable] public sealed class NotificationClickResult : INotificationClickResult {
         /// <summary>
-        /// Action the user took on the notification
+        /// Custom id of action taken.
         /// </summary>
-        public INotificationAction Action => action;
+        public string ActionId => actionId;
         
         /// <summary>
-        /// Notification the user received
+        /// The launch url for the notification
         /// </summary>
-        public INotification Notification => notification;
+        public string Url => url;
 
         #region Native Field Handling
-            public NotificationAction action;
-            public Notification notification;
+            public string actionId;
+            public string url;
         #endregion
-
-        public NotificationClickedResult() {}
-
-        public NotificationClickedResult(Notification notification, NotificationAction action) {
-            this.action = action;
-            this.notification = notification;
-        }
     }
 }
