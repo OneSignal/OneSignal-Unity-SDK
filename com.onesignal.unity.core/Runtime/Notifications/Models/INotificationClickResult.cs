@@ -32,15 +32,15 @@ namespace OneSignalSDK.Notifications.Models {
     /// See full documentation at
     /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
     /// </summary>
-    public interface INotificationClickedResult {
+    public interface INotificationClickResult {
         /// <summary>
-        /// Action the user took on the notification
+        /// Custom id of action taken.
         /// </summary>
-        INotificationAction Action { get; }
+        string ActionId { get; }
         
         /// <summary>
-        /// Notification the user received
+        /// The launch url for the notification.
         /// </summary>
-        INotification Notification { get; }
+        string Url { get; }
     }
 }

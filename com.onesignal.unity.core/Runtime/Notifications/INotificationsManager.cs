@@ -25,6 +25,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Threading.Tasks;
 using OneSignalSDK.Notifications.Models;
 
@@ -32,24 +33,47 @@ namespace OneSignalSDK.Notifications {
     /// <summary>
     /// When a push notification has been received and is about to be displayed
     /// </summary>
-    /// <param name="notification">Details of the notification to be shown</param>
-    /// <returns>The notification object or null if the notification should not be displayed</returns>
-    public delegate INotification NotificationWillShowDelegate(INotification notification);
+    public class NotificationWillDisplayEventArgs : EventArgs
+    {
+        public IDisplayableNotification Notification { get; }
+
+        public NotificationWillDisplayEventArgs(IDisplayableNotification notification) {
+            Notification = notification;
+        }
+
+        /// <summary>
+        /// Prevents OneSignal from displaying the notification automatically.
+        /// </summary>
+        public virtual void PreventDefault() {
+
+        }
+    }
 
     /// <summary>
     /// When a push notification was acted on by the user.
     /// </summary>
-    /// <param name="result">The Notification clicked result describing:
-    ///     1. The notification opened
-    ///     2. The action taken by the user.
-    /// </param>
-    public delegate void NotificationClickedDelegate(INotificationClickedResult result);
+    public class NotificationClickEventArgs : EventArgs
+    {
+        public INotification Notification { get; }
+        public INotificationClickResult Result { get; }
+
+        public NotificationClickEventArgs(INotification notification, INotificationClickResult result) {
+            Notification = notification;
+            Result = result;
+        }
+    }
 
     /// <summary>
     /// When the user enables or disables notifications for your app from the system settings outside of your app. 
     /// </summary>
-    /// <param name="permission">Boolean value for authorization of push notifications</param>
-    public delegate void PermissionChangedDelegate(bool permission);
+    public class NotificationPermissionChangedEventArgs : EventArgs
+    {
+        public bool Permission { get; }
+
+        public NotificationPermissionChangedEventArgs(bool permission) {
+            Permission = permission;
+        }
+    }
 
     /// <summary>
     /// The entry point to the notification SDK for OneSignal.
@@ -58,17 +82,17 @@ namespace OneSignalSDK.Notifications {
         /// <summary>
         /// When a push notification has been received while app is in the foreground
         /// </summary>
-        event NotificationWillShowDelegate WillShow;
+        event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
 
         /// <summary>
         /// When a push notification has been clicked by the user
         /// </summary>
-        event NotificationClickedDelegate Clicked;
+        event EventHandler<NotificationClickEventArgs> Clicked;
 
         /// <summary>
         /// When this device's permissions for authorization of push notifications have changed.
         /// </summary>
-        event PermissionChangedDelegate PermissionChanged;
+        event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
 
         /// <summary>
         /// Current status of permissions granted by this device for push notifications
