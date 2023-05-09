@@ -301,7 +301,7 @@ namespace OneSignalSDK.Notifications.Internal {
         #endregion
     }
 
-    [Serializable] public sealed class Notification : NotificationBase, INotification {
+    [Serializable] public class Notification : NotificationBase, INotification {
         /// <summary>
         /// Gets the notification payloads a summary notification was created from
         /// </summary>

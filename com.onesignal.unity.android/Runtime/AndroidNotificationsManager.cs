@@ -26,24 +26,26 @@
  */
 
 using UnityEngine;
+using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.Notifications.Models;
 using OneSignalSDK.Notifications.Internal;
 using OneSignalSDK.Android.Utilities;
-using System.Collections.Generic;
+using OneSignalSDK.Android.Notifications.Models;
 
 namespace OneSignalSDK.Android.Notifications {
     internal sealed class AndroidNotificationsManager : INotificationsManager {
         private readonly AndroidJavaObject _notifications;
-        
+
         public AndroidNotificationsManager(AndroidJavaClass sdkClass) {
             _notifications = sdkClass.CallStatic<AndroidJavaObject>("getNotifications");
         }
 
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
+        public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
+        public event EventHandler<NotificationClickEventArgs> Clicked;
+        public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
 
         public bool Permission {
             get => _notifications.Call<bool>("getPermission");
@@ -60,69 +62,90 @@ namespace OneSignalSDK.Android.Notifications {
         }
 
         public void Initialize() {
-            _notifications.Call("addPermissionChangedHandler", new InternalPermissionChangedHandler(this));
-            _notifications.Call("setNotificationWillShowInForegroundHandler", new InternalNotificationWillShowInForegroundHandler(this));
-            _notifications.Call("setNotificationClickHandler", new InternalNotificationClickHandler(this));
+            _notifications.Call("addPermissionObserver", new InternalPermissionObserver(this));
+            _notifications.Call("addForegroundLifecycleListener", new InternalNotificationLifecycleListener(this));
+            _notifications.Call("addClickListener", new InternalNotificationClickListener(this));
         }
 
-        private sealed class InternalPermissionChangedHandler : OneSignalAwaitableAndroidJavaProxy<bool> {
+        private sealed class InternalPermissionObserver : OneSignalAwaitableAndroidJavaProxy<bool> {
             private AndroidNotificationsManager _parent;
             
-            public InternalPermissionChangedHandler(AndroidNotificationsManager notificationsManager) : base("notifications.IPermissionChangedHandler") {
+            public InternalPermissionObserver(AndroidNotificationsManager notificationsManager) : base("notifications.IPermissionObserver") {
                 _parent = notificationsManager;
             }
 
             /// <param name="permission">boolean</param>
-            public void onPermissionChanged(bool permission) {
-                UnityMainThreadDispatch.Post(state => _parent.PermissionChanged?.Invoke(permission));
-            }
-        }
-
-        private sealed class InternalNotificationWillShowInForegroundHandler : OneSignalAndroidJavaProxy {
-            private AndroidNotificationsManager _parent;
-
-            public InternalNotificationWillShowInForegroundHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationWillShowInForegroundHandler") {
-                _parent = notificationsManager;
-            }
-
-            /// <param name="notificationReceivedEvent">INotificationReceivedEvent</param>
-            public void notificationWillShowInForeground(AndroidJavaObject notificationReceivedEvent) {
-                var notifJO = notificationReceivedEvent.Call<AndroidJavaObject>("getNotification");
-
-                if (_parent.WillShow == null) {
-                    notificationReceivedEvent.Call("complete", notifJO);
-                    return;
+            public void onNotificationPermissionChange(bool permission) {
+                EventHandler<NotificationPermissionChangedEventArgs> handler = _parent.PermissionChanged;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(this, new NotificationPermissionChangedEventArgs(permission)));
                 }
-
-                var notification = _getNotification(notifJO);
-
-                UnityMainThreadDispatch.Post(state => notificationReceivedEvent.Call("complete", _parent.WillShow(notification) != null ? notifJO : null));
             }
         }
 
-        private sealed class InternalNotificationClickHandler : OneSignalAndroidJavaProxy {
+        private sealed class InternalNotificationLifecycleListener : OneSignalAndroidJavaProxy {
             private AndroidNotificationsManager _parent;
 
-            public InternalNotificationClickHandler(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationClickHandler") {
+            public InternalNotificationLifecycleListener(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationLifecycleListener") {
                 _parent = notificationsManager;
             }
 
-            /// <param name="result">INotificationClickResult</param>
-            public void notificationClicked(AndroidJavaObject result) {
-                var notifJO = result.Call<AndroidJavaObject>("getNotification");
+            /// <param name="willDisplayEvent">INotificationWillDisplayEvent</param>
+            public void onWillDisplay(AndroidJavaObject willDisplayEvent) {
+                var notifJO = willDisplayEvent.Call<AndroidJavaObject>("getNotification");
                 var notification = _getNotification(notifJO);
 
-                var actionJO = result.Call<AndroidJavaObject>("getAction");
-                var action = _getAction(actionJO);
+                var args = new InternalNotificationWillDisplayEventArgs(willDisplayEvent, notification);
 
-                var notifClickResult = new NotificationClickedResult(notification, action);
-
-                UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(notifClickResult));
+                EventHandler<NotificationWillDisplayEventArgs> handler = _parent.ForegroundWillDisplay;
+                if (handler != null)
+                {
+                    // We use Send instead of Post because we need to *not* return to our caller until the
+                    // event handlers have returned themselves. This allows a handler to call PreventDefault()
+                    // which will get passed down to Android in InternalNotificationWillDisplayEventArgs.
+                    UnityMainThreadDispatch.Send(state => handler(_parent, args));
+                }
             }
         }
 
-        private static Notification _getNotification(AndroidJavaObject notifJO) {
-            var notification = notifJO.ToSerializable<Notification>();
+        public class InternalNotificationWillDisplayEventArgs : NotificationWillDisplayEventArgs {
+            private AndroidJavaObject _willDisplayEvent;
+
+            public InternalNotificationWillDisplayEventArgs(AndroidJavaObject willDisplayEvent, IDisplayableNotification notification) : base(notification) {
+                _willDisplayEvent = willDisplayEvent;
+            }
+
+            public override void PreventDefault() => _willDisplayEvent.Call("preventDefault");
+        }
+
+        private sealed class InternalNotificationClickListener : OneSignalAndroidJavaProxy {
+            private AndroidNotificationsManager _parent;
+
+            public InternalNotificationClickListener(AndroidNotificationsManager notificationsManager) : base("notifications.INotificationClickListener") {
+                _parent = notificationsManager;
+            }
+
+            /// <param name="clickEvent">INotificationClickEvent</param>
+            public void onClick(AndroidJavaObject clickEvent) {
+                var notifJO = clickEvent.Call<AndroidJavaObject>("getNotification");
+                var notification = _getNotification(notifJO);
+
+                var resultJO = clickEvent.Call<AndroidJavaObject>("getResult");
+                var result = resultJO.ToSerializable<NotificationClickResult>();
+
+                NotificationClickEventArgs args = new NotificationClickEventArgs(notification, result);
+
+                EventHandler<NotificationClickEventArgs> handler = _parent.Clicked;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(this, args));
+                }
+            }
+        }
+
+        private static AndroidDisplayableNotification _getNotification(AndroidJavaObject notifJO) {
+            var notification = notifJO.ToSerializable<AndroidDisplayableNotification>();
             
             var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
             if (dataJson != null) {
@@ -142,14 +165,10 @@ namespace OneSignalSDK.Android.Notifications {
                 notification.rawPayload = rawPayloadJsonStr;
             }
 
+            // attach the Java-Object to the notifification just built.
+            notification.NotifJO = notifJO;
+
             return notification;
-        }
-
-        private static NotificationAction _getAction(AndroidJavaObject actionJO) {
-            var action = actionJO.ToSerializable<NotificationAction>();
-            action.type = (ActionType) actionJO.Call<AndroidJavaObject>("getType").Call<int>("ordinal");
-
-            return action;
         }
     }
 }
