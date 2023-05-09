@@ -34,6 +34,7 @@ using OneSignalSDK.Debug.Utilities;
 using OneSignalSDK.Location;
 using OneSignalSDK.Session;
 using OneSignalSDK.User;
+using OneSignalSDK.LiveActivities;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -46,6 +47,9 @@ namespace OneSignalSDK {
         private LocationManager _location = new LocationManager();
         private InAppMessagesManager _inAppMessages = new InAppMessagesManager();
         private DebugManager _debug = new DebugManager();
+        private LiveActivitiesManager _liveActivities = new LiveActivitiesManager();
+        private bool _consentGiven;
+        private bool _consentRequired;
 
         public override IUserManager User {
             get => _user;
@@ -75,6 +79,10 @@ namespace OneSignalSDK {
 
         public override bool RequiresPrivacyConsent { get; set; }
 
+        public override ILiveActivitiesManager LiveActivities {
+            get => _liveActivities;
+        }
+
         public override void SetLaunchURLsInApp(bool launchInApp) {
 
         }
@@ -94,14 +102,6 @@ namespace OneSignalSDK {
 
         public override void Logout() {
 
-        }
-
-        public override Task<bool> EnterLiveActivityAsync(string activityId, string token) {
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> ExitLiveActivityAsync(string activityId) {
-            return Task.FromResult(false);
         }
     }
 }

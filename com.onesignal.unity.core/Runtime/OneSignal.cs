@@ -26,7 +26,6 @@
  */
 
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.InAppMessages;
@@ -34,6 +33,7 @@ using OneSignalSDK.Debug;
 using OneSignalSDK.Location;
 using OneSignalSDK.Session;
 using OneSignalSDK.User;
+using OneSignalSDK.LiveActivities;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -95,6 +95,15 @@ namespace OneSignalSDK {
         public abstract IDebugManager Debug { get; }
 
         /// <summary>
+        /// Access to debug the SDK in the additional information is required to diagnose any
+        /// SDK-related issues.  Initialized immediately (can be used prior to [initWithContext]).
+        /// 
+        /// WARNING: This should not be used in a production setting.
+        /// 
+        /// </summary>
+        public abstract ILiveActivitiesManager LiveActivities { get; }
+
+        /// <summary>
         /// Provides privacy consent. OneSignal Unity SDK will not initialize until this is true.
         /// </summary>
         public abstract bool PrivacyConsent { get; set; }
@@ -149,20 +158,5 @@ namespace OneSignalSDK {
         /// data is not cleared.
         /// </summary>
         public abstract void Logout();
-
-        /// <summary>
-        /// Associates a customer defined activityId with a live activity temporary push token on OneSignal's server
-        /// </summary>
-        /// <remarks>iOS Only</remarks>
-        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
-        public abstract Task<bool> EnterLiveActivityAsync(string activityId, string token);
-
-        /// <summary>
-        /// Deletes the association between a customer defined activityId with a Live Activity temporary push token on
-        /// OneSignal's server
-        /// </summary>
-        /// <remarks>iOS Only</remarks>
-        /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
-        public abstract Task<bool> ExitLiveActivityAsync(string activityId);
     }
 }

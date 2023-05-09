@@ -27,7 +27,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.InAppMessages;
@@ -36,12 +35,14 @@ using OneSignalSDK.Debug.Utilities;
 using OneSignalSDK.Location;
 using OneSignalSDK.Session;
 using OneSignalSDK.User;
+using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Android.Notifications;
 using OneSignalSDK.Android.InAppMessages;
 using OneSignalSDK.Android.Debug;
 using OneSignalSDK.Android.Location;
 using OneSignalSDK.Android.Session;
 using OneSignalSDK.Android.User;
+using OneSignalSDK.Android.LiveActivities;
 
 namespace OneSignalSDK.Android {
     public sealed partial class OneSignalAndroid : OneSignal {
@@ -61,6 +62,7 @@ namespace OneSignalSDK.Android {
         private AndroidLocationManager _location;
         private AndroidInAppMessagesManager _inAppMessages;
         private AndroidDebugManager _debug;
+        private AndroidLiveActivitiesManager _liveActivities;
 
         /// <summary>
         /// Used to provide a reference for the global callbacks
@@ -107,6 +109,10 @@ namespace OneSignalSDK.Android {
             set => _sdkClass.CallStatic("setRequiresPrivacyConsent", value);
         }
 
+        public override ILiveActivitiesManager LiveActivities {
+            get => _liveActivities;
+        }
+
         public override void SetLaunchURLsInApp(bool launchInApp)
             => SDKDebug.Warn("This feature is only available for iOS.");
 
@@ -144,6 +150,10 @@ namespace OneSignalSDK.Android {
                 _session = new AndroidSessionManager(_sdkClass);
             }
 
+            if (_liveActivities == null) {
+                _liveActivities = new AndroidLiveActivitiesManager();
+            }
+
             _completedInit(appId);
         }
 
@@ -153,16 +163,6 @@ namespace OneSignalSDK.Android {
 
         public override void Logout() {
             _sdkClass.CallStatic("logout");
-        }
-
-        public override Task<bool> EnterLiveActivityAsync(string activityId, string token) {
-            SDKDebug.Warn("This feature is only available for iOS.");
-            return Task.FromResult(false);
-        }
-
-        public override Task<bool> ExitLiveActivityAsync(string activityId) {
-            SDKDebug.Warn("This feature is only available for iOS.");
-            return Task.FromResult(false);
         }
     }
 }
