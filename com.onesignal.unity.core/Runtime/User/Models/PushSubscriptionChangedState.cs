@@ -24,25 +24,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 using System;
 
-#pragma warning disable 0067 // the event 'x' is never used
 namespace OneSignalSDK.User.Models {
-    internal sealed class PushSubscription : IPushSubscription {
-        public event EventHandler<PushSubscriptionChangedEventArgs> Changed;
+    public sealed class PushSubscriptionChangedState {
+        public IPushSubscriptionState Previous { get; }
 
-        public string Id { get; }
+        public IPushSubscriptionState Current { get; }
 
-        public string Token { get; }
-
-        public bool OptedIn  { get; }
-
-        public void OptIn() {
-
-        }
-
-        public void OptOut() {
-
+        public PushSubscriptionChangedState(IPushSubscriptionState previous, IPushSubscriptionState current) {
+            this.Previous = previous;
+            this.Current = current;
         }
     }
 }
