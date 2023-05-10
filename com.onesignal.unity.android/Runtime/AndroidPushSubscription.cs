@@ -74,14 +74,19 @@ namespace OneSignalSDK.Android.User.Models {
 
             /// <param name="state">PushSubscriptionChangedState</param>
             public void onPushSubscriptionChange(AndroidJavaObject state) {
-                PushSubscriptionState previous = state.Call<AndroidJavaObject>("getPrevious").ToSerializable<PushSubscriptionState>();
-                PushSubscriptionState current = state.Call<AndroidJavaObject>("getCurrent").ToSerializable<PushSubscriptionState>();
-                PushSubscriptionChangedState pushSubcriptionChangedState = new PushSubscriptionChangedState(previous, current);
+                var previousJO = state.Call<AndroidJavaObject>("getPrevious");
+                var previous = previousJO.ToSerializable<PushSubscriptionState>();
+
+                var currentJO = state.Call<AndroidJavaObject>("getCurrent");
+                var current = currentJO.ToSerializable<PushSubscriptionState>();
+
+                PushSubscriptionChangedState pushSubscriptionChangedState = new PushSubscriptionChangedState(previous, current);
+                PushSubscriptionChangedEventArgs args = new PushSubscriptionChangedEventArgs(pushSubscriptionChangedState);
 
                 EventHandler<PushSubscriptionChangedEventArgs> handler = _parent.Changed;
                 if (handler != null)
                 {
-                    UnityMainThreadDispatch.Post(state => handler(_parent, new PushSubscriptionChangedEventArgs(pushSubcriptionChangedState)));
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
                 }
             }
         }
