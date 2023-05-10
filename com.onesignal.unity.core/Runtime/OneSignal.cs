@@ -106,13 +106,13 @@ namespace OneSignalSDK {
         /// <summary>
         /// Provides privacy consent. OneSignal Unity SDK will not initialize until this is true.
         /// </summary>
-        public abstract bool PrivacyConsent { get; set; }
+        public abstract bool ConsentGiven { set; }
 
         /// <summary>
-        /// Allows you to delay the initialization of the SDK until <see cref="PrivacyConsent"/> is set to true. Must
+        /// Allows you to delay the initialization of the SDK until <see cref="ConsentGiven"/> is set to true. Must
         /// be set before <see cref="Initialize"/> is called.
         /// </summary>
-        public abstract bool RequiresPrivacyConsent { get; set; }
+        public abstract bool ConsentRequired { set; }
 
         /// <summary>
         /// Used to set if launch URLs should be opened in safari or within the application. Make sure to set before 

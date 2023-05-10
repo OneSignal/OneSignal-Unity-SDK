@@ -54,7 +54,7 @@ namespace OneSignalSDK {
         /// Allows you to delay the initialization of the SDK until <see cref="OneSignal.PrivacyConsent"/> is set to
         /// true. Must be set before <see cref="OneSignal.Initialize"/> is called.
         /// </summary>
-        public bool RequiresPrivacyConsent = false;
+        public bool ConsentRequired = false;
 
         /// <summary>
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
@@ -65,7 +65,7 @@ namespace OneSignalSDK {
         private void Start() {
             OneSignal.Default.Debug.LogLevel               = LogLevel;
             OneSignal.Default.Debug.AlertLevel             = AlertLevel;
-            OneSignal.Default.RequiresPrivacyConsent       = RequiresPrivacyConsent;
+            OneSignal.Default.ConsentRequired              = ConsentRequired;
             OneSignal.Default.Location.IsShared            = IsShared;
             
             OneSignal.Default.Initialize(AppId);
