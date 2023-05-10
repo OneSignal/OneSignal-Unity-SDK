@@ -76,10 +76,12 @@ namespace OneSignalSDK.Android.Notifications {
 
             /// <param name="permission">boolean</param>
             public void onNotificationPermissionChange(bool permission) {
+                NotificationPermissionChangedEventArgs args = new NotificationPermissionChangedEventArgs(permission);
+
                 EventHandler<NotificationPermissionChangedEventArgs> handler = _parent.PermissionChanged;
                 if (handler != null)
                 {
-                    UnityMainThreadDispatch.Post(state => handler(_parent, new NotificationPermissionChangedEventArgs(permission)));
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
                 }
             }
         }
@@ -96,7 +98,7 @@ namespace OneSignalSDK.Android.Notifications {
                 var notifJO = willDisplayEvent.Call<AndroidJavaObject>("getNotification");
                 var notification = _getNotification(notifJO);
 
-                var args = new InternalNotificationWillDisplayEventArgs(willDisplayEvent, notification);
+                InternalNotificationWillDisplayEventArgs args = new InternalNotificationWillDisplayEventArgs(willDisplayEvent, notification);
 
                 EventHandler<NotificationWillDisplayEventArgs> handler = _parent.ForegroundWillDisplay;
                 if (handler != null)
