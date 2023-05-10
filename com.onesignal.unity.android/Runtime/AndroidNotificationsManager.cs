@@ -79,7 +79,7 @@ namespace OneSignalSDK.Android.Notifications {
                 EventHandler<NotificationPermissionChangedEventArgs> handler = _parent.PermissionChanged;
                 if (handler != null)
                 {
-                    UnityMainThreadDispatch.Post(state => handler(this, new NotificationPermissionChangedEventArgs(permission)));
+                    UnityMainThreadDispatch.Post(state => handler(_parent, new NotificationPermissionChangedEventArgs(permission)));
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace OneSignalSDK.Android.Notifications {
                 EventHandler<NotificationClickEventArgs> handler = _parent.Clicked;
                 if (handler != null)
                 {
-                    UnityMainThreadDispatch.Post(state => handler(this, args));
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
                 }
             }
         }
