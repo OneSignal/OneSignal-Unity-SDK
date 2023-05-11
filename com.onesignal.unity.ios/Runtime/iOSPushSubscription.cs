@@ -31,6 +31,8 @@ using System.Runtime.InteropServices;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.User.Internal;
 
+using OneSignalSDK.Debug.Utilities;
+
 namespace OneSignalSDK.iOS.User.Models {
     internal sealed class iOSPushSubscription : IPushSubscription {
         [DllImport("__Internal")] private static extern string _pushSubscriptionGetId();
@@ -42,7 +44,7 @@ namespace OneSignalSDK.iOS.User.Models {
 
         public delegate void StateListenerDelegate(string current, string previous);
 
-        public event SubscriptionChangedDelegate Changed;
+        public event EventHandler<PushSubscriptionChangedEventArgs> Changed;
 
         private static iOSPushSubscription _instance;
 
@@ -75,8 +77,16 @@ namespace OneSignalSDK.iOS.User.Models {
         [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
         private static void _onPushSubscriptionStateChanged(string current, string previous) {
             var curr = JsonUtility.FromJson<PushSubscriptionState>(current);
-            //var prev = JsonUtility.FromJson<PushSubscriptionState>(previous);
-            UnityMainThreadDispatch.Post(state => _instance.Changed?.Invoke(curr));
+            var prev = JsonUtility.FromJson<PushSubscriptionState>(previous);
+
+            PushSubscriptionChangedState state = new PushSubscriptionChangedState(prev, curr);
+            PushSubscriptionChangedEventArgs args = new PushSubscriptionChangedEventArgs(state);
+
+            EventHandler<PushSubscriptionChangedEventArgs> handler = _instance.Changed;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
         }
     }
 }

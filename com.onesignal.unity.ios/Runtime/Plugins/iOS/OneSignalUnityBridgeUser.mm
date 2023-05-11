@@ -68,10 +68,10 @@ typedef void (*StateListenerDelegate)(const char* current, const char* previous)
     return self;
 }
 
-- (void)onOSPushSubscriptionChangedWithStateChanges:(OSPushSubscriptionStateChanges*)stateChanges {
+- (void)onPushSubscriptionDidChangeWithState:(OSPushSubscriptionChangedState*)state {
     if (_pushSubscriptionDelegate != nil) {
-        auto curr = jsonStringFromDictionary([[stateChanges to] jsonRepresentation]);
-        auto prev = jsonStringFromDictionary([[stateChanges from] jsonRepresentation]);
+        auto curr = jsonStringFromDictionary([[state current] jsonRepresentation]);
+        auto prev = jsonStringFromDictionary([[state previous] jsonRepresentation]);
         _pushSubscriptionDelegate(curr, prev);
     }
 }
