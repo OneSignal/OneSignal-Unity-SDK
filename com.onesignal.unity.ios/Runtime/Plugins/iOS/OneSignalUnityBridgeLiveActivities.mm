@@ -29,6 +29,8 @@
 #import <OneSignalUser/OneSignalUser-Swift.h>
 #import <OneSignalFramework/OneSignalFramework.h>
 
+typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
+
 /*
  * Helpers
  */
@@ -41,31 +43,16 @@
  */
 
 extern "C" {
-    void _initialize(const char* appId) {
-        [OneSignal initialize:TO_NSSTRING(appId) withLaunchOptions:nil];
+    void _enterLiveActivity(const char* activityId, const char* token, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal.LiveActivities enter:TO_NSSTRING(activityId)
+                        withToken:TO_NSSTRING(token)
+                        withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                        withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _login(const char* externalId) {
-        [OneSignal login:TO_NSSTRING(externalId)];
-    }
-
-    void _loginWithJwtBearerToken(const char* externalId, const char* token) {
-        [OneSignal login:TO_NSSTRING(externalId) withToken:TO_NSSTRING(token)];
-    }
-
-    void _logout() {
-        [OneSignal logout];
-    }
-
-    void _setConsentGiven(bool consent) {
-        [OneSignal setConsentGiven:consent];
-    }
-
-    void _setConsentRequired(bool required) {
-        [OneSignal setConsentRequired:required];
-    }
-
-    void _setLaunchURLsInApp(bool launchInApp) {
-        [OneSignal setLaunchURLsInApp:launchInApp];
+    void _exitLiveActivity(const char* activityId, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal.LiveActivities exit:TO_NSSTRING(activityId)
+                        withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                        withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 }
