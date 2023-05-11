@@ -55,10 +55,6 @@ namespace OneSignalSDK.iOS {
         [DllImport("__Internal")] private static extern void _login(string externalId);
         [DllImport("__Internal")] private static extern void _loginWithJwtBearerToken(string externalId, string jwtBearerToken);
         [DllImport("__Internal")] private static extern void _logout();
-        [DllImport("__Internal")] private static extern void _enterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _exitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
-
-        private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
         private iOSUserManager _user;
         private iOSSessionManager _session;
@@ -66,6 +62,7 @@ namespace OneSignalSDK.iOS {
         private iOSLocationManager _location;
         private iOSInAppMessagesManager _inAppMessages;
         private iOSDebugManager _debug;
+        private iOSLiveActivitiesManager _liveActivities;
 
         private static OneSignaliOS _instance;
 
@@ -104,6 +101,8 @@ namespace OneSignalSDK.iOS {
             get => _debug;
         }
 
+        public override ILiveActivitiesManager LiveActivities {
+            get => _liveActivities;
         }
 
         public override bool ConsentGiven {
@@ -143,6 +142,10 @@ namespace OneSignalSDK.iOS {
                 _session = new iOSSessionManager();
             }
 
+            if (_liveActivities == null) {
+                _liveActivities = new iOSLiveActivitiesManager();
+            }
+
             _completedInit(appId);
         }
 
@@ -157,21 +160,5 @@ namespace OneSignalSDK.iOS {
         public override void Logout() {
             _logout();
         }
-
-        public override async Task<bool> EnterLiveActivityAsync(string activityId, string token) {
-            var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _enterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
-            return await proxy;
-        }
-
-        public override async Task<bool> ExitLiveActivityAsync(string activityId) {
-            var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _exitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
-            return await proxy;
-        }
-
-        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-        private static void BooleanCallbackProxy(int hashCode, bool response)
-            => WaitingProxy.ResolveCallbackProxy(hashCode, response);
     }
 }
