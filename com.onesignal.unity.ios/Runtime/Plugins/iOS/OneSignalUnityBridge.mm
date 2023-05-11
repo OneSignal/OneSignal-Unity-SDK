@@ -59,20 +59,12 @@ extern "C" {
         [OneSignal logout];
     }
 
-    bool _getPrivacyConsent() {
-        return OneSignal.getPrivacyConsent;
+    void _setConsentGiven(bool consent) {
+        [OneSignal setConsentGiven:consent];
     }
 
-    void _setPrivacyConsent(bool consent) {
-        [OneSignal setPrivacyConsent:consent];
-    }
-
-    bool _getRequiresPrivacyConsent() {
-        return [OneSignal requiresPrivacyConsent];
-    }
-
-    void _setRequiresPrivacyConsent(bool required) {
-        [OneSignal setRequiresPrivacyConsent:required];
+    void _setConsentRequired(bool required) {
+        [OneSignal setConsentRequired:required];
     }
 
     void _setLaunchURLsInApp(bool launchInApp) {
