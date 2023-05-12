@@ -139,14 +139,13 @@ extern "C" {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setPermissionDelegate:callback];
     }
 
-    void _notificationsAddForegroundWillDisplayListener(WillDisplayEventListenerDelegate callback) {
+    void _notificationsSetForegroundWillDisplayCallback(WillDisplayEventListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setWillDisplayDelegate:callback];
     }
 
     void _notificationsWillDisplayEventPreventDefault(const char* notifcationId) {
         NSString *key = [NSString stringWithUTF8String:notifcationId];
         [[OneSignalNotificationsObserver sharedNotificationsObserver] notificationsWillDisplayEventPreventDefault:key];
-
     }
 
     void _notificationsDisplay(const char* notifcationId) {
@@ -154,7 +153,7 @@ extern "C" {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] notificationsDisplay:key];
     }
 
-    void _notificationsAddClickListener(ClickEventListenerDelegate callback) {
+    void _notificationsSetClickCallback(ClickEventListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setClickDelegate:callback];
     }
 }
