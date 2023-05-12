@@ -111,6 +111,8 @@ namespace OneSignalSDK {
             => SDKDebug.Warn("This feature is only available for iOS.");
 
         public override void Initialize(string appId) {
+            SetOneSignalCallbacksToBackgroundThread();
+
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
@@ -135,6 +137,19 @@ namespace OneSignalSDK {
             _sdkClass.CallStatic("setAppId", appId);
 
             _completedInit(appId);
+        }
+
+        // Change all OneSignal callbacks, observers, and events to fire on a background thread.
+        // This prevents cases where the main thread could hang waiting on Unity to bridge from Java back to C#.
+        private void SetOneSignalCallbacksToBackgroundThread() {
+            var callbackThreadManagerStr = SDKPackage + "." + "CallbackThreadManager";
+            var callbackThreadManagerClass = new AndroidJavaClass(callbackThreadManagerStr);
+            var callbackThreadManagerCompanionClass = callbackThreadManagerClass.GetStatic<AndroidJavaObject>("Companion");
+
+            var useThreadClass = new AndroidJavaClass(callbackThreadManagerStr + "$UseThread");
+            var useThreadBackgroundEnumValue = useThreadClass.GetStatic<AndroidJavaObject>("Background");
+
+            callbackThreadManagerCompanionClass.Call("setPreference", useThreadBackgroundEnumValue);
         }
 
         public override async Task<NotificationPermission> PromptForPushNotificationsWithUserResponse() {
