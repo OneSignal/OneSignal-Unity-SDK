@@ -34,6 +34,7 @@ using OneSignalSDK.Notifications;
 using OneSignalSDK.Notifications.Models;
 using OneSignalSDK.Notifications.Internal;
 using OneSignalSDK.iOS.Utilities;
+using OneSignalSDK.iOS.Notifications.Models;
 
 namespace OneSignalSDK.iOS.Notifications {
     internal sealed class iOSNotificationsManager : INotificationsManager {
@@ -41,20 +42,19 @@ namespace OneSignalSDK.iOS.Notifications {
         //[DllImport("__Internal")] private static extern bool _notificationsGetCanRequestPermission(); // iOS only for now
         [DllImport("__Internal")] private static extern void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsClearAll();
-        //[DllImport("__Internal")] private static extern void _registerForProvisionalAuthorization(); // iOS only
-        [DllImport("__Internal")] private static extern void _notificationsAddPermissionStateChangedCallback(StateListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsSetWillShowHandler(NotificationWillShowInForegroundDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsSetOpenedHandler(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsAddPermissionObserver(PermissionListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsAddForegroundWillDisplayListener(WillDisplayEventListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsWillDisplayEventPreventDefault(string notificationId);
+        [DllImport("__Internal")] private static extern void _notificationsAddClickListener(ClickEventListenerDelegate callback);
 
-        public delegate void StateListenerDelegate(string current);
-
-        private delegate bool NotificationWillShowInForegroundDelegate(string notification);
-        private delegate void StringListenerDelegate(string response);
+        public delegate void PermissionListenerDelegate(bool permission);
+        private delegate void WillDisplayEventListenerDelegate(string notification);
+        private delegate void ClickEventListenerDelegate(string notification, string resultActionId, string resultUrl);
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
+        public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
+        public event EventHandler<NotificationClickEventArgs> Clicked;
+        public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
 
         private static iOSNotificationsManager _instance;
 
@@ -77,57 +77,87 @@ namespace OneSignalSDK.iOS.Notifications {
         }
 
         public void Initialize() {
-            _notificationsAddPermissionStateChangedCallback(_onPermissionStateChanged);
-            _notificationsSetWillShowHandler(_onWillShow);
-            _notificationsSetOpenedHandler(_onOpened);
+            _notificationsAddPermissionObserver(_onPermissionStateChanged);
+            _notificationsAddForegroundWillDisplayListener(_onForegroundWillDisplay);
+            _notificationsAddClickListener(_onClicked);
         }
 
-        [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
-        private static void _onPermissionStateChanged(string current) {
-            var curr = JsonUtility.FromJson<PermissionState>(current);
-            UnityMainThreadDispatch.Post(state => _instance.PermissionChanged?.Invoke(curr.permission));
-        }
+        [AOT.MonoPInvokeCallback(typeof(PermissionListenerDelegate))]
+        private static void _onPermissionStateChanged(bool permission) {
+            NotificationPermissionChangedEventArgs args = new NotificationPermissionChangedEventArgs(permission);
 
-        /// <param name="response">OSNotification</param>
-        [AOT.MonoPInvokeCallback(typeof(NotificationWillShowInForegroundDelegate))]
-        private static bool _onWillShow(string response) {
-            if (_instance.WillShow == null)
-                return true;
-
-            var notification = JsonUtility.FromJson<Notification>(response);
-            _fillNotifFromObj(ref notification, Json.Deserialize(response));
-
-            INotification resultNotif = null;
-            // Blocks current thread using Send to wait for value to assign to resultNotif inorder to display
-            UnityMainThreadDispatch.Send(state => { resultNotif = _instance.WillShow(notification);});
-
-            return resultNotif != null;
-        }
-
-        /// <param name="response">OSNotificationOpenedResult</param>
-        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onOpened(string response) {
-            var notifOpenResult = JsonUtility.FromJson<NotificationClickedResult>(response);
-
-            if (Json.Deserialize(response) is Dictionary<string, object> resultDict && resultDict.ContainsKey("notification"))
-                _fillNotifFromObj(ref notifOpenResult.notification, resultDict["notification"]);
-
-            if (OneSignal.DidInitialize)
-                UnityMainThreadDispatch.Post(state => _instance.Clicked?.Invoke(notifOpenResult));
-            else {
-                void invokeOpened(string appId) {
-                    OneSignal.OnInitialize -= invokeOpened;
-                    UnityMainThreadDispatch.Post(state => _instance.Clicked?.Invoke(notifOpenResult));
-                }
-                
-                OneSignal.OnInitialize += invokeOpened; 
+            EventHandler<NotificationPermissionChangedEventArgs> handler = _instance.PermissionChanged;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
             }
         }
 
-        private static void _fillNotifFromObj(ref Notification notif, object notifObj) {
+        [AOT.MonoPInvokeCallback(typeof(WillDisplayEventListenerDelegate))]
+        private static void _onForegroundWillDisplay(string notification) {
+            var notif = JsonUtility.FromJson<iOSDisplayableNotification>(notification);
+            _fillNotifFromObj(ref notif, Json.Deserialize(notification));
+
+            InternalNotificationWillDisplayEventArgs args = new InternalNotificationWillDisplayEventArgs(notif);
+
+            EventHandler<NotificationWillDisplayEventArgs> handler = _instance.ForegroundWillDisplay;
+            if (handler != null)
+            {
+                // We use Send instead of Post because we need to *not* return to our caller until the
+                // event handlers have returned themselves. This allows a handler to call PreventDefault()
+                // which will get passed down to Android in InternalNotificationWillDisplayEventArgs.
+                UnityMainThreadDispatch.Send(state => handler(_instance, args));
+            }
+        }
+
+        public class InternalNotificationWillDisplayEventArgs : NotificationWillDisplayEventArgs {
+            public InternalNotificationWillDisplayEventArgs(IDisplayableNotification notification) : base(notification) { }
+
+            public override void PreventDefault() {
+                _notificationsWillDisplayEventPreventDefault(this.Notification.NotificationId);
+            }
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(ClickEventListenerDelegate))]
+        private static void _onClicked(string notification, string resultActionId, string resultUrl) {
+            var notif = JsonUtility.FromJson<iOSDisplayableNotification>(notification);
+            _fillNotifFromObj(ref notif, Json.Deserialize(notification));
+
+            var resultJO = new ResultJO(resultActionId, resultUrl);
+            var result = JsonUtility.FromJson<NotificationClickResult>(JsonUtility.ToJson(resultJO));
+
+            NotificationClickEventArgs args = new NotificationClickEventArgs(notif, result);
+
+            EventHandler<NotificationClickEventArgs> handler = _instance.Clicked;
+            if (handler != null)
+            {
+                if (OneSignal.DidInitialize)
+                    UnityMainThreadDispatch.Post(state => handler(_instance, args));
+                else {
+                    void invokeOpened(string appId) {
+                        OneSignal.OnInitialize -= invokeOpened;
+                        UnityMainThreadDispatch.Post(state => handler(_instance, args));
+                    }
+
+                    OneSignal.OnInitialize += invokeOpened; 
+                }
+            }
+        }
+
+        public class ResultJO : MonoBehaviour {
+            public string actionId;
+            public string url;
+
+            public ResultJO(string actionId, string url) {
+                this.actionId = actionId;
+                this.url = url;
+            }
+        }
+
+        private static void _fillNotifFromObj(ref iOSDisplayableNotification notif, object notifObj) {
             if (!(notifObj is Dictionary<string, object> notifDict)) 
                 return;
-            
+
             if (notifDict.ContainsKey("additionalData"))
                 notif.additionalData = notifDict["additionalData"] as Dictionary<string, object>;
             
@@ -136,10 +166,6 @@ namespace OneSignalSDK.iOS.Notifications {
 
             if (notifDict.ContainsKey("rawPayload") && notifDict["rawPayload"] is Dictionary<string, object> payloadDict)
                 notif.rawPayload = Json.Serialize(payloadDict);
-        }
-
-        [Serializable] private sealed class PermissionState { // temp
-            public bool permission;
         }
 
         [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
