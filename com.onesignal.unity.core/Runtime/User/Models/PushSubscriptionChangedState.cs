@@ -34,8 +34,8 @@ namespace OneSignalSDK.User.Models {
         public IPushSubscriptionState Current { get; }
 
         public PushSubscriptionChangedState(IPushSubscriptionState previous, IPushSubscriptionState current) {
-            this.Previous = previous;
-            this.Current = current;
+            Previous = previous;
+            Current = current;
         }
     }
 }
