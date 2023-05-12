@@ -28,23 +28,25 @@
 using System;
 
 namespace OneSignalSDK.InAppMessages.Models {
-    /// <summary>
-    /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
-    /// </summary>
-    public sealed class InAppMessageClickedResult {
+    public interface IInAppMessageClickResult {
         /// <summary>
         /// Action the user took on the in-app message
         /// </summary>
-        public IInAppMessageAction Action { get; }
+        string ActionId { get; }
 
         /// <summary>
-        /// In-App Message the user received
+        /// Where the URL will be opened
         /// </summary>
-        //public InAppMessage message;
+        // InAppMessageActionUrlType UrlTarget { get; } // TODO
 
-        public InAppMessageClickedResult(IInAppMessageAction action) {
-            Action = action;
-        }
+        /// <summary>
+        /// URL opened from the action
+        /// </summary>
+        string Url { get; }
+
+        /// <summary>
+        /// If tapping on the element closes the in-app message
+        /// </summary>
+        bool ClosingMessage { get; }
     }
 }

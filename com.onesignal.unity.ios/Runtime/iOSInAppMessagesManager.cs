@@ -27,6 +27,7 @@
 
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using OneSignalSDK.InAppMessages;
@@ -39,7 +40,7 @@ namespace OneSignalSDK.iOS.InAppMessages {
         [DllImport("__Internal")] private static extern void _inAppMessagesSetDidDisplayCallback(StringListenerDelegate callback);
         [DllImport("__Internal")] private static extern void _inAppMessagesSetWillDismissCallback(StringListenerDelegate callback);
         [DllImport("__Internal")] private static extern void _inAppMessagesSetDidDismissCallback(StringListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetClickedCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _inAppMessagesSetClickCallback(ClickListenerDelegate callback);
 
         [DllImport("__Internal")] private static extern void _inAppMessagesSetPaused(bool paused);
         [DllImport("__Internal")] private static extern bool _inAppMessagesGetPaused();
@@ -50,13 +51,13 @@ namespace OneSignalSDK.iOS.InAppMessages {
         [DllImport("__Internal")] private static extern void _inAppMessagesClearTriggers();
 
         private delegate void StringListenerDelegate(string response);
+        private delegate void ClickListenerDelegate(string message, string result);
 
-        public event InAppMessageLifecycleDelegate WillDisplay;
-        public event InAppMessageLifecycleDelegate DidDisplay;
-        public event InAppMessageLifecycleDelegate WillDismiss;
-        public event InAppMessageLifecycleDelegate DidDismiss;
-
-        public event InAppMessageClickedDelegate Clicked;
+        public event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
+        public event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
+        public event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss;
+        public event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss;
+        public event EventHandler<InAppMessageClickEventArgs> Clicked;
 
         private static iOSInAppMessagesManager _instance;
 
@@ -89,30 +90,69 @@ namespace OneSignalSDK.iOS.InAppMessages {
             _inAppMessagesSetDidDisplayCallback(_onDidDisplay);
             _inAppMessagesSetWillDismissCallback(_onWillDismiss);
             _inAppMessagesSetDidDismissCallback(_onDidDismiss);
-            _inAppMessagesSetClickedCallback(_onClicked);
+            _inAppMessagesSetClickCallback(_onClicked);
         }
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onWillDisplay(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.WillDisplay?.Invoke(new InAppMessage(response)));
+        private static void _onWillDisplay(string response) {
+            var message = new InAppMessage(response);
+            InAppMessageWillDisplayEventArgs args = new InAppMessageWillDisplayEventArgs(message);
+
+            EventHandler<InAppMessageWillDisplayEventArgs> handler = _instance.WillDisplay;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
+        }
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onDidDisplay(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.DidDisplay?.Invoke(new InAppMessage(response)));
+        private static void _onDidDisplay(string response) {
+            var message = new InAppMessage(response);
+            InAppMessageDidDisplayEventArgs args = new InAppMessageDidDisplayEventArgs(message);
+
+            EventHandler<InAppMessageDidDisplayEventArgs> handler = _instance.DidDisplay;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
+        }
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onWillDismiss(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.WillDismiss?.Invoke(new InAppMessage(response)));
+        private static void _onWillDismiss(string response) {
+            var message = new InAppMessage(response);
+            InAppMessageWillDismissEventArgs args = new InAppMessageWillDismissEventArgs(message);
+
+            EventHandler<InAppMessageWillDismissEventArgs> handler = _instance.WillDismiss;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
+        }
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]
-        private static void _onDidDismiss(string response)
-            =>  UnityMainThreadDispatch.Post(state => _instance.DidDismiss?.Invoke(new InAppMessage(response)));
+        private static void _onDidDismiss(string response) {
+            var message = new InAppMessage(response);
+            InAppMessageDidDismissEventArgs args = new InAppMessageDidDismissEventArgs(message);
 
-        [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))] // iOS returns InAppMessageAction. Android returns InAppMessageClickedResult
-        private static void _onClicked(string response) {
-            var action = JsonUtility.FromJson<InAppMessageAction>(response);
-            InAppMessageClickedResult temp = new InAppMessageClickedResult(action);
-            UnityMainThreadDispatch.Post(state => _instance.Clicked?.Invoke(temp));
+            EventHandler<InAppMessageDidDismissEventArgs> handler = _instance.DidDismiss;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(ClickListenerDelegate))]
+        private static void _onClicked(string message, string result) {
+            var mes = JsonUtility.FromJson<InAppMessage>(message);
+            var res = JsonUtility.FromJson<InAppMessageClickResult>(result);
+
+            InAppMessageClickEventArgs args = new InAppMessageClickEventArgs(mes, res);
+
+            EventHandler<InAppMessageClickEventArgs> handler = _instance.Clicked;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
         }
     }
 }
