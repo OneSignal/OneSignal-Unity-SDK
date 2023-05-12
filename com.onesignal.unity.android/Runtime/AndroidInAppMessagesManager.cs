@@ -52,10 +52,10 @@ namespace OneSignalSDK.Android.InAppMessages {
             set => _inAppMessages.Call("setPaused", value);
         }
 
-        public void AddTrigger(string key, object value)
+        public void AddTrigger(string key, string value)
             => _inAppMessages.Call("addTrigger", key, value);
 
-        public void AddTriggers(Dictionary<string, object> triggers)
+        public void AddTriggers(Dictionary<string, string> triggers)
             => _inAppMessages.Call("addTriggers", triggers.ToMap());
 
         public void RemoveTrigger(string key)

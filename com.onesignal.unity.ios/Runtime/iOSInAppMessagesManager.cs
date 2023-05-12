@@ -69,10 +69,10 @@ namespace OneSignalSDK.iOS.InAppMessages {
             set => _inAppMessagesSetPaused(value);
         }
 
-        public void AddTrigger(string key, object value)
+        public void AddTrigger(string key, string value)
             => _inAppMessagesAddTrigger(key, value.ToString());
 
-        public void AddTriggers(Dictionary<string, object> triggers)
+        public void AddTriggers(Dictionary<string, string> triggers)
             => _inAppMessagesAddTriggers(Json.Serialize(triggers));
 
         public void RemoveTrigger(string key)
