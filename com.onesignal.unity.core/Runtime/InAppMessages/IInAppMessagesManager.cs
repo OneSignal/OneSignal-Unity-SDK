@@ -31,20 +31,70 @@ using OneSignalSDK.InAppMessages.Models;
 
 namespace OneSignalSDK.InAppMessages {
     /// <summary>
-    /// When any client side event in an In-App Message's occurs there will be a corresponding event with this
-    /// delegate signature.
+    /// When any client side will display event in an In-App Message's occurs there will be a corresponding event with
+    /// this arguement.
     /// </summary>
-    /// <param name="message">In-app message to be displayed and dismissed</param>
-    public delegate void InAppMessageLifecycleDelegate(IInAppMessage message);
-    
+    public class InAppMessageWillDisplayEventArgs : EventArgs
+    {
+        public IInAppMessage Message { get; }
+
+        public InAppMessageWillDisplayEventArgs(IInAppMessage message) {
+            Message = message;
+        }
+    }
+
     /// <summary>
-    /// Sets a In-App Message opened handler. The instance will be called when an In-App Message action is tapped on.
+    /// When any client side did display event in an In-App Message's occurs there will be a corresponding event with
+    /// this arguement.
     /// </summary>
-    /// <param name="result">The In-App Message clicked result describing:
-    ///     1. The in-app message opened
-    ///     2. The action taken by the user.
-    /// </param>
-    public delegate void InAppMessageClickedDelegate(InAppMessageClickedResult result);
+    public class InAppMessageDidDisplayEventArgs : EventArgs
+    {
+        public IInAppMessage Message { get; }
+
+        public InAppMessageDidDisplayEventArgs(IInAppMessage message) {
+            Message = message;
+        }
+    }
+
+    /// <summary>
+    /// When any client side will dismiss event in an In-App Message's occurs there will be a corresponding event with
+    /// this arguement.
+    /// </summary>
+    public class InAppMessageWillDismissEventArgs : EventArgs
+    {
+        public IInAppMessage Message { get; }
+
+        public InAppMessageWillDismissEventArgs(IInAppMessage message) {
+            Message = message;
+        }
+    }
+
+    /// <summary>
+    /// When any client side did dismiss event in an In-App Message's occurs there will be a corresponding event with
+    /// this arguement.
+    /// </summary>
+    public class InAppMessageDidDismissEventArgs : EventArgs
+    {
+        public IInAppMessage Message { get; }
+
+        public InAppMessageDidDismissEventArgs(IInAppMessage message) {
+            Message = message;
+        }
+    }
+
+    /// <summary>
+    /// When an In-App Message action is tapped on.
+    /// </summary>
+    public class InAppMessageClickEventArgs : EventArgs
+    {
+        public IInAppMessage Message { get; }
+        public IInAppMessageClickResult Result { get; }
+
+        public InAppMessageClickEventArgs(IInAppMessage message, IInAppMessageClickResult result) {
+            Message = message;
+            Result = result;
+        }
+    }
 
     /// <summary>
     /// The In-App Message (IAM) Manager is a *device-scoped* manager for controlling the IAM
@@ -56,27 +106,27 @@ namespace OneSignalSDK.InAppMessages {
         /// <summary>
         /// When an In-App Message is ready to be displayed to the screen
         /// </summary>
-        event InAppMessageLifecycleDelegate WillDisplay;
+        event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
 
         /// <summary>
         /// When an In-App Message is has been displayed to the screen
         /// </summary>
-        event InAppMessageLifecycleDelegate DidDisplay;
+        event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
 
         /// <summary>
         /// When a user has chosen to dismiss an In-App Message
         /// </summary>
-        event InAppMessageLifecycleDelegate WillDismiss;
+        event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss;
 
         /// <summary>
         /// When an In-App Message has finished being dismissed
         /// </summary>
-        event InAppMessageLifecycleDelegate DidDismiss;
+        event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss;
 
         /// <summary>
         /// When a user has clicked on a clickable element in the In-App Message
         /// </summary>
-        event InAppMessageClickedDelegate Clicked;
+        event EventHandler<InAppMessageClickEventArgs> Clicked;
 
         /// <summary>
         /// Allows you to temporarily pause all In-App Messages. You may want to do this while the user is engaged in

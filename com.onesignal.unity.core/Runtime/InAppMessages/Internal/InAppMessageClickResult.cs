@@ -26,37 +26,43 @@
  */
 
 using System;
-using System.Collections.Generic;
+using OneSignalSDK.InAppMessages.Models;
 
-#pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDK.InAppMessages {
-    internal sealed class InAppMessagesManager : IInAppMessagesManager {
-        public event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
-        public event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
-        public event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss;
-        public event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss;
-        public event EventHandler<InAppMessageClickEventArgs> Clicked;
+namespace OneSignalSDK.InAppMessages.Internal {
+    [Serializable] public sealed class InAppMessageClickResult : IInAppMessageClickResult {
+        /// <summary>
+        /// Action the user took on the in-app message
+        /// </summary>
+        public string ActionId => actionId;
 
-        public bool Paused { get; set; }
+        /// <summary>
+        /// Where the URL will be opened
+        /// </summary>
+        // public InAppMessageActionUrlType UrlTarget => urlTarget; // TODO
 
-        public void AddTrigger(string key, string value) {
+        /// <summary>
+        /// URL opened from the action
+        /// </summary>
+        public string Url => url;
 
+        /// <summary>
+        /// If tapping on the element closes the in-app message
+        /// </summary>
+        public bool ClosingMessage => closingMessage;
+
+        public InAppMessageClickResult() {}
+
+        public InAppMessageClickResult(string actionId, string url, bool closingMessage) {
+            this.actionId = actionId;
+            this.url = url;
+            this.closingMessage = closingMessage;
         }
 
-        public void AddTriggers(Dictionary<string, string> triggers) {
-
-        }
-
-        public void RemoveTrigger(string key) {
-
-        }
-
-        public void RemoveTriggers(params string[] keys) {
-
-        }
-
-        public void ClearTriggers() {
-
-        }
+        #region Native Field Handling
+            public string actionId;
+            // public InAppMessageActionUrlType urlTarget;
+            public string url;
+            public bool closingMessage;
+        #endregion
     }
 }

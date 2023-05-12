@@ -31,6 +31,7 @@
 #import "OneSignalBridgeUtil.h"
 
 typedef void (*StringListenerDelegate)(const char* response);
+typedef void (*ClickListenerDelegate)(const char* message, const char* result);
 
 /*
  * Helpers
@@ -43,13 +44,14 @@ typedef void (*StringListenerDelegate)(const char* response);
  * Observer singleton for global callbacks
  */
 
-@interface OneSignalInAppMessagesObserver : NSObject <OSInAppMessageLifecycleHandler>
+@interface OneSignalInAppMessagesObserver : NSObject <OSInAppMessageLifecycleListener, OSInAppMessageClickListener>
 
 + (instancetype) sharedInAppMessagesObserver;
 @property StringListenerDelegate willDisplayDelegate;
 @property StringListenerDelegate didDisplayDelegate;
 @property StringListenerDelegate willDismissDelegate;
 @property StringListenerDelegate didDismissDelegate;
+@property ClickListenerDelegate clickDelegate;
 
 @end
 
@@ -66,30 +68,39 @@ typedef void (*StringListenerDelegate)(const char* response);
 
 - (instancetype) init {
     if (self = [super init]) {
-        [OneSignal.InAppMessages setLifecycleHandler:self];
+        [OneSignal.InAppMessages addLifecycleListener:self];
+        [OneSignal.InAppMessages addClickListener:self];
     }
 
     return self;
 }
 
-- (void)onWillDisplayInAppMessage:(OSInAppMessage *)message {
+- (void)onWillDisplayInAppMessage:(OSInAppMessageWillDisplayEvent *)event {
     if (_willDisplayDelegate != nil)
-        _willDisplayDelegate([message.messageId UTF8String]);
+        _willDisplayDelegate([event.message.messageId UTF8String]);
 }
 
-- (void)onDidDisplayInAppMessage:(OSInAppMessage *)message {
+- (void)onDidDisplayInAppMessage:(OSInAppMessageDidDisplayEvent *)event {
     if (_didDisplayDelegate != nil)
-        _didDisplayDelegate([message.messageId UTF8String]);
+        _didDisplayDelegate([event.message.messageId UTF8String]);
 }
 
-- (void)onWillDismissInAppMessage:(OSInAppMessage *)message {
+- (void)onWillDismissInAppMessage:(OSInAppMessageWillDismissEvent *)event {
     if (_willDismissDelegate != nil)
-        _willDismissDelegate([message.messageId UTF8String]);
+        _willDismissDelegate([event.message.messageId UTF8String]);
 }
 
-- (void)onDidDismissInAppMessage:(OSInAppMessage *)message {
+- (void)onDidDismissInAppMessage:(OSInAppMessageDidDismissEvent *)event {
     if (_didDismissDelegate != nil)
-        _didDismissDelegate([message.messageId UTF8String]);
+        _didDismissDelegate([event.message.messageId UTF8String]);
+}
+
+- (void)onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
+    if (_clickDelegate != nil) {
+        auto message = jsonStringFromDictionary([[event message] jsonRepresentation]);
+        auto result = jsonStringFromDictionary([[event result] jsonRepresentation]);
+        _clickDelegate(message, result);
+    }
 }
 
 @end
@@ -115,10 +126,8 @@ extern "C" {
         [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setDidDismissDelegate:callback];
     }
 
-    void _inAppMessagesSetClickedCallback(StringListenerDelegate callback) {
-        [OneSignal.InAppMessages setClickHandler:^(OSInAppMessageAction * _Nonnull action) {
-            callback(jsonStringFromDictionary([action jsonRepresentation]));
-        }];
+    void _inAppMessagesSetClickCallback(ClickListenerDelegate callback) {
+        [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setClickDelegate:callback];
     }
 
     void _inAppMessagesSetPaused(bool paused) {
