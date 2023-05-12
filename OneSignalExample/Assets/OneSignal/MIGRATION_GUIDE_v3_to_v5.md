@@ -212,4 +212,8 @@ The debug namespace is accessible via `OneSignal.Default.Debug` and provides acc
 
 # Known issues
 - Identity Verification
-    - We will be introducing JWT in follow up Alpha or Beta release 
+    - We will be introducing JWT in follow up Beta release
+
+# Troubleshooting
+- `Assets/OneSignal/Example/OneSignalExampleBehaviou.cs error : The type or namespace name '...`
+  - Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
