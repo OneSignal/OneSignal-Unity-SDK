@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Fixed rare Android ANRs on callbacks firing and also when backgrounding the app.
 ## [3.0.10]
 ### Changed
 - Updated included Android SDK to [4.8.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.5)
