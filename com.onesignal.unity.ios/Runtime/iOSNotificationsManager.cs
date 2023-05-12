@@ -43,9 +43,9 @@ namespace OneSignalSDK.iOS.Notifications {
         [DllImport("__Internal")] private static extern void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsClearAll();
         [DllImport("__Internal")] private static extern void _notificationsAddPermissionObserver(PermissionListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsAddForegroundWillDisplayListener(WillDisplayEventListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsSetForegroundWillDisplayCallback(WillDisplayEventListenerDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsWillDisplayEventPreventDefault(string notificationId);
-        [DllImport("__Internal")] private static extern void _notificationsAddClickListener(ClickEventListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsSetClickCallback(ClickEventListenerDelegate callback);
 
         public delegate void PermissionListenerDelegate(bool permission);
         private delegate void WillDisplayEventListenerDelegate(string notification);
@@ -78,8 +78,8 @@ namespace OneSignalSDK.iOS.Notifications {
 
         public void Initialize() {
             _notificationsAddPermissionObserver(_onPermissionStateChanged);
-            _notificationsAddForegroundWillDisplayListener(_onForegroundWillDisplay);
-            _notificationsAddClickListener(_onClicked);
+            _notificationsSetForegroundWillDisplayCallback(_onForegroundWillDisplay);
+            _notificationsSetClickCallback(_onClicked);
         }
 
         [AOT.MonoPInvokeCallback(typeof(PermissionListenerDelegate))]
