@@ -31,13 +31,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using OneSignalSDK;
-using OneSignalSDK.Notifications.Models;
-using OneSignalSDK.InAppMessages.Models;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.Debug.Models;
 using OneSignalSDK.Debug.Utilities;
-
-using OneSignalSDK.Notifications; // needed for NotificationPermissionChangedEventArgs
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -158,11 +156,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.Notifications.PermissionChanged += _notificationPermissionChanged;
 
         // Setup the below to listen for and respond to events from in-app messages
-        //OneSignal.Default.InAppMessages.WillDisplay += _iamWillDisplay;
-        //OneSignal.Default.InAppMessages.DidDisplay += _iamDidDisplay;
-        //OneSignal.Default.InAppMessages.WillDismiss += _iamWillDismiss;
-        //OneSignal.Default.InAppMessages.DidDismiss += _iamDidDismiss;
-        //OneSignal.Default.InAppMessages.Clicked += _iamOnClick;
+        OneSignal.Default.InAppMessages.WillDisplay += _iamWillDisplay;
+        OneSignal.Default.InAppMessages.DidDisplay += _iamDidDisplay;
+        OneSignal.Default.InAppMessages.WillDismiss += _iamWillDismiss;
+        OneSignal.Default.InAppMessages.DidDismiss += _iamDidDismiss;
+        OneSignal.Default.InAppMessages.Clicked += _iamOnClick;
 
         // Setup the below to listen for and respond to state changes
         OneSignal.Default.User.PushSubscription.Changed += _pushSubscriptionChanged;
@@ -191,24 +189,25 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Notification Permission changed to: {e.Permission}");
     }
 
-    private void _iamWillDisplay(IInAppMessage inAppMessage) {
-        _log($"IAM will display: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e) {
+        _log($"IAM will display: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamDidDisplay(IInAppMessage inAppMessage) {
-        _log($"IAM did display: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) {
+        _log($"IAM did display: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamWillDismiss(IInAppMessage inAppMessage) {
-        _log($"IAM will dismiss: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) {
+        _log($"IAM will dismiss: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamDidDismiss(IInAppMessage inAppMessage) {
-        _log($"IAM did dismiss: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamDidDismiss(object sender, InAppMessageDidDismissEventArgs e) {
+        _log($"IAM did dismiss: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamOnClick(InAppMessageClickedResult result) {
-        _log($"IAM was clicked with Action: {JsonUtility.ToJson(result.Action)}");
+    private void _iamOnClick(object sender, InAppMessageClickEventArgs e) {
+        _log($"IAM was clicked with Message: {JsonUtility.ToJson(e.Message)}");
+        _log($"IAM was clicked with Result: {JsonUtility.ToJson(e.Result)}");
     }
 
     private void _pushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e) {
