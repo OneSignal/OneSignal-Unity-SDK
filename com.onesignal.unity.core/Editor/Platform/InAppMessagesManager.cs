@@ -38,11 +38,11 @@ namespace OneSignalSDK.InAppMessages {
 
         public bool Paused { get; set; }
 
-        public void AddTrigger(string key, object value) {
+        public void AddTrigger(string key, string value) {
 
         }
 
-        public void AddTriggers(Dictionary<string, object> triggers) {
+        public void AddTriggers(Dictionary<string, string> triggers) {
 
         }
 
