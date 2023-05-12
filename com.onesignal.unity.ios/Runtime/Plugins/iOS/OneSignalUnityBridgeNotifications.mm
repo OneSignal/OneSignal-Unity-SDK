@@ -32,8 +32,8 @@
 
 typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
 typedef void (*PermissionListenerDelegate)(bool permission);
-typedef void (*WillDisplayEventListenerDelegate)(const char* notification);
-typedef void (*ClickEventListenerDelegate)(const char* notification, const char* resultActionId, const char* resultUrl);
+typedef void (*WillDisplayListenerDelegate)(const char* notification);
+typedef void (*ClickListenerDelegate)(const char* notification, const char* resultActionId, const char* resultUrl);
 
 /*
  * Helpers
@@ -49,8 +49,8 @@ typedef void (*ClickEventListenerDelegate)(const char* notification, const char*
 
 + (instancetype) sharedNotificationsObserver;
 @property PermissionListenerDelegate permissionDelegate;
-@property WillDisplayEventListenerDelegate willDisplayDelegate;
-@property ClickEventListenerDelegate clickDelegate;
+@property WillDisplayListenerDelegate willDisplayDelegate;
+@property ClickListenerDelegate clickDelegate;
 @property NSMutableDictionary<NSString *, id> *willDisplayEvents;
 
 @end
@@ -139,7 +139,7 @@ extern "C" {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setPermissionDelegate:callback];
     }
 
-    void _notificationsSetForegroundWillDisplayCallback(WillDisplayEventListenerDelegate callback) {
+    void _notificationsSetForegroundWillDisplayCallback(WillDisplayListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setWillDisplayDelegate:callback];
     }
 
@@ -153,7 +153,7 @@ extern "C" {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] notificationsDisplay:key];
     }
 
-    void _notificationsSetClickCallback(ClickEventListenerDelegate callback) {
+    void _notificationsSetClickCallback(ClickListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setClickDelegate:callback];
     }
 }

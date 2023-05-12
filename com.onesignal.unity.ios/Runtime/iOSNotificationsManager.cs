@@ -43,13 +43,13 @@ namespace OneSignalSDK.iOS.Notifications {
         [DllImport("__Internal")] private static extern void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsClearAll();
         [DllImport("__Internal")] private static extern void _notificationsAddPermissionObserver(PermissionListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsSetForegroundWillDisplayCallback(WillDisplayEventListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsSetForegroundWillDisplayCallback(WillDisplayListenerDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsWillDisplayEventPreventDefault(string notificationId);
-        [DllImport("__Internal")] private static extern void _notificationsSetClickCallback(ClickEventListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _notificationsSetClickCallback(ClickListenerDelegate callback);
 
         public delegate void PermissionListenerDelegate(bool permission);
-        private delegate void WillDisplayEventListenerDelegate(string notification);
-        private delegate void ClickEventListenerDelegate(string notification, string resultActionId, string resultUrl);
+        private delegate void WillDisplayListenerDelegate(string notification);
+        private delegate void ClickListenerDelegate(string notification, string resultActionId, string resultUrl);
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
         public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
@@ -93,7 +93,7 @@ namespace OneSignalSDK.iOS.Notifications {
             }
         }
 
-        [AOT.MonoPInvokeCallback(typeof(WillDisplayEventListenerDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(WillDisplayListenerDelegate))]
         private static void _onForegroundWillDisplay(string notification) {
             var notif = JsonUtility.FromJson<iOSDisplayableNotification>(notification);
             _fillNotifFromObj(ref notif, Json.Deserialize(notification));
@@ -118,7 +118,7 @@ namespace OneSignalSDK.iOS.Notifications {
             }
         }
 
-        [AOT.MonoPInvokeCallback(typeof(ClickEventListenerDelegate))]
+        [AOT.MonoPInvokeCallback(typeof(ClickListenerDelegate))]
         private static void _onClicked(string notification, string resultActionId, string resultUrl) {
             var notif = JsonUtility.FromJson<iOSDisplayableNotification>(notification);
             _fillNotifFromObj(ref notif, Json.Deserialize(notification));
