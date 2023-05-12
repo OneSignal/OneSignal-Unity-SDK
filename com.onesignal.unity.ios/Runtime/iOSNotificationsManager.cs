@@ -123,8 +123,7 @@ namespace OneSignalSDK.iOS.Notifications {
             var notif = JsonUtility.FromJson<iOSDisplayableNotification>(notification);
             _fillNotifFromObj(ref notif, Json.Deserialize(notification));
 
-            var resultJO = new ResultJO(resultActionId, resultUrl);
-            var result = JsonUtility.FromJson<NotificationClickResult>(JsonUtility.ToJson(resultJO));
+            var result = new NotificationClickResult(resultActionId, resultUrl);
 
             NotificationClickEventArgs args = new NotificationClickEventArgs(notif, result);
 
@@ -141,16 +140,6 @@ namespace OneSignalSDK.iOS.Notifications {
 
                     OneSignal.OnInitialize += invokeOpened; 
                 }
-            }
-        }
-
-        public class ResultJO : MonoBehaviour {
-            public string actionId;
-            public string url;
-
-            public ResultJO(string actionId, string url) {
-                this.actionId = actionId;
-                this.url = url;
             }
         }
 
