@@ -51,7 +51,7 @@ namespace OneSignalSDK.iOS.InAppMessages {
         [DllImport("__Internal")] private static extern void _inAppMessagesClearTriggers();
 
         private delegate void StringListenerDelegate(string response);
-        private delegate void ClickListenerDelegate(string message, string result);
+        private delegate void ClickListenerDelegate(string message, string result, int urlType);
 
         public event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
         public event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
@@ -142,16 +142,33 @@ namespace OneSignalSDK.iOS.InAppMessages {
         }
 
         [AOT.MonoPInvokeCallback(typeof(ClickListenerDelegate))]
-        private static void _onClicked(string message, string result) {
+        private static void _onClicked(string message, string result, int urlType) {
             var mes = JsonUtility.FromJson<InAppMessage>(message);
             var res = JsonUtility.FromJson<InAppMessageClickResult>(result);
 
-            InAppMessageClickEventArgs args = new InAppMessageClickEventArgs(mes, res);
+            var urlTarget = IntToInAppMessageActionUrlType(urlType);
+            var clickRes = new InAppMessageClickResult(res.ActionId, urlTarget, res.Url, res.ClosingMessage);
+
+            InAppMessageClickEventArgs args = new InAppMessageClickEventArgs(mes, clickRes);
 
             EventHandler<InAppMessageClickEventArgs> handler = _instance.Clicked;
             if (handler != null)
             {
                 UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
+        }
+
+        public static InAppMessageActionUrlType IntToInAppMessageActionUrlType(int urlType) {
+            switch (urlType)
+            {
+                case 0:
+                    return InAppMessageActionUrlType.Browser;
+                case 1:
+                    return InAppMessageActionUrlType.InAppWebview;
+                case 2:
+                    return InAppMessageActionUrlType.RepalceContent;
+                default:
+                    return null;
             }
         }
     }

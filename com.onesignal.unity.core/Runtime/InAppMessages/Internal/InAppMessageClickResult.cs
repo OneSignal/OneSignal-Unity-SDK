@@ -30,6 +30,8 @@ using OneSignalSDK.InAppMessages.Models;
 
 namespace OneSignalSDK.InAppMessages.Internal {
     [Serializable] public sealed class InAppMessageClickResult : IInAppMessageClickResult {
+        private InAppMessageActionUrlType _urlTarget;
+
         /// <summary>
         /// Action the user took on the in-app message
         /// </summary>
@@ -38,7 +40,9 @@ namespace OneSignalSDK.InAppMessages.Internal {
         /// <summary>
         /// Where the URL will be opened
         /// </summary>
-        // public InAppMessageActionUrlType UrlTarget => urlTarget; // TODO
+        public InAppMessageActionUrlType UrlTarget {
+            get => _urlTarget;
+        }
 
         /// <summary>
         /// URL opened from the action
@@ -52,15 +56,17 @@ namespace OneSignalSDK.InAppMessages.Internal {
 
         public InAppMessageClickResult() {}
 
-        public InAppMessageClickResult(string actionId, string url, bool closingMessage) {
+        public InAppMessageClickResult(string actionId, InAppMessageActionUrlType urlTarget, string url, bool closingMessage) { // Android
             this.actionId = actionId;
+            _urlTarget = urlTarget;
             this.url = url;
             this.closingMessage = closingMessage;
+            urlType = _urlTarget.ToString();
         }
 
         #region Native Field Handling
             public string actionId;
-            // public InAppMessageActionUrlType urlTarget;
+            public string urlType;
             public string url;
             public bool closingMessage;
         #endregion

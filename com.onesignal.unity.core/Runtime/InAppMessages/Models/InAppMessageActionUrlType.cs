@@ -25,28 +25,21 @@
  * THE SOFTWARE.
  */
 
-using System;
-
 namespace OneSignalSDK.InAppMessages.Models {
-    public interface IInAppMessageClickResult {
-        /// <summary>
-        /// Action the user took on the in-app message
-        /// </summary>
-        string ActionId { get; }
+    public class InAppMessageActionUrlType {
+        private string _type;
 
-        /// <summary>
-        /// Where the URL will be opened
-        /// </summary>
-        InAppMessageActionUrlType UrlTarget { get; }
+        private InAppMessageActionUrlType(string type) {
+            _type = type;
+        }
 
-        /// <summary>
-        /// URL opened from the action
-        /// </summary>
-        string Url { get; }
+        public override string ToString()
+        {
+            return _type;
+        }
 
-        /// <summary>
-        /// If tapping on the element closes the in-app message
-        /// </summary>
-        bool ClosingMessage { get; }
+        public static InAppMessageActionUrlType InAppWebview = new InAppMessageActionUrlType("Webview");
+        public static InAppMessageActionUrlType Browser = new InAppMessageActionUrlType("Browser");
+        public static InAppMessageActionUrlType RepalceContent = new InAppMessageActionUrlType("Replacement");
     }
 }

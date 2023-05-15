@@ -150,9 +150,14 @@ namespace OneSignalSDK.Android.InAppMessages {
                 var message = messageJO.ToSerializable<InAppMessage>();
 
                 var resultJO = clickEvent.Call<AndroidJavaObject>("getResult");
-                // InAppMessageClickResult urlTarget to be implemented later. Not having a 1:1 C# object will result in serialization being empty
-                // var result = resultJO.ToSerializable<InAppMessageClickResult>();
-                var result = new InAppMessageClickResult(resultJO.Call<string>("getActionId"), resultJO.Call<string>("getUrl"), resultJO.Call<bool>("getClosingMessage"));
+                //var result = resultJO.ToSerializable<InAppMessageClickResult>(); // Not having a 1:1 serialization with matching primative types will result in the serialization being empty
+                var actionId = resultJO.Call<string>("getActionId");
+                var urlTypeJO = resultJO.Call<AndroidJavaObject>("getUrlTarget");
+                var urlType = urlTypeJO.Call<string>("toString");
+                var urlTarget = StringToInAppMessageActionUrlType(urlType);
+                var url = resultJO.Call<string>("getUrl");
+                var closingMessage = resultJO.Call<bool>("getClosingMessage");
+                var result = new InAppMessageClickResult(actionId, urlTarget, url, closingMessage);
 
                 InAppMessageClickEventArgs args = new InAppMessageClickEventArgs(message, result);
 
@@ -160,6 +165,20 @@ namespace OneSignalSDK.Android.InAppMessages {
                 if (handler != null)
                 {
                     UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
+
+            public static InAppMessageActionUrlType StringToInAppMessageActionUrlType(string urlType) {
+                switch (urlType)
+                {
+                    case "webview":
+                        return InAppMessageActionUrlType.InAppWebview;
+                    case "browser":
+                        return InAppMessageActionUrlType.Browser;
+                    case "replacement":
+                        return InAppMessageActionUrlType.RepalceContent;
+                    default:
+                        return null;
                 }
             }
         }
