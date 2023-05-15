@@ -56,7 +56,7 @@ namespace OneSignalSDK.InAppMessages.Internal {
 
         public InAppMessageClickResult() {}
 
-        public InAppMessageClickResult(string actionId, InAppMessageActionUrlType urlTarget, string url, bool closingMessage) { // Android
+        public InAppMessageClickResult(string actionId, InAppMessageActionUrlType urlTarget, string url, bool closingMessage) {
             this.actionId = actionId;
             _urlTarget = urlTarget;
             this.url = url;
