@@ -150,13 +150,17 @@ namespace OneSignalSDK.Android.InAppMessages {
                 var message = messageJO.ToSerializable<InAppMessage>();
 
                 var resultJO = clickEvent.Call<AndroidJavaObject>("getResult");
-                //var result = resultJO.ToSerializable<InAppMessageClickResult>(); // Not having a 1:1 serialization with matching primative types will result in the serialization being empty
+                
+                // Not having a 1:1 serializable class with matching primative types will result in ToSerialization being empty
                 var actionId = resultJO.Call<string>("getActionId");
+                
                 var urlTypeJO = resultJO.Call<AndroidJavaObject>("getUrlTarget");
                 var urlType = urlTypeJO.Call<string>("toString");
                 var urlTarget = StringToInAppMessageActionUrlType(urlType);
+                
                 var url = resultJO.Call<string>("getUrl");
                 var closingMessage = resultJO.Call<bool>("getClosingMessage");
+
                 var result = new InAppMessageClickResult(actionId, urlTarget, url, closingMessage);
 
                 InAppMessageClickEventArgs args = new InAppMessageClickEventArgs(message, result);
