@@ -208,6 +208,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     private void _iamOnClick(object sender, InAppMessageClickEventArgs e) {
         _log($"IAM was clicked with Message: {JsonUtility.ToJson(e.Message)}");
         _log($"IAM was clicked with Result: {JsonUtility.ToJson(e.Result)}");
+        _log($"IAM was clicked with Result UrlTarget: " + e.Result.UrlTarget.ToString());
     }
 
     private void _pushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e) {

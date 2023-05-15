@@ -31,7 +31,7 @@
 #import "OneSignalBridgeUtil.h"
 
 typedef void (*StringListenerDelegate)(const char* response);
-typedef void (*ClickListenerDelegate)(const char* message, const char* result);
+typedef void (*ClickListenerDelegate)(const char* message, const char* result, int urlType);
 
 /*
  * Helpers
@@ -99,7 +99,7 @@ typedef void (*ClickListenerDelegate)(const char* message, const char* result);
     if (_clickDelegate != nil) {
         auto message = jsonStringFromDictionary([[event message] jsonRepresentation]);
         auto result = jsonStringFromDictionary([[event result] jsonRepresentation]);
-        _clickDelegate(message, result);
+        _clickDelegate(message, result, event.result.urlTarget);
     }
 }
 
