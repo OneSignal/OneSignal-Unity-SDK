@@ -100,6 +100,11 @@ namespace OneSignalSDK.Notifications {
         bool Permission { get; }
 
         /// <summary>
+        /// Native permission of the device
+        /// </summary>
+        NotificationPermission PermissionNative { get; }
+
+        /// <summary>
         /// Prompt the user for notification permissions.
         /// </summary>
         /// <param name="fallbackToSettings">

@@ -332,6 +332,12 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log("Notifications cleared");
     }
 
+    public void GetPermissionNative() {
+        var permissionNative = OneSignal.Default.Notifications.PermissionNative;
+
+        _log($"Permission Native is: <b>{permissionNative.ToString()}</b>");
+    }
+
     /*
      * In-App Messages
      */
