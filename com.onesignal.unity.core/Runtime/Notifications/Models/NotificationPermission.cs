@@ -30,6 +30,7 @@ namespace OneSignalSDK.Notifications.Models {
         NotDetermined = 0, 
         Denied, 
         Authorized,
-        Provisional
+        Provisional,
+        Ephemeral
     }
 }
