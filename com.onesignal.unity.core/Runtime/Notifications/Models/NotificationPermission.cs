@@ -29,8 +29,8 @@ namespace OneSignalSDK.Notifications.Models {
     public enum NotificationPermission {
         NotDetermined = 0, 
         Denied, 
-        Authorized,
-        Provisional,
+        Authorized, 
+        Provisional, 
         Ephemeral
     }
 }
