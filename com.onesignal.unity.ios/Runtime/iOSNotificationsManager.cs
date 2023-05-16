@@ -39,6 +39,7 @@ using OneSignalSDK.iOS.Notifications.Models;
 namespace OneSignalSDK.iOS.Notifications {
     internal sealed class iOSNotificationsManager : INotificationsManager {
         [DllImport("__Internal")] private static extern bool _notificationsGetPermission();
+        [DllImport("__Internal")] private static extern int _notificationsGetPermissionNative();
         //[DllImport("__Internal")] private static extern bool _notificationsGetCanRequestPermission(); // iOS only for now
         [DllImport("__Internal")] private static extern void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsClearAll();
@@ -64,6 +65,10 @@ namespace OneSignalSDK.iOS.Notifications {
 
         public bool Permission {
             get => _notificationsGetPermission();
+        }
+
+        public NotificationPermission PermissionNative {
+            get => (NotificationPermission)_notificationsGetPermissionNative();
         }
 
         public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {

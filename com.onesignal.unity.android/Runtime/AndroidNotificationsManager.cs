@@ -51,6 +51,10 @@ namespace OneSignalSDK.Android.Notifications {
             get => _notifications.Call<bool>("getPermission");
         }
 
+        public NotificationPermission PermissionNative {
+            get => _notifications.Call<bool>("getPermission") ? NotificationPermission.Authorized : NotificationPermission.Denied;
+        }
+
         public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
             var continuation = new BoolContinuation();
             _notifications.Call<AndroidJavaObject>("requestPermission", fallbackToSettings, continuation.Proxy);
