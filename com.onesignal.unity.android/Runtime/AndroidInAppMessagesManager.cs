@@ -27,6 +27,7 @@
 
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.InAppMessages.Models;
@@ -40,22 +41,22 @@ namespace OneSignalSDK.Android.InAppMessages {
         public AndroidInAppMessagesManager(AndroidJavaClass sdkClass) {
             _inAppMessages = sdkClass.CallStatic<AndroidJavaObject>("getInAppMessages");
         }
-        public event InAppMessageLifecycleDelegate WillDisplay;
-        public event InAppMessageLifecycleDelegate DidDisplay;
-        public event InAppMessageLifecycleDelegate WillDismiss;
-        public event InAppMessageLifecycleDelegate DidDismiss;
 
-        public event InAppMessageClickedDelegate Clicked;
+        public event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
+        public event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
+        public event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss;
+        public event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss;
+        public event EventHandler<InAppMessageClickEventArgs> Clicked;
 
         public bool Paused {
             get => _inAppMessages.Call<bool>("getPaused");
             set => _inAppMessages.Call("setPaused", value);
         }
 
-        public void AddTrigger(string key, object value)
+        public void AddTrigger(string key, string value)
             => _inAppMessages.Call("addTrigger", key, value);
 
-        public void AddTriggers(Dictionary<string, object> triggers)
+        public void AddTriggers(Dictionary<string, string> triggers)
             => _inAppMessages.Call("addTriggers", triggers.ToMap());
 
         public void RemoveTrigger(string key)
@@ -68,47 +69,121 @@ namespace OneSignalSDK.Android.InAppMessages {
             => _inAppMessages.Call("clearTriggers");
 
         public void Initialize() {
-            _inAppMessages.Call("setInAppMessageClickHandler", new IInAppMessageClickHandler(this));
-            _inAppMessages.Call("setInAppMessageLifecycleHandler", new IInAppMessageLifecycleHandler(this));
+            _inAppMessages.Call("addClickListener", new IInAppMessageClickListener(this));
+            _inAppMessages.Call("addLifecycleListener", new IInAppMessageLifecycleHandler(this));
         }
 
         private sealed class IInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
             private AndroidInAppMessagesManager _parent;
 
-            public IInAppMessageLifecycleHandler(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageLifecycleHandler") {
+            public IInAppMessageLifecycleHandler(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageLifecycleListener") {
                 _parent = inAppMessagesManager;
             }
 
-            /// <param name="message">IInAppMessage</param>
-            public void onWillDisplayInAppMessage(AndroidJavaObject message)
-                => UnityMainThreadDispatch.Post(state => _parent.WillDisplay?.Invoke(message.ToSerializable<InAppMessage>()));
+            /// <param name="willDisplayEvent">IInAppMessageWillDisplayEvent</param>
+            public void onWillDisplay(AndroidJavaObject willDisplayEvent) {
+                var messageJO = willDisplayEvent.Call<AndroidJavaObject>("getMessage");
+                var message = messageJO.ToSerializable<InAppMessage>();
 
-            /// <param name="message">IInAppMessage</param>
-            public void onDidDisplayInAppMessage(AndroidJavaObject message)
-                => UnityMainThreadDispatch.Post(state => _parent.DidDisplay?.Invoke(message.ToSerializable<InAppMessage>()));
+                InAppMessageWillDisplayEventArgs args = new InAppMessageWillDisplayEventArgs(message);
 
-            /// <param name="message">IInAppMessage</param>
-            public void onWillDismissInAppMessage(AndroidJavaObject message)
-                => UnityMainThreadDispatch.Post(state => _parent.WillDismiss?.Invoke(message.ToSerializable<InAppMessage>()));
+                EventHandler<InAppMessageWillDisplayEventArgs> handler = _parent.WillDisplay;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
 
-            /// <param name="message">IInAppMessage</param>
-            public void onDidDismissInAppMessage(AndroidJavaObject message)
-                => UnityMainThreadDispatch.Post(state => _parent.DidDismiss?.Invoke(message.ToSerializable<InAppMessage>()));
+            /// <param name="didDisplayEvent">IInAppMessageDidDisplayEvent</param>
+            public void onDidDisplay(AndroidJavaObject didDisplayEvent) {
+                var messageJO = didDisplayEvent.Call<AndroidJavaObject>("getMessage");
+                var message = messageJO.ToSerializable<InAppMessage>();
+
+                InAppMessageDidDisplayEventArgs args = new InAppMessageDidDisplayEventArgs(message);
+
+                EventHandler<InAppMessageDidDisplayEventArgs> handler = _parent.DidDisplay;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
+
+            /// <param name="willDismissEvent">IInAppMessageWillDismissEvent</param>
+            public void onWillDismiss(AndroidJavaObject willDismissEvent) {
+                var messageJO = willDismissEvent.Call<AndroidJavaObject>("getMessage");
+                var message = messageJO.ToSerializable<InAppMessage>();
+
+                InAppMessageWillDismissEventArgs args = new InAppMessageWillDismissEventArgs(message);
+
+                EventHandler<InAppMessageWillDismissEventArgs> handler = _parent.WillDismiss;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
+
+            /// <param name="didDismissEvent">IInAppMessageDidDismissEvent</param>
+            public void onDidDismiss(AndroidJavaObject didDismissEvent) {
+                var messageJO = didDismissEvent.Call<AndroidJavaObject>("getMessage");
+                var message = messageJO.ToSerializable<InAppMessage>();
+
+                InAppMessageDidDismissEventArgs args = new InAppMessageDidDismissEventArgs(message);
+
+                EventHandler<InAppMessageDidDismissEventArgs> handler = _parent.DidDismiss;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
         }
 
-        private sealed class IInAppMessageClickHandler : OneSignalAndroidJavaProxy {
+        private sealed class IInAppMessageClickListener : OneSignalAndroidJavaProxy {
             private AndroidInAppMessagesManager _parent;
 
-            public IInAppMessageClickHandler(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageClickHandler") {
+            public IInAppMessageClickListener(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageClickListener") {
                 _parent = inAppMessagesManager;
             }
 
-            /// <param name="result">IInAppMessageClickResult</param>
-            public void inAppMessageClicked(AndroidJavaObject result) {
-                var actionResult = result.Call<AndroidJavaObject>("getAction").ToSerializable<InAppMessageAction>(); // temp
-                //var messageResult = result.Call<AndroidJavaObject>("getMessage").ToSerializable<InAppMessage>();
-                var clickResult = new InAppMessageClickedResult(actionResult);
-                UnityMainThreadDispatch.Post(state => _parent.Clicked?.Invoke(clickResult));
+            /// <param name="clickEvent">IInAppMessageClickEvent</param>
+            public void onClick(AndroidJavaObject clickEvent) {
+                var messageJO = clickEvent.Call<AndroidJavaObject>("getMessage");
+                var message = messageJO.ToSerializable<InAppMessage>();
+
+                var resultJO = clickEvent.Call<AndroidJavaObject>("getResult");
+                
+                // Not having a 1:1 serializable class with matching primative types will result in ToSerialization being empty
+                var actionId = resultJO.Call<string>("getActionId");
+                
+                var urlTypeJO = resultJO.Call<AndroidJavaObject>("getUrlTarget");
+                var urlType = urlTypeJO.Call<string>("toString");
+                var urlTarget = StringToInAppMessageActionUrlType(urlType);
+                
+                var url = resultJO.Call<string>("getUrl");
+                var closingMessage = resultJO.Call<bool>("getClosingMessage");
+
+                var result = new InAppMessageClickResult(actionId, urlTarget, url, closingMessage);
+
+                InAppMessageClickEventArgs args = new InAppMessageClickEventArgs(message, result);
+
+                EventHandler<InAppMessageClickEventArgs> handler = _parent.Clicked;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
+
+            public static InAppMessageActionUrlType StringToInAppMessageActionUrlType(string urlType) {
+                switch (urlType)
+                {
+                    case "webview":
+                        return InAppMessageActionUrlType.InAppWebview;
+                    case "browser":
+                        return InAppMessageActionUrlType.Browser;
+                    case "replacement":
+                        return InAppMessageActionUrlType.RepalceContent;
+                    default:
+                        return null;
+                }
             }
         }
     }

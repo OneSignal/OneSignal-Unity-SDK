@@ -27,15 +27,15 @@
 
 #if ONE_SIGNAL_INSTALLED
 using System;
-using OneSignalSDK;
 using UnityEngine;
 using UnityEngine.UI;
-using OneSignalSDK.Debug.Utilities;
-using OneSignalSDK.Debug.Models;
-using OneSignalSDK.Notifications.Models;
-using OneSignalSDK.InAppMessages.Models;
-using OneSignalSDK.User.Models;
 using System.Collections.Generic;
+using OneSignalSDK;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.User.Models;
+using OneSignalSDK.Debug.Models;
+using OneSignalSDK.Debug.Utilities;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -65,9 +65,14 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
     /// <summary>
     /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
-    /// <see cref="OneSignal.RequiresPrivacyConsent"/> in this test MonoBehaviour
+    /// <see cref="OneSignal.ConsentRequired"/> in this test MonoBehaviour
     /// </summary>
-    public bool requiresUserPrivacyConsent;
+    public bool consentRequired;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool consentGiven;
 
     /// <summary>
     /// used to set if launch URLs should be opened in safari or within the application
@@ -120,6 +125,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public float outcomeValue;
 
     /// <summary>
+    /// 
+    /// </summary>
+    public string liveActivityId;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string liveActivityToken;
+
+    /// <summary>
     /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
     /// MonoBehaviour in your opening Scene
     /// </summary>
@@ -131,13 +146,13 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log($"Initializing with appId <b>{appId}</b>");
         OneSignal.Default.Initialize(appId);
 
-        // Setting RequiresPrivacyConsent to true will prevent the OneSignalSDK from operating until
+        // Setting ConsentRequired to true will prevent the OneSignalSDK from operating until
         // PrivacyConsent is also set to true
-        OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
+        OneSignal.Default.ConsentRequired = consentRequired;
 
         // Setup the below to listen for and respond to events from notifications
         OneSignal.Default.Notifications.Clicked += _notificationOnClick;
-        OneSignal.Default.Notifications.WillShow += _notificationOnDisplay;
+        OneSignal.Default.Notifications.ForegroundWillDisplay += _notificationOnDisplay;
         OneSignal.Default.Notifications.PermissionChanged += _notificationPermissionChanged;
 
         // Setup the below to listen for and respond to events from in-app messages
@@ -155,63 +170,66 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * SDK events
      */
     
-    private void _notificationOnClick(INotificationClickedResult result) {
-        _log($"Notification was clicked with Action: {JsonUtility.ToJson(result.Action)}");
+    private void _notificationOnClick(object sender, NotificationClickEventArgs e) {
+        _log($"Notification was clicked with Notification: {JsonUtility.ToJson(e.Notification)}");
+        _log($"Notification was clicked with Result: {JsonUtility.ToJson(e.Result)}");
     }
 
-    private INotification _notificationOnDisplay(INotification notification) {
-        var additionalData = notification.AdditionalData != null
-            ? Json.Serialize(notification.AdditionalData)
+    private void _notificationOnDisplay(object sender, NotificationWillDisplayEventArgs e) {
+        var additionalData = e.Notification.AdditionalData != null
+            ? Json.Serialize(e.Notification.AdditionalData)
                 : null;
 
-        _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}\n{additionalData}");
-        return notification; // show the notification
+        _log($"Notification was received in foreground: {JsonUtility.ToJson(e.Notification)}\n{additionalData}");
+        
+        e.Notification.Display();
     }
 
-    private void _iamWillDisplay(IInAppMessage inAppMessage) {
-        _log($"IAM will display: {JsonUtility.ToJson(inAppMessage)}");
+    private void _notificationPermissionChanged(object sender, NotificationPermissionChangedEventArgs e) {
+        _log($"Notification Permission changed to: {e.Permission}");
     }
 
-    private void _iamDidDisplay(IInAppMessage inAppMessage) {
-        _log($"IAM did display: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e) {
+        _log($"IAM will display: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamWillDismiss(IInAppMessage inAppMessage) {
-        _log($"IAM will dismiss: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) {
+        _log($"IAM did display: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamDidDismiss(IInAppMessage inAppMessage) {
-        _log($"IAM did dismiss: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) {
+        _log($"IAM will dismiss: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamOnClick(InAppMessageClickedResult result) {
-        _log($"IAM was clicked with Action: {JsonUtility.ToJson(result.Action)}");
+    private void _iamDidDismiss(object sender, InAppMessageDidDismissEventArgs e) {
+        _log($"IAM did dismiss: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _notificationPermissionChanged(bool permission) {
-        _log($"Notification Permission changed to: {permission}");
+    private void _iamOnClick(object sender, InAppMessageClickEventArgs e) {
+        _log($"IAM was clicked with Message: {JsonUtility.ToJson(e.Message)}");
+        _log($"IAM was clicked with Result: {JsonUtility.ToJson(e.Result)}");
+        _log($"IAM was clicked with Result UrlTarget: " + e.Result.UrlTarget.ToString());
     }
 
-    private void _pushSubscriptionChanged(IPushSubscriptionState current) {
-        _log($"Push subscription changed: {JsonUtility.ToJson(current)}");
+    private void _pushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e) {
+        _log($"Push subscription changed from previous: {JsonUtility.ToJson(e.State.Previous)}");
+        _log($"Push subscription changed to current: {JsonUtility.ToJson(e.State.Current)}");
     }
 
     /*
      * SDK setup
      */
 
-    public void ToggleRequiresPrivacyConsent() {
-        if (OneSignal.Default.RequiresPrivacyConsent)
-            _error($"Cannot toggle RequiresPrivacyConsent from TRUE to FALSE");
-        else {
-            _log($"Toggling RequiresPrivacyConsent to <b>{!OneSignal.Default.RequiresPrivacyConsent}</b>");
-            OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
-        }
+    public void ToggleConsentRequired() {
+        consentRequired = !consentRequired;
+        _log($"Toggling ConsentRequired to <b>{consentRequired}</b>");
+        OneSignal.Default.ConsentRequired = consentRequired;
     }
 
-    public void TogglePrivacyConsent() {
-        _log($"Toggling PrivacyConsent to <b>{!OneSignal.Default.PrivacyConsent}</b>");
-        OneSignal.Default.PrivacyConsent = !OneSignal.Default.PrivacyConsent;
+    public void ToggleConsentGiven() {
+        consentGiven = !consentGiven;
+        _log($"Toggling PrivacyConsent to <b>{consentGiven}</b>");
+        OneSignal.Default.ConsentGiven = consentGiven;
     }
 
     public void SetLogLevel() {
@@ -314,6 +332,12 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log("Notifications cleared");
     }
 
+    public void GetPermissionNative() {
+        var permissionNative = OneSignal.Default.Notifications.PermissionNative;
+
+        _log($"Permission Native is: <b>{permissionNative.ToString()}</b>");
+    }
+
     /*
      * In-App Messages
      */
@@ -402,6 +426,28 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.Default.SetLaunchURLsInApp(launchURLsInApp);
     }
 
+    public async void EnterLiveActivityAsync() {
+        _log($"Entering Live Activity with id: <b>{liveActivityId}</b> and token: <b>{liveActivityToken}</b> and awaiting result...");
+
+        var result = await OneSignal.Default.LiveActivities.EnterAsync(liveActivityId, liveActivityToken);
+
+        if (result)
+            _log("Live Activity enter success");
+        else
+            _log("Live Activity enter failed");
+    }
+
+    public async void ExitLiveActivityAsync() {
+        _log($"Exiting Live Activity with id: <b>{liveActivityId}</b> and awaiting result...");
+
+        var result = await OneSignal.Default.LiveActivities.ExitAsync(liveActivityId);
+
+        if (result)
+            _log("Live Activity exit success");
+        else
+            _log("Live Activity exit failed");
+    }
+
 #region Rendering
     /*
      * You can safely ignore everything in this region and below
@@ -428,6 +474,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
     public void SetOutcomeKey(string newVal) => outcomeKey = newVal;
     public void SetOutcomeValue(string newVal) => outcomeValue = Convert.ToSingle(newVal);
+
+    public void SetLiveActivityId(string newVal) => liveActivityId = newVal;
+    public void SetLiveActivityToken(string newVal) => liveActivityToken = newVal;
 
     private void Awake() {
         SDKDebug.LogIntercept   += _log;

@@ -25,18 +25,11 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
+using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using OneSignalSDK.iOS.Notifications;
-using OneSignalSDK.iOS.InAppMessages;
-using OneSignalSDK.iOS.Debug;
-using OneSignalSDK.iOS.Location;
-using OneSignalSDK.iOS.Session;
-using OneSignalSDK.iOS.User;
-using OneSignalSDK.iOS.Utilities;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.Debug;
@@ -44,22 +37,24 @@ using OneSignalSDK.Debug.Utilities;
 using OneSignalSDK.Location;
 using OneSignalSDK.Session;
 using OneSignalSDK.User;
+using OneSignalSDK.LiveActivities;
+using OneSignalSDK.iOS.Notifications;
+using OneSignalSDK.iOS.InAppMessages;
+using OneSignalSDK.iOS.Debug;
+using OneSignalSDK.iOS.Location;
+using OneSignalSDK.iOS.Session;
+using OneSignalSDK.iOS.User;
+using OneSignalSDK.iOS.LiveActivities;
 
 namespace OneSignalSDK.iOS {
     public sealed partial class OneSignaliOS : OneSignal {
-        [DllImport("__Internal")] private static extern bool _getPrivacyConsent();
-        [DllImport("__Internal")] private static extern void _setPrivacyConsent(bool consent);
-        [DllImport("__Internal")] private static extern bool _getRequiresPrivacyConsent();
-        [DllImport("__Internal")] private static extern void _setRequiresPrivacyConsent(bool required);
+        [DllImport("__Internal")] private static extern void _setConsentGiven(bool consent);
+        [DllImport("__Internal")] private static extern void _setConsentRequired(bool required);
         [DllImport("__Internal")] private static extern void _setLaunchURLsInApp(bool launchInApp);
         [DllImport("__Internal")] private static extern void _initialize(string appId);
         [DllImport("__Internal")] private static extern void _login(string externalId);
         [DllImport("__Internal")] private static extern void _loginWithJwtBearerToken(string externalId, string jwtBearerToken);
         [DllImport("__Internal")] private static extern void _logout();
-        [DllImport("__Internal")] private static extern void _enterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _exitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
-
-        private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
         private iOSUserManager _user;
         private iOSSessionManager _session;
@@ -67,6 +62,7 @@ namespace OneSignalSDK.iOS {
         private iOSLocationManager _location;
         private iOSInAppMessagesManager _inAppMessages;
         private iOSDebugManager _debug;
+        private iOSLiveActivitiesManager _liveActivities;
 
         private static OneSignaliOS _instance;
 
@@ -105,14 +101,16 @@ namespace OneSignalSDK.iOS {
             get => _debug;
         }
 
-        public override bool PrivacyConsent {
-            get => _getPrivacyConsent();
-            set => _setPrivacyConsent(value);
+        public override ILiveActivitiesManager LiveActivities {
+            get => _liveActivities;
         }
 
-        public override bool RequiresPrivacyConsent {
-            get => _getRequiresPrivacyConsent();
-            set => _setRequiresPrivacyConsent(value);
+        public override bool ConsentGiven {
+            set => _setConsentGiven(value);
+        }
+
+        public override bool ConsentRequired {
+            set => _setConsentRequired(value);
         }
 
         public override void SetLaunchURLsInApp(bool launchInApp)
@@ -144,6 +142,10 @@ namespace OneSignalSDK.iOS {
                 _session = new iOSSessionManager();
             }
 
+            if (_liveActivities == null) {
+                _liveActivities = new iOSLiveActivitiesManager();
+            }
+
             _completedInit(appId);
         }
 
@@ -158,21 +160,5 @@ namespace OneSignalSDK.iOS {
         public override void Logout() {
             _logout();
         }
-
-        public override async Task<bool> EnterLiveActivityAsync(string activityId, string token) {
-            var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _enterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
-            return await proxy;
-        }
-
-        public override async Task<bool> ExitLiveActivityAsync(string activityId) {
-            var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _exitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
-            return await proxy;
-        }
-
-        [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-        private static void BooleanCallbackProxy(int hashCode, bool response)
-            => WaitingProxy.ResolveCallbackProxy(hashCode, response);
     }
 }

@@ -25,24 +25,25 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
 
 #pragma warning disable 0067 // the event 'x' is never used
 namespace OneSignalSDK.InAppMessages {
     internal sealed class InAppMessagesManager : IInAppMessagesManager {
-        public event InAppMessageLifecycleDelegate WillDisplay;
-        public event InAppMessageLifecycleDelegate DidDisplay;
-        public event InAppMessageLifecycleDelegate WillDismiss;
-        public event InAppMessageLifecycleDelegate DidDismiss;
-        public event InAppMessageClickedDelegate Clicked;
+        public event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
+        public event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
+        public event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss;
+        public event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss;
+        public event EventHandler<InAppMessageClickEventArgs> Clicked;
 
         public bool Paused { get; set; }
 
-        public void AddTrigger(string key, object value) {
+        public void AddTrigger(string key, string value) {
 
         }
 
-        public void AddTriggers(Dictionary<string, object> triggers) {
+        public void AddTriggers(Dictionary<string, string> triggers) {
 
         }
 

@@ -51,6 +51,10 @@ namespace OneSignalSDK.Android.Notifications {
             get => _notifications.Call<bool>("getPermission");
         }
 
+        public NotificationPermission PermissionNative {
+            get => _notifications.Call<bool>("getPermission") ? NotificationPermission.Authorized : NotificationPermission.Denied;
+        }
+
         public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
             var continuation = new BoolContinuation();
             _notifications.Call<AndroidJavaObject>("requestPermission", fallbackToSettings, continuation.Proxy);
@@ -76,10 +80,12 @@ namespace OneSignalSDK.Android.Notifications {
 
             /// <param name="permission">boolean</param>
             public void onNotificationPermissionChange(bool permission) {
+                NotificationPermissionChangedEventArgs args = new NotificationPermissionChangedEventArgs(permission);
+
                 EventHandler<NotificationPermissionChangedEventArgs> handler = _parent.PermissionChanged;
                 if (handler != null)
                 {
-                    UnityMainThreadDispatch.Post(state => handler(this, new NotificationPermissionChangedEventArgs(permission)));
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
                 }
             }
         }
@@ -96,7 +102,7 @@ namespace OneSignalSDK.Android.Notifications {
                 var notifJO = willDisplayEvent.Call<AndroidJavaObject>("getNotification");
                 var notification = _getNotification(notifJO);
 
-                var args = new InternalNotificationWillDisplayEventArgs(willDisplayEvent, notification);
+                InternalNotificationWillDisplayEventArgs args = new InternalNotificationWillDisplayEventArgs(willDisplayEvent, notification);
 
                 EventHandler<NotificationWillDisplayEventArgs> handler = _parent.ForegroundWillDisplay;
                 if (handler != null)
@@ -139,7 +145,7 @@ namespace OneSignalSDK.Android.Notifications {
                 EventHandler<NotificationClickEventArgs> handler = _parent.Clicked;
                 if (handler != null)
                 {
-                    UnityMainThreadDispatch.Post(state => handler(this, args));
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
                 }
             }
         }
