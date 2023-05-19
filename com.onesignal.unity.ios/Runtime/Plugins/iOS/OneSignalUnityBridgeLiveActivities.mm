@@ -25,26 +25,34 @@
  * THE SOFTWARE.
  */
 
-using System;
+#import <OneSignalNotifications/OneSignalNotifications.h>
+#import <OneSignalUser/OneSignalUser-Swift.h>
+#import <OneSignalFramework/OneSignalFramework.h>
 
-namespace OneSignalSDK.InAppMessages.Models {
-    /// <summary>
-    /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
-    /// </summary>
-    public sealed class InAppMessageClickedResult {
-        /// <summary>
-        /// Action the user took on the in-app message
-        /// </summary>
-        public IInAppMessageAction Action { get; }
+typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
 
-        /// <summary>
-        /// In-App Message the user received
-        /// </summary>
-        //public InAppMessage message;
+/*
+ * Helpers
+ */
 
-        public InAppMessageClickedResult(IInAppMessageAction action) {
-            Action = action;
-        }
+#define CALLBACK(value) callback(hashCode, value)
+#define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
+
+/*
+ * Bridge methods
+ */
+
+extern "C" {
+    void _enterLiveActivity(const char* activityId, const char* token, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal.LiveActivities enter:TO_NSSTRING(activityId)
+                        withToken:TO_NSSTRING(token)
+                        withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                        withFailure:^(NSError *error) { CALLBACK(NO); }];
+    }
+
+    void _exitLiveActivity(const char* activityId, int hashCode, BooleanResponseDelegate callback) {
+        [OneSignal.LiveActivities exit:TO_NSSTRING(activityId)
+                        withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
+                        withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 }

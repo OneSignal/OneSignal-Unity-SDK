@@ -25,16 +25,20 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Threading.Tasks;
+using OneSignalSDK.Notifications.Models;
 
 #pragma warning disable 0067 // the event 'x' is never used
 namespace OneSignalSDK.Notifications {
     internal sealed class NotificationsManager : INotificationsManager {
-        public event NotificationWillShowDelegate WillShow;
-        public event NotificationClickedDelegate Clicked;
-        public event PermissionChangedDelegate PermissionChanged;
+        public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
+        public event EventHandler<NotificationClickEventArgs> Clicked;
+        public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
 
         public bool Permission { get; }
+
+        public NotificationPermission PermissionNative { get; }
 
         public Task<bool> RequestPermissionAsync(bool fallbackToSettings){
             return Task.FromResult(false);

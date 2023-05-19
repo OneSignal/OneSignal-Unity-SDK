@@ -44,6 +44,13 @@ namespace OneSignalSDK.Notifications.Internal {
         /// </summary>
         public string Url => url;
 
+        public NotificationClickResult() {}
+
+        public NotificationClickResult(string actionId, string url) {
+            this.actionId = actionId;
+            this.url = url;
+        }
+
         #region Native Field Handling
             public string actionId;
             public string url;

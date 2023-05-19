@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Updated `Notifications`, `InAppMessages`, and `User` models to have Pascal Case properties
-- Renamed `EnterLiveActivity` and `ExitLiveActivity` to `EnterLiveActivityAsync` and `ExitLiveActivityAsync`
-- Updated Location `RequestPermission` to `RequestPermissionAsync`
-### Fixed
-- Added helper methods in the iOS OneSignal bridge
+- Updated public API. Please see the updated [migration guide](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.3/MIGRATION_GUIDE_v3_to_v5.md) for the most up to date signatures. 
+- Updated included Android SDK to [5.0.0-beta4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta4)
+- Updated included iOS SDK to [5.0.0-beta-04](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-04)
 
 ## [5.0.0-beta.2]
 ### Added

@@ -25,47 +25,12 @@
  * THE SOFTWARE.
  */
 
-#import <OneSignalNotifications/OneSignalNotifications.h>
-#import <OneSignalUser/OneSignalUser-Swift.h>
-#import <OneSignalFramework/OneSignalFramework.h>
-
-/*
- * Helpers
- */
-
-#define CALLBACK(value) callback(hashCode, value)
-#define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
-
-/*
- * Bridge methods
- */
-
-extern "C" {
-    void _initialize(const char* appId) {
-        [OneSignal initialize:TO_NSSTRING(appId) withLaunchOptions:nil];
-    }
-
-    void _login(const char* externalId) {
-        [OneSignal login:TO_NSSTRING(externalId)];
-    }
-
-    void _loginWithJwtBearerToken(const char* externalId, const char* token) {
-        [OneSignal login:TO_NSSTRING(externalId) withToken:TO_NSSTRING(token)];
-    }
-
-    void _logout() {
-        [OneSignal logout];
-    }
-
-    void _setConsentGiven(bool consent) {
-        [OneSignal setConsentGiven:consent];
-    }
-
-    void _setConsentRequired(bool required) {
-        [OneSignal setConsentRequired:required];
-    }
-
-    void _setLaunchURLsInApp(bool launchInApp) {
-        [OneSignal setLaunchURLsInApp:launchInApp];
+namespace OneSignalSDK.Notifications.Models {
+    public enum NotificationPermission {
+        NotDetermined = 0, 
+        Denied, 
+        Authorized, 
+        Provisional, 
+        Ephemeral
     }
 }

@@ -33,7 +33,7 @@ using OneSignalSDK.Android.Utilities;
 
 namespace OneSignalSDK.Android.User.Models {
     internal sealed class AndroidPushSubscription : IPushSubscription {
-        public event SubscriptionChangedDelegate Changed;
+        public event EventHandler<PushSubscriptionChangedEventArgs> Changed;
 
         private readonly AndroidJavaObject _user;
         
@@ -62,24 +62,32 @@ namespace OneSignalSDK.Android.User.Models {
             => _pushSubscription.Call("optOut");
 
         public void Initialize() {
-            _pushSubscription.Call("addChangeHandler", new InternalSubscriptionChangedHandler(this));
+            _pushSubscription.Call("addObserver", new InternalSubscriptionChangedHandler(this));
         }
 
         private sealed class InternalSubscriptionChangedHandler : OneSignalAndroidJavaProxy {
             private AndroidPushSubscription _parent;
 
-            public InternalSubscriptionChangedHandler(AndroidPushSubscription pushSubscription) : base("user.subscriptions.ISubscriptionChangedHandler") {
+            public InternalSubscriptionChangedHandler(AndroidPushSubscription pushSubscription) : base("user.subscriptions.IPushSubscriptionObserver") {
                 _parent = pushSubscription;
             }
 
-            /// <param name="subscription">ISubscription</param>
-            public void onSubscriptionChanged(AndroidJavaObject subscription) {
-                string id = subscription.Call<string>("getId");
-                bool optedIn = subscription.Call<bool>("getOptedIn");
-                string token = subscription.Call<string>("getToken");
-                PushSubscriptionState pushSubcriptionState = new PushSubscriptionState(id, optedIn, token);
+            /// <param name="state">PushSubscriptionChangedState</param>
+            public void onPushSubscriptionChange(AndroidJavaObject state) {
+                var previousJO = state.Call<AndroidJavaObject>("getPrevious");
+                var previous = previousJO.ToSerializable<PushSubscriptionState>();
 
-                UnityMainThreadDispatch.Post(state => _parent.Changed?.Invoke(pushSubcriptionState));
+                var currentJO = state.Call<AndroidJavaObject>("getCurrent");
+                var current = currentJO.ToSerializable<PushSubscriptionState>();
+
+                PushSubscriptionChangedState pushSubscriptionChangedState = new PushSubscriptionChangedState(previous, current);
+                PushSubscriptionChangedEventArgs args = new PushSubscriptionChangedEventArgs(pushSubscriptionChangedState);
+
+                EventHandler<PushSubscriptionChangedEventArgs> handler = _parent.Changed;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
             }
         }
     }

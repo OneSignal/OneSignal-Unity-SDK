@@ -25,47 +25,28 @@
  * THE SOFTWARE.
  */
 
-#import <OneSignalNotifications/OneSignalNotifications.h>
-#import <OneSignalUser/OneSignalUser-Swift.h>
-#import <OneSignalFramework/OneSignalFramework.h>
+using System;
 
-/*
- * Helpers
- */
+namespace OneSignalSDK.InAppMessages.Models {
+    public interface IInAppMessageClickResult {
+        /// <summary>
+        /// Action the user took on the in-app message
+        /// </summary>
+        string ActionId { get; }
 
-#define CALLBACK(value) callback(hashCode, value)
-#define TO_NSSTRING(cstr) cstr ? [NSString stringWithUTF8String:cstr] : nil
+        /// <summary>
+        /// Where the URL will be opened
+        /// </summary>
+        InAppMessageActionUrlType UrlTarget { get; }
 
-/*
- * Bridge methods
- */
+        /// <summary>
+        /// URL opened from the action
+        /// </summary>
+        string Url { get; }
 
-extern "C" {
-    void _initialize(const char* appId) {
-        [OneSignal initialize:TO_NSSTRING(appId) withLaunchOptions:nil];
-    }
-
-    void _login(const char* externalId) {
-        [OneSignal login:TO_NSSTRING(externalId)];
-    }
-
-    void _loginWithJwtBearerToken(const char* externalId, const char* token) {
-        [OneSignal login:TO_NSSTRING(externalId) withToken:TO_NSSTRING(token)];
-    }
-
-    void _logout() {
-        [OneSignal logout];
-    }
-
-    void _setConsentGiven(bool consent) {
-        [OneSignal setConsentGiven:consent];
-    }
-
-    void _setConsentRequired(bool required) {
-        [OneSignal setConsentRequired:required];
-    }
-
-    void _setLaunchURLsInApp(bool launchInApp) {
-        [OneSignal setLaunchURLsInApp:launchInApp];
+        /// <summary>
+        /// If tapping on the element closes the in-app message
+        /// </summary>
+        bool ClosingMessage { get; }
     }
 }

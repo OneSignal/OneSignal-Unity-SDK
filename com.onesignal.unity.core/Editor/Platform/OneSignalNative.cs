@@ -75,12 +75,16 @@ namespace OneSignalSDK {
             get => _debug;
         }
 
-        public override bool PrivacyConsent { get; set; }
-
-        public override bool RequiresPrivacyConsent { get; set; }
-
         public override ILiveActivitiesManager LiveActivities {
             get => _liveActivities;
+        }
+
+        public override bool ConsentGiven {
+            set => _consentGiven = value;
+        }
+
+        public override bool ConsentRequired {
+            set => _consentRequired = value;
         }
 
         public override void SetLaunchURLsInApp(bool launchInApp) {

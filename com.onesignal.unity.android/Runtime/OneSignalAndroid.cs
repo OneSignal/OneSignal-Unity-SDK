@@ -99,18 +99,16 @@ namespace OneSignalSDK.Android {
             get => _debug;
         }
 
-        public override bool PrivacyConsent {
-            get => _sdkClass.CallStatic<bool>("getPrivacyConsent");
-            set => _sdkClass.CallStatic("setPrivacyConsent", value);
-        }
-
-        public override bool RequiresPrivacyConsent {
-            get => _sdkClass.CallStatic<bool>("getRequiresPrivacyConsent");
-            set => _sdkClass.CallStatic("setRequiresPrivacyConsent", value);
-        }
-
         public override ILiveActivitiesManager LiveActivities {
             get => _liveActivities;
+        }
+
+        public override bool ConsentGiven {
+            set => _sdkClass.CallStatic("setConsentGiven", value);
+        }
+
+        public override bool ConsentRequired {
+            set => _sdkClass.CallStatic("setConsentRequired", value);
         }
 
         public override void SetLaunchURLsInApp(bool launchInApp)
