@@ -40,24 +40,24 @@ namespace OneSignalSDK.Debug.Utilities {
         public static void Info(string message) {
             if (LogIntercept != null)
                 LogIntercept(message);
-            else if (OneSignal.Default.Debug.LogLevel >= LogLevel.Info)
+            else if (OneSignal.Debug.LogLevel >= LogLevel.Info)
                 UnityEngine.Debug.Log(_formatMessage(message));
         }
-        
+
         public static void Warn(string message) {
             if (WarnIntercept != null)
                 WarnIntercept(message);
-            else if (OneSignal.Default.Debug.LogLevel >= LogLevel.Warn)
+            else if (OneSignal.Debug.LogLevel >= LogLevel.Warn)
                UnityEngine.Debug.LogWarning(_formatMessage(message));
         }
-        
+
         public static void Error(string message) {
             if (ErrorIntercept != null)
                 ErrorIntercept(message);
-            else  if (OneSignal.Default.Debug.LogLevel >= LogLevel.Error)
+            else  if (OneSignal.Debug.LogLevel >= LogLevel.Error)
                 UnityEngine.Debug.LogError(_formatMessage(message));
         }
-        
+
         private static string _formatMessage(string message) => "[OneSignal] " + message;
     }
 }

@@ -47,7 +47,7 @@ using OneSignalSDK.iOS.User;
 using OneSignalSDK.iOS.LiveActivities;
 
 namespace OneSignalSDK.iOS {
-    public sealed partial class OneSignaliOS : OneSignal {
+    public sealed partial class OneSignaliOS : OneSignalPlatform {
         [DllImport("__Internal")] private static extern void _setConsentGiven(bool consent);
         [DllImport("__Internal")] private static extern void _setConsentRequired(bool required);
         [DllImport("__Internal")] private static extern void _setLaunchURLsInApp(bool launchInApp);

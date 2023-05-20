@@ -63,12 +63,12 @@ namespace OneSignalSDK {
         public bool IsShared = false;
 
         private void Start() {
-            OneSignal.Default.Debug.LogLevel               = LogLevel;
-            OneSignal.Default.Debug.AlertLevel             = AlertLevel;
-            OneSignal.Default.ConsentRequired              = ConsentRequired;
-            OneSignal.Default.Location.IsShared            = IsShared;
-            
-            OneSignal.Default.Initialize(AppId);
+            OneSignal.Debug.LogLevel               = LogLevel;
+            OneSignal.Debug.AlertLevel             = AlertLevel;
+            OneSignal.ConsentRequired              = ConsentRequired;
+            OneSignal.Location.IsShared            = IsShared;
+
+            OneSignal.Initialize(AppId);
         }
     }
 }

@@ -134,15 +134,15 @@ namespace OneSignalSDK.iOS.Notifications {
             EventHandler<NotificationClickEventArgs> handler = _instance.Clicked;
             if (handler != null)
             {
-                if (OneSignal.DidInitialize)
+                if (OneSignalPlatform.DidInitialize)
                     UnityMainThreadDispatch.Post(state => handler(_instance, args));
                 else {
                     void invokeOpened(string appId) {
-                        OneSignal.OnInitialize -= invokeOpened;
+                        OneSignalPlatform.OnInitialize -= invokeOpened;
                         UnityMainThreadDispatch.Post(state => handler(_instance, args));
                     }
 
-                    OneSignal.OnInitialize += invokeOpened; 
+                    OneSignalPlatform.OnInitialize += invokeOpened; 
                 }
             }
         }

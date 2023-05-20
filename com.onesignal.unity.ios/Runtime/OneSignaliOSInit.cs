@@ -34,7 +34,7 @@ namespace OneSignalSDK.iOS {
     /// </summary>
     internal static class OneSignaliOSInit {
         [RuntimeInitializeOnLoadMethod] public static void Init() {
-            if (!OneSignal.DidInitialize) 
+            if (!OneSignalPlatform.DidInitialize)
                 OneSignal.Default = new OneSignaliOS();
         }
     }
