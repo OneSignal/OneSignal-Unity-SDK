@@ -140,7 +140,7 @@ in the **App Id**, and you are immediately ready to go!
 To get started add the following code in an appropriate place such as the `Start` method of a `MonoBehaviour` early in your application's lifecycle.
 ```C#
 // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID from app.onesignal.com
-OneSignal.Default.Initialize("YOUR_ONESIGNAL_APP_ID");
+OneSignal.Initialize("YOUR_ONESIGNAL_APP_ID");
 ```
 
 You are now ready to start sending and receiving notifications and in-app messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).

@@ -45,7 +45,7 @@ using OneSignalSDK.Android.User;
 using OneSignalSDK.Android.LiveActivities;
 
 namespace OneSignalSDK.Android {
-    public sealed partial class OneSignalAndroid : OneSignal {
+    public sealed partial class OneSignalAndroid : OneSignalPlatform {
         private const string SDKPackage = "com.onesignal";
         private const string SDKClassName = "OneSignal";
         private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
