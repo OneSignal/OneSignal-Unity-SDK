@@ -100,6 +100,11 @@ namespace OneSignalSDK.Notifications {
         bool Permission { get; }
 
         /// <summary>
+        /// Whether this app can request push notification permission.
+        /// </summary>
+        bool CanRequestPermission { get; }
+
+        /// <summary>
         /// Native permission of the device
         /// </summary>
         NotificationPermission PermissionNative { get; }

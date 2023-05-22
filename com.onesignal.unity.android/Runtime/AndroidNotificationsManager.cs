@@ -51,6 +51,10 @@ namespace OneSignalSDK.Android.Notifications {
             get => _notifications.Call<bool>("getPermission");
         }
 
+        public bool CanRequestPermission {
+            get => _notifications.Call<bool>("getCanRequestPermission");
+        }
+
         public NotificationPermission PermissionNative {
             get => _notifications.Call<bool>("getPermission") ? NotificationPermission.Authorized : NotificationPermission.Denied;
         }
