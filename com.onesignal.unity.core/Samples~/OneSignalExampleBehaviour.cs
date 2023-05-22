@@ -312,6 +312,8 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      */
 
     public async void PromptForPush() {
+        _log($"Can request push notification permission: {OneSignal.Notifications.CanRequestPermission}");
+
         _log("Opening permission prompt for push notifications and awaiting result...");
 
         var result = await OneSignal.Notifications.RequestPermissionAsync(true);

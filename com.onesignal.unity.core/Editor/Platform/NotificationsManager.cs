@@ -38,6 +38,8 @@ namespace OneSignalSDK.Notifications {
 
         public bool Permission { get; }
 
+        public bool CanRequestPermission { get; }
+
         public NotificationPermission PermissionNative { get; }
 
         public Task<bool> RequestPermissionAsync(bool fallbackToSettings){

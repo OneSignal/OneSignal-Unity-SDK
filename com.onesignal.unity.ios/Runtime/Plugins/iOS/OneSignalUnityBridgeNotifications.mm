@@ -121,6 +121,10 @@ extern "C" {
         return [OneSignal.Notifications permission];
     }
 
+    bool _notificationsGetCanRequestPermission() {
+        return [OneSignal.Notifications canRequestPermission];
+    }
+
     int _notificationsGetPermissionNative() {
         return [OneSignal.Notifications permissionNative];
     }
