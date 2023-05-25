@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.0.0-beta.3]
 ### Changed
 - Updated `Notifications`, `InAppMessages`, and `User` models to have Pascal Case properties
 - Updated public API. Please see the updated [migration guide](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.3/MIGRATION_GUIDE_v3_to_v5.md) for the most up to date signatures. 
@@ -217,7 +218,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.2...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.3...HEAD
+[5.0.0-beta.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.2...5.0.0-beta.3
 [5.0.0-beta.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.1...5.0.0-beta.2
 [5.0.0-beta.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.9...5.0.0-beta.1
 [3.0.9]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.8...3.0.9
