@@ -39,6 +39,7 @@ using OneSignalSDK.iOS.Notifications.Models;
 namespace OneSignalSDK.iOS.Notifications {
     internal sealed class iOSNotificationsManager : INotificationsManager {
         [DllImport("__Internal")] private static extern bool _notificationsGetPermission();
+        [DllImport("__Internal")] private static extern bool _notificationsGetCanRequestPermission();
         [DllImport("__Internal")] private static extern int _notificationsGetPermissionNative();
         [DllImport("__Internal")] private static extern void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
         [DllImport("__Internal")] private static extern void _notificationsClearAll();
@@ -64,6 +65,10 @@ namespace OneSignalSDK.iOS.Notifications {
 
         public bool Permission {
             get => _notificationsGetPermission();
+        }
+
+        public bool CanRequestPermission {
+            get => _notificationsGetCanRequestPermission();
         }
 
         public NotificationPermission PermissionNative {
@@ -134,15 +139,15 @@ namespace OneSignalSDK.iOS.Notifications {
             EventHandler<NotificationClickEventArgs> handler = _instance.Clicked;
             if (handler != null)
             {
-                if (OneSignal.DidInitialize)
+                if (OneSignalPlatform.DidInitialize)
                     UnityMainThreadDispatch.Post(state => handler(_instance, args));
                 else {
                     void invokeOpened(string appId) {
-                        OneSignal.OnInitialize -= invokeOpened;
+                        OneSignalPlatform.OnInitialize -= invokeOpened;
                         UnityMainThreadDispatch.Post(state => handler(_instance, args));
                     }
 
-                    OneSignal.OnInitialize += invokeOpened; 
+                    OneSignalPlatform.OnInitialize += invokeOpened; 
                 }
             }
         }

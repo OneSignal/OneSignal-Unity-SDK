@@ -42,7 +42,6 @@ namespace OneSignalSDK.User {
             }
         }
 
-
         public void AddTag(string key, string value){
 
         }
