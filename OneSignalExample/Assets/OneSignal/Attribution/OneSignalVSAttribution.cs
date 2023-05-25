@@ -33,10 +33,10 @@ namespace OneSignalSDK
     internal static class AttachToInit {
         #if ONE_SIGNAL_INSTALLED
             [RuntimeInitializeOnLoadMethod] public static void Init() {
-                if (string.IsNullOrEmpty(OneSignal.AppId))
-                    OneSignal.OnInitialize += appId => VSAttribution.SendAttributionEvent("Login", "OneSignal", appId);
+                if (string.IsNullOrEmpty(OneSignalPlatform.AppId))
+                    OneSignalPlatform.OnInitialize += appId => VSAttribution.SendAttributionEvent("Login", "OneSignal", appId);
                 else
-                    VSAttribution.SendAttributionEvent("Login", "OneSignal", OneSignal.AppId);
+                    VSAttribution.SendAttributionEvent("Login", "OneSignal", OneSignalPlatform.AppId);
             }
         #endif
     }

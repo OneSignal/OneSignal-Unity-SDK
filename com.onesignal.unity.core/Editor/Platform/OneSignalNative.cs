@@ -40,7 +40,7 @@ namespace OneSignalSDK {
     /// <summary>
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>
-    internal sealed class OneSignalNative : OneSignal {
+    internal sealed class OneSignalNative : OneSignalPlatform {
         private UserManager _user = new UserManager();
         private SessionManager _session = new SessionManager();
         private NotificationsManager _notifications = new NotificationsManager();

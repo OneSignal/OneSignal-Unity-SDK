@@ -39,51 +39,70 @@ namespace OneSignalSDK {
     /// <summary>
     /// OneSignal SDK for Unity
     /// </summary>
-    public abstract partial class OneSignal {
+    public static partial class OneSignal {
         public const string Version = "5.0.0-beta.2";
-        public const string VersionHeader = "050000";
 
         /// <summary>
         /// The default static instance of the OneSignal Unity SDK
         /// </summary>
-        public static OneSignal Default {
-            get => _getDefaultInstance();
-            internal set {
-                UnityEngine.Debug.Log($"[OneSignal] OneSignal.Default set to platform SDK {value.GetType()}. Current version is {Version}");
+        public static OneSignalPlatform Default {
+            private get => _getDefaultInstance();
+            set {
+                UnityEngine.Debug.Log($"[OneSignal] OneSignal set to platform SDK {value.GetType()}. Current version is {Version}");
                 _default = value;
             }
         }
 
         /// <summary>
-        /// The user manager for accessing user-scoped management.  Initialized only after [initWithContext]
+        /// The user manager for accessing user-scoped management. Initialized only after [initWithContext]
         /// has been called, and initialized with a device-scoped user until (or if) [login] has been
         /// called.
         /// </summary>
-        public abstract IUserManager User { get; }
+        public static IUserManager User {
+            get {
+                return OneSignal.Default.User;
+            }
+        }
 
         /// <summary>
-        /// The session manager for accessing session-scoped management.  Initialized only after [initWithContext]
+        /// The session manager for accessing session-scoped management. Initialized only after [initWithContext]
         /// has been called.
         /// </summary>
-        public abstract ISessionManager Session { get; }
+        public static ISessionManager Session {
+            get {
+                return OneSignal.Default.Session;
+            }
+        }
 
         /// <summary>
         /// The notification manager for accessing device-scoped notification management. Initialized
         /// only after [initWithContext] has been called.
         /// </summary>
-        public abstract INotificationsManager Notifications{ get; }
+        public static INotificationsManager Notifications{
+            get {
+                return OneSignal.Default.Notifications;
+            }
+        }
 
         /// <summary>
         /// The notification manager for accessing device-scoped notification management. Initialized
         /// only after [initWithContext] has been called.
         /// </summary>
-        public abstract ILocationManager Location { get; }
+        public static ILocationManager Location {
+            get {
+                return OneSignal.Default.Location;
+            }
+        }
 
         /// <summary>
         /// The In-App Messaging manager for accessing device-scoped IAP management. Initialized
         /// only after [initWithContext] has been called.
         /// </summary>
-        public abstract IInAppMessagesManager InAppMessages { get; }
+        public static IInAppMessagesManager InAppMessages {
+            get {
+                return OneSignal.Default.InAppMessages;
+            }
+        }
 
         /// <summary>
         /// Access to debug the SDK in the additional information is required to diagnose any
@@ -92,7 +111,11 @@ namespace OneSignalSDK {
         /// WARNING: This should not be used in a production setting.
         /// 
         /// </summary>
-        public abstract IDebugManager Debug { get; }
+        public static IDebugManager Debug {
+            get {
+                return OneSignal.Default.Debug;
+            }
+        }
 
         /// <summary>
         /// Access to debug the SDK in the additional information is required to diagnose any
@@ -101,31 +124,45 @@ namespace OneSignalSDK {
         /// WARNING: This should not be used in a production setting.
         /// 
         /// </summary>
-        public abstract ILiveActivitiesManager LiveActivities { get; }
+        public static ILiveActivitiesManager LiveActivities {
+            get {
+                return OneSignal.Default.LiveActivities;
+            }
+        }
 
         /// <summary>
         /// Provides privacy consent. OneSignal Unity SDK will not initialize until this is true.
         /// </summary>
-        public abstract bool ConsentGiven { set; }
+        public static bool ConsentGiven {
+            set => OneSignal.Default.ConsentGiven = value;
+                // UnityEngine.Debug.Log("OneSignal.ConsentGiven"); //
+            // }
+        }
 
         /// <summary>
         /// Allows you to delay the initialization of the SDK until <see cref="ConsentGiven"/> is set to true. Must
         /// be set before <see cref="Initialize"/> is called.
         /// </summary>
-        public abstract bool ConsentRequired { set; }
+        public static bool ConsentRequired {
+            set => OneSignal.Default.ConsentRequired = value;
+        }
 
         /// <summary>
         /// Used to set if launch URLs should be opened in safari or within the application. Make sure to set before 
         /// <see cref="Initialize"/> is called.
         /// </summary>
         /// <remarks>iOS Only</remarks>
-        public abstract void SetLaunchURLsInApp(bool launchInApp);
+        public static void SetLaunchURLsInApp(bool launchInApp) {
+            OneSignal.Default.SetLaunchURLsInApp(launchInApp);
+        }
 
         /// <summary>
         /// Starts the OneSignal SDK
         /// </summary>
         /// <param name="appId">Your application id from the OneSignal dashboard</param>
-        public abstract void Initialize(string appId);
+        public static void Initialize(string appId) {
+            OneSignal.Default.Initialize(appId);
+        }
 
         /// <summary>
         /// Login to OneSignal under the user identified by the [externalId] provided. The act of
@@ -149,7 +186,9 @@ namespace OneSignalSDK {
         /// trust for the login operation.  Required when identity verification has been enabled. See
         /// [Identity Verification | OneSignal](https://documentation.onesignal.com/docs/identity-verification)
         /// </param>
-        public abstract void Login(string externalId, string jwtBearerToken = null);
+        public static void Login(string externalId, string jwtBearerToken = null) {
+            OneSignal.Default.Login(externalId, jwtBearerToken);
+        }
 
         /// <summary>
         /// Logout the user previously logged in via [login]. The [user] property now references
@@ -157,6 +196,8 @@ namespace OneSignalSDK {
         /// be retrieved, except through this device as long as the app remains installed and the app
         /// data is not cleared.
         /// </summary>
-        public abstract void Logout();
+        public static void Logout() {
+            OneSignal.Default.Logout();
+        }
     }
 }

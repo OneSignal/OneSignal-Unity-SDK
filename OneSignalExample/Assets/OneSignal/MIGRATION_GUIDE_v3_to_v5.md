@@ -31,15 +31,15 @@ OneSignal uses a built-in **alias label** called `external_id` which supports ex
 
 The OneSignal SDK has been updated to be more modular in nature.  The SDK has been split into namespaces and functionality previously in the static `OneSignal.Default` class has been moved to the appropriate namespace.  The namespaces, their containing modules, and how to access them in code are as follows:
 
-| Namespace      | C#                                 |
-| -------------- | -----------------------------------|
-| User           | `OneSignal.Default.User`           |
-| Session        | `OneSignal.Default.Session`        |
-| Notifications  | `OneSignal.Default.Notifications`  |
-| Location       | `OneSignal.Default.Location`       |
-| InAppMessages  | `OneSignal.Default.InAppMessages`  |
-| LiveActivities | `OneSignal.Default.LiveActivities` |
-| Debug          | `OneSignal.Default.Debug`          |
+| Namespace      | C#                         |
+| -------------- | ---------------------------|
+| User           | `OneSignal.User`           |
+| Session        | `OneSignal.Session`        |
+| Notifications  | `OneSignal.Notifications`  |
+| Location       | `OneSignal.Location`       |
+| InAppMessages  | `OneSignal.InAppMessages`  |
+| LiveActivities | `OneSignal.LiveActivities` |
+| Debug          | `OneSignal.Debug`          |
 
 
 
@@ -47,22 +47,22 @@ The OneSignal SDK has been updated to be more modular in nature.  The SDK has be
 
 Initialization of the OneSignal SDK, although similar to past versions, has changed.  The target OneSignal application (`appId`) is now provided as part of initialization and cannot be changed post-initialization.  A typical initialization now looks similar to below
 
-    OneSignal.Default.Initialize(ONESIGNAL_APP_ID);
+    OneSignal.Initialize(ONESIGNAL_APP_ID);
     // RequestPermissionAsync will show the native platform notification permission prompt.
     // We recommend removing the following code and instead using an In-App Message to prompt for notification permission.
-    var result = await OneSignal.Default.Notifications.RequestPermissionAsync(true);
+    var result = await OneSignal.Notifications.RequestPermissionAsync(true);
 
 If your integration is not user-centric, there is no additional startup code required.  A user is automatically created as part of the push subscription creation, both of which are only accessible from the current device and the OneSignal dashboard.
 
 If your integration is user-centric, or you want the ability to identify as the same user on multiple devices, the OneSignal SDK should be called once the user has been identified:
 
-    OneSignal.Default.Login("USER_EXTERNAL_ID");
+    OneSignal.Login("USER_EXTERNAL_ID");
 
 The `login` method will associate the device’s push subscription to the user that can be identified via alias  `externalId=USER_EXTERNAL_ID`.  If a user with the provided `externalId` does not exist, one will be created.  If a user does already exist, the user will be updated to include the current device’s push subscription.  Note that a device's push subscription will always be transferred to the currently logged in user, as they represent the current owners of that push subscription.
 
 Once (or if) the user is no longer identifiable in your app (i.e. they logged out), the OneSignal SDK should be called:
 
-    OneSignal.Default.Logout();
+    OneSignal.Logout();
 
 Logging out has the affect of reverting to a “device-scoped” user, which is the new owner of the device’s push subscription.
 
@@ -74,7 +74,7 @@ In previous versions of the SDK there was a player that could have zero or one e
 **Push Subscription**
 The current device’s push subscription can be retrieved via:
 
-    var pushSubscription = OneSignal.Default.User.PushSubscription;
+    var pushSubscription = OneSignal.User.PushSubscription;
 
 
 If at any point you want the user to stop receiving push notifications on the current device (regardless of permission status) you can use the push subscription to opt out:
@@ -91,14 +91,14 @@ To resume receiving of push notifications (driving the native permission prompt 
 Email and/or SMS subscriptions can be added or removed via:
 
     // Add email subscription
-    OneSignal.Default.User.AddEmail("customer@company.com")
+    OneSignal.User.AddEmail("customer@company.com")
     // Remove previously added email subscription
-    OneSignal.Default.User.RemoveEmail("customer@company.com")
+    OneSignal.User.RemoveEmail("customer@company.com")
     
     // Add SMS subscription
-    OneSignal.Default.User.AddSms("+15558675309")
+    OneSignal.User.AddSms("+15558675309")
     // Remove previously added SMS subscription
-    OneSignal.Default.User.RemoveSms("+15558675309")
+    OneSignal.User.RemoveSms("+15558675309")
 
 
 
@@ -107,7 +107,7 @@ Email and/or SMS subscriptions can be added or removed via:
 Below is a comprehensive reference to the v5.0.0 OneSignal SDK.
 
 **OneSignal**
-The SDK is still accessible via a `OneSignal.Default` static class, it provides access to higher level functionality and is a gateway to each subspace of the SDK.
+The SDK is still accessible via a `OneSignal` static class, it provides access to higher level functionality and is a gateway to each subspace of the SDK.
 
 | **C#**                                                          | **Description**                                                                                                                                                                                                                                                                                                     |
 | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -120,7 +120,7 @@ The SDK is still accessible via a `OneSignal.Default` static class, it provides 
 
 
 **User Namespace**
-The user name space is accessible via `OneSignal.Default.User` and provides access to user-scoped functionality.
+The user name space is accessible via `OneSignal.User` and provides access to user-scoped functionality.
 
 | **C#**                                                | **Description**                                                                                                                                                                                                                          |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -142,7 +142,7 @@ The user name space is accessible via `OneSignal.Default.User` and provides acce
 
 
 **Session Namespace**
-The session namespace is accessible via `OneSignal.Default.Session` and provides access to session-scoped functionality.
+The session namespace is accessible via `OneSignal.Session` and provides access to session-scoped functionality.
 
 | **C#**                                               | **Description**                                                                          |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -152,11 +152,12 @@ The session namespace is accessible via `OneSignal.Default.Session` and provides
 
 
 **Notifications Namespace**
-The notification namespace is accessible via `OneSignal.Default.Notifications` and provides access to notification-scoped functionality.
+The notification namespace is accessible via `OneSignal.Notifications` and provides access to notification-scoped functionality.
 
- | **C#**                                                                                                                                | **Description**                                                                                                                                                                                                                                                  |
-| -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **C#**                                                                                                                                                       | **Description**                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `bool Permission`                                                                                                                                            | *Whether this app has push notification permission.*                                                                                                                                                                                       |
+| `bool CanRequestPermission`                                                                                                                                  | *Whether this app can request push notification permission.*                                                                                                                                                                               |
 | `NotificationPermission PermissionNative`                                                                                                                    | *Native permission of the device. The enum NotificationPermission can be NotDetermined, Denied, Authorized, Provisional, or Ephemeral.*                                                                                                    |
 | `Task<bool> RequestPermissionAsync(bool fallbackToSettings)`                                                                                                 | *Prompt the user for permission to push notifications.  This will display the native OS prompt to request push notification permission.  If the user enables, a push subscription to this device will be automatically added to the user.* |
 | `void ClearAllNotifications()`                                                                                                                               | *Removes all OneSignal notifications.*                                                                                                                                                                                                     |
@@ -166,7 +167,7 @@ The notification namespace is accessible via `OneSignal.Default.Notifications` a
 
 
 **Location Namespace**
-The location namespace is accessible via `OneSignal.Default.Location` and provides access to location-scoped functionality.
+The location namespace is accessible via `OneSignal.Location` and provides access to location-scoped functionality.
 
 | **C#**                     | **Description**                                                                                                                                          |
 | ---------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -175,7 +176,7 @@ The location namespace is accessible via `OneSignal.Default.Location` and provid
 
 
 **InAppMessages Namespace**
-The In App Messages namespace is accessible via `OneSignal.Default.InAppMessages` and provides access to in app messages-scoped functionality.
+The In App Messages namespace is accessible via `OneSignal.InAppMessages` and provides access to in app messages-scoped functionality.
 
 | **C#**                                                                                                                             | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -190,7 +191,7 @@ The In App Messages namespace is accessible via `OneSignal.Default.InAppMessages
 
 
 **LiveActivities Namespace**
-The Live Activities namespace is accessible via `OneSignal.Default.LiveActivities` and provides access to live activities-scoped functionality.
+The Live Activities namespace is accessible via `OneSignal.LiveActivities` and provides access to live activities-scoped functionality.
 
 | **C#**                                                   | **Description**                                                                                                                                                                                                                                                                 |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -199,7 +200,7 @@ The Live Activities namespace is accessible via `OneSignal.Default.LiveActivitie
 
 
 **Debug Namespace**
-The debug namespace is accessible via `OneSignal.Default.Debug` and provides access to debug-scoped functionality.
+The debug namespace is accessible via `OneSignal.Debug` and provides access to debug-scoped functionality.
 
 | **C#**                | **Description**                                                                                    |
 | --------------------- | -------------------------------------------------------------------------------------------------- |
