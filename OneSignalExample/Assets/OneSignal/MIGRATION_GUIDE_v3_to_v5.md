@@ -27,6 +27,37 @@ OneSignal uses a built-in **alias label** called `external_id` which supports ex
 
 # Migration (v3 to v5)
 
+## Upgrading your project from 3.x.x to 5.x.x
+Follow one of the following sections based on your previous install method of the OneSignal SDK.
+
+### Unity Package Manager
+1. If you have them delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
+2. In Unity open **Window > Package Manager**
+3. From the **Package Manager** window select **Packages:** in the top left and click on **In Project**
+4. Select the OneSignal Unity SDK(s) and press the **Upgrade to 5.x.x** button (make sure to update both Android and iOS packages)
+5. Follow the [API Reference](#api-reference) guide below to fix any compilation errors with the new namespaces and updated method calls
+6. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
+
+### Unity Asset Store
+1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
+2. In Unity open **Window > Package Manager**
+3. From the **Package Manager** window select **Packages:** in the top left and click on **My Assets**
+4. Select the **OneSignal SDK** from the list and press the **Update** button.
+5. Once the update has completed click the **Import** button
+6. Navigate to **Window > OneSignal SDK Setup**
+7. Click **Run All Steps**
+8. Follow the [API Reference](#api-reference) guide below to fix any compilation errors with the new namespaces and updated method calls
+9. Navigate back to the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
+
+### Unitypackage Distributable
+1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
+2. Download the latest release from our [releases page](https://github.com/OneSignal/OneSignal-Unity-SDK/releases)
+3. In Unity navigate to **Assets > Import Package > Custom Package...** and select the newly downloaded `*.unitypackage` file
+4. Navigate to **Window > OneSignal SDK Setup**
+7. Click **Run All Steps**
+8. Follow the [API Reference](#api-reference) guide below to fix any compilation errors with the new namespaces and updated method calls
+9. Navigate back to the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
+
 ## Code Modularization
 
 The OneSignal SDK has been updated to be more modular in nature.  The SDK has been split into namespaces and functionality previously in the static `OneSignal.Default` class has been moved to the appropriate namespace.  The namespaces, their containing modules, and how to access them in code are as follows:
@@ -217,5 +248,12 @@ The debug namespace is accessible via `OneSignal.Debug` and provides access to d
     - We will be introducing JWT in follow up Beta release
 
 # Troubleshooting
-`Assets/OneSignal/Example/OneSignalExampleBehaviou.cs: error CS0246: The type or namespace name '...' cound not be found (are you missing a using directive or an assembly reference?)`
+`Assets/OneSignal/Example/OneSignalExampleBehaviou.cs: error CS0246: The type or namespace name '...' could not be found (are you missing a using directive or an assembly reference?)`
+
+`Assets/OneSignal/Attribution/OneSignalVSAttribution.cs: error CS0117: 'OneSignal' does not contain a definition for '...'`
+
 - Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
+
+- Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
+
+If you would like to regenerate the OneSignal assets, remove the OneSignal Unity SDK packages (Android, Core, iOS) from your project and import the OneSignal SDK again.
