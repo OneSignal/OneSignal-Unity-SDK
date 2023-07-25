@@ -75,11 +75,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public bool consentGiven;
 
     /// <summary>
-    /// used to set if launch URLs should be opened in safari or within the application
-    /// </summary>
-    public bool launchURLsInApp;
-
-    /// <summary>
     /// 
     /// </summary>
     public string language;
@@ -420,13 +415,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /*
      * iOS
      */
-
-    public void ToggleLaunchURLsInApp() {
-        _log($"Toggling LaunchURLsInApp to <b>{!launchURLsInApp}</b>");
-        launchURLsInApp = !launchURLsInApp;
-        // Call setLaunchURLsInApp before the Initialize call
-        OneSignal.SetLaunchURLsInApp(launchURLsInApp);
-    }
 
     public async void EnterLiveActivityAsync() {
         _log($"Entering Live Activity with id: <b>{liveActivityId}</b> and token: <b>{liveActivityToken}</b> and awaiting result...");

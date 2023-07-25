@@ -87,10 +87,6 @@ namespace OneSignalSDK {
             set => _consentRequired = value;
         }
 
-        public override void SetLaunchURLsInApp(bool launchInApp) {
-
-        }
-
         public override void Initialize(string appId) {
             if (string.IsNullOrEmpty(appId)) {
                 SDKDebug.Error("appId is null or empty");
