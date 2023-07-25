@@ -64,8 +64,4 @@ extern "C" {
     void _setConsentRequired(bool required) {
         [OneSignal setConsentRequired:required];
     }
-
-    void _setLaunchURLsInApp(bool launchInApp) {
-        [OneSignal setLaunchURLsInApp:launchInApp];
-    }
 }

@@ -111,9 +111,6 @@ namespace OneSignalSDK.Android {
             set => _sdkClass.CallStatic("setConsentRequired", value);
         }
 
-        public override void SetLaunchURLsInApp(bool launchInApp)
-            => SDKDebug.Warn("This feature is only available for iOS.");
-
         public override void Initialize(string appId) {
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
