@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Remove `SetLaunchURLsInApp`
+- Removed `SetLaunchURLsInApp`
+- Removed async from location request permission and updated method name to `RequestPermission`
 - Updated included iOS SDK to [5.0.0-beta-06](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-06)
 
 ## [5.0.0-beta.3]

@@ -135,7 +135,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// </summary>
     private void Start() {
         // Enable lines below to debug issues with OneSignal
-        OneSignal.Debug.LogLevel = LogLevel.Info;
+        OneSignal.Debug.LogLevel = LogLevel.Verbose;
         OneSignal.Debug.AlertLevel = LogLevel.Fatal;
 
         _log($"Initializing with appId <b>{appId}</b>");
@@ -396,15 +396,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * Location
      */
 
-    public async void PromptLocation() {
-        _log("Opening permission prompt for location and awaiting result...");
-
-        var result = await OneSignal.Location.RequestPermissionAsync();
-
-        if (result)
-            _log("Location permission accepeted");
-        else
-            _log("Location permission denied");
+    public void PromptLocation() {
+        _log("Opening permission prompt for location");
+        OneSignal.Location.RequestPermission();
     }
 
     public void ToggleShareLocation() {

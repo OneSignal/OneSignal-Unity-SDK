@@ -41,6 +41,6 @@ namespace OneSignalSDK.Location {
         /// <summary>
         /// Helper method to show the native prompt to ask the user for consent to share their location
         /// </summary>
-        Task<bool> RequestPermissionAsync();
+        void RequestPermission();
     }
 }

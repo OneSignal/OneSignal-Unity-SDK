@@ -41,9 +41,8 @@ namespace OneSignalSDK.iOS.Location {
             set => _locationSetIsShared(value);
         }
 
-        public Task<bool> RequestPermissionAsync() { // iOS not async yet
+        public void RequestPermission() {
             _locationRequestPermission();
-            return Task.FromResult(true);
         }
     }
 }
