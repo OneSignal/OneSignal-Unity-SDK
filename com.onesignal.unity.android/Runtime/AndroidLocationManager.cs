@@ -43,10 +43,9 @@ namespace OneSignalSDK.Android.Location {
             set => _location.Call("setShared", value);
         }
 
-        public async Task<bool> RequestPermissionAsync() {
+        public void RequestPermission() {
             var continuation = new BoolContinuation();
             _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
-            return await continuation;
         }
     }
 }
