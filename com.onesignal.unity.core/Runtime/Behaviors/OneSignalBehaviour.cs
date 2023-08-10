@@ -36,7 +36,7 @@ namespace OneSignalSDK {
     public class OneSignalBehaviour : MonoBehaviour {
         /// <summary>
         /// The unique identifier for your application from the OneSignal dashboard
-        /// https://documentation.onesignal.com/docs/accounts-and-keys#app-id
+        /// https://documentation.onesignal.com/docs/keys-and-ids#app-id
         /// </summary>
         public string AppId;
 

@@ -59,7 +59,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public string phoneNumber;
 
     /// <summary>
-    /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
+    /// set to your app id (https://documentation.onesignal.com/docs/keys-and-ids)
     /// </summary>
     public string appId;
 

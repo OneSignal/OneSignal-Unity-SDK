@@ -32,7 +32,7 @@ namespace OneSignalSDK.User.Models {
         /// <summary>
         /// Unique id of this subscription
         /// </summary>
-        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
+        /// <remarks>See https://documentation.onesignal.com/docs/subscriptions for more information</remarks>
         string Id { get; }
         
         /// <summary>
