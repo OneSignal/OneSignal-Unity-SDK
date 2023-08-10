@@ -87,10 +87,6 @@ extern "C" {
         [OneSignal.User setLanguage:TO_NSSTRING(languageCode)];
     }
 
-    /*id<OSPushSubscription> _userGetPushSubscription() {
-        return OneSignal.User.pushSubscription;
-    }*/
-
     void _userAddAlias(const char* aliasLabel, const char* aliasId) {
         [OneSignal.User addAliasWithLabel:TO_NSSTRING(aliasLabel)
                                        id:TO_NSSTRING(aliasId)];
