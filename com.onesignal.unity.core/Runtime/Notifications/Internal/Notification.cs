@@ -61,7 +61,7 @@ namespace OneSignalSDK.Notifications.Internal {
     
     /// <summary>
     /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#osnotification-class
+    /// https://documentation.onesignal.com/docs/mobile-push-notifications-guide#notification-payload-and-methods
     /// </summary>
     [Serializable] public class NotificationBase : INotificationBase {
         /// <summary>

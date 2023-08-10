@@ -28,10 +28,6 @@
 using System;
 
 namespace OneSignalSDK.Notifications.Models {
-    /// <summary>
-    /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
-    /// </summary>
     public interface INotificationClickResult {
         /// <summary>
         /// Custom id of action taken.
