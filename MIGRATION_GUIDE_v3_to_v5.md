@@ -83,6 +83,8 @@ Initialization of the OneSignal SDK, although similar to past versions, has chan
     // We recommend removing the following code and instead using an In-App Message to prompt for notification permission.
     var result = await OneSignal.Notifications.RequestPermissionAsync(true);
 
+_For iOS: Remove any usages of `setLaunchURLsInApp` as the method and functionality has been removed._
+
 If your integration is not user-centric, there is no additional startup code required.  A user is automatically created as part of the push subscription creation, both of which are only accessible from the current device and the OneSignal dashboard.
 
 If your integration is user-centric, or you want the ability to identify as the same user on multiple devices, the OneSignal SDK should be called once the user has been identified:
