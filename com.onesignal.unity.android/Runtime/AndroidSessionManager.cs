@@ -37,12 +37,12 @@ namespace OneSignalSDK.Android.Session {
         }
 
         public void AddOutcome(string name)
-            => _session.CallStatic("addOutcome", name);
+            => _session.Call("addOutcome", name);
 
         public void AddUniqueOutcome(string name)
-            => _session.CallStatic("addUniqueOutcome", name);
+            => _session.Call("addUniqueOutcome", name);
 
         public void AddOutcomeWithValue(string name, float value)
-            => _session.CallStatic("addOutcomeWithValue", name, value);
+            => _session.Call("addOutcomeWithValue", name, value);
     }
 }
