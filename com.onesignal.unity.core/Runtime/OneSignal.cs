@@ -135,8 +135,6 @@ namespace OneSignalSDK {
         /// </summary>
         public static bool ConsentGiven {
             set => OneSignal.Default.ConsentGiven = value;
-                // UnityEngine.Debug.Log("OneSignal.ConsentGiven"); //
-            // }
         }
 
         /// <summary>
