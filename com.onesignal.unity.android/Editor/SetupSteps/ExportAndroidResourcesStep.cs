@@ -50,6 +50,7 @@ namespace OneSignalSDK {
 
             var packagePaths = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
+            packagePaths = packagePaths.Where(file => !file.EndsWith(".meta"));
 
             var exportPaths = Directory.GetFiles(_pluginExportPath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));

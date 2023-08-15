@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated default OneSignal Android notificaiton icons to new logo
 ### Fixed
 - Outcome method calls on Android
+- Completion check for the Copy Android plugin to Assets setup step
 
 ## [5.0.0-beta.3]
 ### Changed
