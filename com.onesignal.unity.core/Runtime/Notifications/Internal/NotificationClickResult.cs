@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,6 @@ using System;
 using OneSignalSDK.Notifications.Models;
 
 namespace OneSignalSDK.Notifications.Internal {
-    /// <summary>
-    /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#notification-opened-event
-    /// </summary>
     [Serializable] public sealed class NotificationClickResult : INotificationClickResult {
         /// <summary>
         /// Custom id of action taken.

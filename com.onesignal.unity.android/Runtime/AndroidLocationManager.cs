@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,10 +43,9 @@ namespace OneSignalSDK.Android.Location {
             set => _location.Call("setShared", value);
         }
 
-        public async Task<bool> RequestPermissionAsync() {
+        public void RequestPermission() {
             var continuation = new BoolContinuation();
             _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
-            return await continuation;
         }
     }
 }

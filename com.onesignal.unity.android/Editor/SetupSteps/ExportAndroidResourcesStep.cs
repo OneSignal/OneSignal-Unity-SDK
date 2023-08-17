@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,7 @@ namespace OneSignalSDK {
 
             var packagePaths = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
+            packagePaths = packagePaths.Where(file => !file.EndsWith(".meta"));
 
             var exportPaths = Directory.GetFiles(_pluginExportPath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));

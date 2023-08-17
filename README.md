@@ -35,8 +35,8 @@ And via many additional platforms. [Check them all out](https://documentation.on
 - Unity 2018.4 or newer
 - iOS Builds: CocoaPods 1.11.3 or newer
 - In order to test push notifications you will need
-  - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
-  - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
+  - An Android 5 or newer device or emulator with "Google Play Store (Services)" installed
+  - An iOS 11 or newer device (iPhone, iPad, or iPod Touch)
 
 ### Push Notification Credentials
 You must generate the appropriate credentials for the platform(s) you are releasing on:

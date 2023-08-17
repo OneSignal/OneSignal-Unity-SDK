@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -135,8 +135,6 @@ namespace OneSignalSDK {
         /// </summary>
         public static bool ConsentGiven {
             set => OneSignal.Default.ConsentGiven = value;
-                // UnityEngine.Debug.Log("OneSignal.ConsentGiven"); //
-            // }
         }
 
         /// <summary>
@@ -145,15 +143,6 @@ namespace OneSignalSDK {
         /// </summary>
         public static bool ConsentRequired {
             set => OneSignal.Default.ConsentRequired = value;
-        }
-
-        /// <summary>
-        /// Used to set if launch URLs should be opened in safari or within the application. Make sure to set before 
-        /// <see cref="Initialize"/> is called.
-        /// </summary>
-        /// <remarks>iOS Only</remarks>
-        public static void SetLaunchURLsInApp(bool launchInApp) {
-            OneSignal.Default.SetLaunchURLsInApp(launchInApp);
         }
 
         /// <summary>

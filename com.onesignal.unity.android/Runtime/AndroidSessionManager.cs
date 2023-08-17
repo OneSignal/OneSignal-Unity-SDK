@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +37,12 @@ namespace OneSignalSDK.Android.Session {
         }
 
         public void AddOutcome(string name)
-            => _session.CallStatic("addOutcome", name);
+            => _session.Call("addOutcome", name);
 
         public void AddUniqueOutcome(string name)
-            => _session.CallStatic("addUniqueOutcome", name);
+            => _session.Call("addUniqueOutcome", name);
 
         public void AddOutcomeWithValue(string name, float value)
-            => _session.CallStatic("addOutcomeWithValue", name, value);
+            => _session.Call("addOutcomeWithValue", name, value);
     }
 }

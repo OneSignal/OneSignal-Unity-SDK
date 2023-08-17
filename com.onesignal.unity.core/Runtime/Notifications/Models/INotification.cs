@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ namespace OneSignalSDK.Notifications.Models {
     
     /// <summary>
     /// See full documentation at
-    /// https://documentation.onesignal.com/docs/sdk-notification-event-handlers#osnotification-class
+    /// https://documentation.onesignal.com/docs/mobile-push-notifications-guide#notification-payload-and-methods
     /// </summary>
     public interface INotificationBase {
         /// <summary>

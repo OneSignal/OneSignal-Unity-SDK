@@ -1,4 +1,4 @@
-# Unity v5.0.0-beta.3 Migration Guide
+# Unity v5.0.0 Migration Guide
 In this release, we are making a significant shift from a device-centered model to a user-centered model.  A user-centered model allows for more powerful omni-channel integrations within the OneSignal platform.
 
 This migration guide will walk you through the Unity SDK v5.0.0 changes as a result of this shift.
@@ -83,6 +83,8 @@ Initialization of the OneSignal SDK, although similar to past versions, has chan
     // We recommend removing the following code and instead using an In-App Message to prompt for notification permission.
     var result = await OneSignal.Notifications.RequestPermissionAsync(true);
 
+_For iOS: Remove any usages of `setLaunchURLsInApp` as the method and functionality has been removed._
+
 If your integration is not user-centric, there is no additional startup code required.  A user is automatically created as part of the push subscription creation, both of which are only accessible from the current device and the OneSignal dashboard.
 
 If your integration is user-centric, or you want the ability to identify as the same user on multiple devices, the OneSignal SDK should be called once the user has been identified:
@@ -147,7 +149,6 @@ The SDK is still accessible via a `OneSignal` static class, it provides access t
 | `void Initialize(string appId)`                                 | *Initialize the OneSignal SDK.  This should be called during startup of the application.*                                                                                                                                                                                                                           |
 | `void Login(string externalId, string jwtBearerToken = null)`   | *Login to OneSignal under the user identified by the [externalId] provided. The act of logging a user into the OneSignal SDK will switch the [user] context to that specific user.*<br><br>- *If the [externalId] exists the user will be retrieved and the context set from that user information. If operations have already been performed under a guest user, they* ***will not*** *be applied to the now logged in user (they will be lost).*<br>- *If the [externalId] does not exist the user will be created and the context set from the current local state. If operations have already been performed under a guest user those operations* ***will*** *be applied to the newly created user.*<br><br>***Push Notifications and In App Messaging***<br>*Logging in a new user will automatically transfer push notification and in app messaging subscriptions from the current user (if there is one) to the newly logged in user.  This is because both Push and IAM are owned by the device.* |
 | `void Logout()`                                                 | *Logout the user previously logged in via [login]. The [user] property now references a new device-scoped user. A device-scoped user has no user identity that can later be retrieved, except through this device as long as the app remains installed and the app data is not cleared.*                            |
-| `void SetLaunchURLsInApp(bool launchInApp)`                     | ***Note:*** *This method is for iOS only<br>This method can be used to set if launch URLs should be opened in Safari or within the application. Set to true to launch all notifications with a URL in the app instead of the default web browser. Make sure to call SetLaunchURLsInApp before the initialize call.* |
 
 
 **User Namespace**
@@ -203,7 +204,7 @@ The location namespace is accessible via `OneSignal.Location` and provides acces
 | **C#**                     | **Description**                                                                                                                                          |
 | ---------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bool IsShared`            | *Whether location is currently shared with OneSignal.*                                                                                                   |
-| `Task<bool> RequestPermissionAsync()` | *Use this method to manually prompt the user for location permissions. This allows for geotagging so you send notifications to users based on location.* |
+| `void RequestPermission()` | *Use this method to manually prompt the user for location permissions. This allows for geotagging so you send notifications to users based on location.* |
 
 
 **InAppMessages Namespace**
@@ -240,12 +241,13 @@ The debug namespace is accessible via `OneSignal.Debug` and provides access to d
 
 
 # Limitations 
-- Recommend using only in development and staging environments for Beta releases.
-- Outcomes will be available in a future release
+- Changing app IDs is not supported.
+- Any User namespace calls must be invoked after initialization. Example: OneSignal.User.AddTag("tag", "2")
+- In the SDK, the user state is only refreshed from the server when a new session is started (cold start or backgrounded for over 30 seconds) or when the user is logged in. This is by design.
 
 # Known issues
 - Identity Verification
-    - We will be introducing JWT in follow up Beta release
+    - We will be introducing JWT in a follow up release
 
 # Troubleshooting
 
