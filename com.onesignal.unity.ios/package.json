@@ -1,11 +1,11 @@
 {
   "name": "com.onesignal.unity.ios",
   "displayName": "OneSignal Unity SDK - iOS",
-  "version": "5.0.0-beta.3",
+  "version": "5.0.0",
   "unity": "2018.4",
   "description": "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.",
   "dependencies": {
-    "com.onesignal.unity.core": "5.0.0-beta.3"
+    "com.onesignal.unity.core": "5.0.0"
   },
   "keywords": [
     "push-notifications",
