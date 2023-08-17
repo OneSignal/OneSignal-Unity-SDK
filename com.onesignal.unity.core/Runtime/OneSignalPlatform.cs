@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -110,13 +110,6 @@ namespace OneSignalSDK {
         /// be set before <see cref="Initialize"/> is called.
         /// </summary>
         public abstract bool ConsentRequired { set; }
-
-        /// <summary>
-        /// Used to set if launch URLs should be opened in safari or within the application. Make sure to set before 
-        /// <see cref="Initialize"/> is called.
-        /// </summary>
-        /// <remarks>iOS Only</remarks>
-        public abstract void SetLaunchURLsInApp(bool launchInApp);
 
         /// <summary>
         /// Starts the OneSignal SDK

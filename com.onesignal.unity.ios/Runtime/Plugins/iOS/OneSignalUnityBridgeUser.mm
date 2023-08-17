@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -86,10 +86,6 @@ extern "C" {
     void _userSetLanguage(const char* languageCode) {
         [OneSignal.User setLanguage:TO_NSSTRING(languageCode)];
     }
-
-    /*id<OSPushSubscription> _userGetPushSubscription() {
-        return OneSignal.User.pushSubscription;
-    }*/
 
     void _userAddAlias(const char* aliasLabel, const char* aliasId) {
         [OneSignal.User addAliasWithLabel:TO_NSSTRING(aliasLabel)

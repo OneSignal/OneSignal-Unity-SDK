@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ namespace OneSignalSDK.User.Models {
         /// <summary>
         /// Unique id of this subscription
         /// </summary>
-        /// <remarks>See https://documentation.onesignal.com/docs/users#player-id for more information</remarks>
+        /// <remarks>See https://documentation.onesignal.com/docs/subscriptions for more information</remarks>
         string Id { get; }
         
         /// <summary>

@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Removed `SetLaunchURLsInApp`
+- Removed async from location request permission and updated method name to `RequestPermission`
+- Updated included iOS SDK to [5.0.1](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.1)
+- Updated included Android SDK to [5.0.0](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0)
+- Updated default OneSignal Android notificaiton icons to new logo
+### Fixed
+- Outcome method calls on Android
+- Completion check for the Copy Android plugin to Assets setup step
+
 ## [5.0.0-beta.3]
 ### Changed
 - Updated `Notifications`, `InAppMessages`, and `User` models to have Pascal Case properties

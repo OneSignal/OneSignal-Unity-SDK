@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,6 @@ namespace OneSignalSDK.iOS {
     public sealed partial class OneSignaliOS : OneSignalPlatform {
         [DllImport("__Internal")] private static extern void _setConsentGiven(bool consent);
         [DllImport("__Internal")] private static extern void _setConsentRequired(bool required);
-        [DllImport("__Internal")] private static extern void _setLaunchURLsInApp(bool launchInApp);
         [DllImport("__Internal")] private static extern void _initialize(string appId);
         [DllImport("__Internal")] private static extern void _login(string externalId);
         [DllImport("__Internal")] private static extern void _loginWithJwtBearerToken(string externalId, string jwtBearerToken);
@@ -112,9 +111,6 @@ namespace OneSignalSDK.iOS {
         public override bool ConsentRequired {
             set => _setConsentRequired(value);
         }
-
-        public override void SetLaunchURLsInApp(bool launchInApp)
-            => _setLaunchURLsInApp(launchInApp);
 
         public override void Initialize(string appId) {
             _initialize(appId);

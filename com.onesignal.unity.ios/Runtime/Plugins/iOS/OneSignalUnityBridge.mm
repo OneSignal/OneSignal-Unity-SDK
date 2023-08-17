@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,9 +63,5 @@ extern "C" {
 
     void _setConsentRequired(bool required) {
         [OneSignal setConsentRequired:required];
-    }
-
-    void _setLaunchURLsInApp(bool launchInApp) {
-        [OneSignal setLaunchURLsInApp:launchInApp];
     }
 }

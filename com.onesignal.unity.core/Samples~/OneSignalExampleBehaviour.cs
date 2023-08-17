@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public string phoneNumber;
 
     /// <summary>
-    /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
+    /// set to your app id (https://documentation.onesignal.com/docs/keys-and-ids)
     /// </summary>
     public string appId;
 
@@ -73,11 +73,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// 
     /// </summary>
     public bool consentGiven;
-
-    /// <summary>
-    /// used to set if launch URLs should be opened in safari or within the application
-    /// </summary>
-    public bool launchURLsInApp;
 
     /// <summary>
     /// 
@@ -401,15 +396,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * Location
      */
 
-    public async void PromptLocation() {
-        _log("Opening permission prompt for location and awaiting result...");
-
-        var result = await OneSignal.Location.RequestPermissionAsync();
-
-        if (result)
-            _log("Location permission accepeted");
-        else
-            _log("Location permission denied");
+    public void PromptLocation() {
+        _log("Opening permission prompt for location");
+        OneSignal.Location.RequestPermission();
     }
 
     public void ToggleShareLocation() {
@@ -420,13 +409,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /*
      * iOS
      */
-
-    public void ToggleLaunchURLsInApp() {
-        _log($"Toggling LaunchURLsInApp to <b>{!launchURLsInApp}</b>");
-        launchURLsInApp = !launchURLsInApp;
-        // Call setLaunchURLsInApp before the Initialize call
-        OneSignal.SetLaunchURLsInApp(launchURLsInApp);
-    }
 
     public async void EnterLiveActivityAsync() {
         _log($"Entering Live Activity with id: <b>{liveActivityId}</b> and token: <b>{liveActivityToken}</b> and awaiting result...");

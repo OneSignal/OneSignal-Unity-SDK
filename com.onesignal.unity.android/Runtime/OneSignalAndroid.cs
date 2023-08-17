@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -110,9 +110,6 @@ namespace OneSignalSDK.Android {
         public override bool ConsentRequired {
             set => _sdkClass.CallStatic("setConsentRequired", value);
         }
-
-        public override void SetLaunchURLsInApp(bool launchInApp)
-            => SDKDebug.Warn("This feature is only available for iOS.");
 
         public override void Initialize(string appId) {
             SetOneSignalCallbacksToBackgroundThread();

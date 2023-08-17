@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,9 +41,8 @@ namespace OneSignalSDK.iOS.Location {
             set => _locationSetIsShared(value);
         }
 
-        public Task<bool> RequestPermissionAsync() { // iOS not async yet
+        public void RequestPermission() {
             _locationRequestPermission();
-            return Task.FromResult(true);
         }
     }
 }
