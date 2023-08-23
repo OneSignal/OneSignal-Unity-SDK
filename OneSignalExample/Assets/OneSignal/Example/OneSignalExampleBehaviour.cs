@@ -135,7 +135,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// </summary>
     private void Start() {
         // Enable lines below to debug issues with OneSignal
-        OneSignal.Debug.LogLevel = LogLevel.Verbose;
+        OneSignal.Debug.LogLevel = LogLevel.Info;
         OneSignal.Debug.AlertLevel = LogLevel.Fatal;
 
         _log($"Initializing with appId <b>{appId}</b>");
@@ -230,16 +230,12 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void SetLogLevel() {
         var newLevel = _nextEnum(OneSignal.Debug.LogLevel);
         _log($"Setting LogLevel to <b>{newLevel}</b>");
-        
-        // LogLevel uses the standard Unity LogType
         OneSignal.Debug.LogLevel = newLevel;
     }
 
     public void SetAlertLevel() {
         var newLevel = _nextEnum(OneSignal.Debug.AlertLevel);
         _log($"Setting AlertLevel to <b>{newLevel}</b>");
-
-        // AlertLevel uses the standard Unity LogType
         OneSignal.Debug.AlertLevel = newLevel;
     }
 
