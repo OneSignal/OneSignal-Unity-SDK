@@ -80,6 +80,7 @@ typedef void (*StateListenerDelegate)(const char* current, const char* previous)
 
 /*
  * Bridge methods
+ * We use strdup because Unity attempts to free the memory after we return the value
  */
 
 extern "C" {
@@ -156,11 +157,11 @@ extern "C" {
     }
 
     const char* _pushSubscriptionGetId() {
-        return [OneSignal.User.pushSubscription.id UTF8String];
+        return strdup([OneSignal.User.pushSubscription.id UTF8String]);
     }
 
     const char* _pushSubscriptionGetToken() {
-        return [OneSignal.User.pushSubscription.token UTF8String];
+        return strdup([OneSignal.User.pushSubscription.token UTF8String]);
     }
 
     bool _pushSubscriptionGetOptedIn() {
