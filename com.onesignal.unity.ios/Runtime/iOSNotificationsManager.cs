@@ -114,7 +114,7 @@ namespace OneSignalSDK.iOS.Notifications {
             {
                 // We use Send instead of Post because we need to *not* return to our caller until the
                 // event handlers have returned themselves. This allows a handler to call PreventDefault()
-                // which will get passed down to Android in InternalNotificationWillDisplayEventArgs.
+                // which will get passed down to iOS in InternalNotificationWillDisplayEventArgs.
                 UnityMainThreadDispatch.Send(state => handler(_instance, args));
             }
         }
