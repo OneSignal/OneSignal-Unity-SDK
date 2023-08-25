@@ -71,6 +71,8 @@ typedef void (*ClickListenerDelegate)(const char* notification, const char* resu
         [OneSignal.Notifications addPermissionObserver:self];
         [OneSignal.Notifications addForegroundLifecycleListener:self];
         [OneSignal.Notifications addClickListener:self];
+
+        _willDisplayEvents = [NSMutableDictionary new];
     }
 
     return self;
@@ -84,10 +86,10 @@ typedef void (*ClickListenerDelegate)(const char* notification, const char* resu
 
 - (void)onWillDisplayNotification:(OSNotificationWillDisplayEvent *)event {
     if (_willDisplayDelegate != nil) {
+        _willDisplayEvents[event.notification.notificationId] = event;
+
         NSString *stringNotification = [event.notification stringify];
         _willDisplayDelegate([stringNotification UTF8String]);
-
-        _willDisplayEvents[event.notification.notificationId] = event;
     }
 }
 
