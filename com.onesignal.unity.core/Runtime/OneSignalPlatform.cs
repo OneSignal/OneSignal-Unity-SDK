@@ -38,7 +38,7 @@ using OneSignalSDK.LiveActivities;
 
 namespace OneSignalSDK {
     public abstract class OneSignalPlatform {
-        public const string VersionHeader = "050001";
+        public const string VersionHeader = "050002";
 
         internal static event Action<string> OnInitialize;
 
