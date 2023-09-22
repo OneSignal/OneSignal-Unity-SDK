@@ -26,7 +26,7 @@ This causes the following problems:
      Unity project can be complex and a burden on a Unity plugin maintainer.
    * The process of resolving conflicting dependencies on platform specific
      libraries is pushed to the developer attempting to use a Unity plugin.
-     The developer trying to use you plugin is very likely to give up when
+     The developer trying to use your plugin is very likely to give up when
      faced with Android or iOS specific build errors.
    * The process of resolving conflicting Unity plugins (due to shared Unity
      plugin components) is pushed to the developer attempting to use your Unity
@@ -35,6 +35,9 @@ This causes the following problems:
      report bugs when that doesn't work and finally give up.
 
 EDM provides solutions for each of these problems.
+
+If, after reading this, you need to debug usage of EDM in a Unity project,
+consult the debugging [step-by-step guide](troubleshooting-faq.md).
 
 ## Android Dependency Management
 
