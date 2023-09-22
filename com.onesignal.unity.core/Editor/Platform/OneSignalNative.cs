@@ -92,8 +92,10 @@ namespace OneSignalSDK {
                 SDKDebug.Error("appId is null or empty");
                 return;
             }
-            
-            SDKDebug.Warn("Native SDK is placeholder. Please run on supported platform (iOS or Android).");
+
+            _init(appId);
+
+            SDKDebug.Warn("Native SDK is a placeholder. Please run on supported platform (iOS or Android).");
         }
 
         public override void Login(string externalId, string jwtBearerToken = null) {
