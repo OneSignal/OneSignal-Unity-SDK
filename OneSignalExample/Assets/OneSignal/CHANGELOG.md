@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- `InstallEdm4uStep` now imports version [1.2.177](https://github.com/googlesamples/unity-jar-resolver/releases/tag/v1.2.177) of [EDM4U](https://github.com/googlesamples/unity-jar-resolver)
 ### Fixed
 - Sending VSAttribution data from the editor
 
