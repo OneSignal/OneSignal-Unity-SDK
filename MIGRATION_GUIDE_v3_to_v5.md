@@ -251,14 +251,36 @@ The debug namespace is accessible via `OneSignal.Debug` and provides access to d
 
 # Troubleshooting
 
-If you run into the following errors :  
+```
+Assets/OneSignal/Example/OneSignalExampleBehaviou.cs: error CS0246: The type or namespace name '...' could not be found (are you missing a using directive or an assembly reference?)
+```
 
-`Assets/OneSignal/Example/OneSignalExampleBehaviou.cs: error CS0246: The type or namespace name '...' could not be found (are you missing a using directive or an assembly reference?)`
-
-`Assets/OneSignal/Attribution/OneSignalVSAttribution.cs: error CS0117: 'OneSignal' does not contain a definition for '...'`
+```
+Assets/OneSignal/Attribution/OneSignalVSAttribution.cs: error CS0117: 'OneSignal' does not contain a definition for '...'
+```
 
 1. Delete the directory at `Assets/OneSignal` and the xml file at `Assets/Plugins/Android/OneSignalConfig.plugin/AndroidManifest.xml`
-
+   - If you would like to regenerate the OneSignal assets, remove the OneSignal Unity SDK packages (Android, Core, iOS) from your project and import the OneSignal SDK again.
 2. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
-If you would like to regenerate the OneSignal assets, remove the OneSignal Unity SDK packages (Android, Core, iOS) from your project and import the OneSignal SDK again.
+```
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':unityLibrary:mergeReleaseJavaResource'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.MergeJavaResWorkAction
+ > 2 files found with path 'META-INF/kotlinx_coroutines_core.version' from inputs:
+   - /Users/.../Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/libs/org.jetbrains.kotlinx.kotlinx-coroutines-core-jvm-1.6.4.jar
+   - /Users/.../Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/libs/org.jetbrains.kotlinx.kotlinx-coroutines-core-1.6.4.jar
+```
+```
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':launcher:mergeReleaseJavaResource'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.Workers$ActionFacade
+   > More than one file was found with OS independent path 'META-INF/kotlinx_coroutines_core.version'.
+```
+
+1. Go to **Player Settings > Android Tab > Publishing Settings** and enable the following settings:
+   - Custom Main Gradle Template
+   - Custom Gradle Properties Template
+2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
