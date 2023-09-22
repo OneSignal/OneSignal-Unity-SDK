@@ -280,7 +280,7 @@ Execution failed for task ':launcher:mergeReleaseJavaResource'.
    > More than one file was found with OS independent path 'META-INF/kotlinx_coroutines_core.version'.
 ```
 
-1. Go to **Player Settings > Android Tab > Publishing Settings** and enable the following settings:
+1. Go to **Player Settings** and click the Android Tab. Under **Publishing Settings**, enable the following:
    - Custom Main Gradle Template
    - Custom Gradle Properties Template
 2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
