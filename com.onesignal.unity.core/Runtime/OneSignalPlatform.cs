@@ -51,6 +51,10 @@ namespace OneSignalSDK {
             OnInitialize?.Invoke(AppId);
         }
 
+        protected static void _init(string appId) {
+            OnInitialize?.Invoke(appId);
+        }
+
         /// <summary>
         /// The user manager for accessing user-scoped management.  Initialized only after [initWithContext]
         /// has been called, and initialized with a device-scoped user until (or if) [login] has been
