@@ -313,8 +313,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             _log("Notification permission accepeted");
         else
             _log("Notification permission denied");
-
-        _log($"Notification permission is: {OneSignal.Notifications.Permission}");
     }
 
     public void ClearPush() {
@@ -325,10 +323,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         _log("Notifications cleared");
     }
 
-    public void GetPermissionNative() {
+    public void GetNotificationsPermission() {
+        var permission = OneSignal.Notifications.Permission;
+
+        _log($"Notifications permission is: <b>{permission}</b>");
+    }
+
+    public void GetNotificationsPermissionNative() {
         var permissionNative = OneSignal.Notifications.PermissionNative;
 
-        _log($"Permission Native is: <b>{permissionNative.ToString()}</b>");
+        _log($"Notifications native permission is: <b>{permissionNative.ToString()}</b>");
     }
 
     /*

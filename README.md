@@ -120,6 +120,13 @@ After building in Unity and exporting the XCode project follow these steps:
 6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
 
 ### Android
+In the Unity editor:
+
+1. Go to **Player Settings** and click the Android Tab. Under **Publishing Settings**, enable the following:
+   - Custom Main Gradle Template
+   - Custom Gradle Properties Template
+2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
+
 Most of the Android setup was already handled during installation!
 
 The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.plugin` 
