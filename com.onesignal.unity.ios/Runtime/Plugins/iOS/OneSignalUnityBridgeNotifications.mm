@@ -70,7 +70,6 @@ typedef void (*ClickListenerDelegate)(const char* notification, const char* resu
     if (self = [super init]) {
         [OneSignal.Notifications addPermissionObserver:self];
         [OneSignal.Notifications addForegroundLifecycleListener:self];
-        [OneSignal.Notifications addClickListener:self];
 
         _willDisplayEvents = [NSMutableDictionary new];
     }
@@ -161,5 +160,7 @@ extern "C" {
 
     void _notificationsSetClickCallback(ClickListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setClickDelegate:callback];
+        
+        [OneSignal.Notifications addClickListener:[OneSignalNotificationsObserver sharedNotificationsObserver]];
     }
 }
