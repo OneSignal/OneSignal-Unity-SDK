@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated included iOS SDK to [5.0.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.2)
 ### Fixed
 - Sending VSAttribution data from the editor
+- iOS notifications clicked event to fire when app is opened from clicking on a notification
 
 ## [5.0.2]
 ### Fixed
