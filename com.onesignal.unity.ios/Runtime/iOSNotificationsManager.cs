@@ -48,7 +48,7 @@ namespace OneSignalSDK.iOS.Notifications {
         [DllImport("__Internal")] private static extern void _notificationsWillDisplayEventPreventDefault(string notificationId);
         [DllImport("__Internal")] private static extern void _notificationsSetClickCallback(ClickListenerDelegate callback);
 
-        public delegate void PermissionListenerDelegate(bool permission);
+        private delegate void PermissionListenerDelegate(bool permission);
         private delegate void WillDisplayListenerDelegate(string notification);
         private delegate void ClickListenerDelegate(string notification, string resultActionId, string resultUrl);
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
