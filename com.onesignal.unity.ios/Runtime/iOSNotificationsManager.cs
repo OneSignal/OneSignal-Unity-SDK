@@ -48,14 +48,29 @@ namespace OneSignalSDK.iOS.Notifications {
         [DllImport("__Internal")] private static extern void _notificationsWillDisplayEventPreventDefault(string notificationId);
         [DllImport("__Internal")] private static extern void _notificationsSetClickCallback(ClickListenerDelegate callback);
 
-        public delegate void PermissionListenerDelegate(bool permission);
+        private delegate void PermissionListenerDelegate(bool permission);
         private delegate void WillDisplayListenerDelegate(string notification);
         private delegate void ClickListenerDelegate(string notification, string resultActionId, string resultUrl);
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
         public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
-        public event EventHandler<NotificationClickEventArgs> Clicked;
         public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
+
+        // Only set the native listner once
+        private bool _clickNativeListenerSet;
+
+        private EventHandler<NotificationClickEventArgs> _clicked;
+        public event EventHandler<NotificationClickEventArgs> Clicked {
+            add {
+                _clicked += value;
+
+                if (!_clickNativeListenerSet) {
+                    _clickNativeListenerSet = true;
+                    _notificationsSetClickCallback(_onClicked);
+                }
+            }
+            remove { _clicked -= value; }
+        }
 
         private static iOSNotificationsManager _instance;
 
@@ -88,7 +103,6 @@ namespace OneSignalSDK.iOS.Notifications {
         public void Initialize() {
             _notificationsAddPermissionObserver(_onPermissionStateChanged);
             _notificationsSetForegroundWillDisplayCallback(_onForegroundWillDisplay);
-            _notificationsSetClickCallback(_onClicked);
         }
 
         [AOT.MonoPInvokeCallback(typeof(PermissionListenerDelegate))]
@@ -133,23 +147,10 @@ namespace OneSignalSDK.iOS.Notifications {
             _fillNotifFromObj(ref notif, Json.Deserialize(notification));
 
             var result = new NotificationClickResult(resultActionId, resultUrl);
-
             NotificationClickEventArgs args = new NotificationClickEventArgs(notif, result);
 
-            EventHandler<NotificationClickEventArgs> handler = _instance.Clicked;
-            if (handler != null)
-            {
-                if (OneSignalPlatform.DidInitialize)
-                    UnityMainThreadDispatch.Post(state => handler(_instance, args));
-                else {
-                    void invokeOpened(string appId) {
-                        OneSignalPlatform.OnInitialize -= invokeOpened;
-                        UnityMainThreadDispatch.Post(state => handler(_instance, args));
-                    }
-
-                    OneSignalPlatform.OnInitialize += invokeOpened; 
-                }
-            }
+            EventHandler<NotificationClickEventArgs> handler = _instance._clicked;
+            UnityMainThreadDispatch.Post(state => handler(_instance, args));
         }
 
         private static void _fillNotifFromObj(ref iOSDisplayableNotification notif, object notifObj) {
