@@ -56,14 +56,16 @@ namespace OneSignalSDK.iOS.Notifications {
         public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
         public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
 
-        private bool _clickDelegate;
+        // Only set the native listner once
+        private bool _clickNativeListenerSet;
+
         private EventHandler<NotificationClickEventArgs> _clicked;
         public event EventHandler<NotificationClickEventArgs> Clicked {
             add {
-                // only add one click listener
-                if (!_clickDelegate) {
-                    _clicked += value;
-                    _clickDelegate = true;
+                _clicked += value;
+
+                if (!_clickNativeListenerSet) {
+                    _clickNativeListenerSet = true;
                     _notificationsSetClickCallback(_onClicked);
                 }
             }
