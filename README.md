@@ -122,12 +122,11 @@ After building in Unity and exporting the XCode project follow these steps:
 7. Make sure all **Targets** have **Enable Bitcode** set to **No** in **Build Settings**.
 
 ### Android
-In the Unity editor:
-
-1. Go to **Player Settings** and click the Android Tab. Under **Publishing Settings**, enable the following:
+1. From the Unity Editor, navigate to **Edit > Project Settings > Player** and click the **Android** settings tab.
+2. Expand **Publishing Settings** and enable:
    - Custom Main Gradle Template
    - Custom Gradle Properties Template
-2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
+3. Navigate to **Assets > External Dependency Manager > Android Resolver > Force Resolve** and resolve your Android dependencies.
 
 Most of the Android setup was already handled during installation!
 
