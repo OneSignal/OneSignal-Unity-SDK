@@ -115,7 +115,7 @@ namespace OneSignalSDK {
         private static readonly string _manifestPackagePath = Path.Combine(_pluginPackagePath, "AndroidManifest.xml");
         private static readonly string _manifestExportPath = Path.Combine(_pluginExportPath, "AndroidManifest.xml");
 
-        // OneSignalConfig name used in the 3.x version of the SDK
+        // Old OneSignalConfig name used from 3.x.x to 5.0.2
         private const string _pluginNamev3 = "OneSignalConfig.plugin";
         private static readonly string _pluginV3ExportPath = Path.Combine(_androidPluginsPath, _pluginNamev3);
         private static readonly string _projectPropertiesV3ExportPath = Path.Combine(_pluginV3ExportPath, "project.properties");
