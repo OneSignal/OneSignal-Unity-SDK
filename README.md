@@ -119,6 +119,8 @@ After building in Unity and exporting the XCode project follow these steps:
 
 6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
 
+7. Make sure all **Targets** have **Enable Bitcode** set to **No** in **Build Settings**.
+
 ### Android
 In the Unity editor:
 
