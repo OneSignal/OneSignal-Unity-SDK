@@ -66,7 +66,7 @@ namespace OneSignalSDK {
         }
 
         protected override void _runStep() {
-            migratePluginToAndroidlib();
+            MigratePluginToAndroidlib();
 
             var files = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
 
@@ -93,7 +93,7 @@ namespace OneSignalSDK {
             AssetDatabase.Refresh();
         }
 
-        private void migratePluginToAndroidlib() {
+        private void MigratePluginToAndroidlib() {
             if (Directory.Exists(_pluginV3ExportPath)) {
                 if (!Directory.Exists(_pluginExportPath)) {
                     try
