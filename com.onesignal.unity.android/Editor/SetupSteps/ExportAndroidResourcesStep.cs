@@ -66,19 +66,7 @@ namespace OneSignalSDK {
         }
 
         protected override void _runStep() {
-            if (Directory.Exists(_pluginV3ExportPath)) {
-                if (!Directory.Exists(_pluginExportPath)) {
-                    // Remove project.properties
-                    if (File.Exists(_projectPropertiesV3ExportPath)) {
-                        AssetDatabase.DeleteAsset(_projectPropertiesV3ExportPath);
-                    }
-
-                    // Rename OneSignalConfig.plugin to OneSignalConfig.androidlib
-                    AssetDatabase.MoveAsset(_pluginV3ExportPath, _pluginExportPath);
-                } else {
-                    AssetDatabase.DeleteAsset(_pluginV3ExportPath);
-                }
-            }
+            migratePluginToAndroidlib();
 
             var files = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
 
@@ -103,6 +91,22 @@ namespace OneSignalSDK {
             }
 
             AssetDatabase.Refresh();
+        }
+
+        private void migratePluginToAndroidlib() {
+            if (Directory.Exists(_pluginV3ExportPath)) {
+                if (!Directory.Exists(_pluginExportPath)) {
+                    // Remove project.properties
+                    if (File.Exists(_projectPropertiesV3ExportPath)) {
+                        AssetDatabase.DeleteAsset(_projectPropertiesV3ExportPath);
+                    }
+
+                    // Rename OneSignalConfig.plugin to OneSignalConfig.androidlib
+                    AssetDatabase.MoveAsset(_pluginV3ExportPath, _pluginExportPath);
+                } else {
+                    AssetDatabase.DeleteAsset(_pluginV3ExportPath);
+                }
+            }
         }
 
         private const string _pluginName = "OneSignalConfig.androidlib";
