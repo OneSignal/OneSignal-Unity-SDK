@@ -111,6 +111,14 @@ namespace OneSignalSDK.iOS {
             // Add the service extension
             AddNotificationServiceExtension();
 
+            // Unity Tests
+            var unityTests = _project.TargetGuidByName(PBXProject.GetUnityTestTargetName());
+            _project.SetBuildProperty(unityTests, "ENABLE_BITCODE", "NO");
+
+            // Unity Framework
+            var unityFramework = _project.GetUnityFrameworkTargetGuid();
+            _project.SetBuildProperty(unityFramework, "ENABLE_BITCODE", "NO");
+
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
         }
@@ -152,6 +160,8 @@ namespace OneSignalSDK.iOS {
             var targetGuid = _project.GetMainTargetGuid();
             var targetName = _project.GetMainTargetName();
 
+            _project.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
+
             var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
             var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, targetName);
 
@@ -191,6 +201,7 @@ namespace OneSignalSDK.iOS {
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
             _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(extensionGuid, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
+            _project.SetBuildProperty(extensionGuid, "ENABLE_BITCODE", "NO");
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
                 $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
