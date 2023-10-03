@@ -119,6 +119,13 @@ To resume receiving of push notifications (driving the native permission prompt 
 
     pushSubscription.OptIn();
 
+To observe changes to the push subscription you can add a custom method to the event:
+    
+    OneSignal.User.PushSubscription.Changed += yourOnPushSubscriptionChangedMethod;
+
+    public void yourOnPushSubscriptionChangedMethod(object sender, PushSubscriptionChangedEventArgs e) {
+        ...
+    }
 
 **Email/SMS Subscriptions**
 Email and/or SMS subscriptions can be added or removed via:
