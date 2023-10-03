@@ -250,7 +250,7 @@ The debug namespace is accessible via `OneSignal.Debug` and provides access to d
     - We will be introducing JWT in a follow up release
 
 # Troubleshooting
-
+## Android
 ```
 Assets/OneSignal/Example/OneSignalExampleBehaviou.cs: error CS0246: The type or namespace name '...' could not be found (are you missing a using directive or an assembly reference?)
 ```
@@ -284,3 +284,12 @@ Execution failed for task ':launcher:mergeReleaseJavaResource'.
    - Custom Main Gradle Template
    - Custom Gradle Properties Template
 2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
+
+## iOS
+**Build error**
+```
+'/Users/.../Library/Developer/Xcode/DerivedData/Unity-iPhone-.../Build/Products/ReleaseForRunning-iphoneos/XCFrameworkIntermediates/OneSignalXCFramework/OneSignalCore/OneSignalCore.framework/OneSignalCore' does not contain bitcode. You must rebuild it with bitcode enabled (Xcode setting ENABLE_BITCODE), obtain an updated library from the vendor, or disable bitcode for this target. file '/Users/.../Library/Developer/Xcode/DerivedData/Unity-iPhone-.../Build/Products/ReleaseForRunning-iphoneos/XCFrameworkIntermediates/OneSignalXCFramework/OneSignalCore/OneSignalCore.framework/OneSignalCore' for architecture arm64
+```
+
+1. For each target, select the **Build Settings** tab
+2. Set **Enable Bitcode** to **No**
