@@ -49,15 +49,15 @@ have already been done for you.
 
 ### Step 2 - Add icons to project
 If you have already run our SDK setup wizard (found in the Unity Editor via the `Window > OneSignal` menu) then you will already have the 
-`OneSignalConfig.plugin` imported into your project at the path `/Assets/Plugins/Android/OneSignalConfig.plugin`. If this is not the case 
+`OneSignalConfig.androidlib` imported into your project at the path `/Assets/Plugins/Android/OneSignalConfig.androidlib`. If this is not the case 
 please run the step **"Copy Android plugin to Assets"** to do so. Once this is ready you can simply copy the files you made in step 1 to 
 the correct paths:
 
 | Path                                                                                                       | Density (dp) | Size (px) |
 |------------------------------------------------------------------------------------------------------------|--------------|-----------|
-| Assets/Plugins/Android/OneSignalConfig.plugin/res/**drawable-mdpi**/ic_stat_onesignal_default.png          | MDPI         | 24x24     |
-| Assets/Plugins/Android/OneSignalConfig.plugin/res/**drawable-hdpi**/ic_stat_onesignal_default.png          | HDPI         | 36x36     |
-| Assets/Plugins/Android/OneSignalConfig.plugin/res/**drawable-xhdpi**/ic_stat_onesignal_default.png         | XHDPI        | 48x48     |
-| Assets/Plugins/Android/OneSignalConfig.plugin/res/**drawable-xxhdpi**/ic_stat_onesignal_default.png        | XXHDPI       | 72x72     |
-| Assets/Plugins/Android/OneSignalConfig.plugin/res/**drawable-xxxhdpi**/ic_stat_onesignal_default.png       | XXXHDPI      | 96x96     |
-| Assets/Plugins/Android/OneSignalConfig.plugin/res/**drawable-xxxhdpi**/ic_onesignal_large_icon_default.png | XXXHDPI      | 256x256   |
+| Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res/**drawable-mdpi**/ic_stat_onesignal_default.png          | MDPI         | 24x24     |
+| Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res/**drawable-hdpi**/ic_stat_onesignal_default.png          | HDPI         | 36x36     |
+| Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res/**drawable-xhdpi**/ic_stat_onesignal_default.png         | XHDPI        | 48x48     |
+| Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res/**drawable-xxhdpi**/ic_stat_onesignal_default.png        | XXHDPI       | 72x72     |
+| Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res/**drawable-xxxhdpi**/ic_stat_onesignal_default.png       | XXXHDPI      | 96x96     |
+| Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res/**drawable-xxxhdpi**/ic_onesignal_large_icon_default.png | XXXHDPI      | 256x256   |
