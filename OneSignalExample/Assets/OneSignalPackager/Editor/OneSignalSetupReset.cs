@@ -40,9 +40,9 @@ namespace OneSignalSDK {
         public static void ResetAllSteps() {
             /*
              * ExportAndroidResourcesStep
-             * deletes the OneSignalConfig.plugin directory
+             * deletes the OneSignalConfig.androidlib directory
              */
-            AssetDatabase.DeleteAsset(Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.plugin"));
+            AssetDatabase.DeleteAsset(Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.androidlib"));
 
             /*
              * InstallEdm4UStep
