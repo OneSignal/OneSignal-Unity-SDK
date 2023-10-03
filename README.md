@@ -117,7 +117,9 @@ After building in Unity and exporting the XCode project follow these steps:
 
     ![extension signing and groups](Documentation/ios_extension_sign_and_groups.png)
 
-6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
+   **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
+
+6. Make sure all **Targets** have **Enable Bitcode** set to **No** in **Build Settings**.
 
 ### Android
 In the Unity editor:
