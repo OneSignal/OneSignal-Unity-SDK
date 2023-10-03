@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Sending VSAttribution data from the editor
 - iOS notifications clicked event firing if the app was cold started from clicking a notification
-- Android builds with minify enabled
+- ClassNotFoundException: com.onesignal.OneSignal for Android builds with minify enabled
 
 ## [5.0.2]
 ### Fixed
