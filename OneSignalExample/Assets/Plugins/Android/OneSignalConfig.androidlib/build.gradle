@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+
+android {
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+   defaultConfig {
+       consumerProguardFiles "consumer-proguard.pro"
+   }
+
+    compileSdkVersion 31
+
+    lintOptions {
+        abortOnError false
+    }
+}
