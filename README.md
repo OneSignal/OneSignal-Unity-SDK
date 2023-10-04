@@ -63,7 +63,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
     ![onesignal unity sdk in my assets](Documentation/asset_listing.png)
 
 4. A prompt to import all of the files of the OneSignal Unity SDK will appear. Click **Import** to continue and compile the scripts into your project.
-5. Navigate to **Window > OneSignal** (or follow the popup if upgrading) in the Unity Editor which will bring up a window with some final steps which need 
+5. Navigate to **Window > OneSignal SDK Setup** (or follow the popup if upgrading) in the Unity Editor which will bring up a window with some final steps which need 
    to be completed in order to finalize the installation. The most important of these steps is **Import OneSignal packages**.
    
     > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
@@ -90,7 +90,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
    and click **Save**.
 3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu. You will see all of the OneSignal Unity SDK packages available
    on which you can then click **Install** for the platforms you would like to include. Dependencies will be added automatically.
-4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed
+4. Once the packages have finished importing you will find a new menu under **Window > OneSignal SDK Setup**. Open it and you will find some final steps which need to be completed
    in order to finalize the installation.
 
     > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
@@ -122,12 +122,11 @@ After building in Unity and exporting the XCode project follow these steps:
 7. Make sure all **Targets** have **Enable Bitcode** set to **No** in **Build Settings**.
 
 ### Android
-In the Unity editor:
-
-1. Go to **Player Settings** and click the Android Tab. Under **Publishing Settings**, enable the following:
+1. From the Unity Editor, navigate to **Edit > Project Settings > Player** and click the **Android** settings tab.
+2. Expand **Publishing Settings** and enable:
    - Custom Main Gradle Template
    - Custom Gradle Properties Template
-2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
+3. Navigate to **Assets > External Dependency Manager > Android Resolver > Force Resolve** and resolve your Android dependencies.
 
 Most of the Android setup was already handled during installation!
 

@@ -119,6 +119,13 @@ To resume receiving of push notifications (driving the native permission prompt 
 
     pushSubscription.OptIn();
 
+To observe changes to the push subscription you can add a custom method to the event:
+    
+    OneSignal.User.PushSubscription.Changed += yourOnPushSubscriptionChangedMethod;
+
+    public void yourOnPushSubscriptionChangedMethod(object sender, PushSubscriptionChangedEventArgs e) {
+        ...
+    }
 
 **Email/SMS Subscriptions**
 Email and/or SMS subscriptions can be added or removed via:
@@ -151,7 +158,7 @@ The SDK is still accessible via a `OneSignal` static class, it provides access t
 | `void Logout()`                                                 | *Logout the user previously logged in via [login]. The [user] property now references a new device-scoped user. A device-scoped user has no user identity that can later be retrieved, except through this device as long as the app remains installed and the app data is not cleared.*                            |
 
 
-**User Namespace**
+### User Namespace
 The user name space is accessible via `OneSignal.User` and provides access to user-scoped functionality.
 
 | **C#**                                                | **Description**                                                                                                                                                                                                                          |
@@ -173,7 +180,7 @@ The user name space is accessible via `OneSignal.User` and provides access to us
 | `void RemoveTags(params string[] keys)`               | *Remove multiple tags from the current user.*                                                                                                                                                                                            |
 
 
-**Session Namespace**
+### Session Namespace
 The session namespace is accessible via `OneSignal.Session` and provides access to session-scoped functionality.
 
 | **C#**                                               | **Description**                                                                          |
@@ -183,7 +190,7 @@ The session namespace is accessible via `OneSignal.Session` and provides access 
 | `void AddOutcomeWithValue(string name, float value)` | *Add an outcome with the provided name and value, captured against the current session.* |
 
 
-**Notifications Namespace**
+### Notifications Namespace
 The notification namespace is accessible via `OneSignal.Notifications` and provides access to notification-scoped functionality.
 
 | **C#**                                                                                                                                                       | **Description**                                                                                                                                                                                                                            |
@@ -198,7 +205,7 @@ The notification namespace is accessible via `OneSignal.Notifications` and provi
 | `event EventHandler<NotificationClickEventArgs> Clicked` <br><br> `NotificationClickEventArgs { INotification Notification, INotificationClickResult Result }` | *Set an event that will fire whenever a notification is clicked on by the user.*                                                                                                                                                         |
 
 
-**Location Namespace**
+### Location Namespace
 The location namespace is accessible via `OneSignal.Location` and provides access to location-scoped functionality.
 
 | **C#**                     | **Description**                                                                                                                                          |
@@ -207,7 +214,7 @@ The location namespace is accessible via `OneSignal.Location` and provides acces
 | `void RequestPermission()` | *Use this method to manually prompt the user for location permissions. This allows for geotagging so you send notifications to users based on location.* |
 
 
-**InAppMessages Namespace**
+### InAppMessages Namespace
 The In App Messages namespace is accessible via `OneSignal.InAppMessages` and provides access to in app messages-scoped functionality.
 
 | **C#**                                                                                                                             | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -222,7 +229,7 @@ The In App Messages namespace is accessible via `OneSignal.InAppMessages` and pr
 | `event EventHandler<InAppMessageClickEventArgs> Clicked` <br><br> `InAppMessageClickEventArgs { IInAppMessage Message, IInAppMessageClickResult Result }` | *Set the IAM click events.*                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 
-**LiveActivities Namespace**
+### LiveActivities Namespace
 The Live Activities namespace is accessible via `OneSignal.LiveActivities` and provides access to live activities-scoped functionality.
 
 | **C#**                                                   | **Description**                                                                                                                                                                                                                                                                 |
@@ -231,7 +238,7 @@ The Live Activities namespace is accessible via `OneSignal.LiveActivities` and p
 | `Task<bool> ExitAsync(string activityId)`                | ***Note:*** *This method is for iOS only<br>Exiting a Live activity deletes the association between a customer defined activityId with a Live Activity temporary push token on OneSignal's server.*                                                                             |
 
 
-**Debug Namespace**
+### Debug Namespace
 The debug namespace is accessible via `OneSignal.Debug` and provides access to debug-scoped functionality.
 
 | **C#**                | **Description**                                                                                    |
@@ -280,10 +287,11 @@ Execution failed for task ':launcher:mergeReleaseJavaResource'.
    > More than one file was found with OS independent path 'META-INF/kotlinx_coroutines_core.version'.
 ```
 
-1. Go to **Player Settings** and click the Android Tab. Under **Publishing Settings**, enable the following:
+1. From the Unity Editor, navigate to **Edit > Project Settings > Player** and click the **Android** settings tab.
+2. Expand **Publishing Settings** and enable:
    - Custom Main Gradle Template
    - Custom Gradle Properties Template
-2. Resolve Android dependencies with EDM4U at **Assets > External Dependency Manager > Android Resolver > Force Resolve**
+3. Navigate to **Assets > External Dependency Manager > Android Resolver > Force Resolve** and resolve your Android dependencies.
 
 ## iOS
 **Build error**
