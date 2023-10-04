@@ -111,13 +111,7 @@ namespace OneSignalSDK.iOS {
             // Add the service extension
             AddNotificationServiceExtension();
 
-            // Unity Tests
-            var unityTests = _project.TargetGuidByName(PBXProject.GetUnityTestTargetName());
-            _project.SetBuildProperty(unityTests, "ENABLE_BITCODE", "NO");
-
-            // Unity Framework
-            var unityFramework = _project.GetUnityFrameworkTargetGuid();
-            _project.SetBuildProperty(unityFramework, "ENABLE_BITCODE", "NO");
+            DisableBitcode();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
@@ -159,8 +153,6 @@ namespace OneSignalSDK.iOS {
         private void AddProjectCapabilities() {
             var targetGuid = _project.GetMainTargetGuid();
             var targetName = _project.GetMainTargetName();
-
-            _project.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
 
             var entitlementsPath = GetEntitlementsPath(targetGuid, targetName);
             var projCapability = new ProjectCapabilityManager(_projectPath, entitlementsPath, targetName);
@@ -292,6 +284,20 @@ namespace OneSignalSDK.iOS {
             }
             
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void DisableBitcode() {
+            // Main
+            var targetGuid = _project.GetMainTargetGuid();
+            _project.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
+
+            // Unity Tests
+            var unityTests = _project.TargetGuidByName(PBXProject.GetUnityTestTargetName());
+            _project.SetBuildProperty(unityTests, "ENABLE_BITCODE", "NO");
+
+            // Unity Framework
+            var unityFramework = _project.GetUnityFrameworkTargetGuid();
+            _project.SetBuildProperty(unityFramework, "ENABLE_BITCODE", "NO");
         }
     }
 }
