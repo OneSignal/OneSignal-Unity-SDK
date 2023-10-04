@@ -111,6 +111,8 @@ namespace OneSignalSDK.iOS {
             // Add the service extension
             AddNotificationServiceExtension();
 
+            DisableBitcode();
+
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
         }
@@ -191,6 +193,7 @@ namespace OneSignalSDK.iOS {
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
             _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(extensionGuid, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
+            _project.SetBuildProperty(extensionGuid, "ENABLE_BITCODE", "NO");
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
                 $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
@@ -281,6 +284,20 @@ namespace OneSignalSDK.iOS {
             }
             
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void DisableBitcode() {
+            // Main
+            var targetGuid = _project.GetMainTargetGuid();
+            _project.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
+
+            // Unity Tests
+            var unityTests = _project.TargetGuidByName(PBXProject.GetUnityTestTargetName());
+            _project.SetBuildProperty(unityTests, "ENABLE_BITCODE", "NO");
+
+            // Unity Framework
+            var unityFramework = _project.GetUnityFrameworkTargetGuid();
+            _project.SetBuildProperty(unityFramework, "ENABLE_BITCODE", "NO");
         }
     }
 }

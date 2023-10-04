@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sending VSAttribution data from the editor
 - iOS notifications clicked event firing if the app was cold started from clicking a notification
 - ClassNotFoundException: com.onesignal.OneSignal for Android builds with minify enabled. You must run the "Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup**.
+- Disabled bitcode to avoid iOS build error
 
 ## [5.0.2]
 ### Fixed
