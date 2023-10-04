@@ -48,7 +48,7 @@ You must be sure the icon filenames are correct as per the above table. If you u
 have already been done for you.
 
 ### Step 2 - Add icons to project
-If you have already run our SDK setup wizard (found in the Unity Editor via the `Window > OneSignal` menu) then you will already have the 
+If you have already run our SDK setup wizard (found in the Unity Editor via the `Window > OneSignal SDK Setup` menu) then you will already have the 
 `OneSignalConfig.androidlib` imported into your project at the path `/Assets/Plugins/Android/OneSignalConfig.androidlib`. If this is not the case 
 please run the step **"Copy Android plugin to Assets"** to do so. Once this is ready you can simply copy the files you made in step 1 to 
 the correct paths:
