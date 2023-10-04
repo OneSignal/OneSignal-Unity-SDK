@@ -122,6 +122,12 @@ After building in Unity and exporting the XCode project follow these steps:
 7. Make sure all **Targets** have **Enable Bitcode** set to **No** in **Build Settings**.
 
 ### Android
+1. From the Unity Editor, navigate to **Edit > Project Settings > Player** and click the **Android** settings tab.
+2. Expand **Publishing Settings** and enable:
+   - Custom Main Gradle Template
+   - Custom Gradle Properties Template
+3. Navigate to **Assets > External Dependency Manager > Android Resolver > Force Resolve** and resolve your Android dependencies.
+
 Most of the Android setup was already handled during installation!
 
 The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.androidlib` 
