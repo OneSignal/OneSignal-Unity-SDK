@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `InstallEdm4uStep` now imports version [1.2.177](https://github.com/googlesamples/unity-jar-resolver/releases/tag/v1.2.177) of [EDM4U](https://github.com/googlesamples/unity-jar-resolver)
 - Updated included Android SDK to [5.0.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.2)
 - Updated included iOS SDK to [5.0.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.2)
+- `OneSignalConfig.plugin` has been changed to `OneSignalConfig.androidlib`. Run the "Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup** to migrate. Custom notification icons are now located in `Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res`
 ### Fixed
 - Sending VSAttribution data from the editor
 - iOS notifications clicked event firing if the app was cold started from clicking a notification
