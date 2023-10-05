@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.0.3]
 ### Changed
 - `InstallEdm4uStep` now imports version [1.2.177](https://github.com/googlesamples/unity-jar-resolver/releases/tag/v1.2.177) of [EDM4U](https://github.com/googlesamples/unity-jar-resolver)
 - Updated included Android SDK to [5.0.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.2)
@@ -248,7 +249,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.2...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.3...HEAD
+[5.0.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.2...5.0.3
 [5.0.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.1...5.0.2
 [5.0.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.3...5.0.0
