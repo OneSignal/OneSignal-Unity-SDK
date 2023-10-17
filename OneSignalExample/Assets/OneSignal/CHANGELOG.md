@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Included meta files in OneSignalConfig.androidlib to prevent asset from being ignored
+
 ## [5.0.4]
 ### Changed
 - Updated included Android SDK to [5.0.3](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.3)
