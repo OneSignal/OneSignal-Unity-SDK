@@ -50,6 +50,7 @@ namespace OneSignalSDK {
 
             var packagePaths = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
+            packagePaths = packagePaths.Where(file => !file.EndsWith(".meta"));
 
             var exportPaths = Directory.GetFiles(_pluginExportPath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
@@ -69,8 +70,9 @@ namespace OneSignalSDK {
             MigratePluginToAndroidlib();
 
             var files = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
+            var filteredFiles = files.Where(file => !file.EndsWith(".meta"));
 
-            foreach (var file in files) {
+            foreach (var file in filteredFiles) {
                 var trimmedPath    = file.Remove(0, _pluginPackagePath.Length + 1);
                 var fileExportPath = Path.Combine(_pluginExportPath, trimmedPath);
                 var containingPath = fileExportPath.Remove(fileExportPath.LastIndexOf(Path.DirectorySeparatorChar));
