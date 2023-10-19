@@ -96,7 +96,7 @@ static bool swizzled = false;
 
 - (BOOL)oneSignalApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [OneSignalWrapper setSdkType:@"unity"];
-    [OneSignalWrapper setSdkVersion:@"050004"];
+    [OneSignalWrapper setSdkVersion:@"050005"];
     [OneSignal initialize:nil withLaunchOptions:launchOptions];
 
     if ([self respondsToSelector:@selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
