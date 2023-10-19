@@ -78,7 +78,7 @@ namespace OneSignalSDK {
         private static string _bundleVersion => File.ReadAllText(_versionPath);
 
         private static string _onesignalUnityPackageDownloadUrl
-            => $"https://github.com/OneSignal/OneSignal-Unity-SDK/blob/{_sdkVersion}/OneSignal-v{_sdkVersion}.unitypackage";
+            => $"https://github.com/OneSignal/OneSignal-Unity-SDK/releases/download/{_sdkVersion}/OneSignal-v{_sdkVersion}.unitypackage";
 
         private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.core");
         private static readonly string _packageJsonPath = Path.Combine(_packagePath, "package.json");
