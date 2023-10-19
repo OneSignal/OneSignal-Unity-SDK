@@ -267,7 +267,7 @@ Assets/OneSignal/Attribution/OneSignalVSAttribution.cs: error CS0117: 'OneSignal
 ```
 
 1. Delete the directory at `Assets/OneSignal`
-   - If you would like to regenerate the OneSignal assets, remove the OneSignal Unity SDK packages (Android, Core, iOS) from your project and import the OneSignal SDK again.
+   - You can import the OneSignal assets again with our [unitypackage](https://github.com/OneSignal/OneSignal-Unity-SDK/releases) or through our [listing on the Unity Asset Store](https://assetstore.unity.com/packages/add-ons/services/billing/onesignal-sdk-193316)
 2. Check the menu at **Window > OneSignal SDK Setup** to see if there are any remaining steps to run
 
 ```
