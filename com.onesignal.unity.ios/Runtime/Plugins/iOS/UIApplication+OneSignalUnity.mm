@@ -31,12 +31,11 @@
 #import "UIApplication+OneSignalUnity.h"
 #import <objc/runtime.h>
 
-// from OneSignalSelectorHelpers.m
-static Class getClassWithProtocolInHierarchy(Class searchClass, Protocol *protocolToFind) {
+static Class oneSignalGetClassWithProtocolInHierarchy(Class searchClass, Protocol *protocolToFind) {
     if (!class_conformsToProtocol(searchClass, protocolToFind)) {
         if ([searchClass superclass] == [NSObject class])
             return nil;
-        Class foundClass = getClassWithProtocolInHierarchy([searchClass superclass], protocolToFind);
+        Class foundClass = oneSignalGetClassWithProtocolInHierarchy([searchClass superclass], protocolToFind);
         if (foundClass)
             return foundClass;
         return searchClass;
@@ -45,7 +44,7 @@ static Class getClassWithProtocolInHierarchy(Class searchClass, Protocol *protoc
 }
 
 // from OneSignalSelectorHelpers.m
-BOOL injectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel) {
+BOOL oneSignalInjectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel) {
     Method newMeth = class_getInstanceMethod(newClass, newSel);
     IMP imp = method_getImplementation(newMeth);
 
@@ -82,9 +81,9 @@ static bool swizzled = false;
         return;
     }
 
-    Class delegateClass = getClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
+    Class delegateClass = oneSignalGetClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
 
-    injectSelector(
+    oneSignalInjectSelector(
         self.class, @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
         delegateClass, @selector(application:didFinishLaunchingWithOptions:)
     );

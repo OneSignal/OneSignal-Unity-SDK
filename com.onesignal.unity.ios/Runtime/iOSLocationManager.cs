@@ -32,17 +32,17 @@ using System.Runtime.InteropServices;
 
 namespace OneSignalSDK.iOS.Location {
     internal sealed class iOSLocationManager : ILocationManager {
-        [DllImport("__Internal")] private static extern bool _locationGetIsShared();
-        [DllImport("__Internal")] private static extern void _locationSetIsShared(bool shared);
-        [DllImport("__Internal")] private static extern void _locationRequestPermission();
+        [DllImport("__Internal")] private static extern bool _oneSignalLocationGetIsShared();
+        [DllImport("__Internal")] private static extern void _oneSignalLocationSetIsShared(bool shared);
+        [DllImport("__Internal")] private static extern void _oneSignalLocationRequestPermission();
 
         public bool IsShared {
-            get => _locationGetIsShared();
-            set => _locationSetIsShared(value);
+            get => _oneSignalLocationGetIsShared();
+            set => _oneSignalLocationSetIsShared(value);
         }
 
         public void RequestPermission() {
-            _locationRequestPermission();
+            _oneSignalLocationRequestPermission();
         }
     }
 }

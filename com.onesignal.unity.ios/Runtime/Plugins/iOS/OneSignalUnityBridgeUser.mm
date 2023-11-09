@@ -70,8 +70,8 @@ typedef void (*StateListenerDelegate)(const char* current, const char* previous)
 
 - (void)onPushSubscriptionDidChangeWithState:(OSPushSubscriptionChangedState*)state {
     if (_pushSubscriptionDelegate != nil) {
-        auto curr = jsonStringFromDictionary([[state current] jsonRepresentation]);
-        auto prev = jsonStringFromDictionary([[state previous] jsonRepresentation]);
+        auto curr = oneSignalJsonStringFromDictionary([[state current] jsonRepresentation]);
+        auto prev = oneSignalJsonStringFromDictionary([[state previous] jsonRepresentation]);
         _pushSubscriptionDelegate(curr, prev);
     }
 }
@@ -84,27 +84,27 @@ typedef void (*StateListenerDelegate)(const char* current, const char* previous)
  */
 
 extern "C" {
-    void _userSetLanguage(const char* languageCode) {
+    void _oneSignalUserSetLanguage(const char* languageCode) {
         [OneSignal.User setLanguage:TO_NSSTRING(languageCode)];
     }
 
-    void _userAddAlias(const char* aliasLabel, const char* aliasId) {
+    void _oneSignalUserAddAlias(const char* aliasLabel, const char* aliasId) {
         [OneSignal.User addAliasWithLabel:TO_NSSTRING(aliasLabel)
                                        id:TO_NSSTRING(aliasId)];
     }
 
-    void _userAddAliases(const char* aliasesJson) {
-        NSDictionary *aliases = dictionaryFromJsonString(aliasesJson);
+    void _oneSignalUserAddAliases(const char* aliasesJson) {
+        NSDictionary *aliases = oneSignalDictionaryFromJsonString(aliasesJson);
 
         [OneSignal.User addAliases:aliases];
     }
 
-    void _userRemoveAlias(const char* aliasLabel) {
+    void _oneSignalUserRemoveAlias(const char* aliasLabel) {
         [OneSignal.User removeAlias:TO_NSSTRING(aliasLabel)];
     }
 
-    void _userRemoveAliases(const char* aliasesJson) {
-        NSArray *aliases = arrayFromJsonString(aliasesJson);
+    void _oneSignalUserRemoveAliases(const char* aliasesJson) {
+        NSArray *aliases = oneSignalArrayFromJsonString(aliasesJson);
 
         if (aliases == nil) {
             NSLog(@"[Onesignal] Could not parse aliases to delete");
@@ -114,39 +114,39 @@ extern "C" {
         [OneSignal.User removeAliases:aliases];
     }
 
-    void _userAddEmail(const char* email) {
+    void _oneSignalUserAddEmail(const char* email) {
         [OneSignal.User addEmail:TO_NSSTRING(email)];
     }
 
-    void _userRemoveEmail(const char* email) {
+    void _oneSignalUserRemoveEmail(const char* email) {
         [OneSignal.User removeEmail:TO_NSSTRING(email)];
     }
 
-    void _userAddSms(const char* smsNumber) {
+    void _oneSignalUserAddSms(const char* smsNumber) {
         [OneSignal.User addSms:TO_NSSTRING(smsNumber)];
     }
 
-    void _userRemoveSms(const char* smsNumber) {
+    void _oneSignalUserRemoveSms(const char* smsNumber) {
         [OneSignal.User removeSms:TO_NSSTRING(smsNumber)];
     }
 
-    void _userAddTag(const char* key, const char* value) {
+    void _oneSignalUserAddTag(const char* key, const char* value) {
         [OneSignal.User addTagWithKey:TO_NSSTRING(key)
                                 value:TO_NSSTRING(value)];
     }
 
-    void _userAddTags(const char* tagsJson) {
-        NSDictionary *tags = dictionaryFromJsonString(tagsJson);
+    void _oneSignalUserAddTags(const char* tagsJson) {
+        NSDictionary *tags = oneSignalDictionaryFromJsonString(tagsJson);
 
         [OneSignal.User addTags:tags];
     }
 
-    void _userRemoveTag(const char* key) {
+    void _oneSignalUserRemoveTag(const char* key) {
         [OneSignal.User removeTag:TO_NSSTRING(key)];
     }
 
-    void _userRemoveTags(const char* tagsJson) {
-        NSArray *tags = arrayFromJsonString(tagsJson);
+    void _oneSignalUserRemoveTags(const char* tagsJson) {
+        NSArray *tags = oneSignalArrayFromJsonString(tagsJson);
 
         if (tags == nil) {
             NSLog(@"[Onesignal] Could not parse tags to delete");
@@ -156,27 +156,27 @@ extern "C" {
         [OneSignal.User removeTags:tags];
     }
 
-    const char* _pushSubscriptionGetId() {
+    const char* _oneSignalPushSubscriptionGetId() {
         return strdup([OneSignal.User.pushSubscription.id UTF8String]);
     }
 
-    const char* _pushSubscriptionGetToken() {
+    const char* _oneSignalPushSubscriptionGetToken() {
         return strdup([OneSignal.User.pushSubscription.token UTF8String]);
     }
 
-    bool _pushSubscriptionGetOptedIn() {
+    bool _oneSignalPushSubscriptionGetOptedIn() {
         return OneSignal.User.pushSubscription.optedIn;
     }
 
-    void _pushSubscriptionOptIn() {
+    void _oneSignalPushSubscriptionOptIn() {
         [OneSignal.User.pushSubscription optIn];
     }
 
-    void _pushSubscriptionOptOut() {
+    void _oneSignalPushSubscriptionOptOut() {
         [OneSignal.User.pushSubscription optOut];
     }
 
-    void _pushSubscriptionAddStateChangedCallback(StateListenerDelegate callback) {
+    void _oneSignalPushSubscriptionAddStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalUserObserver sharedUserObserver] setPushSubscriptionDelegate:callback];
     }
 }

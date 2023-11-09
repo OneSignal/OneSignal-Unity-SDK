@@ -38,15 +38,15 @@ using OneSignalSDK.iOS.Notifications.Models;
 
 namespace OneSignalSDK.iOS.Notifications {
     internal sealed class iOSNotificationsManager : INotificationsManager {
-        [DllImport("__Internal")] private static extern bool _notificationsGetPermission();
-        [DllImport("__Internal")] private static extern bool _notificationsGetCanRequestPermission();
-        [DllImport("__Internal")] private static extern int _notificationsGetPermissionNative();
-        [DllImport("__Internal")] private static extern void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsClearAll();
-        [DllImport("__Internal")] private static extern void _notificationsAddPermissionObserver(PermissionListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsSetForegroundWillDisplayCallback(WillDisplayListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _notificationsWillDisplayEventPreventDefault(string notificationId);
-        [DllImport("__Internal")] private static extern void _notificationsSetClickCallback(ClickListenerDelegate callback);
+        [DllImport("__Internal")] private static extern bool _oneSignalNotificationsGetPermission();
+        [DllImport("__Internal")] private static extern bool _oneSignalNotificationsGetCanRequestPermission();
+        [DllImport("__Internal")] private static extern int _oneSignalNotificationsGetPermissionNative();
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsClearAll();
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsAddPermissionObserver(PermissionListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsSetForegroundWillDisplayCallback(WillDisplayListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsWillDisplayEventPreventDefault(string notificationId);
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsSetClickCallback(ClickListenerDelegate callback);
 
         private delegate void PermissionListenerDelegate(bool permission);
         private delegate void WillDisplayListenerDelegate(string notification);
@@ -66,7 +66,7 @@ namespace OneSignalSDK.iOS.Notifications {
 
                 if (!_clickNativeListenerSet) {
                     _clickNativeListenerSet = true;
-                    _notificationsSetClickCallback(_onClicked);
+                    _oneSignalNotificationsSetClickCallback(_onClicked);
                 }
             }
             remove { _clicked -= value; }
@@ -79,30 +79,30 @@ namespace OneSignalSDK.iOS.Notifications {
         }
 
         public bool Permission {
-            get => _notificationsGetPermission();
+            get => _oneSignalNotificationsGetPermission();
         }
 
         public bool CanRequestPermission {
-            get => _notificationsGetCanRequestPermission();
+            get => _oneSignalNotificationsGetCanRequestPermission();
         }
 
         public NotificationPermission PermissionNative {
-            get => (NotificationPermission)_notificationsGetPermissionNative();
+            get => (NotificationPermission)_oneSignalNotificationsGetPermissionNative();
         }
 
         public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _notificationsRequestPermission(fallbackToSettings, hashCode, BooleanCallbackProxy);
+            _oneSignalNotificationsRequestPermission(fallbackToSettings, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public void ClearAllNotifications() {
-            _notificationsClearAll();
+            _oneSignalNotificationsClearAll();
         }
 
         public void Initialize() {
-            _notificationsAddPermissionObserver(_onPermissionStateChanged);
-            _notificationsSetForegroundWillDisplayCallback(_onForegroundWillDisplay);
+            _oneSignalNotificationsAddPermissionObserver(_onPermissionStateChanged);
+            _oneSignalNotificationsSetForegroundWillDisplayCallback(_onForegroundWillDisplay);
         }
 
         [AOT.MonoPInvokeCallback(typeof(PermissionListenerDelegate))]
@@ -137,7 +137,7 @@ namespace OneSignalSDK.iOS.Notifications {
             public InternalNotificationWillDisplayEventArgs(IDisplayableNotification notification) : base(notification) { }
 
             public override void PreventDefault() {
-                _notificationsWillDisplayEventPreventDefault(this.Notification.NotificationId);
+                _oneSignalNotificationsWillDisplayEventPreventDefault(this.Notification.NotificationId);
             }
         }
 
