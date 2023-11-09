@@ -97,8 +97,8 @@ typedef void (*ClickListenerDelegate)(const char* message, const char* result, i
 
 - (void)onClickInAppMessage:(OSInAppMessageClickEvent * _Nonnull)event {
     if (_clickDelegate != nil) {
-        auto message = jsonStringFromDictionary([[event message] jsonRepresentation]);
-        auto result = jsonStringFromDictionary([[event result] jsonRepresentation]);
+        auto message = oneSignalJsonStringFromDictionary([[event message] jsonRepresentation]);
+        auto result = oneSignalJsonStringFromDictionary([[event result] jsonRepresentation]);
         _clickDelegate(message, result, event.result.urlTarget);
     }
 }
@@ -110,55 +110,55 @@ typedef void (*ClickListenerDelegate)(const char* message, const char* result, i
  */
 
 extern "C" {
-    void _inAppMessagesSetWillDisplayCallback(StringListenerDelegate callback) {
+    void _oneSignalInAppMessagesSetWillDisplayCallback(StringListenerDelegate callback) {
         [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setWillDisplayDelegate:callback];
     }
 
-    void _inAppMessagesSetDidDisplayCallback(StringListenerDelegate callback) {
+    void _oneSignalInAppMessagesSetDidDisplayCallback(StringListenerDelegate callback) {
         [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setDidDisplayDelegate:callback];
     }
 
-    void _inAppMessagesSetWillDismissCallback(StringListenerDelegate callback) {
+    void _oneSignalInAppMessagesSetWillDismissCallback(StringListenerDelegate callback) {
         [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setWillDismissDelegate:callback];
     }
 
-    void _inAppMessagesSetDidDismissCallback(StringListenerDelegate callback) {
+    void _oneSignalInAppMessagesSetDidDismissCallback(StringListenerDelegate callback) {
         [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setDidDismissDelegate:callback];
     }
 
-    void _inAppMessagesSetClickCallback(ClickListenerDelegate callback) {
+    void _oneSignalInAppMessagesSetClickCallback(ClickListenerDelegate callback) {
         [[OneSignalInAppMessagesObserver sharedInAppMessagesObserver] setClickDelegate:callback];
     }
 
-    void _inAppMessagesSetPaused(bool paused) {
+    void _oneSignalInAppMessagesSetPaused(bool paused) {
         [OneSignal.InAppMessages paused:paused];
     }
 
-    bool _inAppMessagesGetPaused() {
+    bool _oneSignalInAppMessagesGetPaused() {
         return [OneSignal.InAppMessages paused];
     }
 
-    void _inAppMessagesAddTrigger(const char* key, const char* value) {
+    void _oneSignalInAppMessagesAddTrigger(const char* key, const char* value) {
         [OneSignal.InAppMessages addTrigger:TO_NSSTRING(key) withValue:TO_NSSTRING(value)];
     }
 
-    void _inAppMessagesAddTriggers(const char* triggersJson) {
-        NSDictionary *triggers = dictionaryFromJsonString(triggersJson);
+    void _oneSignalInAppMessagesAddTriggers(const char* triggersJson) {
+        NSDictionary *triggers = oneSignalDictionaryFromJsonString(triggersJson);
 
         [OneSignal.InAppMessages addTriggers:triggers];
     }
 
-    void _inAppMessagesRemoveTrigger(const char* key) {
+    void _oneSignalInAppMessagesRemoveTrigger(const char* key) {
         [OneSignal.InAppMessages removeTrigger:TO_NSSTRING(key)];
     }
 
-    void _inAppMessagesRemoveTriggers(const char* triggersJson) {
-        NSArray *triggers = arrayFromJsonString(triggersJson);
+    void _oneSignalInAppMessagesRemoveTriggers(const char* triggersJson) {
+        NSArray *triggers = oneSignalArrayFromJsonString(triggersJson);
 
         [OneSignal.InAppMessages removeTriggers:triggers];
     }
 
-    void _inAppMessagesClearTriggers() {
+    void _oneSignalInAppMessagesClearTriggers() {
         [OneSignal.InAppMessages clearTriggers];
     }
 }

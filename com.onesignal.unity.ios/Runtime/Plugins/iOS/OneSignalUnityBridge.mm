@@ -41,27 +41,27 @@
  */
 
 extern "C" {
-    void _initialize(const char* appId) {
+    void _oneSignalInitialize(const char* appId) {
         [OneSignal initialize:TO_NSSTRING(appId) withLaunchOptions:nil];
     }
 
-    void _login(const char* externalId) {
+    void _oneSignalLogin(const char* externalId) {
         [OneSignal login:TO_NSSTRING(externalId)];
     }
 
-    void _loginWithJwtBearerToken(const char* externalId, const char* token) {
+    void _oneSignalLoginWithJwtBearerToken(const char* externalId, const char* token) {
         [OneSignal login:TO_NSSTRING(externalId) withToken:TO_NSSTRING(token)];
     }
 
-    void _logout() {
+    void _oneSignalLogout() {
         [OneSignal logout];
     }
 
-    void _setConsentGiven(bool consent) {
+    void _oneSignalSetConsentGiven(bool consent) {
         [OneSignal setConsentGiven:consent];
     }
 
-    void _setConsentRequired(bool required) {
+    void _oneSignalSetConsentRequired(bool required) {
         [OneSignal setConsentRequired:required];
     }
 }

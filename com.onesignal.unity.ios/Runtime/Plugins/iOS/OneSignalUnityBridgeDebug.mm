@@ -30,11 +30,11 @@
 #import <OneSignalFramework/OneSignalFramework.h>
 
 extern "C" {
-    void _debugSetLogLevel(int logLevel) {
+    void _oneSignalDebugSetLogLevel(int logLevel) {
         [OneSignal.Debug setLogLevel:(ONE_S_LOG_LEVEL) logLevel];
     }
 
-    void _debugSetAlertLevel(int alertLevel) {
+    void _oneSignalDebugSetAlertLevel(int alertLevel) {
         [OneSignal.Debug setAlertLevel:(ONE_S_LOG_LEVEL) alertLevel];
     }
 }

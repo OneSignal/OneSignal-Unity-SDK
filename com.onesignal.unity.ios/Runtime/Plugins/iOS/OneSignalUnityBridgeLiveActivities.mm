@@ -43,14 +43,14 @@ typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
  */
 
 extern "C" {
-    void _enterLiveActivity(const char* activityId, const char* token, int hashCode, BooleanResponseDelegate callback) {
+    void _oneSignalEnterLiveActivity(const char* activityId, const char* token, int hashCode, BooleanResponseDelegate callback) {
         [OneSignal.LiveActivities enter:TO_NSSTRING(activityId)
                         withToken:TO_NSSTRING(token)
                         withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
                         withFailure:^(NSError *error) { CALLBACK(NO); }];
     }
 
-    void _exitLiveActivity(const char* activityId, int hashCode, BooleanResponseDelegate callback) {
+    void _oneSignalExitLiveActivity(const char* activityId, int hashCode, BooleanResponseDelegate callback) {
         [OneSignal.LiveActivities exit:TO_NSSTRING(activityId)
                         withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
                         withFailure:^(NSError *error) { CALLBACK(NO); }];

@@ -118,47 +118,47 @@ typedef void (*ClickListenerDelegate)(const char* notification, const char* resu
  */
 
 extern "C" {
-    bool _notificationsGetPermission() {
+    bool _oneSignalNotificationsGetPermission() {
         return [OneSignal.Notifications permission];
     }
 
-    bool _notificationsGetCanRequestPermission() {
+    bool _oneSignalNotificationsGetCanRequestPermission() {
         return [OneSignal.Notifications canRequestPermission];
     }
 
-    int _notificationsGetPermissionNative() {
+    int _oneSignalNotificationsGetPermissionNative() {
         return [OneSignal.Notifications permissionNative];
     }
 
-    void _notificationsClearAll() {
+    void _oneSignalNotificationsClearAll() {
         [OneSignal.Notifications clearAll];
     }
 
-    void _notificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback) {
+    void _oneSignalNotificationsRequestPermission(bool fallbackToSettings, int hashCode, BooleanResponseDelegate callback) {
         [OneSignal.Notifications requestPermission:^(BOOL accepted) {
             CALLBACK(accepted);
         } fallbackToSettings:fallbackToSettings];
     }
 
-    void _notificationsAddPermissionObserver(PermissionListenerDelegate callback) {
+    void _oneSignalNotificationsAddPermissionObserver(PermissionListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setPermissionDelegate:callback];
     }
 
-    void _notificationsSetForegroundWillDisplayCallback(WillDisplayListenerDelegate callback) {
+    void _oneSignalNotificationsSetForegroundWillDisplayCallback(WillDisplayListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setWillDisplayDelegate:callback];
     }
 
-    void _notificationsWillDisplayEventPreventDefault(const char* notifcationId) {
+    void _oneSignalNotificationsWillDisplayEventPreventDefault(const char* notifcationId) {
         NSString *key = [NSString stringWithUTF8String:notifcationId];
         [[OneSignalNotificationsObserver sharedNotificationsObserver] notificationsWillDisplayEventPreventDefault:key];
     }
 
-    void _notificationsDisplay(const char* notifcationId) {
+    void _oneSignalNotificationsDisplay(const char* notifcationId) {
         NSString *key = [NSString stringWithUTF8String:notifcationId];
         [[OneSignalNotificationsObserver sharedNotificationsObserver] notificationsDisplay:key];
     }
 
-    void _notificationsSetClickCallback(ClickListenerDelegate callback) {
+    void _oneSignalNotificationsSetClickCallback(ClickListenerDelegate callback) {
         [[OneSignalNotificationsObserver sharedNotificationsObserver] setClickDelegate:callback];
         
         [OneSignal.Notifications addClickListener:[OneSignalNotificationsObserver sharedNotificationsObserver]];
