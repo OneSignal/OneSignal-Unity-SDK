@@ -48,12 +48,12 @@ using OneSignalSDK.iOS.LiveActivities;
 
 namespace OneSignalSDK.iOS {
     public sealed partial class OneSignaliOS : OneSignalPlatform {
-        [DllImport("__Internal")] private static extern void _setConsentGiven(bool consent);
-        [DllImport("__Internal")] private static extern void _setConsentRequired(bool required);
-        [DllImport("__Internal")] private static extern void _initialize(string appId);
-        [DllImport("__Internal")] private static extern void _login(string externalId);
-        [DllImport("__Internal")] private static extern void _loginWithJwtBearerToken(string externalId, string jwtBearerToken);
-        [DllImport("__Internal")] private static extern void _logout();
+        [DllImport("__Internal")] private static extern void _oneSignalSetConsentGiven(bool consent);
+        [DllImport("__Internal")] private static extern void _oneSignalSetConsentRequired(bool required);
+        [DllImport("__Internal")] private static extern void _oneSignalInitialize(string appId);
+        [DllImport("__Internal")] private static extern void _oneSignalLogin(string externalId);
+        [DllImport("__Internal")] private static extern void _oneSignalLoginWithJwtBearerToken(string externalId, string jwtBearerToken);
+        [DllImport("__Internal")] private static extern void _oneSignalLogout();
 
         private iOSUserManager _user;
         private iOSSessionManager _session;
@@ -105,15 +105,15 @@ namespace OneSignalSDK.iOS {
         }
 
         public override bool ConsentGiven {
-            set => _setConsentGiven(value);
+            set => _oneSignalSetConsentGiven(value);
         }
 
         public override bool ConsentRequired {
-            set => _setConsentRequired(value);
+            set => _oneSignalSetConsentRequired(value);
         }
 
         public override void Initialize(string appId) {
-            _initialize(appId);
+            _oneSignalInitialize(appId);
 
             if (_inAppMessages == null) {
                 _inAppMessages = new iOSInAppMessagesManager();
@@ -147,14 +147,14 @@ namespace OneSignalSDK.iOS {
 
         public override void Login(string externalId, string jwtBearerToken = null) {
             if (jwtBearerToken == null) {
-                _login(externalId);
+                _oneSignalLogin(externalId);
             } else {
-                _loginWithJwtBearerToken(externalId, jwtBearerToken);
+                _oneSignalLoginWithJwtBearerToken(externalId, jwtBearerToken);
             }
         }
 
         public override void Logout() {
-            _logout();
+            _oneSignalLogout();
         }
     }
 }

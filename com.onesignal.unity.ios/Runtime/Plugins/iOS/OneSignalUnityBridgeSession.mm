@@ -40,15 +40,15 @@
  */
 
 extern "C" {
-    void _sessionAddOutcome(const char* name) {
+    void _oneSignalSessionAddOutcome(const char* name) {
         [OneSignal.Session addOutcome:TO_NSSTRING(name)];
     }
 
-    void _sessionAddUniqueOutcome(const char* name) {
+    void _oneSignalSessionAddUniqueOutcome(const char* name) {
         [OneSignal.Session addUniqueOutcome:TO_NSSTRING(name)];
     }
 
-    void _sessionAddOutcomeWithValue(const char* name, float value) {
+    void _oneSignalSessionAddOutcomeWithValue(const char* name, float value) {
         [OneSignal.Session addOutcomeWithValue:TO_NSSTRING(name)
                                          value:@(value)];
     }

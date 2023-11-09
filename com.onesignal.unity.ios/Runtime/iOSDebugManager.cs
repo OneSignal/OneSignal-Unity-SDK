@@ -32,8 +32,8 @@ using OneSignalSDK.Debug.Models;
 
 namespace OneSignalSDK.iOS.Debug {
     internal sealed class iOSDebugManager : IDebugManager {
-        [DllImport("__Internal")] private static extern void _debugSetLogLevel(int logLevel);
-        [DllImport("__Internal")] private static extern void _debugSetAlertLevel(int alertlLevel);
+        [DllImport("__Internal")] private static extern void _oneSignalDebugSetLogLevel(int logLevel);
+        [DllImport("__Internal")] private static extern void _oneSignalDebugSetAlertLevel(int alertlLevel);
 
         private LogLevel _logLevel = LogLevel.Warn;
         private LogLevel _alertLevel = LogLevel.None;
@@ -42,7 +42,7 @@ namespace OneSignalSDK.iOS.Debug {
             get => _logLevel;
             set {
                 _logLevel = value;
-                _debugSetLogLevel((int) value);
+                _oneSignalDebugSetLogLevel((int) value);
             }
         }
 
@@ -50,7 +50,7 @@ namespace OneSignalSDK.iOS.Debug {
             get => _alertLevel;
             set {
                 _alertLevel = value;
-                _debugSetAlertLevel((int) value);
+                _oneSignalDebugSetAlertLevel((int) value);
             }
         }
     }
