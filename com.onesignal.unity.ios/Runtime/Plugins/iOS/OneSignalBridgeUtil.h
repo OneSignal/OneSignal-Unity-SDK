@@ -29,8 +29,8 @@
 
 @interface OneSignalBridgeUtil : NSObject
 
-const char* jsonStringFromDictionary(NSDictionary *dictionary);
-NSDictionary* dictionaryFromJsonString(const char* jsonString);
-NSArray* arrayFromJsonString(const char* jsonString);
+const char* oneSignalJsonStringFromDictionary(NSDictionary *dictionary);
+NSDictionary* oneSignalDictionaryFromJsonString(const char* jsonString);
+NSArray* oneSignalArrayFromJsonString(const char* jsonString);
 
 @end

@@ -31,17 +31,17 @@ using System.Runtime.InteropServices;
 
 namespace OneSignalSDK.iOS.Session {
     internal sealed class iOSSessionManager : ISessionManager {
-        [DllImport("__Internal")] private static extern void _sessionAddOutcome(string name);
-        [DllImport("__Internal")] private static extern void _sessionAddUniqueOutcome(string name);
-        [DllImport("__Internal")] private static extern void _sessionAddOutcomeWithValue(string name, float value);
+        [DllImport("__Internal")] private static extern void _oneSignalSessionAddOutcome(string name);
+        [DllImport("__Internal")] private static extern void _oneSignalSessionAddUniqueOutcome(string name);
+        [DllImport("__Internal")] private static extern void _oneSignalSessionAddOutcomeWithValue(string name, float value);
 
         public void AddOutcome(string name)
-            => _sessionAddOutcome(name);
+            => _oneSignalSessionAddOutcome(name);
 
         public void AddUniqueOutcome(string name)
-            => _sessionAddUniqueOutcome(name);
+            => _oneSignalSessionAddUniqueOutcome(name);
 
         public void AddOutcomeWithValue(string name, float value)
-            => _sessionAddOutcomeWithValue(name, value);
+            => _oneSignalSessionAddOutcomeWithValue(name, value);
     }
 }

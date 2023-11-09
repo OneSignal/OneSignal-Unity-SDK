@@ -32,20 +32,20 @@ using OneSignalSDK.iOS.Utilities;
 
 namespace OneSignalSDK.iOS.LiveActivities {
     internal sealed class iOSLiveActivitiesManager : ILiveActivitiesManager {
-        [DllImport("__Internal")] private static extern void _enterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _exitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalEnterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalExitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
 
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
         public async Task<bool> EnterAsync(string activityId, string token) {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _enterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
+            _oneSignalEnterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
         public async Task<bool> ExitAsync(string activityId) {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
-            _exitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
+            _oneSignalExitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 

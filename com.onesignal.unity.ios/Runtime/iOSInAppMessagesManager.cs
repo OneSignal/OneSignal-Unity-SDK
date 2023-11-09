@@ -36,19 +36,19 @@ using OneSignalSDK.InAppMessages.Internal;
 
 namespace OneSignalSDK.iOS.InAppMessages {
     internal sealed class iOSInAppMessagesManager : IInAppMessagesManager {
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetWillDisplayCallback(StringListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetDidDisplayCallback(StringListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetWillDismissCallback(StringListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetDidDismissCallback(StringListenerDelegate callback);
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetClickCallback(ClickListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesSetWillDisplayCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesSetDidDisplayCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesSetWillDismissCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesSetDidDismissCallback(StringListenerDelegate callback);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesSetClickCallback(ClickListenerDelegate callback);
 
-        [DllImport("__Internal")] private static extern void _inAppMessagesSetPaused(bool paused);
-        [DllImport("__Internal")] private static extern bool _inAppMessagesGetPaused();
-        [DllImport("__Internal")] private static extern void _inAppMessagesAddTrigger(string key, string value);
-        [DllImport("__Internal")] private static extern void _inAppMessagesAddTriggers(string triggersJson);
-        [DllImport("__Internal")] private static extern void _inAppMessagesRemoveTrigger(string key);
-        [DllImport("__Internal")] private static extern void _inAppMessagesRemoveTriggers(string triggersJson);
-        [DllImport("__Internal")] private static extern void _inAppMessagesClearTriggers();
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesSetPaused(bool paused);
+        [DllImport("__Internal")] private static extern bool _oneSignalInAppMessagesGetPaused();
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesAddTrigger(string key, string value);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesAddTriggers(string triggersJson);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesRemoveTrigger(string key);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesRemoveTriggers(string triggersJson);
+        [DllImport("__Internal")] private static extern void _oneSignalInAppMessagesClearTriggers();
 
         private delegate void StringListenerDelegate(string response);
         private delegate void ClickListenerDelegate(string message, string result, int urlType);
@@ -66,31 +66,31 @@ namespace OneSignalSDK.iOS.InAppMessages {
         }
 
         public bool Paused {
-            get => _inAppMessagesGetPaused();
-            set => _inAppMessagesSetPaused(value);
+            get => _oneSignalInAppMessagesGetPaused();
+            set => _oneSignalInAppMessagesSetPaused(value);
         }
 
         public void AddTrigger(string key, string value)
-            => _inAppMessagesAddTrigger(key, value.ToString());
+            => _oneSignalInAppMessagesAddTrigger(key, value.ToString());
 
         public void AddTriggers(Dictionary<string, string> triggers)
-            => _inAppMessagesAddTriggers(Json.Serialize(triggers));
+            => _oneSignalInAppMessagesAddTriggers(Json.Serialize(triggers));
 
         public void RemoveTrigger(string key)
-            => _inAppMessagesRemoveTrigger(key);
+            => _oneSignalInAppMessagesRemoveTrigger(key);
 
         public void RemoveTriggers(params string[] keys)
-            => _inAppMessagesRemoveTriggers(Json.Serialize(keys));
+            => _oneSignalInAppMessagesRemoveTriggers(Json.Serialize(keys));
 
         public void ClearTriggers()
-            => _inAppMessagesClearTriggers();
+            => _oneSignalInAppMessagesClearTriggers();
 
         public void Initialize() {
-            _inAppMessagesSetWillDisplayCallback(_onWillDisplay);
-            _inAppMessagesSetDidDisplayCallback(_onDidDisplay);
-            _inAppMessagesSetWillDismissCallback(_onWillDismiss);
-            _inAppMessagesSetDidDismissCallback(_onDidDismiss);
-            _inAppMessagesSetClickCallback(_onClicked);
+            _oneSignalInAppMessagesSetWillDisplayCallback(_onWillDisplay);
+            _oneSignalInAppMessagesSetDidDisplayCallback(_onDidDisplay);
+            _oneSignalInAppMessagesSetWillDismissCallback(_onWillDismiss);
+            _oneSignalInAppMessagesSetDidDismissCallback(_onDidDismiss);
+            _oneSignalInAppMessagesSetClickCallback(_onClicked);
         }
 
         [AOT.MonoPInvokeCallback(typeof(StringListenerDelegate))]

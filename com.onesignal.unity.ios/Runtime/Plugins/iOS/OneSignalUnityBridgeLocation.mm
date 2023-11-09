@@ -30,15 +30,15 @@
 #import <OneSignalFramework/OneSignalFramework.h>
 
 extern "C" {
-    bool _locationGetIsShared() {
+    bool _oneSignalLocationGetIsShared() {
         return [OneSignal.Location isShared];
     }
 
-    void _locationSetIsShared(bool shared) {
+    void _oneSignalLocationSetIsShared(bool shared) {
         [OneSignal.Location setShared:shared];
     }
 
-    void _locationRequestPermission() {
+    void _oneSignalLocationRequestPermission() {
         [OneSignal.Location requestPermission];
     }
 }

@@ -33,9 +33,9 @@ using OneSignalSDK.Notifications.Models;
 
 namespace OneSignalSDK.iOS.Notifications.Models {
     public sealed class iOSDisplayableNotification : Notification, IDisplayableNotification {
-        [DllImport("__Internal")] private static extern void _notificationsDisplay(string notificationId);
+        [DllImport("__Internal")] private static extern void _oneSignalNotificationsDisplay(string notificationId);
 
         public void Display()
-            => _notificationsDisplay(this.NotificationId);
+            => _oneSignalNotificationsDisplay(this.NotificationId);
     }
 }
