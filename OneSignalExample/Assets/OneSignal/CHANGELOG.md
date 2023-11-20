@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Duplicate symbol errors when building with other iOS plugins
+### Changed
+- Updated included Android SDK to [5.0.4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.4)
+- Updated included iOS SDK to [5.0.4](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.4)
 
 ## [5.0.5]
 ### Fixed
