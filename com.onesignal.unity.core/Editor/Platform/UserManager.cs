@@ -42,6 +42,10 @@ namespace OneSignalSDK.User {
             }
         }
 
+        public Dictionary<string, string> GetTags() {
+            return new Dictionary<string, string>();
+        }
+
         public void AddTag(string key, string value){
 
         }

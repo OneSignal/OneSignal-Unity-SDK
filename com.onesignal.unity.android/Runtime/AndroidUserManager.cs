@@ -51,6 +51,10 @@ namespace OneSignalSDK.Android.User {
             set => _user.Call("setLanguage", value);
         }
 
+        public Dictionary<string, string> GetTags() {
+            => _user.Call("getTags");
+        }
+
         public void AddTag(string key, string value)
             => _user.Call("addTag", key, value);
 
