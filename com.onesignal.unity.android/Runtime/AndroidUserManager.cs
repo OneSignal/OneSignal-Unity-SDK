@@ -51,6 +51,13 @@ namespace OneSignalSDK.Android.User {
             set => _user.Call("setLanguage", value);
         }
 
+        public Dictionary<string, string> GetTags() {
+            AndroidJavaObject obj = _user.Call<AndroidJavaObject>("getTags");
+            Dictionary<string, string> dictionary = obj.MapToDictionary();
+            UnityEngine.Debug.Log(dictionary.Count);
+            return obj.MapToDictionary();
+        }
+
         public void AddTag(string key, string value)
             => _user.Call("addTag", key, value);
 

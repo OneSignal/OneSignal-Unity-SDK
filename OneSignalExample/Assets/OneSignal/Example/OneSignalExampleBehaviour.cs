@@ -371,6 +371,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void RemoveTag() {
         _log($"Removing tag for key <b>{tagKey}</b>");
         OneSignal.User.RemoveTag(tagKey);
+        
+    }
+
+    public void GetTags() {
+        Dictionary<string, string> dict = OneSignal.User.GetTags();
+        string dictionaryString = "{";
+        foreach(KeyValuePair < string, string > keyValues in dict) {  
+            dictionaryString += keyValues.Key + " : " + keyValues.Value + ", ";
+        }
+        _log($"Get all user tags " + dictionaryString.TrimEnd(',', ' ') + "}");
     }
 
     /*
