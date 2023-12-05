@@ -130,6 +130,9 @@ extern "C" {
         [OneSignal.User removeSms:TO_NSSTRING(smsNumber)];
     }
 
+    NSDictionary<NSString *, NSString*>* _oneSignalUserGetTags() {
+        return [OneSignal.User getTags];
+    }
     void _oneSignalUserAddTag(const char* key, const char* value) {
         [OneSignal.User addTagWithKey:TO_NSSTRING(key)
                                 value:TO_NSSTRING(value)];

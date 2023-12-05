@@ -44,6 +44,7 @@ namespace OneSignalSDK.iOS.User {
         [DllImport("__Internal")] private static extern void _oneSignalUserRemoveEmail(string email);
         [DllImport("__Internal")] private static extern void _oneSignalUserAddSms(string smsNumber);
         [DllImport("__Internal")] private static extern void _oneSignalUserRemoveSms(string smsNumber);
+        [DllImport("__Internal")] private static extern Dictionary<string, string> _oneSignalUserGetTags();
         [DllImport("__Internal")] private static extern void _oneSignalUserAddTag(string key, string value);
         [DllImport("__Internal")] private static extern void _oneSignalUserAddTags(string tagsJson);
         [DllImport("__Internal")] private static extern void _oneSignalUserRemoveTag(string key);
@@ -63,6 +64,8 @@ namespace OneSignalSDK.iOS.User {
             set => _oneSignalUserSetLanguage(value);
         }
 
+        public Dictionary<string, string> GetTags()
+            =>_oneSignalUserGetTags();
         public void AddTag(string key, string value)
             =>_oneSignalUserAddTag(key, value);
 

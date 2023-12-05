@@ -59,6 +59,11 @@ namespace OneSignalSDK.User {
         IPushSubscription PushSubscription { get; }
 
         /// <summary>
+        /// Return a copy of all tags
+        /// </summary>
+        Dictionary<string, string> GetTags();
+
+        /// <summary>
         /// Tag player with a key value pair to later create segments on them at onesignal.com
         /// </summary>
         /// <param name="key">The key of the data tag.</param>
