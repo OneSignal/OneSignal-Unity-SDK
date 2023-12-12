@@ -10,7 +10,7 @@ android {
     def unityLib = project(':unityLibrary').extensions.getByName('android')
 
    defaultConfig {
-       consumerProguardFiles "consumer-proguard.pro"
+        consumerProguardFiles "consumer-proguard.pro"
         minSdkVersion unityLib.defaultConfig.minSdk
         targetSdkVersion unityLib.defaultConfig.targetSdk
    }
