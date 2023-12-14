@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Included meta files in OneSignalConfig.androidlib to prevent asset from being ignored
 - Package download url in the "Sync example code bundle package" step from the OneSignal SDK Setup
+- Add public get tags method
 
 ## [5.0.4]
 ### Changed
