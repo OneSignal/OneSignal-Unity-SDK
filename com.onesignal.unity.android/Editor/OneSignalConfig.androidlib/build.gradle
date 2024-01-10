@@ -11,8 +11,8 @@ android {
 
    defaultConfig {
         consumerProguardFiles "consumer-proguard.pro"
-        minSdkVersion unityLib.defaultConfig.minSdk
-        targetSdkVersion unityLib.defaultConfig.targetSdk
+        minSdkVersion unityLib.defaultConfig.minSdkVersion.mApiLevel
+        targetSdkVersion unityLib.defaultConfig.targetSdkVersion.mApiLevel
    }
 
     compileSdkVersion unityLib.compileSdkVersion
