@@ -59,7 +59,7 @@ namespace OneSignalSDK.User {
         IPushSubscription PushSubscription { get; }
 
         /// <summary>
-        /// Return a copy of all tags
+        /// Return a copy of all local tags from the current user
         /// </summary>
         Dictionary<string, string> GetTags();
 
