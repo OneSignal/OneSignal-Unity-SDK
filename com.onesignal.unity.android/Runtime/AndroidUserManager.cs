@@ -53,8 +53,6 @@ namespace OneSignalSDK.Android.User {
 
         public Dictionary<string, string> GetTags() {
             AndroidJavaObject obj = _user.Call<AndroidJavaObject>("getTags");
-            Dictionary<string, string> dictionary = obj.MapToDictionary();
-            UnityEngine.Debug.Log(dictionary.Count);
             return obj.MapToDictionary();
         }
 

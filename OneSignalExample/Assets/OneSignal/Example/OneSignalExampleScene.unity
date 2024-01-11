@@ -1869,7 +1869,7 @@ GameObject:
   - component: {fileID: 253700100}
   - component: {fileID: 253700099}
   m_Layer: 5
-  m_Name: button_gettag
+  m_Name: button_gettags
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11340,7 +11340,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Get Tag
+  m_Text: Get Tags
 --- !u!222 &1371986163
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13786,7 +13786,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 916273502}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.3125
+  m_Size: 0.5315627
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
