@@ -81,13 +81,13 @@ namespace OneSignalSDK.Android.Utilities {
 
             var ret = new Dictionary<string, string>();
 
-            do {
+            while (iter.Call<bool>("hasNext")) {
                 var entry = iter.Call<AndroidJavaObject>("next");
                 var key = entry.Call<string>("getKey");
                 var valueJO = entry.Call<AndroidJavaObject>("getValue");
                 
                 ret[key] = valueJO.Call<string>("toString");
-            } while (iter.Call<bool>("hasNext"));
+            }
             
             return ret;
         }

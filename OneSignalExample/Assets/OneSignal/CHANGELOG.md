@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated included iOS SDK to [5.0.4](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.4)
 
 ## [5.0.5]
+### Changed
+- Add public get tags method
+- Updated included Android SDK to [5.0.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.5)
+- Updated included iOS SDK to [5.0.5](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.5)
 ### Fixed
 - Included meta files in OneSignalConfig.androidlib to prevent asset from being ignored
 - Package download url in the "Sync example code bundle package" step from the OneSignal SDK Setup
