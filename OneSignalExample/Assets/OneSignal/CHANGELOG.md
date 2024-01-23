@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed lower build-tools versions being needed for Android builds. Delete your OneSignalConfig.androidlib and run the 
 "Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup** to apply the fix.
 ### Changed
-- Updated included Android SDK to [5.0.4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.4)
-- Updated included iOS SDK to [5.0.4](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.4)
+- Updated included Android SDK to [5.1.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.1)
+- Updated included iOS SDK to [5.1.0](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.1.0)
 
 ## [5.0.5]
 ### Changed
