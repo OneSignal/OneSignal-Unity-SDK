@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.0.6]
 ### Fixed
 - Duplicate symbol errors when building with other iOS plugins
 - Removed READ_PHONE_STATE permission in Android builds. Delete your OneSignalConfig.androidlib and run the 
@@ -273,7 +274,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.5...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.6...HEAD
+[5.0.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.5...5.0.6
 [5.0.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.4...5.0.5
 [5.0.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.3...5.0.4
 [5.0.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.2...5.0.3
