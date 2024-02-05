@@ -161,10 +161,16 @@ extern "C" {
     }
 
     const char* _oneSignalPushSubscriptionGetId() {
+        if (OneSignal.User.pushSubscription.id == NULL) {
+            return NULL;
+        }
         return strdup([OneSignal.User.pushSubscription.id UTF8String]);
     }
 
     const char* _oneSignalPushSubscriptionGetToken() {
+        if (OneSignal.User.pushSubscription.token == NULL) {
+            return NULL;
+        }
         return strdup([OneSignal.User.pushSubscription.token UTF8String]);
     }
 
