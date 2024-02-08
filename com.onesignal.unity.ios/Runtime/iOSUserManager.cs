@@ -27,14 +27,18 @@
 
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using OneSignalSDK.User;
+using OneSignalSDK.User.Internal;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.iOS.User.Models;
 
 namespace OneSignalSDK.iOS.User {
     internal sealed class iOSUserManager : IUserManager {
+        [DllImport("__Internal")] private static extern string _oneSignalUserGetOneSignalId();
+        [DllImport("__Internal")] private static extern string _oneSignalUserGetExternalId();
         [DllImport("__Internal")] private static extern void _oneSignalUserSetLanguage(string languageCode);
         [DllImport("__Internal")] private static extern void _oneSignalUserAddAlias(string aliasLabel, string aliasId);
         [DllImport("__Internal")] private static extern void _oneSignalUserAddAliases(string aliasesJson);
@@ -49,11 +53,27 @@ namespace OneSignalSDK.iOS.User {
         [DllImport("__Internal")] private static extern void _oneSignalUserAddTags(string tagsJson);
         [DllImport("__Internal")] private static extern void _oneSignalUserRemoveTag(string key);
         [DllImport("__Internal")] private static extern void _oneSignalUserRemoveTags(string tagsJson);
+        [DllImport("__Internal")] private static extern void _oneSignalUserAddStateChangedCallback(UserStateListenerDelegate callback);
+
+        public delegate void UserStateListenerDelegate(string current);
+
+        public event EventHandler<UserStateChangedEventArgs> Changed;
 
         private iOSPushSubscription _pushSubscription;
+
+        private static iOSUserManager _instance;
         
         public iOSUserManager() {
+            _instance = this;
             _pushSubscription = new iOSPushSubscription();
+        }
+
+        public string onesignalId {
+            get => _oneSignalUserGetOneSignalId();
+        }
+
+        public string externalId {
+            get => _oneSignalUserGetExternalId();
         }
 
         public IPushSubscription PushSubscription {
@@ -109,6 +129,21 @@ namespace OneSignalSDK.iOS.User {
 
         public void Initialize() {
             _pushSubscription.Initialize();
+            _oneSignalUserAddStateChangedCallback(_onUserStateChanged);
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(UserStateListenerDelegate))]
+        private static void _onUserStateChanged(string current) {
+            var curr = JsonUtility.FromJson<UserState>(current);
+
+            UserChangedState userChangedState = new UserChangedState(curr);
+            UserStateChangedEventArgs args = new UserStateChangedEventArgs(userChangedState);
+
+            EventHandler<UserStateChangedEventArgs> handler = _instance.Changed;
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
         }
     }
 }

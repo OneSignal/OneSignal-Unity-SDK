@@ -31,6 +31,7 @@
 #import "OneSignalBridgeUtil.h"
 
 typedef void (*StateListenerDelegate)(const char* current, const char* previous);
+typedef void (*UserStateListenerDelegate)(const char* current);
 
 /*
  * Helpers
@@ -73,6 +74,45 @@ typedef void (*StateListenerDelegate)(const char* current, const char* previous)
         auto curr = oneSignalJsonStringFromDictionary([[state current] jsonRepresentation]);
         auto prev = oneSignalJsonStringFromDictionary([[state previous] jsonRepresentation]);
         _pushSubscriptionDelegate(curr, prev);
+    }
+}
+
+@end
+
+/*
+ * User state observer singleton for global callbacks
+ */
+
+@interface OneSignalUserStateObserver : NSObject <OSUserStateObserver>
+
++ (instancetype) sharedUserObserver;
+@property UserStateListenerDelegate userStateDelegate;
+
+@end
+
+@implementation OneSignalUserStateObserver
+
++ (instancetype) sharedUserObserver {
+    static dispatch_once_t pred = 0;
+    static id _sharedObject = nil;
+    dispatch_once(&pred, ^{
+        _sharedObject = [[self alloc] init];
+    });
+    return _sharedObject;
+}
+
+- (instancetype) init {
+    if (self = [super init]) {
+        [OneSignal.User addObserver:self];
+    }
+
+    return self;
+}
+
+- (void)onUserStateDidChangeWithState:(OSUserChangedState*)state {
+    if (_userStateDelegate != nil) {
+        auto curr = oneSignalJsonStringFromDictionary([[state current] jsonRepresentation]);
+        _userStateDelegate(curr);
     }
 }
 
@@ -160,6 +200,20 @@ extern "C" {
         [OneSignal.User removeTags:tags];
     }
 
+    const char* _oneSignalUserGetOneSignalId(){
+        if (OneSignal.User.onesignalId == NULL) {
+            return NULL;
+        }
+        return strdup([OneSignal.User.onesignalId UTF8String]);
+    }
+
+    const char* _oneSignalUserGetExternalId(){
+        if (OneSignal.User.externalId == NULL) {
+            return NULL;
+        }
+        return strdup([OneSignal.User.externalId UTF8String]);
+    }
+
     const char* _oneSignalPushSubscriptionGetId() {
         if (OneSignal.User.pushSubscription.id == NULL) {
             return NULL;
@@ -188,5 +242,9 @@ extern "C" {
 
     void _oneSignalPushSubscriptionAddStateChangedCallback(StateListenerDelegate callback) {
         [[OneSignalUserObserver sharedUserObserver] setPushSubscriptionDelegate:callback];
+    }
+
+    void _oneSignalUserAddStateChangedCallback(UserStateListenerDelegate callback) {
+        [[OneSignalUserStateObserver sharedUserObserver] setUserStateDelegate:callback];
     }
 }

@@ -99,6 +99,14 @@ Once (or if) the user is no longer identifiable in your app (i.e. they logged ou
 
 Logging out has the affect of reverting to a “device-scoped” user, which is the new owner of the device’s push subscription.
 
+To observe changes to the onesignalId or externalId you can add a custom method to the event:
+    
+    OneSignal.User.Changed += _userStateChanged;
+
+    private void yourOnUserStateChangedMethod(object sender, UserStateChangedEventArgs e) {
+        ...
+    }
+
 
 ## Subscriptions
 
@@ -165,7 +173,10 @@ The user name space is accessible via `OneSignal.User` and provides access to us
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `IPushSubscription PushSubscription`                  | *The push subscription associated to the current user.*                                                                                                                                                                                  |
 | `string Language`                                     | *Set the 2-character language either as a detected language or explicitly set for this user.*                                                                                                                                            |
+| `Changed` <br><br> `event EventHandler<UserStateChangedEventArgs> Changed` <br><br> `UserStateChangedEventArgs { UserChangedState State }` | *Adds a change event that will run whenever the onesignalId or externalId has been changed.*                      |
+*                                                                                                                                            |
 | `PushSubsription.Changed` <br><br> `event EventHandler<PushSubscriptionChangedEventArgs> Changed` <br><br> `PushSubscriptionChangedEventArgs { PushSubscriptionChangedState State }` | *Adds a change event that will run whenever the push subscription has been changed.*                      |
+*                                                                                                                                            |
 | `void AddAlias(string label, string id)`              | *Set an alias for the current user.  If this alias already exists it will be overwritten.*                                                                                                                                               |
 | `void AddAliases(Dictionary<string, string> aliases)` | S*et aliases for the current user. If any alias already exists it will be overwritten.*                                                                                                                                                  |
 | `void RemoveAlias(string label)`                      | *Remove an alias from the current user.*                                                                                                                                                                                                 |
