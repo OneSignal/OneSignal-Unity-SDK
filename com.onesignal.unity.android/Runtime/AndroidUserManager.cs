@@ -27,8 +27,10 @@
 
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using OneSignalSDK.User;
+using OneSignalSDK.User.Internal;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.Android.User.Models;
 using OneSignalSDK.Android.Utilities;
@@ -37,10 +39,19 @@ namespace OneSignalSDK.Android.User {
     internal sealed class AndroidUserManager : IUserManager {
         private readonly AndroidJavaObject _user;
         private AndroidPushSubscription _pushSubscription;
+        public event EventHandler<UserStateChangedEventArgs> Changed;
         
         public AndroidUserManager(AndroidJavaClass sdkClass) {
             _user = sdkClass.CallStatic<AndroidJavaObject>("getUser");
             _pushSubscription = new AndroidPushSubscription(_user);
+        }
+
+        public string onesignalId {
+            get => _user.Call<string>("getOnesignalId");
+        }
+
+        public string externalId {
+            get => _user.Call<string>("getExternalId");
         }
 
         public IPushSubscription PushSubscription {
@@ -93,7 +104,31 @@ namespace OneSignalSDK.Android.User {
             => _user.Call("removeSms", sms);
 
         public void Initialize() {
+            _user.Call("addObserver", new InternalUserChangedHandler(this));
             _pushSubscription.Initialize();
+        }
+
+        private sealed class InternalUserChangedHandler : OneSignalAndroidJavaProxy {
+            private AndroidUserManager _parent;
+
+            public InternalUserChangedHandler(AndroidUserManager userManager) : base("user.state.IUserStateObserver") {
+                _parent = userManager;
+            }
+
+            /// <param name="state">UserChangedState</param>
+            public void onUserStateChange(AndroidJavaObject state) {
+                var currentJO = state.Call<AndroidJavaObject>("getCurrent");
+                var current = currentJO.ToSerializable<UserState>();
+
+                UserChangedState userChangedState = new UserChangedState(current);
+                UserStateChangedEventArgs args = new UserStateChangedEventArgs(userChangedState);
+
+                EventHandler<UserStateChangedEventArgs> handler = _parent.Changed;
+                if (handler != null)
+                {
+                    UnityMainThreadDispatch.Post(state => handler(_parent, args));
+                }
+            }
         }
     }
 }

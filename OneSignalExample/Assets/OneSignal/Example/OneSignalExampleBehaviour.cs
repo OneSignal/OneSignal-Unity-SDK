@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using OneSignalSDK;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.InAppMessages;
+using OneSignalSDK.User;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.Debug.Models;
 using OneSignalSDK.Debug.Utilities;
@@ -159,6 +160,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         // Setup the below to listen for and respond to state changes
         OneSignal.User.PushSubscription.Changed += _pushSubscriptionChanged;
+        OneSignal.User.Changed += _userStateChanged;
     }
 
     /*
@@ -209,6 +211,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     private void _pushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e) {
         _log($"Push subscription changed from previous: {JsonUtility.ToJson(e.State.Previous)}");
         _log($"Push subscription changed to current: {JsonUtility.ToJson(e.State.Current)}");
+    }
+
+    private void _userStateChanged(object sender, UserStateChangedEventArgs e) {
+        _log($"onesignalId changed : {e.State.Current.OneSignalId}");
+        _log($"externalId changed : {e.State.Current.ExternalId}");
     }
 
     /*
@@ -296,6 +303,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void RemoveAlias() {
         _log($"Removing alias with label <b>{aliasKey}</b>");
         OneSignal.User.RemoveAlias(aliasKey);
+    }
+
+    public void GetOneSignalId() {
+        string onesignalId = OneSignal.User.onesignalId;
+        _log($"Get OneSignalId <b>{onesignalId}</b>");
+    }
+
+    public void GetExternalId() {
+        string externalId = OneSignal.User.externalId;
+        _log($"Get ExternalId <b>{externalId}</b>");
     }
 
     /*
