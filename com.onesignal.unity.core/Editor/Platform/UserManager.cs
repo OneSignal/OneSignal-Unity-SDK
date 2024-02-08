@@ -25,11 +25,22 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
 using OneSignalSDK.User.Models;
 
 namespace OneSignalSDK.User {
     internal sealed class UserManager : IUserManager {
+        public string OneSignalId {
+            get => "";
+        }
+
+        public string ExternalId {
+            get => "";
+        }
+
+        public event EventHandler<UserStateChangedEventArgs> Changed;
+
         private PushSubscription _subscription = new PushSubscription();
 
         public IPushSubscription PushSubscription {
