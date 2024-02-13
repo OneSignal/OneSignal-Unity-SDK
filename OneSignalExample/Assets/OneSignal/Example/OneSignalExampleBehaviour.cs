@@ -214,8 +214,8 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     private void _userStateChanged(object sender, UserStateChangedEventArgs e) {
-        _log($"onesignalId changed : {e.State.Current.OneSignalId}");
-        _log($"externalId changed : {e.State.Current.ExternalId}");
+        _log($"OneSignalId changed : {e.State.Current.OneSignalId}");
+        _log($"ExternalId changed : {e.State.Current.ExternalId}");
     }
 
     /*
@@ -306,12 +306,12 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     public void GetOneSignalId() {
-        string onesignalId = OneSignal.User.onesignalId;
+        string onesignalId = OneSignal.User.OneSignalId;
         _log($"Get OneSignalId <b>{onesignalId}</b>");
     }
 
     public void GetExternalId() {
-        string externalId = OneSignal.User.externalId;
+        string externalId = OneSignal.User.ExternalId;
         _log($"Get ExternalId <b>{externalId}</b>");
     }
 

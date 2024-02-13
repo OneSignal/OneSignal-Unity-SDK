@@ -213,8 +213,8 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     private void _userStateChanged(object sender, UserStateChangedEventArgs e) {
-        _log($"onesignalId changed : {JsonUtility.ToJson(e.State.Current.onesignalId)}");
-        _log($"externalId changed : {JsonUtility.ToJson(e.State.Current.externalId)}");
+        _log($"OneSignalId changed : {JsonUtility.ToJson(e.State.Current.OneSignalId)}");
+        _log($"ExternalId changed : {JsonUtility.ToJson(e.State.Current.ExternalId)}");
     }
 
     /*

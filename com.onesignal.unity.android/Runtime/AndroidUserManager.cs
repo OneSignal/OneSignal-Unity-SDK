@@ -46,11 +46,11 @@ namespace OneSignalSDK.Android.User {
             _pushSubscription = new AndroidPushSubscription(_user);
         }
 
-        public string onesignalId {
+        public string OneSignalId {
             get => _user.Call<string>("getOnesignalId");
         }
 
-        public string externalId {
+        public string ExternalId {
             get => _user.Call<string>("getExternalId");
         }
 
