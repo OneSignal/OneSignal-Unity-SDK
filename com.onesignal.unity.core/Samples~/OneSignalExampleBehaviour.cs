@@ -159,6 +159,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         // Setup the below to listen for and respond to state changes
         OneSignal.User.PushSubscription.Changed += _pushSubscriptionChanged;
+        OneSignal.User.Changed += _userStateChanged;
     }
 
     /*
@@ -209,6 +210,11 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     private void _pushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e) {
         _log($"Push subscription changed from previous: {JsonUtility.ToJson(e.State.Previous)}");
         _log($"Push subscription changed to current: {JsonUtility.ToJson(e.State.Current)}");
+    }
+
+    private void _userStateChanged(object sender, UserStateChangedEventArgs e) {
+        _log($"OneSignalId changed : {JsonUtility.ToJson(e.State.Current.OneSignalId)}");
+        _log($"ExternalId changed : {JsonUtility.ToJson(e.State.Current.ExternalId)}");
     }
 
     /*
