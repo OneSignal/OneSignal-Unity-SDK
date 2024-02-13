@@ -34,7 +34,6 @@ using OneSignalSDK;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.User;
-using OneSignalSDK.User.Internal;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.Debug.Models;
 using OneSignalSDK.Debug.Utilities;

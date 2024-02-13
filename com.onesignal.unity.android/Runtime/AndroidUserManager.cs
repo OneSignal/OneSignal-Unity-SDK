@@ -117,7 +117,6 @@ namespace OneSignalSDK.Android.User {
 
             /// <param name="state">UserChangedState</param>
             public void onUserStateChange(AndroidJavaObject state) {
-                UnityEngine.Debug.Log("onUserStateChange fired");
                 var currentJO = state.Call<AndroidJavaObject>("getCurrent");
                 var current = currentJO.ToSerializable<UserState>();
 

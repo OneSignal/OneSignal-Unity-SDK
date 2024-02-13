@@ -25,10 +25,10 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using System;
 
 namespace OneSignalSDK.User.Models {
     /// <summary>

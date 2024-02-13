@@ -7,12 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - iOS crash when calling OneSignal.User.PushSubscription.Id and OneSignal.User.PushSubscription.Token when they are null.
-
-## [5.1.0]
-### Fixed
-- Add getters for the user state that includes onesignalId and externalId
-- Add observer for the user state
 ### Changed
+- Add public getters for OnesignalId and ExternalId in the User namespace
+- Add public event handler OneSignal.User.Changed that fires when the OnesignalId or ExternalId changes
 - Updated included Android SDK to [5.1.4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.4)
 
 ## [5.0.6]
