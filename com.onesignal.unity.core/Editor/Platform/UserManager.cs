@@ -31,11 +31,11 @@ using OneSignalSDK.User.Models;
 
 namespace OneSignalSDK.User {
     internal sealed class UserManager : IUserManager {
-        public string onesignalId {
+        public string OneSignalId {
             get => "";
         }
 
-        public string externalId {
+        public string ExternalId {
             get => "";
         }
 

@@ -306,12 +306,12 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     public void GetOneSignalId() {
-        string onesignalId = OneSignal.User.onesignalId;
+        string onesignalId = OneSignal.User.OneSignalId;
         _log($"Get OneSignalId <b>{onesignalId}</b>");
     }
 
     public void GetExternalId() {
-        string externalId = OneSignal.User.externalId;
+        string externalId = OneSignal.User.ExternalId;
         _log($"Get ExternalId <b>{externalId}</b>");
     }
 

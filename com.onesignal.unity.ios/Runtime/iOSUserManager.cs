@@ -68,11 +68,11 @@ namespace OneSignalSDK.iOS.User {
             _pushSubscription = new iOSPushSubscription();
         }
 
-        public string onesignalId {
+        public string OneSignalId {
             get => _oneSignalUserGetOneSignalId();
         }
 
-        public string externalId {
+        public string ExternalId {
             get => _oneSignalUserGetExternalId();
         }
 
