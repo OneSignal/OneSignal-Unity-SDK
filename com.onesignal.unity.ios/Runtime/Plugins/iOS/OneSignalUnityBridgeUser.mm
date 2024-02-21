@@ -201,17 +201,17 @@ extern "C" {
     }
 
     const char* _oneSignalUserGetOneSignalId(){
-        if (OneSignal.User.OneSignalId == NULL) {
+        if (OneSignal.User.onesignalId == NULL) {
             return NULL;
         }
-        return strdup([OneSignal.User.OneSignalId UTF8String]);
+        return strdup([OneSignal.User.onesignalId UTF8String]);
     }
 
     const char* _oneSignalUserGetExternalId(){
-        if (OneSignal.User.ExternalId == NULL) {
+        if (OneSignal.User.externalId == NULL) {
             return NULL;
         }
-        return strdup([OneSignal.User.ExternalId UTF8String]);
+        return strdup([OneSignal.User.externalId UTF8String]);
     }
 
     const char* _oneSignalPushSubscriptionGetId() {
