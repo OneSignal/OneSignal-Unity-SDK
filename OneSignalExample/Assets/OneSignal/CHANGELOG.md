@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Add public getters for OneSignalId and ExternalId in the User namespace
 - Add public event handler OneSignal.User.Changed that fires when the OneSignalId or ExternalId changes
-- Updated included Android SDK to [5.1.4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.4)
+- Updated included Android SDK to [5.1.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.5)
 
 ## [5.0.6]
 ### Fixed

@@ -6,7 +6,7 @@ apply plugin: 'com.android.library'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.onesignal:OneSignal:5.1.4' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
+    implementation 'com.onesignal:OneSignal:5.1.5' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
 // Android Resolver Dependencies End
 **DEPS**}
 
