@@ -47,11 +47,17 @@ namespace OneSignalSDK.Android.User {
         }
 
         public string OneSignalId {
-            get => _user.Call<string>("getOnesignalId");
+            get {
+                string id = _user.Call<string>("getOnesignalId");
+                return string.IsNullOrEmpty(id)? null : id;
+            }
         }
 
         public string ExternalId {
-            get => _user.Call<string>("getExternalId");
+            get {
+                string id = _user.Call<string>("getExternalId");
+                return string.IsNullOrEmpty(id)? null : id;
+            }
         }
 
         public IPushSubscription PushSubscription {
