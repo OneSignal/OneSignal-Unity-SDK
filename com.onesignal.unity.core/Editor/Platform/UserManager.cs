@@ -32,11 +32,11 @@ using OneSignalSDK.User.Models;
 namespace OneSignalSDK.User {
     internal sealed class UserManager : IUserManager {
         public string OneSignalId {
-            get => "";
+            get => null;
         }
 
         public string ExternalId {
-            get => "";
+            get => null;
         }
 
         public event EventHandler<UserStateChangedEventArgs> Changed;
