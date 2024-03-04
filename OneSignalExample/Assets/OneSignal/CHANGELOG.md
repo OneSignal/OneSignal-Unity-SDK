@@ -5,15 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## [5.1.0]
-### Fixed
-- iOS crash when calling OneSignal.User.PushSubscription.Id and OneSignal.User.PushSubscription.Token when they are null.
-### Changed
-- Add public getters for OneSignalId and ExternalId in the User namespace
-- Add public event handler OneSignal.User.Changed that fires when the OneSignalId or ExternalId changes
-- Updated included Android SDK to [5.1.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.5)
-
-## [5.0.6]
 ### Fixed
 - Duplicate symbol errors when building with other iOS plugins
 - Removed READ_PHONE_STATE permission in Android builds. Delete your OneSignalConfig.androidlib and run the 
@@ -21,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed lower build-tools versions being needed for Android builds. Delete your OneSignalConfig.androidlib and run the 
 "Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup** to apply the fix.
 ### Changed
-- Updated included Android SDK to [5.1.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.2).
+- Updated included Android SDK to [5.1.1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.1).
   - Android builds now require the Target API Level to be set to 33 or higher.
 - Updated included iOS SDK to [5.1.0](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.1.0)
 
@@ -93,6 +84,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated included iOS SDK to [5.0.0-beta-01](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-01)
 
 If you run into any problems, please don’t hesitate to add to this [issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/585)!
+
+## [3.0.11]
+### Fixed
+- Fixed rare Android ANRs on callbacks firing and also when backgrounding the app.
 
 ## [3.0.10]
 ### Changed
@@ -282,9 +277,7 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.0...HEAD
-[5.1.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.6...5.1.0
-[5.0.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.5...5.0.6
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.5...HEAD
 [5.0.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.4...5.0.5
 [5.0.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.3...5.0.4
 [5.0.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.2...5.0.3
