@@ -94,6 +94,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 If you run into any problems, please don’t hesitate to add to this [issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/585)!
 
+## [3.0.11]
+### Fixed
+- Fixed rare Android ANRs on callbacks firing and also when backgrounding the app.
+
 ## [3.0.10]
 ### Changed
 - Updated included Android SDK to [4.8.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.5)

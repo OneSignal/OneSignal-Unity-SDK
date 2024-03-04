@@ -112,8 +112,6 @@ namespace OneSignalSDK.Android {
         }
 
         public override void Initialize(string appId) {
-            SetOneSignalCallbacksToBackgroundThread();
-
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
