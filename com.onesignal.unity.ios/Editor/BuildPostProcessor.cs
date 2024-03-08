@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,9 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode.Extensions;
 using Debug = UnityEngine.Debug;
 
-namespace OneSignalSDK {
+using UnityEditor.Callbacks;
+
+namespace OneSignalSDK.iOS {
     /// <summary>
     /// Adds required frameworks to the iOS project, and adds the OneSignalNotificationServiceExtension. Also handles
     /// making sure both targets (app and extension service) have the correct dependencies
@@ -70,7 +72,7 @@ namespace OneSignalSDK {
     public class BuildPostProcessor : IPostprocessBuildWithReport {
         private const string ServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
         private const string ServiceExtensionFilename = "NotificationService.swift";
-        private const string DependenciesFilename = "OneSignalIOSDependencies.xml";
+        private const string DependenciesFilename = "OneSignaliOSDependencies.xml";
         private const string PackageName = "com.onesignal.unity.ios";
 
         private static readonly string EditorFilesPath = Path.Combine("Packages", PackageName, "Editor");
@@ -108,6 +110,8 @@ namespace OneSignalSDK {
             
             // Add the service extension
             AddNotificationServiceExtension();
+
+            DisableBitcode();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
@@ -189,6 +193,7 @@ namespace OneSignalSDK {
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
             _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(extensionGuid, "DEVELOPMENT_TEAM", PlayerSettings.iOS.appleDeveloperTeamID);
+            _project.SetBuildProperty(extensionGuid, "ENABLE_BITCODE", "NO");
 
             _project.AddBuildProperty(extensionGuid, "LIBRARY_SEARCH_PATHS",
                 $"$(PROJECT_DIR)/Libraries/{PluginLibrariesPath.Replace("\\", "/")}");
@@ -279,6 +284,20 @@ namespace OneSignalSDK {
             }
             
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void DisableBitcode() {
+            // Main
+            var targetGuid = _project.GetMainTargetGuid();
+            _project.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
+
+            // Unity Tests
+            var unityTests = _project.TargetGuidByName(PBXProject.GetUnityTestTargetName());
+            _project.SetBuildProperty(unityTests, "ENABLE_BITCODE", "NO");
+
+            // Unity Framework
+            var unityFramework = _project.GetUnityFrameworkTargetGuid();
+            _project.SetBuildProperty(unityFramework, "ENABLE_BITCODE", "NO");
         }
     }
 }

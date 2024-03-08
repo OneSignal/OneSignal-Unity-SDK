@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,10 +33,10 @@ namespace OneSignalSDK
     internal static class AttachToInit {
         #if ONE_SIGNAL_INSTALLED
             [RuntimeInitializeOnLoadMethod] public static void Init() {
-                if (string.IsNullOrEmpty(OneSignal.AppId))
-                    OneSignal.OnInitialize += appId => VSAttribution.SendAttributionEvent("Login", "OneSignal", appId);
+                if (string.IsNullOrEmpty(OneSignalPlatform.AppId))
+                    OneSignalPlatform.OnInitialize += appId => VSAttribution.SendAttributionEvent("Login", "OneSignal", appId);
                 else
-                    VSAttribution.SendAttributionEvent("Login", "OneSignal", OneSignal.AppId);
+                    VSAttribution.SendAttributionEvent("Login", "OneSignal", OneSignalPlatform.AppId);
             }
         #endif
     }

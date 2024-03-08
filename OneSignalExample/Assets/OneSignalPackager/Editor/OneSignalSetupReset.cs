@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,9 +40,9 @@ namespace OneSignalSDK {
         public static void ResetAllSteps() {
             /*
              * ExportAndroidResourcesStep
-             * deletes the OneSignalConfig.plugin directory
+             * deletes the OneSignalConfig.androidlib directory
              */
-            AssetDatabase.DeleteAsset(Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.plugin"));
+            AssetDatabase.DeleteAsset(Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.androidlib"));
 
             /*
              * InstallEdm4UStep

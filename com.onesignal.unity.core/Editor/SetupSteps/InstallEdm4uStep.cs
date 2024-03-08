@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using OneSignalSDK.Debug.Utilities;
 
 namespace OneSignalSDK {
     /// <summary>
@@ -120,7 +121,7 @@ namespace OneSignalSDK {
             });
         }
 
-        private const string _edm4UVersion = "1.2.169";
+        private const string _edm4UVersion = "1.2.177";
 
         private static readonly string _edm4UPackageDownloadUrl
             = $"https://github.com/googlesamples/unity-jar-resolver/blob/v{_edm4UVersion}/external-dependency-manager-{_edm4UVersion}.unitypackage?raw=true";

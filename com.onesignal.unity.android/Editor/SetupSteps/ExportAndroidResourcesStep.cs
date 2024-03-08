@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ using UnityEditor;
 
 namespace OneSignalSDK {
     /// <summary>
-    /// Copies the OneSignalConfig.plugin to Assets/Plugins/Android/*
+    /// Copies the OneSignalConfig.androidlib to Assets/Plugins/Android/*
     /// </summary>
     public sealed class ExportAndroidResourcesStep : OneSignalSetupStep {
         public override string Summary
@@ -45,11 +45,12 @@ namespace OneSignalSDK {
             => true;
 
         protected override bool _getIsStepCompleted() {
-            if (!Directory.Exists(_pluginExportPath))
+            if (!Directory.Exists(_pluginExportPath) || Directory.Exists(_pluginV3ExportPath))
                 return false;
 
             var packagePaths = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
+            packagePaths = packagePaths.Where(file => !file.EndsWith(".meta"));
 
             var exportPaths = Directory.GetFiles(_pluginExportPath, "*", SearchOption.AllDirectories)
                .Select(path => path.Remove(0, path.LastIndexOf(_pluginName, StringComparison.InvariantCulture)));
@@ -66,7 +67,9 @@ namespace OneSignalSDK {
         }
 
         protected override void _runStep() {
-            var files         = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
+            MigratePluginToAndroidlib();
+
+            var files = Directory.GetFiles(_pluginPackagePath, "*", SearchOption.AllDirectories);
             var filteredFiles = files.Where(file => !file.EndsWith(".meta"));
 
             foreach (var file in filteredFiles) {
@@ -92,7 +95,39 @@ namespace OneSignalSDK {
             AssetDatabase.Refresh();
         }
 
-        private const string _pluginName = "OneSignalConfig.plugin";
+        private void MigratePluginToAndroidlib() {
+            if (Directory.Exists(_pluginV3ExportPath)) {
+                if (!Directory.Exists(_pluginExportPath)) {
+                    try
+                    {
+                        AssetDatabase.StartAssetEditing();
+
+                        // Remove project.properties
+                        if (File.Exists(_projectPropertiesV3ExportPath)) {
+                            AssetDatabase.DeleteAsset(_projectPropertiesV3ExportPath);
+                        }
+                        
+                        // Rename OneSignalConfig.plugin to OneSignalConfig.androidlib
+                        AssetDatabase.MoveAsset(_pluginV3ExportPath, _pluginExportPath);
+                    }
+                    finally
+                    {
+                        AssetDatabase.StopAssetEditing();
+                    }
+
+                    // Move the icons and .wav file to /src/main
+                    if (Directory.Exists(_resV3ExportPath)) {
+                        Directory.CreateDirectory(Path.GetDirectoryName(_resExportPath));
+
+                        FileUtil.MoveFileOrDirectory(_resV3ExportPath, _resExportPath);
+                    }
+                } else {
+                    AssetDatabase.DeleteAsset(_pluginV3ExportPath);
+                }
+            }
+        }
+
+        private const string _pluginName = "OneSignalConfig.androidlib";
         private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor");
         private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
         
@@ -101,5 +136,15 @@ namespace OneSignalSDK {
         
         private static readonly string _manifestPackagePath = Path.Combine(_pluginPackagePath, "AndroidManifest.xml");
         private static readonly string _manifestExportPath = Path.Combine(_pluginExportPath, "AndroidManifest.xml");
+
+        private const string _resPath = "src/main/res";
+        private static readonly string _resExportPath = Path.Combine(_pluginExportPath, _resPath);
+
+        // Old OneSignalConfig name used from 3.x.x to 5.0.2
+        private const string _pluginNameV3 = "OneSignalConfig.plugin";
+        private static readonly string _pluginV3ExportPath = Path.Combine(_androidPluginsPath, _pluginNameV3);
+        private static readonly string _projectPropertiesV3ExportPath = Path.Combine(_pluginV3ExportPath, "project.properties");
+        private const string _resV3Path = "res";
+        private static readonly string _resV3ExportPath = Path.Combine(_pluginExportPath, _resV3Path);
     }
 }

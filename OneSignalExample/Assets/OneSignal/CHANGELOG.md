@@ -5,9 +5,99 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.0]
+### Fixed
+- iOS crash when calling OneSignal.User.PushSubscription.Id and OneSignal.User.PushSubscription.Token when they are null.
+### Changed
+- Add public getters for OneSignalId and ExternalId in the User namespace
+- Add public event handler OneSignal.User.Changed that fires when the OneSignalId or ExternalId changes
+- Updated included Android SDK to [5.1.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.5)
+
+## [5.0.6]
+### Fixed
+- Duplicate symbol errors when building with other iOS plugins
+- Removed READ_PHONE_STATE permission in Android builds. Delete your OneSignalConfig.androidlib and run the 
+"Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup** to apply the fix.
+- Fixed lower build-tools versions being needed for Android builds. Delete your OneSignalConfig.androidlib and run the 
+"Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup** to apply the fix.
+### Changed
+- Updated included Android SDK to [5.1.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.2).
+  - Android builds now require the Target API Level to be set to 33 or higher.
+- Updated included iOS SDK to [5.1.0](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.1.0)
+
+## [5.0.5]
+### Changed
+- Add public get tags method
+- Updated included Android SDK to [5.0.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.5)
+- Updated included iOS SDK to [5.0.5](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.5)
+### Fixed
+- Included meta files in OneSignalConfig.androidlib to prevent asset from being ignored
+- Package download url in the "Sync example code bundle package" step from the OneSignal SDK Setup
+
+## [5.0.4]
+### Changed
+- Updated included Android SDK to [5.0.3](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.3)
+
+## [5.0.3]
+### Changed
+- `InstallEdm4uStep` now imports version [1.2.177](https://github.com/googlesamples/unity-jar-resolver/releases/tag/v1.2.177) of [EDM4U](https://github.com/googlesamples/unity-jar-resolver)
+- Updated included Android SDK to [5.0.2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.2)
+- Updated included iOS SDK to [5.0.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.2)
+- `OneSignalConfig.plugin` has been changed to `OneSignalConfig.androidlib`. Run the "Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup** to migrate. Custom notification icons are now located in `Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res`
+### Fixed
+- Sending VSAttribution data from the editor
+- iOS notifications clicked event firing if the app was cold started from clicking a notification
+- ClassNotFoundException: com.onesignal.OneSignal for Android builds with minify enabled. You must run the "Copy Android plugin to Assets" step in **Window > OneSignal SDK Setup**.
+- Disabled bitcode to avoid iOS build error
+
+## [5.0.2]
+### Fixed
+- Stop foreground notifications from displaying after calling prevent default on iOS
+
+## [5.0.1]
+### Fixed
+- Push subscription Id and Token malloc error on iOS
+
+## [5.0.0]
+### Changed
+- Removed `SetLaunchURLsInApp`
+- Removed async from location request permission and updated method name to `RequestPermission`
+- Updated included iOS SDK to [5.0.1](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.1)
+- Updated included Android SDK to [5.0.0](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0)
+- Updated default OneSignal Android notification icons to new logo
+### Fixed
+- NoSuchMethodError for outcome methods on Android
+- Completion check for the Copy Android plugin to Assets setup step
+
+## [5.0.0-beta.3]
+### Changed
+- Updated `Notifications`, `InAppMessages`, and `User` models to have Pascal Case properties
+- Updated public API. Please see the updated [migration guide](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.3/MIGRATION_GUIDE_v3_to_v5.md) for the most up to date signatures. 
+- Updated included Android SDK to [5.0.0-beta4](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta4)
+- Updated included iOS SDK to [5.0.0-beta-04](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-04)
+
+## [5.0.0-beta.2]
+### Added
+- SDK type and version to api headers
+### Changed
+- Updated included Android SDK to [5.0.0-beta2](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta2)
+- Updated included iOS SDK to [5.0.0-beta-02](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-02)
+
+## [5.0.0-beta.1]
+### Added
+- [Migration guide](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.1/MIGRATION_GUIDE_v3_to_v5.md
+) for updating from 3.x.x to 5.x.x
+### Changed
+- Overhauled public API of the SDK to a user-centered model. While this release is in beta please see our included [example MonoBehaviour](https://github.com/OneSignal/OneSignal-Unity-SDK/blob/5.0.0-beta.1/OneSignalExample/Assets/OneSignal/Example/OneSignalExampleBehaviour.cs) for usage.
+- Updated included Android SDK to [5.0.0-beta1](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.0.0-beta1)
+- Updated included iOS SDK to [5.0.0-beta-01](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.0.0-beta-01)
+
+If you run into any problems, please don’t hesitate to add to this [issue](https://github.com/OneSignal/OneSignal-Unity-SDK/issues/585)!
+
 ## [3.0.11]
 ### Fixed
 - Fixed rare Android ANRs on callbacks firing and also when backgrounding the app.
+
 ## [3.0.10]
 ### Changed
 - Updated included Android SDK to [4.8.5](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/4.8.5)
@@ -196,9 +286,18 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.11...HEAD
-[3.0.11]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.10...3.0.11
-[3.0.10]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.9...3.0.10
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.0...HEAD
+[5.1.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.6...5.1.0
+[5.0.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.5...5.0.6
+[5.0.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.4...5.0.5
+[5.0.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.3...5.0.4
+[5.0.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.2...5.0.3
+[5.0.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.1...5.0.2
+[5.0.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0...5.0.1
+[5.0.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.3...5.0.0
+[5.0.0-beta.3]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.2...5.0.0-beta.3
+[5.0.0-beta.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.0-beta.1...5.0.0-beta.2
+[5.0.0-beta.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.9...5.0.0-beta.1
 [3.0.9]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.8...3.0.9
 [3.0.8]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.7...3.0.8
 [3.0.7]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/3.0.6...3.0.7

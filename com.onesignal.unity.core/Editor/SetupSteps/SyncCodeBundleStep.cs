@@ -1,7 +1,7 @@
 /*
 * Modified MIT License
 * 
-* Copyright 2022 OneSignal
+* Copyright 2023 OneSignal
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ namespace OneSignalSDK {
 
         protected override bool _getIsStepCompleted() {
             if (!File.Exists(_packageJsonPath)) {
-                Debug.LogError($"Could not find {_packageJsonPath}");
+                UnityEngine.Debug.LogError($"Could not find {_packageJsonPath}");
                 return true;
             }
 
@@ -61,7 +61,7 @@ namespace OneSignalSDK {
                 return _bundleVersion == _sdkVersion;
             }
 
-            Debug.LogError("Could not deserialize package.json");
+            UnityEngine.Debug.LogError("Could not deserialize package.json");
 
             return true;
         }
@@ -78,7 +78,7 @@ namespace OneSignalSDK {
         private static string _bundleVersion => File.ReadAllText(_versionPath);
 
         private static string _onesignalUnityPackageDownloadUrl
-            => $"https://github.com/OneSignal/OneSignal-Unity-SDK/blob/{_sdkVersion}/OneSignal-v{_sdkVersion}.unitypackage";
+            => $"https://github.com/OneSignal/OneSignal-Unity-SDK/releases/download/{_sdkVersion}/OneSignal-v{_sdkVersion}.unitypackage";
 
         private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.core");
         private static readonly string _packageJsonPath = Path.Combine(_packagePath, "package.json");

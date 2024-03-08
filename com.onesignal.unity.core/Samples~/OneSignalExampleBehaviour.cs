@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,15 @@
 
 #if ONE_SIGNAL_INSTALLED
 using System;
-using System.Collections.Generic;
-using OneSignalSDK;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using OneSignalSDK;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.User.Models;
+using OneSignalSDK.Debug.Models;
+using OneSignalSDK.Debug.Utilities;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -54,15 +59,35 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public string phoneNumber;
 
     /// <summary>
-    /// set to your app id (https://documentation.onesignal.com/docs/accounts-and-keys)
+    /// set to your app id (https://documentation.onesignal.com/docs/keys-and-ids)
     /// </summary>
     public string appId;
 
     /// <summary>
     /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
-    /// <see cref="OneSignal.PrivacyConsent"/> in this test MonoBehaviour
+    /// <see cref="OneSignal.ConsentRequired"/> in this test MonoBehaviour
     /// </summary>
-    public bool requiresUserPrivacyConsent;
+    public bool consentRequired;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool consentGiven;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string language;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string aliasKey;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string aliasValue;
 
     /// <summary>
     /// 
@@ -95,159 +120,188 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public float outcomeValue;
 
     /// <summary>
+    /// 
+    /// </summary>
+    public string liveActivityId;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string liveActivityToken;
+
+    /// <summary>
     /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
     /// MonoBehaviour in your opening Scene
     /// </summary>
     private void Start() {
         // Enable lines below to debug issues with OneSignal
-        OneSignal.Default.LogLevel   = LogLevel.Info;
-        OneSignal.Default.AlertLevel = LogLevel.Fatal;
+        OneSignal.Debug.LogLevel = LogLevel.Info;
+        OneSignal.Debug.AlertLevel = LogLevel.Fatal;
 
-        // Setting RequiresPrivacyConsent to true will prevent the OneSignalSDK from operating until
+        _log($"Initializing with appId <b>{appId}</b>");
+        OneSignal.Initialize(appId);
+
+        // Setting ConsentRequired to true will prevent the OneSignalSDK from operating until
         // PrivacyConsent is also set to true
-        OneSignal.Default.RequiresPrivacyConsent = requiresUserPrivacyConsent;
+        OneSignal.ConsentRequired = consentRequired;
 
         // Setup the below to listen for and respond to events from notifications
-        OneSignal.Default.NotificationOpened   += _notificationOpened;
-        OneSignal.Default.NotificationWillShow += _notificationReceived;
+        OneSignal.Notifications.Clicked += _notificationOnClick;
+        OneSignal.Notifications.ForegroundWillDisplay += _notificationOnDisplay;
+        OneSignal.Notifications.PermissionChanged += _notificationPermissionChanged;
 
-        // Setup the below to listen for and respond to events from in app messages
-        OneSignal.Default.InAppMessageWillDisplay     += _iamWillDisplay;
-        OneSignal.Default.InAppMessageDidDisplay      += _iamDidDisplay;
-        OneSignal.Default.InAppMessageWillDismiss     += _iamWillDismiss;
-        OneSignal.Default.InAppMessageDidDismiss      += _iamDidDismiss;
-        OneSignal.Default.InAppMessageTriggeredAction += _iamTriggeredAction;
+        // Setup the below to listen for and respond to events from in-app messages
+        OneSignal.InAppMessages.WillDisplay += _iamWillDisplay;
+        OneSignal.InAppMessages.DidDisplay += _iamDidDisplay;
+        OneSignal.InAppMessages.WillDismiss += _iamWillDismiss;
+        OneSignal.InAppMessages.DidDismiss += _iamDidDismiss;
+        OneSignal.InAppMessages.Clicked += _iamOnClick;
 
         // Setup the below to listen for and respond to state changes
-        OneSignal.Default.NotificationPermissionChanged += _notificationPermissionChanged;
-        OneSignal.Default.PushSubscriptionStateChanged  += _pushStateChanged;
-        OneSignal.Default.EmailSubscriptionStateChanged += _emailStateChanged;
-        OneSignal.Default.SMSSubscriptionStateChanged   += _smsStateChanged;
+        OneSignal.User.PushSubscription.Changed += _pushSubscriptionChanged;
+        OneSignal.User.Changed += _userStateChanged;
     }
 
     /*
      * SDK events
      */
-
-    private void _notificationOpened(NotificationOpenedResult result) {
-        _log($"Notification was opened with result: {JsonUtility.ToJson(result)}");
+    
+    private void _notificationOnClick(object sender, NotificationClickEventArgs e) {
+        _log($"Notification was clicked with Notification: {JsonUtility.ToJson(e.Notification)}");
+        _log($"Notification was clicked with Result: {JsonUtility.ToJson(e.Result)}");
     }
 
-    private Notification _notificationReceived(Notification notification) {
-        var additionalData = notification.additionalData != null
-            ? Json.Serialize(notification.additionalData)
+    private void _notificationOnDisplay(object sender, NotificationWillDisplayEventArgs e) {
+        var additionalData = e.Notification.AdditionalData != null
+            ? Json.Serialize(e.Notification.AdditionalData)
                 : null;
-            
-            _log($"Notification was received in foreground: {JsonUtility.ToJson(notification)}\n{additionalData}");
-            return notification; // show the notification
-        }
 
-    private void _iamWillDisplay(InAppMessage inAppMessage) {
-        _log($"IAM will display: {JsonUtility.ToJson(inAppMessage)}");
+        _log($"Notification was received in foreground: {JsonUtility.ToJson(e.Notification)}\n{additionalData}");
+        
+        e.Notification.Display();
     }
 
-    private void _iamDidDisplay(InAppMessage inAppMessage) {
-        _log($"IAM did display: {JsonUtility.ToJson(inAppMessage)}");
+    private void _notificationPermissionChanged(object sender, NotificationPermissionChangedEventArgs e) {
+        _log($"Notification Permission changed to: {e.Permission}");
     }
 
-    private void _iamWillDismiss(InAppMessage inAppMessage) {
-        _log($"IAM will dismiss: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e) {
+        _log($"IAM will display: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamDidDismiss(InAppMessage inAppMessage) {
-        _log($"IAM did dismiss: {JsonUtility.ToJson(inAppMessage)}");
+    private void _iamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) {
+        _log($"IAM did display: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _iamTriggeredAction(InAppMessageAction inAppMessageAction) {
-        _log($"IAM triggered action: {JsonUtility.ToJson(inAppMessageAction)}");
+    private void _iamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) {
+        _log($"IAM will dismiss: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _notificationPermissionChanged(NotificationPermission current, NotificationPermission previous) {
-        _log($"Notification Permissions changed to: {current}");
+    private void _iamDidDismiss(object sender, InAppMessageDidDismissEventArgs e) {
+        _log($"IAM did dismiss: {JsonUtility.ToJson(e.Message)}");
     }
 
-    private void _pushStateChanged(PushSubscriptionState current, PushSubscriptionState previous) {
-        _log($"Push state changed to: {JsonUtility.ToJson(current)}");
+    private void _iamOnClick(object sender, InAppMessageClickEventArgs e) {
+        _log($"IAM was clicked with Message: {JsonUtility.ToJson(e.Message)}");
+        _log($"IAM was clicked with Result: {JsonUtility.ToJson(e.Result)}");
+        _log($"IAM was clicked with Result UrlTarget: " + e.Result.UrlTarget.ToString());
     }
 
-    private void _emailStateChanged(EmailSubscriptionState current, EmailSubscriptionState previous) {
-        _log($"Email state changed to: {JsonUtility.ToJson(current)}");
+    private void _pushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e) {
+        _log($"Push subscription changed from previous: {JsonUtility.ToJson(e.State.Previous)}");
+        _log($"Push subscription changed to current: {JsonUtility.ToJson(e.State.Current)}");
     }
 
-    private void _smsStateChanged(SMSSubscriptionState current, SMSSubscriptionState previous) {
-        _log($"SMS state changed to: {JsonUtility.ToJson(current)}");
+    private void _userStateChanged(object sender, UserStateChangedEventArgs e) {
+        _log($"OneSignalId changed : {JsonUtility.ToJson(e.State.Current.OneSignalId)}");
+        _log($"ExternalId changed : {JsonUtility.ToJson(e.State.Current.ExternalId)}");
     }
 
     /*
      * SDK setup
      */
 
-    public void Initialize() {
-        _log($"Initializing with appId <b>{appId}</b>");
-        OneSignal.Default.Initialize(appId);
+    public void ToggleConsentRequired() {
+        consentRequired = !consentRequired;
+        _log($"Toggling ConsentRequired to <b>{consentRequired}</b>");
+        OneSignal.ConsentRequired = consentRequired;
     }
 
-    public void ToggleRequiresPrivacyConsent() {
-        _log($"Toggling RequiresPrivacyConsent to <b>{!OneSignal.Default.RequiresPrivacyConsent}</b>");
-        OneSignal.Default.RequiresPrivacyConsent = !OneSignal.Default.RequiresPrivacyConsent;
-    }
-
-    public void TogglePrivacyConsent() {
-        _log($"Toggling PrivacyConsent to <b>{!OneSignal.Default.PrivacyConsent}</b>");
-        OneSignal.Default.PrivacyConsent = !OneSignal.Default.PrivacyConsent;
+    public void ToggleConsentGiven() {
+        consentGiven = !consentGiven;
+        _log($"Toggling ConsentGiven to <b>{consentGiven}</b>");
+        OneSignal.ConsentGiven = consentGiven;
     }
 
     public void SetLogLevel() {
-        var newLevel = _nextEnum(OneSignal.Default.LogLevel);
+        var newLevel = _nextEnum(OneSignal.Debug.LogLevel);
         _log($"Setting LogLevel to <b>{newLevel}</b>");
-
-        // LogLevel uses the standard Unity LogType
-        OneSignal.Default.LogLevel = newLevel;
+        OneSignal.Debug.LogLevel = newLevel;
     }
 
     public void SetAlertLevel() {
-        var newLevel = _nextEnum(OneSignal.Default.AlertLevel);
+        var newLevel = _nextEnum(OneSignal.Debug.AlertLevel);
         _log($"Setting AlertLevel to <b>{newLevel}</b>");
-
-        // AlertLevel uses the standard Unity LogType
-        OneSignal.Default.AlertLevel = newLevel;
+        OneSignal.Debug.AlertLevel = newLevel;
     }
 
     /*
      * User identification
      */
 
-    public async void SetEmail() {
-        _log($"Calling SetEmail(<b>{email}</b>) and awaiting result...");
-
-        var result = await OneSignal.Default.SetEmail(email);
-
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void LoginOneSignalUser() {
+        _log($"Logging in user (<b>{externalId}</b>)");
+        OneSignal.Login(externalId);
+    }
+    
+    public void LogoutOneSignalUser() {
+        _log($"Logging out user");
+        OneSignal.Logout();
     }
 
-    public async void SetExternalId() {
-        _log($"Calling SetExternalUserId(<b>{externalId}</b>) and awaiting result...");
-
-        var result = await OneSignal.Default.SetExternalUserId(externalId);
-
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void PushSubscriptionOptIn() {
+        _log($"Opting in push subscription");
+        OneSignal.User.PushSubscription.OptIn();
     }
 
-    public async void SetSMSNumber() {
-        _log($"Calling SetSMSNumber(<b>{phoneNumber}</b>) and awaiting result...");
+    public void PushSubscriptionOptOut() {
+        _log($"Opting out push subscription");
+        OneSignal.User.PushSubscription.OptOut();
+    }
 
-        var result = await OneSignal.Default.SetSMSNumber(phoneNumber);
+    public void AddEmail() {
+        _log($"Adding email (<b>{email}</b>)");
+        OneSignal.User.AddEmail(email);
+    }
+    
+    public void RemoveEmail() {
+        _log($"Removing email (<b>{email}</b>)");
+        OneSignal.User.RemoveEmail(email);
+    }
 
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void AddSms() {
+        _log($"Adding sms (<b>{phoneNumber}</b>)");
+        OneSignal.User.AddSms(phoneNumber);
+    }
+    
+    public void RemoveSms() {
+        _log($"Removing sms (<b>{phoneNumber}</b>)");
+        OneSignal.User.RemoveSms(phoneNumber);
+    }
+
+    public void SetLanguage() {
+        _log($"Setting language for the user to (<b>{language}</b>)");
+        OneSignal.User.Language = language;
+    }
+
+    public void AddAlias() {
+        _log($"Adding alias with label <b>{aliasKey}</b> and id <b>{aliasValue}</b>");
+        OneSignal.User.AddAlias(aliasKey, aliasValue);
+    }
+
+    public void RemoveAlias() {
+        _log($"Removing alias with label <b>{aliasKey}</b>");
+        OneSignal.User.RemoveAlias(aliasKey);
     }
 
     /*
@@ -255,149 +309,93 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      */
 
     public async void PromptForPush() {
-        _log("Calling PromptForPushNotificationsWithUserResponse and awaiting result...");
+        _log($"Can request push notification permission: {OneSignal.Notifications.CanRequestPermission}");
 
-        var result = await OneSignal.Default.PromptForPushNotificationsWithUserResponse();
+        _log("Opening permission prompt for push notifications and awaiting result...");
 
-        _log($"Prompt completed with <b>{result}</b>");
+        var result = await OneSignal.Notifications.RequestPermissionAsync(true);
+
+        if (result)
+            _log("Notification permission accepeted");
+        else
+            _log("Notification permission denied");
     }
 
     public void ClearPush() {
-        _log("Clearing existing OneSignal push notifications...");
-        OneSignal.Default.ClearOneSignalNotifications();
+        _log("Clearing existing OneSignal push notifications");
+        
+        OneSignal.Notifications.ClearAllNotifications();
+        
+        _log("Notifications cleared");
     }
 
-    public async void SendPushToSelf() {
-        _log("Sending push notification to this device via PostNotification...");
+    public void GetNotificationsPermission() {
+        var permission = OneSignal.Notifications.Permission;
 
-        // Check out our API docs at https://documentation.onesignal.com/reference/create-notification
-        // for a full list of possibilities for notification options.
-        var pushOptions = new Dictionary<string, object> {
-            ["contents"] = new Dictionary<string, string> {
-                ["en"] = "Test Message"
-            },
+        _log($"Notifications permission is: <b>{permission}</b>");
+    }
 
-            // Send notification to this user
-            ["include_external_user_ids"] = new List<string> { externalId },
+    public void GetNotificationsPermissionNative() {
+        var permissionNative = OneSignal.Notifications.PermissionNative;
 
-            // Example of scheduling a notification in the future
-            ["send_after"] = DateTime.Now.ToUniversalTime().AddSeconds(30).ToString("U")
-        };
-
-        var result = await OneSignal.Default.PostNotification(pushOptions);
-
-        if (Json.Serialize(result) is string resultString)
-            _log($"Notification sent with result <b>{resultString}</b>");
-        else
-            _error("Could not serialize result of PostNotification");
+        _log($"Notifications native permission is: <b>{permissionNative.ToString()}</b>");
     }
 
     /*
-     * In App Messages
+     * In-App Messages
      */
 
-    public void SetTrigger() {
-        _log($"Setting trigger with key <b>{triggerKey}</b> and value <b>{triggerValue}</b>");
-        OneSignal.Default.SetTrigger(triggerKey, triggerValue);
-    }
-
-    public void GetTrigger() {
-        _log($"Getting trigger for key <b>{triggerKey}</b>");
-        var value = OneSignal.Default.GetTrigger(triggerKey);
-        _log($"Trigger for key <b>{triggerKey}</b> is of value <b>{value}</b>");
+    public void AddTrigger() {
+        _log($"Adding trigger with key <b>{triggerKey}</b> and value <b>{triggerValue}</b>");
+        OneSignal.InAppMessages.AddTrigger(triggerKey, triggerValue);
     }
 
     public void RemoveTrigger() {
         _log($"Removing trigger for key <b>{triggerKey}</b>");
-        OneSignal.Default.RemoveTrigger(triggerKey);
+        OneSignal.InAppMessages.RemoveTrigger(triggerKey);
     }
 
-    public void GetTriggers() {
-        _log("Getting all trigger keys and values");
-        var triggers = OneSignal.Default.GetTriggers();
-
-        if (Json.Serialize(triggers) is string triggersString)
-            _log($"Current triggers are <b>{triggersString}</b>");
-        else
-            _error("Could not serialize triggers");
+    public void ClearTriggers() {
+        _log("Clearing all trigger keys and values from user");
+        OneSignal.InAppMessages.ClearTriggers();
     }
 
-    public void ToggleInAppMessagesArePaused() {
-        _log($"Toggling InAppMessagesArePaused to <b>{!OneSignal.Default.InAppMessagesArePaused}</b>");
-        OneSignal.Default.InAppMessagesArePaused = !OneSignal.Default.InAppMessagesArePaused;
+    public void TogglePauseInAppMessages() {
+        _log($"Toggling Pausing InAppMessages to <b>{!OneSignal.InAppMessages.Paused}</b>");
+        OneSignal.InAppMessages.Paused = !OneSignal.InAppMessages.Paused;
     }
 
     /*
      * Tags
      */
 
-    public async void SetTag() {
-        _log($"Setting tag with key <b>{tagKey}</b> and value <b>{tagValue}</b> and awaiting result...");
-
-        var result = await OneSignal.Default.SendTag(tagKey, tagValue);
-
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void AddTag() {
+        _log($"Adding tag with key <b>{tagKey}</b> and value <b>{tagValue}</b>");
+        OneSignal.User.AddTag(tagKey, tagValue);
     }
 
-    public async void RemoveTag() {
-        _log($"Removing tag for key <b>{triggerKey}</b> and awaiting result...");
-
-        var result = await OneSignal.Default.DeleteTag(tagKey);
-
-        if (result)
-            _log("Remove succeeded");
-        else
-            _error("Remove failed");
-    }
-
-    public async void GetTags() {
-        _log("Requesting all tag keys and values for this user...");
-        var tags = await OneSignal.Default.GetTags();
-
-        if (Json.Serialize(tags) is string tagsString)
-            _log($"Current tags are <b>{tagsString}</b>");
-        else
-            _error("Could not serialize tags");
+    public void RemoveTag() {
+        _log($"Removing tag for key <b>{tagKey}</b>");
+        OneSignal.User.RemoveTag(tagKey);
     }
 
     /*
      * Outcomes
      */
 
-    public async void SetOutcome() {
-        _log($"Setting outcome with key <b>{outcomeKey}</b> and awaiting result...");
-
-        var result = await OneSignal.Default.SendOutcome(outcomeKey);
-
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void AddOutcome() {
+        _log($"Adding outcome with key <b>{outcomeKey}</b>");
+        OneSignal.Session.AddOutcome(outcomeKey);
     }
 
-    public async void SetUniqueOutcome() {
-        _log($"Setting unique outcome with key <b>{outcomeKey}</b> and awaiting result...");
-
-        var result = await OneSignal.Default.SendUniqueOutcome(outcomeKey);
-
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void AddUniqueOutcome() {
+        _log($"Adding unique outcome with key <b>{outcomeKey}</b>");
+        OneSignal.Session.AddUniqueOutcome(outcomeKey);
     }
 
-    public async void SetOutcomeWithValue() {
-        _log($"Setting outcome with key <b>{outcomeKey}</b> and value <b>{outcomeValue}</b> and awaiting result...");
-
-        var result = await OneSignal.Default.SendOutcomeWithValue(outcomeKey, outcomeValue);
-
-        if (result)
-            _log("Set succeeded");
-        else
-            _error("Set failed");
+    public void AddOutcomeWithValue() {
+        _log($"Adding outcome with key <b>{outcomeKey}</b> and value <b>{outcomeValue}</b>");
+        OneSignal.Session.AddOutcomeWithValue(outcomeKey, outcomeValue);
     }
 
     /*
@@ -405,13 +403,39 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      */
 
     public void PromptLocation() {
-        _log("Opening prompt to ask for user consent to access location");
-        OneSignal.Default.PromptLocation();
+        _log("Opening permission prompt for location");
+        OneSignal.Location.RequestPermission();
     }
 
     public void ToggleShareLocation() {
-        _log($"Toggling ShareLocation to <b>{!OneSignal.Default.ShareLocation}</b>");
-        OneSignal.Default.ShareLocation = !OneSignal.Default.ShareLocation;
+        _log($"Toggling Location IsShared to <b>{!OneSignal.Location.IsShared}</b>");
+        OneSignal.Location.IsShared = !OneSignal.Location.IsShared;
+    }
+
+    /*
+     * iOS
+     */
+
+    public async void EnterLiveActivityAsync() {
+        _log($"Entering Live Activity with id: <b>{liveActivityId}</b> and token: <b>{liveActivityToken}</b> and awaiting result...");
+
+        var result = await OneSignal.LiveActivities.EnterAsync(liveActivityId, liveActivityToken);
+
+        if (result)
+            _log("Live Activity enter success");
+        else
+            _log("Live Activity enter failed");
+    }
+
+    public async void ExitLiveActivityAsync() {
+        _log($"Exiting Live Activity with id: <b>{liveActivityId}</b> and awaiting result...");
+
+        var result = await OneSignal.LiveActivities.ExitAsync(liveActivityId);
+
+        if (result)
+            _log("Live Activity exit success");
+        else
+            _log("Live Activity exit failed");
     }
 
 #region Rendering
@@ -420,12 +444,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      */
 
     public Text console;
+    public Text appIdText;
 
     public void SetAppIdString(string newVal) => appId = newVal;
 
     public void SetExternalIdString(string newVal) => externalId = newVal;
     public void SetEmailString(string newVal) => email = newVal;
     public void SetPhoneNumberString(string newVal) => phoneNumber = newVal;
+    public void SetLanguageString(string newVal) => language = newVal;
+
+    public void SetAliasKey(string newVal) => aliasKey = newVal;
+    public void SetAliasValue(string newVal) => aliasValue = newVal;
 
     public void SetTriggerKey(string newVal) => triggerKey = newVal;
     public void SetTriggerValue(string newVal) => triggerValue = newVal;
@@ -436,25 +465,32 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void SetOutcomeKey(string newVal) => outcomeKey = newVal;
     public void SetOutcomeValue(string newVal) => outcomeValue = Convert.ToSingle(newVal);
 
+    public void SetLiveActivityId(string newVal) => liveActivityId = newVal;
+    public void SetLiveActivityToken(string newVal) => liveActivityToken = newVal;
+
     private void Awake() {
         SDKDebug.LogIntercept   += _log;
         SDKDebug.WarnIntercept  += _warn;
         SDKDebug.ErrorIntercept += _error;
+        appIdText.text = appId;
     }
 
     private void _log(object message) {
-        Debug.Log(message);
-        console.text += $"\n<color=green><b>I></b></color> {message}";
+        string green = "#3BB674";
+        UnityEngine.Debug.Log(message);
+        console.text += $"\n<color={green}><b>I></b></color> {message}";
     }
 
     private void _warn(object message) {
-        Debug.LogWarning(message);
-        console.text += $"\n<color=orange><b>W></b></color> {message}";
+        string yellow = "#FFA940";
+        UnityEngine.Debug.LogWarning(message);
+        console.text += $"\n<color={yellow}><b>W></b></color> {message}";
     }
 
     private void _error(object message) {
-        Debug.LogError(message);
-        console.text += $"\n<color=red><b>E></b></color> {message}";
+        string red = "#E54B4D";
+        UnityEngine.Debug.LogError(message);
+        console.text += $"\n<color={red}><b>E></b></color> {message}";
     }
 #endregion
 

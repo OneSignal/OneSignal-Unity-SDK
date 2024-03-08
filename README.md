@@ -32,11 +32,12 @@ And via many additional platforms. [Check them all out](https://documentation.on
 ## Requirements
 - A [OneSignal Account](https://app.onesignal.com/signup) if you do not already have one
 - Your OneSignal App ID which you can find under **Settings > Keys & IDs**
-- Unity 2018.4 or newer
+- Unity 2021.3 or newer
+- Android Builds: Target API Level 33 or higher
 - iOS Builds: CocoaPods 1.11.3 or newer
 - In order to test push notifications you will need
-  - An Android 4.0.3 or newer device or emulator with "Google Play services" installed
-  - An iOS 9 or newer device (iPhone, iPad, or iPod Touch)
+  - An Android 5 or newer device or emulator with "Google Play Store (Services)" installed
+  - An iOS 11 or newer device (iPhone, iPad, or iPod Touch)
 
 ### Push Notification Credentials
 You must generate the appropriate credentials for the platform(s) you are releasing on:
@@ -48,7 +49,10 @@ You must generate the appropriate credentials for the platform(s) you are releas
 ## Installation
 There are two methods of installation available for the OneSignal Unity SDK:
 > **Upgrading from 2.x.x to 3.x.x?**</br>
-> Please check out our [migration guide](MIGRATION.md).
+> Please check out our [v2 to v3 migration guide](MIGRATION_GUIDE_v2_to_v3.md).
+
+> **Upgrading from 3.x.x to 5.x.x?**</br>
+> Please check out our [v3 to v5 migration guide](MIGRATION_GUIDE_v3_to_v5.md).
 
 <details>
 <summary><b>Unity Asset Store</b> <i>(click to expand)</i></summary>
@@ -60,7 +64,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
     ![onesignal unity sdk in my assets](Documentation/asset_listing.png)
 
 4. A prompt to import all of the files of the OneSignal Unity SDK will appear. Click **Import** to continue and compile the scripts into your project.
-5. Navigate to **Window > OneSignal** (or follow the popup if upgrading) in the Unity Editor which will bring up a window with some final steps which need 
+5. Navigate to **Window > OneSignal SDK Setup** (or follow the popup if upgrading) in the Unity Editor which will bring up a window with some final steps which need 
    to be completed in order to finalize the installation. The most important of these steps is **Import OneSignal packages**.
    
     > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
@@ -87,7 +91,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
    and click **Save**.
 3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu. You will see all of the OneSignal Unity SDK packages available
    on which you can then click **Install** for the platforms you would like to include. Dependencies will be added automatically.
-4. Once the packages have finished importing you will find a new menu under **Window > OneSignal**. Open it and you will find some final steps which need to be completed
+4. Once the packages have finished importing you will find a new menu under **Window > OneSignal SDK Setup**. Open it and you will find some final steps which need to be completed
    in order to finalize the installation.
 
     > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
@@ -116,11 +120,19 @@ After building in Unity and exporting the XCode project follow these steps:
 
 6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
 
+7. Make sure all **Targets** have **Enable Bitcode** set to **No** in **Build Settings**.
+
 ### Android
+1. From the Unity Editor, navigate to **Edit > Project Settings > Player** and click the **Android** settings tab.
+2. Expand **Publishing Settings** and enable:
+   - Custom Main Gradle Template
+   - Custom Gradle Properties Template
+3. Navigate to **Assets > External Dependency Manager > Android Resolver > Force Resolve** and resolve your Android dependencies.
+
 Most of the Android setup was already handled during installation!
 
-The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.plugin` 
-with your own. There is a complete guide for this [in the plugin's README](com.onesignal.unity.android/Editor/OneSignalConfig.plugin/README.md). See our 
+The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res` 
+with your own. There is a complete guide for this [in the plugin's README](com.onesignal.unity.android/Editor/OneSignalConfig.androidlib/README.md). See our 
 [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) page for additional details.
 
 ## Usage
@@ -137,7 +149,7 @@ in the **App Id**, and you are immediately ready to go!
 To get started add the following code in an appropriate place such as the `Start` method of a `MonoBehaviour` early in your application's lifecycle.
 ```C#
 // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID from app.onesignal.com
-OneSignal.Default.Initialize("YOUR_ONESIGNAL_APP_ID");
+OneSignal.Initialize("YOUR_ONESIGNAL_APP_ID");
 ```
 
 You are now ready to start sending and receiving notifications and in-app messages. For additional information please see [our complete OneSignal Unity SDK docs](https://documentation.onesignal.com/docs/unity-sdk-setup).

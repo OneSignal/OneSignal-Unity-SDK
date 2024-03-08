@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,13 +28,13 @@
 #if UNITY_ANDROID && !UNITY_EDITOR
 using UnityEngine;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK.Android {
     /// <summary>
     /// 
     /// </summary>
     internal static class OneSignalAndroidInit {
         [RuntimeInitializeOnLoadMethod] public static void Init() {
-            if (!OneSignal.DidInitialize) 
+            if (!OneSignalPlatform.DidInitialize)
                 OneSignal.Default = new OneSignalAndroid();
         }
     }

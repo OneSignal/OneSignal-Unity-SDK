@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+
+android {
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    def unityLib = project(':unityLibrary').extensions.getByName('android')
+
+   defaultConfig {
+        consumerProguardFiles "consumer-proguard.pro"
+        minSdkVersion unityLib.defaultConfig.minSdkVersion.mApiLevel
+        targetSdkVersion unityLib.defaultConfig.targetSdkVersion.mApiLevel
+   }
+
+    compileSdkVersion unityLib.compileSdkVersion
+    buildToolsVersion unityLib.buildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+}

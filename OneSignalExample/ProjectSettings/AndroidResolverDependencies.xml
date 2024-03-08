@@ -1,6 +1,6 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:OneSignal:4.8.3</package>
+    <package>com.onesignal:OneSignal:5.1.5</package>
   </packages>
   <files />
   <settings>
@@ -16,6 +16,8 @@
     <setting name="patchAndroidManifest" value="True" />
     <setting name="patchMainTemplateGradle" value="True" />
     <setting name="projectExportEnabled" value="False" />
+    <setting name="useFullCustomMavenRepoPathWhenExport" value="True" />
+    <setting name="useFullCustomMavenRepoPathWhenNotExport" value="False" />
     <setting name="useJetifier" value="False" />
   </settings>
 </dependencies>

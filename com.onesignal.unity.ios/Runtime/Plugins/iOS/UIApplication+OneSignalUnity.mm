@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,17 @@
  * THE SOFTWARE.
  */
 
+#import <OneSignalNotifications/OneSignalNotifications.h>
+#import <OneSignalUser/OneSignalUser-Swift.h>
+#import <OneSignalFramework/OneSignalFramework.h>
 #import "UIApplication+OneSignalUnity.h"
-#import <OneSignal/OneSignal.h>
 #import <objc/runtime.h>
 
-// from OneSignalSelectorHelpers.m
-static Class getClassWithProtocolInHierarchy(Class searchClass, Protocol *protocolToFind) {
+static Class oneSignalGetClassWithProtocolInHierarchy(Class searchClass, Protocol *protocolToFind) {
     if (!class_conformsToProtocol(searchClass, protocolToFind)) {
         if ([searchClass superclass] == [NSObject class])
             return nil;
-        Class foundClass = getClassWithProtocolInHierarchy([searchClass superclass], protocolToFind);
+        Class foundClass = oneSignalGetClassWithProtocolInHierarchy([searchClass superclass], protocolToFind);
         if (foundClass)
             return foundClass;
         return searchClass;
@@ -43,7 +44,7 @@ static Class getClassWithProtocolInHierarchy(Class searchClass, Protocol *protoc
 }
 
 // from OneSignalSelectorHelpers.m
-BOOL injectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel) {
+BOOL oneSignalInjectSelector(Class newClass, SEL newSel, Class addToClass, SEL makeLikeSel) {
     Method newMeth = class_getInstanceMethod(newClass, newSel);
     IMP imp = method_getImplementation(newMeth);
 
@@ -80,9 +81,9 @@ static bool swizzled = false;
         return;
     }
 
-    Class delegateClass = getClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
+    Class delegateClass = oneSignalGetClassWithProtocolInHierarchy([delegate class], @protocol(UIApplicationDelegate));
 
-    injectSelector(
+    oneSignalInjectSelector(
         self.class, @selector(oneSignalApplication:didFinishLaunchingWithOptions:),
         delegateClass, @selector(application:didFinishLaunchingWithOptions:)
     );
@@ -93,8 +94,9 @@ static bool swizzled = false;
 }
 
 - (BOOL)oneSignalApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [OneSignal setMSDKType:@"unity"];
-    [OneSignal initWithLaunchOptions:launchOptions];
+    [OneSignalWrapper setSdkType:@"unity"];
+    [OneSignalWrapper setSdkVersion:@"050100"];
+    [OneSignal initialize:nil withLaunchOptions:launchOptions];
 
     if ([self respondsToSelector:@selector(oneSignalApplication:didFinishLaunchingWithOptions:)])
         return [self oneSignalApplication:application didFinishLaunchingWithOptions:launchOptions];

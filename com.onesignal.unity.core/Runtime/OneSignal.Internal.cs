@@ -1,7 +1,7 @@
 /*
  * Modified MIT License
  *
- * Copyright 2022 OneSignal
+ * Copyright 2023 OneSignal
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,38 +28,26 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using OneSignalSDK.Debug.Utilities;
 
 namespace OneSignalSDK {
-    public abstract partial class OneSignal {
-        internal static string AppId { get; private set; }
-        internal static bool DidInitialize { get; private set; }
-        internal static event Action<string> OnInitialize;
+    public static partial class OneSignal {
+        private static OneSignalPlatform _default;
 
-        protected static void _completedInit(string appId) {
-            AppId         = appId;
-            DidInitialize = true;
-            OnInitialize?.Invoke(AppId);
-        }
-        
-        protected LogLevel _logLevel = LogLevel.Fatal;
-        protected LogLevel _alertLevel = LogLevel.None;
-        
-        private static OneSignal _default;
-
-        private static OneSignal _getDefaultInstance() {
+        private static OneSignalPlatform _getDefaultInstance() {
             if (_default != null)
                 return _default;
 
             // only 1 sdk should be available for any given supported platform
-            var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignal>("OneSignal");
-            if (Activator.CreateInstance(availableSDKs.First()) is OneSignal sdk) {
+            var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignalPlatform>("OneSignal");
+            if (Activator.CreateInstance(availableSDKs.First()) is OneSignalPlatform sdk) {
                 _default = sdk;
-                SDKDebug.Info($"OneSignal.Default set to platform SDK {sdk.GetType()}. Current version is {Version}");
+                SDKDebug.Info($"OneSignal set to platform SDK {sdk.GetType()}. Current version is {Version}");
             }
             else {
-                Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
+                UnityEngine.Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
             }
-            
+
             return _default;
         }
     }
