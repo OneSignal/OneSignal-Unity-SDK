@@ -34,7 +34,7 @@ namespace OneSignalSDK {
     /// OneSignal SDK for Unity
     /// </summary>
     public abstract partial class OneSignal {
-        public const string Version = "3.0.11";
+        public const string Version = "3.0.12";
 
         /// <summary>
         /// The default static instance of the OneSignal Unity SDK
