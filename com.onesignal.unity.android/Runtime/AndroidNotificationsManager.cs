@@ -60,6 +60,11 @@ namespace OneSignalSDK.Android.Notifications {
         }
 
         public async Task<bool> RequestPermissionAsync(bool fallbackToSettings) {
+            // if permission already exists, return early as the method call will not resolve
+            if (_notifications.Call<bool>("getPermission")) {
+                return true;
+            }
+
             var continuation = new BoolContinuation();
             _notifications.Call<AndroidJavaObject>("requestPermission", fallbackToSettings, continuation.Proxy);
             return await continuation;
