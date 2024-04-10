@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Updated included Android SDK from 5.1.6 to [5.1.7](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.7)
+- Updated included Android SDK from 5.1.6 to [5.1.8](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.8)
+  - Fixed externalId being skipped and updates to stop if something updates the User (such as addTag) shortly before login is called
   - Fixed optIn() not prompting if called before push subscription is created on backend
   - Fixed crash with EventProducer's fire events
   - Fixed context not being set on all entry points
