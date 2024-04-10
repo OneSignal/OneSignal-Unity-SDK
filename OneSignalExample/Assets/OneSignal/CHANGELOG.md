@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.2]
 ### Changed
 - Updated included Android SDK from 5.1.6 to [5.1.8](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.8)
   - Fixed externalId being skipped and updates to stop if something updates the User (such as addTag) shortly before login is called
@@ -303,7 +304,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.1...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.2...HEAD
+[5.1.2]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.1...5.1.2
 [5.1.1]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.0...5.1.1
 [5.1.0]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.6...5.1.0
 [5.0.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.0.5...5.0.6
