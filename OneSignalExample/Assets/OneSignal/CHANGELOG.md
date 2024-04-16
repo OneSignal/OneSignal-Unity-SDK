@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.8 to [5.1.9](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.9)
+  - Added AndroidManifest option to override In-App Messages gray overlay and dropshadow
+    - \<meta-data android:name="com.onesignal.inAppMessageHideGrayOverlay" android:value="true"/>
+    - \<meta-data android:name="com.onesignal.inAppMessageHideDropShadow" android:value="true"/>
+  - Fixed WorkManager not initialized crash
+  - Fixed don't re-create user on failed remove alias
+  - Added network call optimizations 
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.1.4 to [5.1.5](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.1.5)
+  - Added plist option to hide gray overlay and disable dropshadow for In-App Messages
+    - OneSignal_in_app_message_hide_gray_overlay
+    - OneSignal_in_app_message_hide_drop_shadow
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.2]
 ### Changed
 - Updated included Android SDK from 5.1.6 to [5.1.8](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.8)
