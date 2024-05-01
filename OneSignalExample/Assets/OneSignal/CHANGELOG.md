@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.9 to [5.1.10](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.10)
+  - Handle incorrect 404 responses; add a delay after creates and retries on 404 of new ids
+  - Added network call optimizations
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.1.5 to [5.1.6](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.1.6)
+  - Fixed pending properties from being sent to the incorrect user when quickly changing users
+  - Fixed crashes when encoding user models
+  - Fixed crash in OneSignalAttachmentHandler trimURLSpacing method
+  - Fixed crash when handling a dialog result
+  - Removed IAM window when an in app message is inactive
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.3]
 ### Changed
 - Updated included Android SDK from 5.1.8 to [5.1.9](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.9)
