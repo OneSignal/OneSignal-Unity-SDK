@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.10 to [5.1.13](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.13)
+  - Fixed the ANR issue caused by prolonged loading of OperationRepo and potentially by extended holding of the model lock during disk I/O read operations
+  - Fixed IndexOutOfBounds exception thrown from OperationRepo.loadSavedOperations if app was opened offline, some operations done, and then the app is opened again
+  - Targets JDK11 instead of JDK21 to address build errors encountered on certain development environments using JDK versions below 21
+  - Fixed grouping skipping opRepoPostCreateDelay, causing operations being applied out of order when multiple login operations are pending
+  - Fixed cancelling permission request dialog not firing continuation
+  - Fixed RecoverFromDroppedLoginBug not running in very rare cases
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.1.6 to [5.2.0](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.0)
+  - Added additional 6 privacy manifests to the 6 sub-targets that are included in the primary targets clients import
+  - Updated User Defaults API reason to include app groups for appropriate modules
+  - Fixed rare scenario of dropping data when multiple logins are called
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.4]
 ### Changed
 - Updated included Android SDK from 5.1.9 to [5.1.10](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.10)
