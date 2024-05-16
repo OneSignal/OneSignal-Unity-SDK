@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "5.1.4"
+        "com.onesignal.unity.core": "5.1.5"
       }
     },
     "com.onesignal.unity.core": {
@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "5.1.4"
+        "com.onesignal.unity.core": "5.1.5"
       }
     },
     "com.unity.ai.navigation": {
