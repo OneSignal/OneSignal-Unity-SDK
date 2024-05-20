@@ -25,6 +25,8 @@
  * THE SOFTWARE.
  */
 
+#import <OneSignalCore/OneSignalCore.h>
+#import <OneSignalOSCore/OneSignalOSCore-Swift.h>
 #import <OneSignalNotifications/OneSignalNotifications.h>
 #import <OneSignalUser/OneSignalUser-Swift.h>
 #import <OneSignalFramework/OneSignalFramework.h>
