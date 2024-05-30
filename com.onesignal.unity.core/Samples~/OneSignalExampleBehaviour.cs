@@ -127,7 +127,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// <summary>
     /// 
     /// </summary>
-    public string liveActivityToken;
+    public string liveActivityIdToken;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string liveActivityType;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string liveActivityTypeToken;
 
     /// <summary>
     /// we recommend initializing OneSignal early in your application's lifecycle such as in the Start method of a
@@ -140,6 +150,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
 
         _log($"Initializing with appId <b>{appId}</b>");
         OneSignal.Initialize(appId);
+
+        // Setup the default live activity
+        OneSignal.LiveActivities.SetupDefault();
 
         // Setting ConsentRequired to true will prevent the OneSignalSDK from operating until
         // PrivacyConsent is also set to true
@@ -416,10 +429,28 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
      * iOS
      */
 
-    public async void EnterLiveActivityAsync() {
-        _log($"Entering Live Activity with id: <b>{liveActivityId}</b> and token: <b>{liveActivityToken}</b> and awaiting result...");
+    public void StartDefaultLiveActivity() {
+        _log($"Start Default Live Activity with id: <b>{liveActivityId}</b>...");
 
-        var result = await OneSignal.LiveActivities.EnterAsync(liveActivityId, liveActivityToken);
+        OneSignal.LiveActivities.StartDefault(
+            liveActivityId,
+            new Dictionary<string, object>() {
+                { "title", "Welcome!" }
+            },
+            new Dictionary<string, object>() {
+                { "message", new Dictionary<string, object>() {
+                    { "en", "Hello World!"}
+                }},
+                { "intValue", 3 },
+                { "doubleValue", 3.14 },
+                { "boolValue", true }
+            });
+    }
+
+    public async void EnterLiveActivityAsync() {
+        _log($"Entering Live Activity with id: <b>{liveActivityId}</b> and token: <b>{liveActivityIdToken}</b> and awaiting result...");
+
+        var result = await OneSignal.LiveActivities.EnterAsync(liveActivityId, liveActivityIdToken);
 
         if (result)
             _log("Live Activity enter success");
@@ -436,6 +467,18 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
             _log("Live Activity exit success");
         else
             _log("Live Activity exit failed");
+    }
+
+    public void SetPushToStartToken() {
+        _log($"Set Push To Start Token for type: <b>{liveActivityType}</b> with token: <b>{liveActivityTypeToken}</b>...");
+
+        OneSignal.LiveActivities.SetPushToStartToken(liveActivityType, liveActivityTypeToken);
+    }
+
+    public void RemovePushToStartToken() {
+        _log($"Remove Push To Start Token for type: <b>{liveActivityType}</b>...");
+
+        OneSignal.LiveActivities.RemovePushToStartToken(liveActivityType);
     }
 
 #region Rendering
@@ -466,7 +509,10 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void SetOutcomeValue(string newVal) => outcomeValue = Convert.ToSingle(newVal);
 
     public void SetLiveActivityId(string newVal) => liveActivityId = newVal;
-    public void SetLiveActivityToken(string newVal) => liveActivityToken = newVal;
+    public void SetLiveActivityIdToken(string newVal) => liveActivityIdToken = newVal;
+
+    public void SetLiveActivityType(string newVal) => liveActivityType = newVal;
+    public void SetLiveActivityTypeToken(string newVal) => liveActivityTypeToken = newVal;
 
     private void Awake() {
         SDKDebug.LogIntercept   += _log;

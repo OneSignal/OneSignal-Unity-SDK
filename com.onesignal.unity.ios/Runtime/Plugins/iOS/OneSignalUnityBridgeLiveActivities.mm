@@ -29,7 +29,9 @@
 #import <OneSignalOSCore/OneSignalOSCore-Swift.h>
 #import <OneSignalNotifications/OneSignalNotifications.h>
 #import <OneSignalUser/OneSignalUser-Swift.h>
+#import "OneSignalLiveActivities/OneSignalLiveActivities-Swift.h"
 #import <OneSignalFramework/OneSignalFramework.h>
+#import "OneSignalBridgeUtil.h"
 
 typedef void (*BooleanResponseDelegate)(int hashCode, bool response);
 
@@ -56,5 +58,61 @@ extern "C" {
         [OneSignal.LiveActivities exit:TO_NSSTRING(activityId)
                         withSuccess:^(NSDictionary *result) { CALLBACK(YES); }
                         withFailure:^(NSError *error) { CALLBACK(NO); }];
+    }
+
+
+    void _oneSignalSetupDefaultLiveActivity(const char* optionsJson) {
+        LiveActivitySetupOptions *laOptions = nil;
+
+        if (optionsJson) {
+            NSDictionary *optionsDict = oneSignalDictionaryFromJsonString(optionsJson);
+
+            laOptions = [LiveActivitySetupOptions alloc];
+            [laOptions setEnablePushToStart:[optionsDict[@"enablePushToStart"] boolValue]];
+            [laOptions setEnablePushToUpdate:[optionsDict[@"enablePushToUpdate"] boolValue]];
+        }
+
+        if (@available(iOS 16.1, *)) {
+            [OneSignalLiveActivitiesManagerImpl setupDefaultWithOptions:laOptions];
+        } else {
+            [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot setupDefault on iOS < 16.1"]];
+        }
+    }
+
+    void _oneSignalStartDefaultLiveActivity(const char* activityId, const char* attributesJson, const char* contentJson) {
+        if (@available(iOS 16.1, *)) {
+            NSDictionary *attributes = oneSignalDictionaryFromJsonString(attributesJson);
+            NSDictionary *content = oneSignalDictionaryFromJsonString(contentJson);
+
+            [OneSignalLiveActivitiesManagerImpl startDefault:TO_NSSTRING(activityId) attributes:attributes content:content];
+        } else {
+            [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot startDefault on iOS < 16.1"]];
+        }
+    }
+
+    void _oneSignalSetPushToStartToken(const char* activityType, const char* token) {
+        NSError* err=nil;
+
+        if (@available(iOS 17.2, *)) {
+            [OneSignalLiveActivitiesManagerImpl setPushToStartToken:TO_NSSTRING(activityType) withToken:TO_NSSTRING(token) error:&err];
+            if (err) {
+                [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"activityType must be the name of your ActivityAttributes struct"]];
+            }
+        } else {
+            [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot setPushToStartToken on iOS < 17.2"]];
+        }
+    }
+
+    void _oneSignalRemovePushToStartToken(const char* activityType) {
+        NSError* err=nil;
+        if (@available(iOS 17.2, *)) {
+            [OneSignalLiveActivitiesManagerImpl removePushToStartToken:TO_NSSTRING(activityType) error:&err];
+
+            if (err) {
+                [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"activityType must be the name of your ActivityAttributes struct"]];
+            }
+        } else {
+            [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot removePushToStartToken on iOS < 17.2"]];
+        }
     }
 }

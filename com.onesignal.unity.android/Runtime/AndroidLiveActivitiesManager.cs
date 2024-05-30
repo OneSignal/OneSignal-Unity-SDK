@@ -40,5 +40,25 @@ namespace OneSignalSDK.Android.LiveActivities {
             SDKDebug.Warn("This feature is only available for iOS.");
             return Task.FromResult(false);
         }
+        
+        public void RemovePushToStartToken(string activityType)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
+
+        public void SetPushToStartToken(string activityType, string token)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
+
+        public void SetupDefault(LiveActivitySetupOptions options = null)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
+
+        public void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
     }
 }
