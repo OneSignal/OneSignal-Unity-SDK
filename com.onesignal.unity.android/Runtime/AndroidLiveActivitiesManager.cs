@@ -25,6 +25,7 @@
  * THE SOFTWARE.
  */
 using UnityEngine;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Debug.Utilities;
@@ -39,6 +40,26 @@ namespace OneSignalSDK.Android.LiveActivities {
         public Task<bool> ExitAsync(string activityId) {
             SDKDebug.Warn("This feature is only available for iOS.");
             return Task.FromResult(false);
+        }
+        
+        public void RemovePushToStartToken(string activityType)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
+
+        public void SetPushToStartToken(string activityType, string token)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
+
+        public void SetupDefault(LiveActivitySetupOptions options = null)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
+        }
+
+        public void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content)
+        {
+            SDKDebug.Warn("This feature is only available for iOS.");
         }
     }
 }

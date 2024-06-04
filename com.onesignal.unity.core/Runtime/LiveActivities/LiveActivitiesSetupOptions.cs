@@ -25,37 +25,23 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OneSignalSDK.LiveActivities {
-    internal sealed class LiveActivitiesManager : ILiveActivitiesManager {
-        public Task<bool> EnterAsync(string activityId, string token) {
-            return Task.FromResult(false);
-        }
+    /// <summary>
+    /// The setup options for <see cref="ILiveActivitiesManager.SetupDefault"/>.
+    /// </summary>
+    public class LiveActivitySetupOptions
+    {
+        /// <summary>
+        /// When true, OneSignal will listen for pushToStart tokens for the `OneSignalLiveActivityAttributes` structure.
+        /// </summary>
+        public bool EnablePushToStart { get; set; }
 
-        public Task<bool> ExitAsync(string activityId) {
-            return Task.FromResult(false);
-        }
-
-        public void RemovePushToStartToken(string activityType)
-        {
-
-        }
-
-        public void SetPushToStartToken(string activityType, string token)
-        {
-
-        }
-
-        public void SetupDefault(LiveActivitySetupOptions options = null)
-        {
-
-        }
-
-        public void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content)
-        {
-
-        }
+        /// <summary>
+        /// When true, OneSignal will listen for pushToUpdate  tokens for each start live activity that uses the
+        /// `OneSignalLiveActivityAttributes` structure.
+        /// </summary>
+        public bool EnablePushToUpdate { get; set; }
     }
 }
