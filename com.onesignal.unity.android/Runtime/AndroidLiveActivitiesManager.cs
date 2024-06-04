@@ -25,6 +25,7 @@
  * THE SOFTWARE.
  */
 using UnityEngine;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Debug.Utilities;
