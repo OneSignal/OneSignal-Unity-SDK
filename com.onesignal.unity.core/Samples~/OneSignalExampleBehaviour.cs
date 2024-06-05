@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using OneSignalSDK;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.InAppMessages;
+using OneSignalSDK.User;
 using OneSignalSDK.User.Models;
 using OneSignalSDK.Debug.Models;
 using OneSignalSDK.Debug.Utilities;
@@ -145,7 +146,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// </summary>
     private void Start() {
         // Enable lines below to debug issues with OneSignal
-        OneSignal.Debug.LogLevel = LogLevel.Info;
+        OneSignal.Debug.LogLevel = LogLevel.Verbose;
         OneSignal.Debug.AlertLevel = LogLevel.Fatal;
 
         _log($"Initializing with appId <b>{appId}</b>");
@@ -226,8 +227,8 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     }
 
     private void _userStateChanged(object sender, UserStateChangedEventArgs e) {
-        _log($"OneSignalId changed : {JsonUtility.ToJson(e.State.Current.OneSignalId)}");
-        _log($"ExternalId changed : {JsonUtility.ToJson(e.State.Current.ExternalId)}");
+        _log($"OneSignalId changed : {e.State.Current.OneSignalId}");
+        _log($"ExternalId changed : {e.State.Current.ExternalId}");
     }
 
     /*
@@ -317,6 +318,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
         OneSignal.User.RemoveAlias(aliasKey);
     }
 
+    public void GetOneSignalId() {
+        string onesignalId = OneSignal.User.OneSignalId ?? "null";
+        _log($"Get OneSignalId <b>{onesignalId}</b>");
+    }
+
+    public void GetExternalId() {
+        string externalId = OneSignal.User.ExternalId ?? "null";
+        _log($"Get ExternalId <b>{externalId}</b>");
+    }
+
     /*
      * Push
      */
@@ -390,6 +401,16 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     public void RemoveTag() {
         _log($"Removing tag for key <b>{tagKey}</b>");
         OneSignal.User.RemoveTag(tagKey);
+        
+    }
+
+    public void GetTags() {
+        Dictionary<string, string> dict = OneSignal.User.GetTags();
+        string dictionaryString = "{";
+        foreach(KeyValuePair <string, string> keyValues in dict) {  
+            dictionaryString += keyValues.Key + " : " + keyValues.Value + ", ";
+        }
+        _log($"Get all user tags " + dictionaryString.TrimEnd(',', ' ') + "}");
     }
 
     /*
