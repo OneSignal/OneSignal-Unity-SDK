@@ -146,7 +146,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour {
     /// </summary>
     private void Start() {
         // Enable lines below to debug issues with OneSignal
-        OneSignal.Debug.LogLevel = LogLevel.Info;
+        OneSignal.Debug.LogLevel = LogLevel.Verbose;
         OneSignal.Debug.AlertLevel = LogLevel.Fatal;
 
         _log($"Initializing with appId <b>{appId}</b>");
