@@ -68,8 +68,10 @@ namespace OneSignalSDK.Android {
         /// Used to provide a reference for the global callbacks
         /// </summary>
         public OneSignalAndroid() {
-            if (_instance != null)
+            if (_instance != null) {
                 SDKDebug.Error("Additional instance of OneSignalAndroid created.");
+                return;
+            }
 
             _instance = this;
             _debug = new AndroidDebugManager(_sdkClass);
