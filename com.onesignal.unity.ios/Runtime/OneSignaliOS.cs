@@ -69,8 +69,10 @@ namespace OneSignalSDK.iOS {
         /// Used to provide a reference for and sets up the global callbacks
         /// </summary>
         public OneSignaliOS() {
-            if (_instance != null)
+            if (_instance != null) {
                 SDKDebug.Error("Additional instance of OneSignaliOS created.");
+                return;
+            }
 
             _instance = this;
             _debug = new iOSDebugManager();
