@@ -62,6 +62,7 @@ extern "C" {
 
 
     void _oneSignalSetupDefaultLiveActivity(const char* optionsJson) {
+        #if !TARGET_OS_MACCATALYST
         LiveActivitySetupOptions *laOptions = nil;
 
         if (optionsJson) {
@@ -77,9 +78,11 @@ extern "C" {
         } else {
             [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot setupDefault on iOS < 16.1"]];
         }
+        #endif
     }
 
     void _oneSignalStartDefaultLiveActivity(const char* activityId, const char* attributesJson, const char* contentJson) {
+        #if !TARGET_OS_MACCATALYST
         if (@available(iOS 16.1, *)) {
             NSDictionary *attributes = oneSignalDictionaryFromJsonString(attributesJson);
             NSDictionary *content = oneSignalDictionaryFromJsonString(contentJson);
@@ -88,9 +91,11 @@ extern "C" {
         } else {
             [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot startDefault on iOS < 16.1"]];
         }
+        #endif
     }
 
     void _oneSignalSetPushToStartToken(const char* activityType, const char* token) {
+        #if !TARGET_OS_MACCATALYST
         NSError* err=nil;
 
         if (@available(iOS 17.2, *)) {
@@ -101,9 +106,11 @@ extern "C" {
         } else {
             [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot setPushToStartToken on iOS < 17.2"]];
         }
+        #endif
     }
 
     void _oneSignalRemovePushToStartToken(const char* activityType) {
+        #if !TARGET_OS_MACCATALYST
         NSError* err=nil;
         if (@available(iOS 17.2, *)) {
             [OneSignalLiveActivitiesManagerImpl removePushToStartToken:TO_NSSTRING(activityType) error:&err];
@@ -114,5 +121,6 @@ extern "C" {
         } else {
             [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:[NSString stringWithFormat:@"cannot removePushToStartToken on iOS < 17.2"]];
         }
+        #endif
     }
 }
