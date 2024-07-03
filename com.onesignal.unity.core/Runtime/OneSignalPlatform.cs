@@ -43,11 +43,9 @@ namespace OneSignalSDK {
         internal static event Action<string> OnInitialize;
 
         internal static string AppId { get; private set; }
-        internal static bool DidInitialize { get; private set; }
 
         protected static void _completedInit(string appId) {
             AppId         = appId;
-            DidInitialize = true;
             OnInitialize?.Invoke(AppId);
         }
 

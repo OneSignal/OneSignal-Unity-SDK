@@ -46,10 +46,8 @@ namespace OneSignalSDK {
         /// The default static instance of the OneSignal Unity SDK
         /// </summary>
         public static OneSignalPlatform Default {
-            private get => _getDefaultInstance();
-            set {
-                UnityEngine.Debug.Log($"[OneSignal] OneSignal set to platform SDK {value.GetType()}. Current version is {Version}");
-                _default = value;
+            get {
+                return _getDefaultInstance();
             }
         }
 
