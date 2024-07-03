@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.7]
 ### Changed
 - Updated included Android SDK from 5.1.13 to [5.1.17](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.17)
   - Fixed Xiaomi notification click not foregrounding app
@@ -378,7 +379,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.6...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.7...HEAD
+[5.1.7]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.6...5.1.7
 [5.1.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.5...5.1.6
 [5.1.5]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.4...5.1.5
 [5.1.4]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.3...5.1.4
