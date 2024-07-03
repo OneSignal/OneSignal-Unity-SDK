@@ -5,6 +5,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.13 to [5.1.17](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.17)
+  - Fixed Xiaomi notification click not foregrounding app
+  - Fixed FCM push token not being refreshed
+  - Poll for notification permission changes to detect permission change when prompting outside of OneSignal
+  - Cold start creates new session and refreshes the user from the server
+  - Immediately process pending operations when privacy consent goes from false to true
+  - Fixed OneSignal.Notifications.RequestPermissionAsync() not firing when permission was already granted
+  - Fixed Operation Model Store adding duplicate operations when the same ones that were previously added to the store and persisted, are re-read from cache
+  - Fixed a bug causing clicking an unexpanded group notification results in only registering the click result for the final notification in the group
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.0 to [5.2.2](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.2)
+  - Prevent In-App Message request crashes by making null values safe
+  - Added Dispatch Queues to all executors to prevent concurrency crashes
+  - Fixed clearing notifications incorrectly such as when pulling down the notification center
+  - Fixed a purchases bug for the amount spent
+  - Fixed a build issue for mac catalyst
+  - Fixed crash when IAM window fails to load by using the main thread
+  - Network call optimizations: Combine user property updates for network call improvements
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
 ### Fixed
 - Additional instance of OneSignal error when calling OneSignal methods in Awake()
 - iOS Mac Catalyst build error: Use of undeclared identifier 'OneSignalLiveActivitiesManagerImpl'
