@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## [5.1.7]
 ### Changed
+- Updated SDK to support Live Activities PushToStart and added a concept of a "Default" Live Activity to facilitate easier adoption. Please check out https://documentation.onesignal.com/docs/push-to-start-live-activities for more information and our [example app](https://github.com/OneSignal/OneSignal-Unity-SDK/tree/main/OneSignalExample) for an example implementation.
 - Updated included Android SDK from 5.1.13 to [5.1.17](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.17)
   - Fixed Xiaomi notification click not foregrounding app
   - Fixed FCM push token not being refreshed
