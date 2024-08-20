@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.17 to [5.1.20](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.20)
+  - Optimized the initialization process by moving some service initialization to a background thread
+  - Recover null onesignal ID crashes for Operations
+  - Add option to default to HMS over FCM
+  - Prevent retrying IAM display if 410 is received from backend
+  - Fix dynamic triggers showing IAM repeatedly after being dismissed
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.2 to [5.2.3](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.3)
+  - The user executor needs to uncache first which fixes some cached requests being dropped for past users
+  - Omit misleading fatal-level log for cross-platform SDKs
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.7]
 ### Changed
 - Updated SDK to support Live Activities PushToStart and added a concept of a "Default" Live Activity to facilitate easier adoption. Please check out https://documentation.onesignal.com/docs/push-to-start-live-activities for more information and our [example app](https://github.com/OneSignal/OneSignal-Unity-SDK/tree/main/OneSignalExample) for an example implementation.
