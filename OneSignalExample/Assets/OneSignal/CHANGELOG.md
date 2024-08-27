@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prevent retrying IAM display if 410 is received from backend
   - Fix dynamic triggers showing IAM repeatedly after being dismissed
   - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
-- Updated included iOS SDK from 5.2.2 to [5.2.3](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.3)
+- Updated included iOS SDK from 5.2.2 to [5.2.4](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.4)
+  - Handle incorrect `404` by delaying making updates to new users or subscriptions
   - The user executor needs to uncache first which fixes some cached requests being dropped for past users
   - Omit misleading fatal-level log for cross-platform SDKs
   - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
