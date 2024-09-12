@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.9]
 ### Changed
 - Updated included Android SDK from 5.1.20 to [5.1.21](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.21)
   - Fix ending an already ended session
@@ -402,7 +403,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.8...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.9...HEAD
+[5.1.9]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.8...5.1.9
 [5.1.8]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.7...5.1.8
 [5.1.7]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.6...5.1.7
 [5.1.6]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.5...5.1.6
