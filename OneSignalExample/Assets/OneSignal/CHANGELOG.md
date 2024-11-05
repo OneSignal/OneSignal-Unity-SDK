@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.21 to [5.1.24](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.24)
+  - Pausing in-app messages now dismisses any currently displaying in-app messages
+  - Fix setting consentGiven throwing if called before initWithContext
+  - Fix BadTokenException and WindowLeaked exception caused by showing a dialog on a finishing or destroyed activity
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.4 to [5.2.7](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.7)
+  - Pausing in-app messages now dismisses any currently displaying in-app messages
+  - Don't use cached in-app messages if the SDK encounters an error fetching them or when the server returns none
+  - Improve segment membership calculation that allows for fetching more accurate and updated in-app messages for a user
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.9]
 ### Changed
 - Updated included Android SDK from 5.1.20 to [5.1.21](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.21)
