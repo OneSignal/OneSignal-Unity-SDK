@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.24 to [5.1.25](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.25)
+  - Fix NullPointerException from getScheduleBackgroundRunIn
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.7 to [5.2.8](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.8)
+  - Fix [__NSPlaceholderDictionary initWithObjects:forKeys:count:] crashes caused by nil HTTPResponse headers
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.10]
 ### Changed
 - Updated included Android SDK from 5.1.21 to [5.1.24](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.24)
