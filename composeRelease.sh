@@ -154,6 +154,61 @@ echo "    New version is ${new_version}"
 echo -n "${new_version}" > ${version_filepath}
 echo "Updated - ${version_filepath}"
 
+# update version numbers
+onesignal_path="com.onesignal.unity.core/Runtime/OneSignal.cs"
+onesignal_version_regex="Version = \"${current_version}\";"
+onesignal_new_version="Version = \"${new_version}\";"
+onesignal_file=$(cat "$onesignal_path")
+
+onesignal_version=$([[ ${onesignal_file} =~ $onesignal_version_regex ]] && echo "${BASH_REMATCH[0]}")
+onesignal_file=${onesignal_file/$onesignal_version/$onesignal_new_version}
+
+echo "${onesignal_file}" > ${onesignal_path}
+echo "Updated - ${onesignal_path}"
+
+# The version number sent to iOS and Android use a 000000 format. For example: 5.1.9 should be sent as 050109
+toHeaderVersion() {
+    local version=$1
+
+    a=(${version//./ })
+
+    for i in ${!a[@]}; do
+        a[$i]=$(printf "%02d" ${a[$i]})
+    done
+
+    retval=$(IFS=; echo "${a[*]}");
+    return
+}
+
+# update Android header
+toHeaderVersion $current_version
+current_header_version=$retval
+toHeaderVersion $new_version
+new_header_version=$retval
+
+onesignalplatform_path="com.onesignal.unity.core/Runtime/OneSignalPlatform.cs"
+onesignalplatform_version_regex="VersionHeader = \"${current_header_version}\";"
+onesignalplatform_new_version="VersionHeader = \"${new_header_version}\";"
+onesignalplatform_file=$(cat "$onesignalplatform_path")
+
+onesignalplatform_version=$([[ ${onesignalplatform_file} =~ $onesignalplatform_version_regex ]] && echo "${BASH_REMATCH[0]}")
+onesignalplatform_file=${onesignalplatform_file/$onesignalplatform_version/$onesignalplatform_new_version}
+
+echo "${onesignalplatform_file}" > ${onesignalplatform_path}
+echo "Updated - ${onesignalplatform_path}"
+
+# update iOS header
+uiapplicationonesignalunity_path="com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm"
+uiapplicationonesignalunity_version_regex="setSdkVersion:@\"${current_header_version}\"];"
+uiapplicationonesignalunity_new_version="setSdkVersion:@\"${new_header_version}\"];"
+uiapplicationonesignalunity_file=$(cat "$uiapplicationonesignalunity_path")
+
+uiapplicationonesignalunity_version=$([[ ${uiapplicationonesignalunity_file} =~ $uiapplicationonesignalunity_version_regex ]] && echo "${BASH_REMATCH[0]}")
+uiapplicationonesignalunity_file=${uiapplicationonesignalunity_file/$uiapplicationonesignalunity_version/$uiapplicationonesignalunity_new_version}
+
+echo "${uiapplicationonesignalunity_file}" > ${uiapplicationonesignalunity_path}
+echo "Updated - ${uiapplicationonesignalunity_path}"
+
 # update package.json files
 packagejson_path="com.onesignal.unity.*/package.json"
 packagejson_version_regex="\"version\": \"${current_version}\","
@@ -175,6 +230,32 @@ do
 
     echo "${packagejson_file}" > ${packagejson_filepath}
     echo "Updated - ${packagejson_filepath}"
+done
+
+# update packages-lock.json
+packageslockjson_path="OneSignalExample/Packages/packages-lock.json"
+packageslockjson_file=$(cat "$packageslockjson_path")
+
+packageslockjson_core=$([[ ${packageslockjson_file} =~ $packagejson_core_regex ]] && echo "${BASH_REMATCH[0]}")
+packageslockjson_file=${packageslockjson_file/$packageslockjson_core/$packagejson_new_core}
+
+echo "${packageslockjson_file}" > ${packageslockjson_path}
+echo "Updated - ${packageslockjson_path}"
+
+# update .asmdef files
+asmdef_path="OneSignalExample/Assets/OneSignal/*/OneSignal.UnityPackage.*.asmdef"
+asmdef_version_regex="\"expression\": \"${current_version}\","
+asmdef_new_version="\"expression\": \"${new_version}\","
+
+for asmdef_filepath in $asmdef_path
+do
+    asmdef_file=$(cat "$asmdef_filepath")
+
+    asmdef_version=$([[ ${asmdef_file} =~ $asmdef_version_regex ]] && echo "${BASH_REMATCH[0]}")
+    asmdef_file=${asmdef_file/$asmdef_version/$asmdef_new_version}
+
+    echo "${asmdef_file}" > ${asmdef_filepath}
+    echo "Updated - ${asmdef_filepath}"
 done
 
 # update CHANGELOG
@@ -231,7 +312,7 @@ executeUnityMethod "OneSignalExample" "Android" "OneSignalSDK.OneSignalPackagePu
 
 # preserve current workspace
 current_branch=$(git branch --show-current)
-git add ${version_filepath} ${packagejson_path} ${projectsettings_path} ${changelog_path}
+git add ${version_filepath} ${packagejson_path} ${projectsettings_path} ${changelog_path} ${onesignal_path} ${onesignalplatform_path} ${uiapplicationonesignalunity_path} ${packageslockjson_path} ${asmdef_path}
 git stash push --keep-index
 
 # generate new release branch and commit all changes
