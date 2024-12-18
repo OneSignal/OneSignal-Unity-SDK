@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.25 to [5.1.26](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.26)
+  - [Fix] ANR caused by operationRepo.enqueue while loading is in progress
+  - [Fix] Check subscription Id before executing delete and update subscription operations
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.8 to [5.2.9](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.9)
+  - [Fix] Use new OneSignalClientError type for callbacks which fixes crash report of NSInvalidArgumentException
+  - [Fix] Don’t evaluate in app messages when paused which fixes issues with duration-since-last In-App Messages when pausing and unpausing
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+
 ## [5.1.11]
 ### Changed
 - Updated included Android SDK from 5.1.24 to [5.1.25](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.25)
