@@ -51,7 +51,7 @@ And via many additional platforms. [Check them all out](https://documentation.on
 - Android Builds: Target API Level 33 or higher
 - iOS Builds: CocoaPods 1.11.3 or newer
 - In order to test push notifications you will need
-  - An Android 5 or newer device or emulator with "Google Play Store (Services)" installed
+  - An Android 7 or newer device or emulator with "Google Play Store (Services)" installed
   - An iOS 11 or newer device (iPhone, iPad, or iPod Touch)
 
 ### Push Notification Credentials
