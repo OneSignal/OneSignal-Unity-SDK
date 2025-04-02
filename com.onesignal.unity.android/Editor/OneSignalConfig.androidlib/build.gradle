@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.onesignal.onesignalsdk'
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
