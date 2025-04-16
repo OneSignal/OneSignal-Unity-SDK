@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated included Android SDK from 5.1.26 to [5.1.31](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.31)
+  - [Fix] Incorrect activity path for NotificationOpenedActivityHMS
+  - [Fix] Anonymous Login request not cleared if app is forced close within 5 seconds on a new install
+  - [Fix] V4 to v5 upgrade will migrate app ID
+  - [Fix] Notification click not foreground the app in the first click if app is closed and no clickListener is added
+  - [Fix] Subscription/IAM not updated after upgrading from 5.2.0-beta or between 5.1.9 to 5.1.27
+  - [Fix] ANR caused by model.add(), model.initializeFromJson(), or modelstore.load()
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.9 to [5.2.9](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.10)
+  - [Fix] Requiring privacy consent blocks confirmed deliveries indefinitely
+  = [Fix] Detect for timezone changes and update the user
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
 ## [5.1.12]
 ### Changed
 - Updated included Android SDK from 5.1.25 to [5.1.26](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.26)
