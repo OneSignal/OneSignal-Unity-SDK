@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.1.13]
 ### Changed
 - Updated included Android SDK from 5.1.26 to [5.1.31](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.31)
+  - [Compatibility] Unity 6 build error with Android
   - [Fix] Incorrect activity path for NotificationOpenedActivityHMS
   - [Fix] Anonymous Login request not cleared if app is forced close within 5 seconds on a new install
   - [Fix] V4 to v5 upgrade will migrate app ID
