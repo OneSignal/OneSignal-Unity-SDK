@@ -131,8 +131,8 @@ namespace OneSignalSDK {
         private static readonly string _packagePath = Path.Combine("Packages", "com.onesignal.unity.android", "Editor");
         private static readonly string _androidPluginsPath = Path.Combine("Assets", "Plugins", "Android");
         
-        private static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
-        private static readonly string _pluginExportPath = Path.Combine(_androidPluginsPath, _pluginName);
+        internal static readonly string _pluginPackagePath = Path.Combine(_packagePath, _pluginName);
+        internal static readonly string _pluginExportPath = Path.Combine(_androidPluginsPath, _pluginName);
         
         private static readonly string _manifestPackagePath = Path.Combine(_pluginPackagePath, "AndroidManifest.xml");
         private static readonly string _manifestExportPath = Path.Combine(_pluginExportPath, "AndroidManifest.xml");
