@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.13]
 ### Changed
 - Updated included Android SDK from 5.1.26 to [5.1.31](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.31)
+  - [Compatibility] Unity 6 build error with Android
   - [Fix] Incorrect activity path for NotificationOpenedActivityHMS
   - [Fix] Anonymous Login request not cleared if app is forced close within 5 seconds on a new install
   - [Fix] V4 to v5 upgrade will migrate app ID
@@ -449,7 +451,8 @@ If you run into any problems, please don’t hesitate to [open an issue](https:/
   - If you are updating from a previous version of the OneSignal Unity SDK please follow the Unity Asset Store instructions in
       the [README](https://github.com/OneSignal/OneSignal-Unity-SDK/README.md#unity-asset-store) to ensure a smooth transition.
 
-[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.12...HEAD
+[Unreleased]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.13...HEAD
+[5.1.13]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.12...5.1.13
 [5.1.12]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.11...5.1.12
 [5.1.11]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.10...5.1.11
 [5.1.10]: https://github.com/OneSignal/OneSignal-Unity-SDK/compare/5.1.9...5.1.10
