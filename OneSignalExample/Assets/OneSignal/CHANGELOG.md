@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ## [5.1.14]
+### Changed
+- [Fix] Missing .meta Android Migration files Unity editor error
 ## [5.1.13]
 ### Changed
 - Updated included Android SDK from 5.1.26 to [5.1.31](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.31)
