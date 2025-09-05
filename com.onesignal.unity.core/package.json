@@ -1,7 +1,7 @@
 {
   "name": "com.onesignal.unity.core",
   "displayName": "OneSignal Unity SDK - Core",
-  "version": "5.1.14",
+  "version": "5.1.15",
   "unity": "2018.4",
   "description": "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.",
   "dependencies": {
