@@ -5,6 +5,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.15]
+### Changed
+- Updated included Android SDK from 5.1.31 to [5.1.37](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.37)
+  - [Fix] IAM not shown when calling login immediately after init
+  - [Fix] IAM now showing after switching to 3-button-navigation mode
+  - [Fix] very rare bug where app doesn't opening from notification tap when it cold starts the app
+  - [Fix] NPE when accessing WindowInsets used in isKeyboardUp()
+  - [Fix] NotificationOpenedActivity "freeze" when a large amount of notification is clicked
+  - [Fix] Crash when adding alias with some labels
+  - [Fix] Crashes with Amazon IAP tracking by dropping support for this
+  - [Fix] Push subscription observers not firing
+  - [Fix] Handle in-app messages dismissed by back press
+  - [Fix] Android 7 and lower crashes with getParameterCount calls
+  - [Fix] Logout incorrectly uses the old subscription ID
+  - [Fix] NPE in PermissionsActivity
+  - [Fix] Fix parsing subscriptions from server, and improve handling of deleted push subscriptions
+  - [Fix] Multiple create subscription operations exist without token
+  - [Fix] Finishing the activity on main thread when a notification is opened
+  - [Feature] Adds the following new public methods (#2311):
+    - OneSignal.Debug.addLogListener
+    - OneSignal.Debug.removeLogListener
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases)
+- Updated included iOS SDK from 5.2.10 to [5.2.14](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/5.2.14)
+  - [Fix] Synchronize to fix crashes in the user module 
+  - [Fix] Prevent deadlocks when user manager runs its startup tasks
+  - [Fix] Bug when notification has badge set to zero
+  - [Fix] drop deprecated applicationIconBadgeNumber usage
+  - [Improvement] Ensure push tokens are registered for existing Live Activities during setup
+  - For full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
 ## [5.1.14]
 ### Changed
 - [Fix] Missing .meta Android Migration files Unity editor error
