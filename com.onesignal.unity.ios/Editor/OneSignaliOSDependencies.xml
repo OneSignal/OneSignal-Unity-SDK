@@ -1,4 +1,4 @@
-﻿<dependencies>
+<dependencies>
   <iosPods>
     <iosPod name="OneSignalXCFramework" version="5.4.0" addToAllTargets="true" />
   </iosPods>

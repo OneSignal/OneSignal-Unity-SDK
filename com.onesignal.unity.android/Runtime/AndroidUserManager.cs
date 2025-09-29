@@ -109,6 +109,9 @@ namespace OneSignalSDK.Android.User
 
         public void RemoveSms(string sms) => _user.Call("removeSms", sms);
 
+        public void TrackEvent(string name, Dictionary<string, object> properties = null) =>
+            _user.Call("trackEvent", name, properties?.ToMap());
+
         public void Initialize()
         {
             _user.Call("addObserver", new InternalUserChangedHandler(this));

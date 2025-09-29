@@ -1,4 +1,4 @@
-﻿<dependencies>
+<dependencies>
   <androidPackages>
     <repositories>
       <repository>https://repo.maven.apache.org/maven2</repository>
