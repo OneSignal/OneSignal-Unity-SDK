@@ -4,3 +4,4 @@ OneSignalExample/.utmp/
 OneSignalExample/Packages/com.unity.asset-store-tools/
 
 .DS_Store
+.gradle/
