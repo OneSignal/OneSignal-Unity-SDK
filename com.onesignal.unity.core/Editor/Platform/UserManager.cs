@@ -29,13 +29,17 @@ using System;
 using System.Collections.Generic;
 using OneSignalSDK.User.Models;
 
-namespace OneSignalSDK.User {
-    internal sealed class UserManager : IUserManager {
-        public string OneSignalId {
+namespace OneSignalSDK.User
+{
+    internal sealed class UserManager : IUserManager
+    {
+        public string OneSignalId
+        {
             get => null;
         }
 
-        public string ExternalId {
+        public string ExternalId
+        {
             get => null;
         }
 
@@ -43,66 +47,45 @@ namespace OneSignalSDK.User {
 
         private PushSubscription _subscription = new PushSubscription();
 
-        public IPushSubscription PushSubscription {
+        public IPushSubscription PushSubscription
+        {
             get => _subscription;
         }
 
-        public string Language {
-            set {
-
-            }
+        public string Language
+        {
+            set { }
         }
 
-        public Dictionary<string, string> GetTags() {
+        public Dictionary<string, string> GetTags()
+        {
             return new Dictionary<string, string>();
         }
 
-        public void AddTag(string key, string value){
+        public void AddTag(string key, string value) { }
 
-        }
+        public void AddTags(Dictionary<string, string> tags) { }
 
-        public void AddTags(Dictionary<string, string> tags) {
+        public void RemoveTag(string key) { }
 
-        }
+        public void RemoveTags(params string[] keys) { }
 
-        public void RemoveTag(string key) {
+        public void AddAlias(string label, string id) { }
 
-        }
+        public void AddAliases(Dictionary<string, string> aliases) { }
 
-        public void RemoveTags(params string[] keys) {
+        public void RemoveAlias(string label) { }
 
-        }
+        public void RemoveAliases(params string[] labels) { }
 
-        public void AddAlias(string label, string id) {
+        public void AddEmail(string email) { }
 
-        }
+        public void RemoveEmail(string email) { }
 
-        public void AddAliases(Dictionary<string, string> aliases) {
+        public void AddSms(string sms) { }
 
-        }
+        public void RemoveSms(string sms) { }
 
-        public void RemoveAlias(string label) {
-
-        }
-
-        public void RemoveAliases(params string[] labels) {
-
-        }
-
-        public void AddEmail(string email) {
-
-        }
-
-        public void RemoveEmail(string email) {
-
-        }
-
-        public void AddSms(string sms) {
-
-        }
-
-        public void RemoveSms(string sms) {
-
-        }
+        public void TrackEvent(string name, Dictionary<string, object> properties = null) { }
     }
 }
