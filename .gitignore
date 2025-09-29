@@ -2,3 +2,4 @@
 OneSignalExample/.idea/
 
 .DS_Store
+.gradle/
