@@ -25,35 +25,74 @@
  * THE SOFTWARE.
  */
 
-
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using OneSignalSDK.iOS.User.Models;
 using OneSignalSDK.User;
 using OneSignalSDK.User.Internal;
 using OneSignalSDK.User.Models;
-using OneSignalSDK.iOS.User.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS.User {
-    internal sealed class iOSUserManager : IUserManager {
-        [DllImport("__Internal")] private static extern string _oneSignalUserGetOneSignalId();
-        [DllImport("__Internal")] private static extern string _oneSignalUserGetExternalId();
-        [DllImport("__Internal")] private static extern void _oneSignalUserSetLanguage(string languageCode);
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddAlias(string aliasLabel, string aliasId);
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddAliases(string aliasesJson);
-        [DllImport("__Internal")] private static extern void _oneSignalUserRemoveAlias(string aliasLabel);
-        [DllImport("__Internal")] private static extern void _oneSignalUserRemoveAliases(string aliasesJson);
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddEmail(string email);
-        [DllImport("__Internal")] private static extern void _oneSignalUserRemoveEmail(string email);
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddSms(string smsNumber);
-        [DllImport("__Internal")] private static extern void _oneSignalUserRemoveSms(string smsNumber);
-        [DllImport("__Internal")] private static extern string _oneSignalUserGetTags();
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddTag(string key, string value);
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddTags(string tagsJson);
-        [DllImport("__Internal")] private static extern void _oneSignalUserRemoveTag(string key);
-        [DllImport("__Internal")] private static extern void _oneSignalUserRemoveTags(string tagsJson);
-        [DllImport("__Internal")] private static extern void _oneSignalUserAddStateChangedCallback(UserStateListenerDelegate callback);
+namespace OneSignalSDK.iOS.User
+{
+    internal sealed class iOSUserManager : IUserManager
+    {
+        [DllImport("__Internal")]
+        private static extern string _oneSignalUserGetOneSignalId();
+
+        [DllImport("__Internal")]
+        private static extern string _oneSignalUserGetExternalId();
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserSetLanguage(string languageCode);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddAlias(string aliasLabel, string aliasId);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddAliases(string aliasesJson);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserRemoveAlias(string aliasLabel);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserRemoveAliases(string aliasesJson);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddEmail(string email);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserRemoveEmail(string email);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddSms(string smsNumber);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserRemoveSms(string smsNumber);
+
+        [DllImport("__Internal")]
+        private static extern string _oneSignalUserGetTags();
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddTag(string key, string value);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddTags(string tagsJson);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserRemoveTag(string key);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserRemoveTags(string tagsJson);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserAddStateChangedCallback(
+            UserStateListenerDelegate callback
+        );
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserTrackEvent(string name, string propertiesJson);
 
         public delegate void UserStateListenerDelegate(string current);
 
@@ -62,78 +101,88 @@ namespace OneSignalSDK.iOS.User {
         private iOSPushSubscription _pushSubscription;
 
         private static iOSUserManager _instance;
-        
-        public iOSUserManager() {
+
+        public iOSUserManager()
+        {
             _instance = this;
             _pushSubscription = new iOSPushSubscription();
         }
 
-        public string OneSignalId {
+        public string OneSignalId
+        {
             get => _oneSignalUserGetOneSignalId();
         }
 
-        public string ExternalId {
+        public string ExternalId
+        {
             get => _oneSignalUserGetExternalId();
         }
 
-        public IPushSubscription PushSubscription {
+        public IPushSubscription PushSubscription
+        {
             get => _pushSubscription;
         }
 
-        public string Language {
+        public string Language
+        {
             set => _oneSignalUserSetLanguage(value);
         }
 
-        public Dictionary<string, string> GetTags() {
-            Dictionary<string, object> raw = (Dictionary<string, object>)Json.Deserialize(_oneSignalUserGetTags());
+        public Dictionary<string, string> GetTags()
+        {
+            Dictionary<string, object> raw =
+                (Dictionary<string, object>)Json.Deserialize(_oneSignalUserGetTags());
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, object> kvp in raw) dict.Add(kvp.Key, kvp.Value.ToString());
+            foreach (KeyValuePair<string, object> kvp in raw)
+                dict.Add(kvp.Key, kvp.Value.ToString());
             return dict;
         }
 
-        public void AddTag(string key, string value)
-            =>_oneSignalUserAddTag(key, value);
+        public void AddTag(string key, string value) => _oneSignalUserAddTag(key, value);
 
-        public void AddTags(Dictionary<string, string> tags)
-            => _oneSignalUserAddTags(Json.Serialize(tags));
+        public void AddTags(Dictionary<string, string> tags) =>
+            _oneSignalUserAddTags(Json.Serialize(tags));
 
-        public void RemoveTag(string key)
-            => _oneSignalUserRemoveTag(key);
+        public void RemoveTag(string key) => _oneSignalUserRemoveTag(key);
 
-        public void RemoveTags(params string[] keys)
-            => _oneSignalUserRemoveTags(Json.Serialize(keys));
+        public void RemoveTags(params string[] keys) =>
+            _oneSignalUserRemoveTags(Json.Serialize(keys));
 
-        public void AddAlias(string label, string id)
-            => _oneSignalUserAddAlias(label, id);
+        public void AddAlias(string label, string id) => _oneSignalUserAddAlias(label, id);
 
-        public void AddAliases(Dictionary<string, string> aliases)
-            => _oneSignalUserAddAliases(Json.Serialize(aliases));
+        public void AddAliases(Dictionary<string, string> aliases) =>
+            _oneSignalUserAddAliases(Json.Serialize(aliases));
 
-        public void RemoveAlias(string label)
-            => _oneSignalUserRemoveAlias(label);
+        public void RemoveAlias(string label) => _oneSignalUserRemoveAlias(label);
 
-        public void RemoveAliases(params string[] labels)
-            => _oneSignalUserRemoveAliases(Json.Serialize(labels));
+        public void RemoveAliases(params string[] labels) =>
+            _oneSignalUserRemoveAliases(Json.Serialize(labels));
 
-        public void AddEmail(string email)
-            => _oneSignalUserAddEmail(email);
+        public void AddEmail(string email) => _oneSignalUserAddEmail(email);
 
-        public void RemoveEmail(string email)
-            => _oneSignalUserRemoveEmail(email);
+        public void RemoveEmail(string email) => _oneSignalUserRemoveEmail(email);
 
-        public void AddSms(string sms)
-            => _oneSignalUserAddSms(sms);
+        public void AddSms(string sms) => _oneSignalUserAddSms(sms);
 
-        public void RemoveSms(string sms)
-            => _oneSignalUserRemoveSms(sms);
+        public void RemoveSms(string sms) => _oneSignalUserRemoveSms(sms);
 
-        public void Initialize() {
+        public void TrackEvent(string name, Dictionary<string, object> properties = null)
+        {
+            if (properties != null)
+                _oneSignalUserTrackEvent(name, Json.Serialize(properties));
+            else
+                _oneSignalUserTrackEvent(name, null);
+        }
+
+        public void Initialize()
+        {
             _pushSubscription.Initialize();
             _oneSignalUserAddStateChangedCallback(_onUserStateChanged);
         }
 
         [AOT.MonoPInvokeCallback(typeof(UserStateListenerDelegate))]
-        private static void _onUserStateChanged(string current) {
+        private static void _onUserStateChanged(string current)
+        {
             var curr = JsonUtility.FromJson<UserState>(current);
 
             UserChangedState userChangedState = new UserChangedState(curr);
