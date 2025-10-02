@@ -124,6 +124,21 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     /// <summary>
     ///
     /// </summary>
+    public string eventName;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string eventPropertyKey;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string eventPropertyValue;
+
+    /// <summary>
+    /// 
+    /// </summary>
     public string liveActivityId;
 
     /// <summary>
@@ -461,6 +476,21 @@ public class OneSignalExampleBehaviour : MonoBehaviour
         _log($"Get all user tags " + dictionaryString.TrimEnd(',', ' ') + "}");
     }
 
+    public void TrackEvent() {
+        var properties = new Dictionary<string, object> {
+            { eventPropertyKey, eventPropertyValue },
+            { "timestamp", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+            { "platform", "Unity" }
+        };
+        _log($"Tracking event <b>{eventName}</b> with properties: {Json.Serialize(properties)}");
+        OneSignal.User.TrackEvent(eventName, properties);
+    }
+
+    public void TrackEventSimple() {
+        _log($"Tracking simple event <b>{eventName}</b> without properties");
+        OneSignal.User.TrackEvent(eventName);
+    }
+
     /*
      * Outcomes
      */
@@ -607,10 +637,13 @@ public class OneSignalExampleBehaviour : MonoBehaviour
 
     public void SetLiveActivityTypeToken(string newVal) => liveActivityTypeToken = newVal;
 
-    private void Awake()
-    {
-        SDKDebug.LogIntercept += _log;
-        SDKDebug.WarnIntercept += _warn;
+    public void SetEventName(string newVal) => eventName = newVal;
+    public void SetEventPropertyKey(string newVal) => eventPropertyKey = newVal;
+    public void SetEventPropertyValue(string newVal) => eventPropertyValue = newVal;
+
+    private void Awake() {
+        SDKDebug.LogIntercept   += _log;
+        SDKDebug.WarnIntercept  += _warn;
         SDKDebug.ErrorIntercept += _error;
         appIdText.text = appId;
     }
