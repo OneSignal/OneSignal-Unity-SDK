@@ -29,16 +29,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
-namespace OneSignalSDK.Android.Utilities {
+namespace OneSignalSDK.Android.Utilities
+{
     /// <summary>
     /// Conversion methods for common Java types wrapped by <see cref="AndroidJavaObject"/>
     /// </summary>
-    internal static class AndroidJavaObjectExtensions {
+    internal static class AndroidJavaObjectExtensions
+    {
         /// <summary>
         /// Converts from a Java class which implements a toJSONObject method which returns a JSONObject representation
         /// of that object to a Serializable class in Unity
         /// </summary>
-        public static TModel ToSerializable<TModel>(this AndroidJavaObject source) {
+        public static TModel ToSerializable<TModel>(this AndroidJavaObject source)
+        {
             if (source == default)
                 return default;
 
@@ -48,90 +51,163 @@ namespace OneSignalSDK.Android.Utilities {
 
             return serialized;
         }
-        
+
         /*
          * JSONObject
          */
-        
+
         /// <summary>
         /// Converts from a Java org.json.JSONObject to a <see cref="Dictionary{TKey,TValue}"/>
         /// </summary>
-        public static Dictionary<string, object> JSONObjectToDictionary(this AndroidJavaObject source)
-            => source != null ? Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object> : null;
+        public static Dictionary<string, object> JSONObjectToDictionary(
+            this AndroidJavaObject source
+        ) =>
+            source != null
+                ? Json.Deserialize(source.Call<string>("toString")) as Dictionary<string, object>
+                : null;
 
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java org.json.JSONObject
         /// </summary>
-        public static AndroidJavaObject ToJSONObject<TKey, TValue>(this Dictionary<TKey, TValue> source)
-            => new AndroidJavaObject("org.json.JSONObject", Json.Serialize(source));
-        
+        public static AndroidJavaObject ToJSONObject<TKey, TValue>(
+            this Dictionary<TKey, TValue> source
+        ) => new AndroidJavaObject("org.json.JSONObject", Json.Serialize(source));
+
         /*
          * Map
          */
-        
+
         /// <summary>
         /// Converts from a Java java.util.Map to a <see cref="Dictionary{TKey,TValue}"/>
         /// </summary>
-        public static Dictionary<string, string> MapToDictionary(this AndroidJavaObject source) {
+        public static Dictionary<string, string> MapToDictionary(this AndroidJavaObject source)
+        {
             if (source == null)
                 return null;
-            
+
             var entries = source.Call<AndroidJavaObject>("entrySet");
             var iter = entries.Call<AndroidJavaObject>("iterator");
 
             var ret = new Dictionary<string, string>();
 
-            while (iter.Call<bool>("hasNext")) {
+            while (iter.Call<bool>("hasNext"))
+            {
                 var entry = iter.Call<AndroidJavaObject>("next");
                 var key = entry.Call<string>("getKey");
                 var valueJO = entry.Call<AndroidJavaObject>("getValue");
-                
+
                 ret[key] = valueJO.Call<string>("toString");
             }
-            
+
             return ret;
         }
 
         /// <summary>
         /// Converts from a <see cref="Dictionary{TKey,TValue}"/> to a Java java.util.Map
         /// </summary>
-        public static AndroidJavaObject ToMap(this Dictionary<string, string> source) {
+        public static AndroidJavaObject ToMap(this Dictionary<string, string> source)
+        {
             var map = new AndroidJavaObject("java.util.HashMap");
-            var put = AndroidJNIHelper.GetMethodID(map.GetRawClass(), "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+            var put = AndroidJNIHelper.GetMethodID(
+                map.GetRawClass(),
+                "put",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+            );
 
             var entryArgs = new object[2];
-            foreach (var kv in source) {
+            foreach (var kv in source)
+            {
                 using (var key = new AndroidJavaObject("java.lang.String", kv.Key))
-                using (var value = new AndroidJavaObject("java.lang.String", kv.Value)) {
+                using (var value = new AndroidJavaObject("java.lang.String", kv.Value))
+                {
                     entryArgs[0] = key;
                     entryArgs[1] = value;
-                    AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
+                    AndroidJNI.CallObjectMethod(
+                        map.GetRawObject(),
+                        put,
+                        AndroidJNIHelper.CreateJNIArgArray(entryArgs)
+                    );
                 }
             }
 
             return map;
         }
 
-        public static AndroidJavaObject ToMap(this Dictionary<string, object> source) {
+        public static AndroidJavaObject ToMap(this Dictionary<string, object> source)
+        {
+            if (source == null)
+                return null;
+
             var map = new AndroidJavaObject("java.util.HashMap");
-            var put = AndroidJNIHelper.GetMethodID(map.GetRawClass(), "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+            var put = AndroidJNIHelper.GetMethodID(
+                map.GetRawClass(),
+                "put",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+            );
 
             var entryArgs = new object[2];
-            foreach (var kv in source) {
-                var key = new AndroidJavaObject("java.lang.String", kv.Key);
-                var value = new AndroidJavaClass("java.lang.String").CallStatic<string>("valueOf", kv.Value);
-                entryArgs[0] = key;
-                entryArgs[1] = value;
-                AndroidJNI.CallObjectMethod(map.GetRawObject(), put, AndroidJNIHelper.CreateJNIArgArray(entryArgs));
+            foreach (var kv in source)
+            {
+                using (var key = new AndroidJavaObject("java.lang.String", kv.Key))
+                {
+                    AndroidJavaObject value = null;
+
+                    // Preserve original data types
+                    switch (kv.Value)
+                    {
+                        case string stringValue:
+                            value = new AndroidJavaObject("java.lang.String", stringValue);
+                            break;
+                        case int intValue:
+                            value = new AndroidJavaObject("java.lang.Integer", intValue);
+                            break;
+                        case long longValue:
+                            value = new AndroidJavaObject("java.lang.Long", longValue);
+                            break;
+                        case float floatValue:
+                            value = new AndroidJavaObject("java.lang.Float", floatValue);
+                            break;
+                        case double doubleValue:
+                            value = new AndroidJavaObject("java.lang.Double", doubleValue);
+                            break;
+                        case bool boolValue:
+                            value = new AndroidJavaObject("java.lang.Boolean", boolValue);
+                            break;
+                        case null:
+                            value = null;
+                            break;
+                        default:
+                            // Fallback to string representation for unsupported types
+                            value = new AndroidJavaObject("java.lang.String", kv.Value.ToString());
+                            break;
+                    }
+
+                    try
+                    {
+                        entryArgs[0] = key;
+                        entryArgs[1] = value;
+                        AndroidJNI.CallObjectMethod(
+                            map.GetRawObject(),
+                            put,
+                            AndroidJNIHelper.CreateJNIArgArray(entryArgs)
+                        );
+                    }
+                    finally
+                    {
+                        value?.Dispose();
+                    }
+                }
             }
 
             return map;
         }
 
-        public static AndroidJavaObject ToArrayList(this string[] keys) {
+        public static AndroidJavaObject ToArrayList(this string[] keys)
+        {
             AndroidJavaObject arrayList = new AndroidJavaObject("java.util.ArrayList");
 
-            foreach(string key in keys) {
+            foreach (string key in keys)
+            {
                 arrayList.Call<bool>("add", key);
             }
 
