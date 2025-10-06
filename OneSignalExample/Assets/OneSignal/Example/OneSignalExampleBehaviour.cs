@@ -63,7 +63,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     /// <summary>
     /// set to your app id (https://documentation.onesignal.com/docs/keys-and-ids)
     /// </summary>
-    public string appId;
+    public string appId = "77e32082-ea27-42e3-a898-c72e141824ef";
 
     /// <summary>
     /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
@@ -127,17 +127,17 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     public string eventName;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public string eventPropertyKey;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public string eventPropertyValue;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public string liveActivityId;
 
@@ -476,19 +476,56 @@ public class OneSignalExampleBehaviour : MonoBehaviour
         _log($"Get all user tags " + dictionaryString.TrimEnd(',', ' ') + "}");
     }
 
-    public void TrackEvent() {
-        var properties = new Dictionary<string, object> {
-            { eventPropertyKey, eventPropertyValue },
-            { "timestamp", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
-            { "platform", "Unity" }
-        };
-        _log($"Tracking event <b>{eventName}</b> with properties: {Json.Serialize(properties)}");
-        OneSignal.User.TrackEvent(eventName, properties);
-    }
+    public void TrackEvent()
+    {
+        // Detect platform
+        string platform =
+            Application.platform == RuntimePlatform.Android ? "android"
+            : Application.platform == RuntimePlatform.IPhonePlayer ? "ios"
+            : "unknown";
 
-    public void TrackEventSimple() {
-        _log($"Tracking simple event <b>{eventName}</b> without properties");
-        OneSignal.User.TrackEvent(eventName);
+        // Track event without properties
+        _log($"Tracking event <b>Unity-{platform}-noprops</b> without properties");
+        OneSignal.User.TrackEvent($"Unity-{platform}-noprops");
+
+        // Track event with comprehensive properties
+        var properties = new Dictionary<string, object>
+        {
+            { "someNum", 123 },
+            { "someFloat", 3.14159f },
+            { "someString", "abc" },
+            { "someBool", true },
+            {
+                "someObject",
+                new Dictionary<string, object>
+                {
+                    { "abc", "123" },
+                    {
+                        "nested",
+                        new Dictionary<string, object> { { "def", "456" } }
+                    },
+                }
+            },
+            {
+                "someArray",
+                new List<object> { 1, 2 }
+            },
+            {
+                "someMixedArray",
+                new List<object>
+                {
+                    1,
+                    "2",
+                    new Dictionary<string, object> { { "abc", "123" } },
+                }
+            },
+            { "someNull", null },
+        };
+
+        _log(
+            $"Tracking event <b>Unity-{platform}</b> with properties: {Json.Serialize(properties)}"
+        );
+        OneSignal.User.TrackEvent($"Unity-{platform}", properties);
     }
 
     /*
@@ -638,12 +675,15 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     public void SetLiveActivityTypeToken(string newVal) => liveActivityTypeToken = newVal;
 
     public void SetEventName(string newVal) => eventName = newVal;
+
     public void SetEventPropertyKey(string newVal) => eventPropertyKey = newVal;
+
     public void SetEventPropertyValue(string newVal) => eventPropertyValue = newVal;
 
-    private void Awake() {
-        SDKDebug.LogIntercept   += _log;
-        SDKDebug.WarnIntercept  += _warn;
+    private void Awake()
+    {
+        SDKDebug.LogIntercept += _log;
+        SDKDebug.WarnIntercept += _warn;
         SDKDebug.ErrorIntercept += _error;
         appIdText.text = appId;
     }
