@@ -124,21 +124,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     /// <summary>
     ///
     /// </summary>
-    public string eventName;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string eventPropertyKey;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string eventPropertyValue;
-
-    /// <summary>
-    ///
-    /// </summary>
     public string liveActivityId;
 
     /// <summary>
@@ -673,12 +658,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     public void SetLiveActivityType(string newVal) => liveActivityType = newVal;
 
     public void SetLiveActivityTypeToken(string newVal) => liveActivityTypeToken = newVal;
-
-    public void SetEventName(string newVal) => eventName = newVal;
-
-    public void SetEventPropertyKey(string newVal) => eventPropertyKey = newVal;
-
-    public void SetEventPropertyValue(string newVal) => eventPropertyValue = newVal;
 
     private void Awake()
     {
