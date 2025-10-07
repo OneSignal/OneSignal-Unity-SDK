@@ -173,6 +173,18 @@ namespace OneSignalSDK.Android.Utilities
                         case bool boolValue:
                             value = new AndroidJavaObject("java.lang.Boolean", boolValue);
                             break;
+                        case Dictionary<string, object> dictValue:
+                            value = new AndroidJavaObject(
+                                "org.json.JSONObject",
+                                Json.Serialize(dictValue)
+                            );
+                            break;
+                        case System.Collections.IList listValue:
+                            value = new AndroidJavaObject(
+                                "org.json.JSONArray",
+                                Json.Serialize(listValue)
+                            );
+                            break;
                         case null:
                             value = null;
                             break;

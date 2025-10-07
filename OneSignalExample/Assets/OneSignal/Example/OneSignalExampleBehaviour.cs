@@ -485,7 +485,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour
             : "unknown";
 
         // Track event without properties
-        _log($"Tracking event <b>Unity-{platform}-noprops</b> without properties");
+        _log($"Tracking an event <b>Unity-{platform}-noprops</b> without properties");
         OneSignal.User.TrackEvent($"Unity-{platform}-noprops");
 
         // Track event with comprehensive properties
@@ -523,7 +523,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour
         };
 
         _log(
-            $"Tracking event <b>Unity-{platform}</b> with properties: {Json.Serialize(properties)}"
+            $"Tracking an event <b>Unity-{platform}</b> with properties: {Json.Serialize(properties)}"
         );
         OneSignal.User.TrackEvent($"Unity-{platform}", properties);
     }
