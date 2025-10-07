@@ -13,10 +13,7 @@ dependencies {
 
 // Android Resolver Exclusions Start
 android {
-    namespace "com.unity3d.player"
-    ndkPath "**NDKPATH**"
-    ndkVersion "**NDKVERSION**"
-  packaging {
+  packagingOptions {
       exclude ('/lib/armeabi/*' + '*')
       exclude ('/lib/mips/*' + '*')
       exclude ('/lib/mips64/*' + '*')
