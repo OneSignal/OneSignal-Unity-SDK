@@ -63,7 +63,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     /// <summary>
     /// set to your app id (https://documentation.onesignal.com/docs/keys-and-ids)
     /// </summary>
-    public string appId = "77e32082-ea27-42e3-a898-c72e141824ef";
+    public string appId;
 
     /// <summary>
     /// whether you would prefer OneSignal Unity SDK prevent initialization until consent is granted via
