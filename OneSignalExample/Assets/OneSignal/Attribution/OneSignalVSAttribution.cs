@@ -25,19 +25,23 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using UnityEditor.VSAttribution.OneSignalSDK;
+using UnityEngine;
 
 namespace OneSignalSDK
 {
-    internal static class AttachToInit {
-        #if ONE_SIGNAL_INSTALLED
-            [RuntimeInitializeOnLoadMethod] public static void Init() {
-                if (string.IsNullOrEmpty(OneSignalPlatform.AppId))
-                    OneSignalPlatform.OnInitialize += appId => VSAttribution.SendAttributionEvent("Login", "OneSignal", appId);
-                else
-                    VSAttribution.SendAttributionEvent("Login", "OneSignal", OneSignalPlatform.AppId);
-            }
-        #endif
+    internal static class AttachToInit
+    {
+#if ONE_SIGNAL_INSTALLED
+        [RuntimeInitializeOnLoadMethod]
+        public static void Init()
+        {
+            if (string.IsNullOrEmpty(OneSignalPlatform.AppId))
+                OneSignalPlatform.OnInitialize += appId =>
+                    VSAttribution.SendAttributionEvent("Login", "OneSignal", appId);
+            else
+                VSAttribution.SendAttributionEvent("Login", "OneSignal", OneSignalPlatform.AppId);
+        }
+#endif
     }
 }

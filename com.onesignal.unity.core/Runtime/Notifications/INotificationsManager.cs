@@ -29,7 +29,8 @@ using System;
 using System.Threading.Tasks;
 using OneSignalSDK.Notifications.Models;
 
-namespace OneSignalSDK.Notifications {
+namespace OneSignalSDK.Notifications
+{
     /// <summary>
     /// When a push notification has been received and is about to be displayed
     /// </summary>
@@ -37,16 +38,15 @@ namespace OneSignalSDK.Notifications {
     {
         public IDisplayableNotification Notification { get; }
 
-        public NotificationWillDisplayEventArgs(IDisplayableNotification notification) {
+        public NotificationWillDisplayEventArgs(IDisplayableNotification notification)
+        {
             Notification = notification;
         }
 
         /// <summary>
         /// Prevents OneSignal from displaying the notification automatically.
         /// </summary>
-        public virtual void PreventDefault() {
-
-        }
+        public virtual void PreventDefault() { }
     }
 
     /// <summary>
@@ -57,20 +57,25 @@ namespace OneSignalSDK.Notifications {
         public INotification Notification { get; }
         public INotificationClickResult Result { get; }
 
-        public NotificationClickEventArgs(INotification notification, INotificationClickResult result) {
+        public NotificationClickEventArgs(
+            INotification notification,
+            INotificationClickResult result
+        )
+        {
             Notification = notification;
             Result = result;
         }
     }
 
     /// <summary>
-    /// When the user enables or disables notifications for your app from the system settings outside of your app. 
+    /// When the user enables or disables notifications for your app from the system settings outside of your app.
     /// </summary>
     public class NotificationPermissionChangedEventArgs : EventArgs
     {
         public bool Permission { get; }
 
-        public NotificationPermissionChangedEventArgs(bool permission) {
+        public NotificationPermissionChangedEventArgs(bool permission)
+        {
             Permission = permission;
         }
     }
@@ -78,7 +83,8 @@ namespace OneSignalSDK.Notifications {
     /// <summary>
     /// The entry point to the notification SDK for OneSignal.
     /// </summary>
-    public interface INotificationsManager {
+    public interface INotificationsManager
+    {
         /// <summary>
         /// When a push notification has been received while app is in the foreground
         /// </summary>

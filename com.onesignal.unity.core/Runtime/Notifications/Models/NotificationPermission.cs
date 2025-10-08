@@ -25,12 +25,14 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDK.Notifications.Models {
-    public enum NotificationPermission {
-        NotDetermined = 0, 
-        Denied, 
-        Authorized, 
-        Provisional, 
-        Ephemeral
+namespace OneSignalSDK.Notifications.Models
+{
+    public enum NotificationPermission
+    {
+        NotDetermined = 0,
+        Denied,
+        Authorized,
+        Provisional,
+        Ephemeral,
     }
 }

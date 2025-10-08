@@ -35,17 +35,23 @@ using UnityEditor.iOS.Xcode.Extensions;
 using System.IO;
 using System.Linq;
 
-namespace App.Editor.iOS {
+namespace App.Editor.iOS
+{
     /// <summary>
     /// Adds the ExampleWidgetExtension to the iOS project frameworks to the iOS project and enables the main target
     /// for Live Activities.
     /// </summary>
-    public class BuildPostProcessor : IPostprocessBuildWithReport {
-
+    public class BuildPostProcessor : IPostprocessBuildWithReport
+    {
         private static readonly string WdigetExtensionTargetRelativePath = "ExampleWidget";
         private static readonly string WidgetExtensionTargetName = "ExampleWidgetExtension";
         private static readonly string WidgetExtensionPath = Path.Combine("iOS", "ExampleWidget");
-        private static readonly string[] WidgetExtensionFiles = new string[] { "Assets.xcassets", "ExampleWidgetBundle.swift", "ExampleWidgetLiveActivity.swift" };
+        private static readonly string[] WidgetExtensionFiles = new string[]
+        {
+            "Assets.xcassets",
+            "ExampleWidgetBundle.swift",
+            "ExampleWidgetLiveActivity.swift",
+        };
 
         /// <summary>
         /// must be between 40 and 50 to ensure that it's not overriden by Podfile generation (40) and that it's
@@ -54,22 +60,32 @@ namespace App.Editor.iOS {
         /// </summary>
         public int callbackOrder => 45;
 
-        public void OnPostprocessBuild(BuildReport report) {
+        public void OnPostprocessBuild(BuildReport report)
+        {
             if (report.summary.platform != BuildTarget.iOS)
                 return;
 
-            Debug.Log("BuildPostProcessor.OnPostprocessBuild for target " + report.summary.platform + " at path " + report.summary.outputPath + " with CWD " + Directory.GetCurrentDirectory());
+            Debug.Log(
+                "BuildPostProcessor.OnPostprocessBuild for target "
+                    + report.summary.platform
+                    + " at path "
+                    + report.summary.outputPath
+                    + " with CWD "
+                    + Directory.GetCurrentDirectory()
+            );
 
             EnableAppForLiveActivities(report.summary.outputPath);
             CreateWidgetExtension(report.summary.outputPath);
-        
+
             Debug.Log("BuildPostProcessor.OnPostprocessBuild complete");
         }
 
-        static void EnableAppForLiveActivities(string outputPath) {
+        static void EnableAppForLiveActivities(string outputPath)
+        {
             var plistPath = Path.Combine(outputPath, "Info.plist");
 
-            if (!File.Exists(plistPath)) {
+            if (!File.Exists(plistPath))
+            {
                 Debug.LogError($"Could not find PList {plistPath}!");
                 return;
             }
@@ -80,12 +96,14 @@ namespace App.Editor.iOS {
             mainPlist.WriteToFile(plistPath);
         }
 
-        static void CreateWidgetExtension(string outputPath) {
+        static void CreateWidgetExtension(string outputPath)
+        {
             AddWidgetExtensionToProject(outputPath);
             AddWidgetExtensionToPodFile(outputPath);
         }
 
-        static void AddWidgetExtensionToProject(string outputPath) {
+        static void AddWidgetExtensionToProject(string outputPath)
+        {
             var project = new PBXProject();
             var projectPath = PBXProject.GetPBXProjectPath(outputPath);
             project.ReadFromString(File.ReadAllText(projectPath));
@@ -99,9 +117,13 @@ namespace App.Editor.iOS {
             var widgetDestPath = Path.Combine(outputPath, WdigetExtensionTargetRelativePath);
 
             Directory.CreateDirectory(widgetDestPath);
-            CopyFileOrDirectory(Path.Combine(WidgetExtensionPath, "Info.plist"), Path.Combine(widgetDestPath, "Info.plist"));
+            CopyFileOrDirectory(
+                Path.Combine(WidgetExtensionPath, "Info.plist"),
+                Path.Combine(widgetDestPath, "Info.plist")
+            );
 
-            extensionGuid = project.AddAppExtension(project.GetUnityMainTargetGuid(),
+            extensionGuid = project.AddAppExtension(
+                project.GetUnityMainTargetGuid(),
                 WidgetExtensionTargetName,
                 $"{PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS)}.{WidgetExtensionTargetName}",
                 $"{WdigetExtensionTargetRelativePath}/Info.plist"
@@ -109,11 +131,15 @@ namespace App.Editor.iOS {
 
             var buildPhaseID = project.AddSourcesBuildPhase(extensionGuid);
 
-            foreach (var file in WidgetExtensionFiles) {
+            foreach (var file in WidgetExtensionFiles)
+            {
                 var destPathRelative = Path.Combine(WdigetExtensionTargetRelativePath, file);
                 var sourceFileGuid = project.AddFile(destPathRelative, destPathRelative);
                 project.AddFileToBuildSection(extensionGuid, buildPhaseID, sourceFileGuid);
-                CopyFileOrDirectory(Path.Combine(WidgetExtensionPath, file), Path.Combine(outputPath, destPathRelative));
+                CopyFileOrDirectory(
+                    Path.Combine(WidgetExtensionPath, file),
+                    Path.Combine(outputPath, destPathRelative)
+                );
             }
 
             project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
@@ -123,16 +149,19 @@ namespace App.Editor.iOS {
             project.WriteToFile(projectPath);
         }
 
-        static void AddWidgetExtensionToPodFile(string outputPath) {
+        static void AddWidgetExtensionToPodFile(string outputPath)
+        {
             var podfilePath = Path.Combine(outputPath, "Podfile");
 
-            if (!File.Exists(podfilePath)) {
+            if (!File.Exists(podfilePath))
+            {
                 Debug.LogError($"Could not find Podfile {podfilePath}!");
                 return;
             }
 
             var podfile = File.ReadAllText(podfilePath);
-            podfile += $"target '{WidgetExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '>= 5.0.2', '< 6.0.0'\nend\n";
+            podfile +=
+                $"target '{WidgetExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '>= 5.0.2', '< 6.0.0'\nend\n";
             File.WriteAllText(podfilePath, podfile);
         }
 
@@ -150,17 +179,26 @@ namespace App.Editor.iOS {
             {
                 file.CopyTo(destinationPath, true);
             }
-            else {
-                Directory.CreateDirectory(destinationPath); 
+            else
+            {
+                Directory.CreateDirectory(destinationPath);
 
-                foreach (FileInfo childFile in dir.EnumerateFiles().Where(f => !f.Name.EndsWith(".meta")))
+                foreach (
+                    FileInfo childFile in dir.EnumerateFiles().Where(f => !f.Name.EndsWith(".meta"))
+                )
                 {
-                    CopyFileOrDirectory(childFile.FullName, Path.Combine(destinationPath, childFile.Name));
+                    CopyFileOrDirectory(
+                        childFile.FullName,
+                        Path.Combine(destinationPath, childFile.Name)
+                    );
                 }
 
                 foreach (DirectoryInfo subDir in dir.GetDirectories())
                 {
-                    CopyFileOrDirectory(subDir.FullName, Path.Combine(destinationPath, subDir.Name));
+                    CopyFileOrDirectory(
+                        subDir.FullName,
+                        Path.Combine(destinationPath, subDir.Name)
+                    );
                 }
             }
         }

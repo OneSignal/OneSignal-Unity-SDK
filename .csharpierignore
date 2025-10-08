@@ -1,0 +1,2 @@
+# Exclude Packages folders (Unity packages and third-party code)
+**/Packages/**

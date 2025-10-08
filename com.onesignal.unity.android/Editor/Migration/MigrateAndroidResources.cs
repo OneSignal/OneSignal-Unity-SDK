@@ -1,11 +1,13 @@
 using System.IO;
 using UnityEditor;
 
-namespace OneSignalSDK {
-
+namespace OneSignalSDK
+{
     [InitializeOnLoad]
-    sealed class MigrateAndroidResources {
-        static MigrateAndroidResources() {
+    sealed class MigrateAndroidResources
+    {
+        static MigrateAndroidResources()
+        {
             UpdateBuildDotGradleContains();
         }
 
@@ -15,7 +17,8 @@ namespace OneSignalSDK {
         /// Includes compatibility with Unity 6, as it's Gradle version has new
         /// requirements.
         /// </summary>
-        private static void UpdateBuildDotGradleContains() {
+        private static void UpdateBuildDotGradleContains()
+        {
             if (!Directory.Exists(ExportAndroidResourcesStep._pluginExportPath))
                 return;
 
@@ -33,7 +36,8 @@ namespace OneSignalSDK {
 
             // We want to copy only when needed, otherwise it can reset file
             // properties, such as permissions and timestamps
-            if (exportedContains != packageContains) {
+            if (exportedContains != packageContains)
+            {
                 File.Copy(packageFilename, exportedFilename, true);
             }
         }

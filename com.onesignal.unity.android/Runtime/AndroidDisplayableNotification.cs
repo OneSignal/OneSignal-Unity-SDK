@@ -26,15 +26,16 @@
  */
 
 using System;
-using UnityEngine;
 using OneSignalSDK.Notifications.Internal;
 using OneSignalSDK.Notifications.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.Notifications.Models {
-    public sealed class AndroidDisplayableNotification : Notification, IDisplayableNotification {
+namespace OneSignalSDK.Android.Notifications.Models
+{
+    public sealed class AndroidDisplayableNotification : Notification, IDisplayableNotification
+    {
         public AndroidJavaObject NotifJO { get; set; }
 
-        public void Display()
-            => NotifJO?.Call("display");
+        public void Display() => NotifJO?.Call("display");
     }
 }

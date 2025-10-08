@@ -27,22 +27,20 @@
 using System;
 
 #pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDK.User.Models {
-    internal sealed class PushSubscription : IPushSubscription {
+namespace OneSignalSDK.User.Models
+{
+    internal sealed class PushSubscription : IPushSubscription
+    {
         public event EventHandler<PushSubscriptionChangedEventArgs> Changed;
 
         public string Id { get; }
 
         public string Token { get; }
 
-        public bool OptedIn  { get; }
+        public bool OptedIn { get; }
 
-        public void OptIn() {
+        public void OptIn() { }
 
-        }
-
-        public void OptOut() {
-
-        }
+        public void OptOut() { }
     }
 }

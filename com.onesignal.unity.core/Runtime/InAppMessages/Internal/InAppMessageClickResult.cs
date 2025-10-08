@@ -28,8 +28,11 @@
 using System;
 using OneSignalSDK.InAppMessages.Models;
 
-namespace OneSignalSDK.InAppMessages.Internal {
-    [Serializable] public sealed class InAppMessageClickResult : IInAppMessageClickResult {
+namespace OneSignalSDK.InAppMessages.Internal
+{
+    [Serializable]
+    public sealed class InAppMessageClickResult : IInAppMessageClickResult
+    {
         private InAppMessageActionUrlType _urlTarget;
 
         /// <summary>
@@ -40,7 +43,8 @@ namespace OneSignalSDK.InAppMessages.Internal {
         /// <summary>
         /// Where the URL will be opened
         /// </summary>
-        public InAppMessageActionUrlType UrlTarget {
+        public InAppMessageActionUrlType UrlTarget
+        {
             get => _urlTarget;
         }
 
@@ -54,9 +58,15 @@ namespace OneSignalSDK.InAppMessages.Internal {
         /// </summary>
         public bool ClosingMessage => closingMessage;
 
-        public InAppMessageClickResult() {}
+        public InAppMessageClickResult() { }
 
-        public InAppMessageClickResult(string actionId, InAppMessageActionUrlType urlTarget, string url, bool closingMessage) {
+        public InAppMessageClickResult(
+            string actionId,
+            InAppMessageActionUrlType urlTarget,
+            string url,
+            bool closingMessage
+        )
+        {
             this.actionId = actionId;
             _urlTarget = urlTarget;
             this.url = url;
@@ -65,10 +75,10 @@ namespace OneSignalSDK.InAppMessages.Internal {
         }
 
         #region Native Field Handling
-            public string actionId;
-            public string urlType;
-            public string url;
-            public bool closingMessage;
+        public string actionId;
+        public string urlType;
+        public string url;
+        public bool closingMessage;
         #endregion
     }
 }

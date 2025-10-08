@@ -28,11 +28,13 @@
 using System;
 using UnityEngine;
 
-namespace OneSignalSDK.InAppMessages.Models {
+namespace OneSignalSDK.InAppMessages.Models
+{
     /// <summary>
     /// Action associated with clicking a button in an In-App Message
     /// </summary>
-    public interface IInAppMessageAction {
+    public interface IInAppMessageAction
+    {
         /// <summary>
         /// An optional click name defined for the action element
         /// </summary>

@@ -31,11 +31,13 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Helper class for ensuring a callback is invoked on the main Unity thread
     /// </summary>
-    public static class UnityMainThreadDispatch {
+    public static class UnityMainThreadDispatch
+    {
         /// <summary>
         /// Synchronous; blocks until the callback completes
         /// </summary>

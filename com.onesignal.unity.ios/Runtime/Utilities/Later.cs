@@ -2,26 +2,32 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Laters {
+namespace Laters
+{
     /// <summary>For referencing <see cref="ILater{TResult}"/> generically</summary>
-    public interface ILater {}
-    
+    public interface ILater { }
+
     /// <summary>Read-only interface for a standard <see cref="Later{TResult}"/></summary>
-    public interface ILater<TResult> : ILater {
+    public interface ILater<TResult> : ILater
+    {
         event Action<TResult> OnComplete;
         TaskAwaiter<TResult> GetAwaiter();
     }
 
     /// <summary>Basic Later for passing a single type to callbacks and awaiters</summary>
-    public class Later<TResult> : BaseLater<TResult> {
+    public class Later<TResult> : BaseLater<TResult>
+    {
         public void Complete(TResult result) => _complete(result);
     }
 
     /// <summary>Separated implementation so the derivations can offer different methods for completion</summary>
-    public abstract class BaseLater<TResult> : ILater<TResult> {
-        public event Action<TResult> OnComplete {
+    public abstract class BaseLater<TResult> : ILater<TResult>
+    {
+        public event Action<TResult> OnComplete
+        {
             remove => _onComplete -= value;
-            add {
+            add
+            {
                 if (_isComplete)
                     _onComplete += value;
                 else if (value != null)
@@ -29,7 +35,8 @@ namespace Laters {
             }
         }
 
-        public TaskAwaiter<TResult> GetAwaiter() {
+        public TaskAwaiter<TResult> GetAwaiter()
+        {
             if (_completionSource != null)
                 return _completionSource.Task.GetAwaiter();
 
@@ -43,7 +50,8 @@ namespace Laters {
             return _completionSource.Task.GetAwaiter();
         }
 
-        protected void _complete(TResult result) {
+        protected void _complete(TResult result)
+        {
             if (_isComplete)
                 return;
 

@@ -26,62 +26,75 @@
  */
 
 using System;
-using UnityEngine;
-using OneSignalSDK.User.Models;
-using OneSignalSDK.User.Internal;
 using OneSignalSDK.Android.Utilities;
+using OneSignalSDK.User.Internal;
+using OneSignalSDK.User.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.User.Models {
-    internal sealed class AndroidPushSubscription : IPushSubscription {
+namespace OneSignalSDK.Android.User.Models
+{
+    internal sealed class AndroidPushSubscription : IPushSubscription
+    {
         public event EventHandler<PushSubscriptionChangedEventArgs> Changed;
 
         private readonly AndroidJavaObject _user;
-        
-        public AndroidPushSubscription(AndroidJavaObject user) {
+
+        public AndroidPushSubscription(AndroidJavaObject user)
+        {
             _user = user;
         }
 
-        private AndroidJavaObject _pushSubscription => _user.Call<AndroidJavaObject>("getPushSubscription");
+        private AndroidJavaObject _pushSubscription =>
+            _user.Call<AndroidJavaObject>("getPushSubscription");
 
-        public string Id {
+        public string Id
+        {
             get => _pushSubscription.Call<string>("getId");
         }
 
-        public string Token {
+        public string Token
+        {
             get => _pushSubscription.Call<string>("getToken");
         }
 
-        public bool OptedIn {
+        public bool OptedIn
+        {
             get => _pushSubscription.Call<bool>("getOptedIn");
         }
 
-        public void OptIn()
-            => _pushSubscription.Call("optIn");
+        public void OptIn() => _pushSubscription.Call("optIn");
 
-        public void OptOut()
-            => _pushSubscription.Call("optOut");
+        public void OptOut() => _pushSubscription.Call("optOut");
 
-        public void Initialize() {
+        public void Initialize()
+        {
             _pushSubscription.Call("addObserver", new InternalSubscriptionChangedHandler(this));
         }
 
-        private sealed class InternalSubscriptionChangedHandler : OneSignalAndroidJavaProxy {
+        private sealed class InternalSubscriptionChangedHandler : OneSignalAndroidJavaProxy
+        {
             private AndroidPushSubscription _parent;
 
-            public InternalSubscriptionChangedHandler(AndroidPushSubscription pushSubscription) : base("user.subscriptions.IPushSubscriptionObserver") {
+            public InternalSubscriptionChangedHandler(AndroidPushSubscription pushSubscription)
+                : base("user.subscriptions.IPushSubscriptionObserver")
+            {
                 _parent = pushSubscription;
             }
 
             /// <param name="state">PushSubscriptionChangedState</param>
-            public void onPushSubscriptionChange(AndroidJavaObject state) {
+            public void onPushSubscriptionChange(AndroidJavaObject state)
+            {
                 var previousJO = state.Call<AndroidJavaObject>("getPrevious");
                 var previous = previousJO.ToSerializable<PushSubscriptionState>();
 
                 var currentJO = state.Call<AndroidJavaObject>("getCurrent");
                 var current = currentJO.ToSerializable<PushSubscriptionState>();
 
-                PushSubscriptionChangedState pushSubscriptionChangedState = new PushSubscriptionChangedState(previous, current);
-                PushSubscriptionChangedEventArgs args = new PushSubscriptionChangedEventArgs(pushSubscriptionChangedState);
+                PushSubscriptionChangedState pushSubscriptionChangedState =
+                    new PushSubscriptionChangedState(previous, current);
+                PushSubscriptionChangedEventArgs args = new PushSubscriptionChangedEventArgs(
+                    pushSubscriptionChangedState
+                );
 
                 EventHandler<PushSubscriptionChangedEventArgs> handler = _parent.Changed;
                 if (handler != null)

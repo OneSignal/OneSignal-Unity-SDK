@@ -27,29 +27,39 @@
 
 using System;
 using System.Linq;
-using UnityEngine;
 using OneSignalSDK.Debug.Utilities;
+using UnityEngine;
 
-namespace OneSignalSDK {
-    public static partial class OneSignal {
+namespace OneSignalSDK
+{
+    public static partial class OneSignal
+    {
         private static OneSignalPlatform _default;
 
-        private static OneSignalPlatform _getDefaultInstance() {
+        private static OneSignalPlatform _getDefaultInstance()
+        {
             if (_default != null)
                 return _default;
 
             // only 1 sdk should be available for any given supported platform
-            var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignalPlatform>("OneSignal");
-            if (Activator.CreateInstance(availableSDKs.First()) is OneSignalPlatform sdk) {
+            var availableSDKs = ReflectionHelpers.FindAllAssignableTypes<OneSignalPlatform>(
+                "OneSignal"
+            );
+            if (Activator.CreateInstance(availableSDKs.First()) is OneSignalPlatform sdk)
+            {
                 _default = sdk;
-                SDKDebug.Info($"OneSignal set to platform SDK {sdk.GetType()}. Current version is {Version}");
+                SDKDebug.Info(
+                    $"OneSignal set to platform SDK {sdk.GetType()}. Current version is {Version}"
+                );
             }
-            else {
-                UnityEngine.Debug.LogError("[OneSignal] Could not find an implementation of OneSignal SDK to use!");
+            else
+            {
+                UnityEngine.Debug.LogError(
+                    "[OneSignal] Could not find an implementation of OneSignal SDK to use!"
+                );
             }
 
             return _default;
         }
     }
 }
-

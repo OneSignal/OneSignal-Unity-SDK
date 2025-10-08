@@ -27,11 +27,13 @@
 
 using System.Collections.Generic;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Representation of the manifest file "dependency" entry.
     /// </summary>
-    public class Dependency {
+    public class Dependency
+    {
         /// <summary>
         /// The dependency name.
         /// </summary>
@@ -47,8 +49,9 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="name">Dependency name.</param>
         /// <param name="version">Dependency version.</param>
-        public Dependency(string name, string version) {
-            Name    = name;
+        public Dependency(string name, string version)
+        {
+            Name = name;
             Version = version;
         }
 
@@ -56,7 +59,8 @@ namespace OneSignalSDK {
         /// Sets new dependency version.
         /// </summary>
         /// <param name="version">The version to be set for this dependency</param>
-        public void SetVersion(string version) {
+        public void SetVersion(string version)
+        {
             Version = version;
         }
 
@@ -64,7 +68,8 @@ namespace OneSignalSDK {
         /// Creates a dictionary from this object.
         /// </summary>
         /// <returns>Dependency object representation as Dictionary&lt;string, object&gt;.</returns>
-        public Dictionary<string, object> ToDictionary() {
+        public Dictionary<string, object> ToDictionary()
+        {
             Dictionary<string, object> result = new Dictionary<string, object>();
             result.Add(Name, Version);
 

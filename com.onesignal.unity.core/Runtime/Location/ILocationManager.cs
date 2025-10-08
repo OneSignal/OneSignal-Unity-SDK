@@ -27,11 +27,13 @@
 
 using System.Threading.Tasks;
 
-namespace OneSignalSDK.Location {
+namespace OneSignalSDK.Location
+{
     /// <summary>
     /// The entry point to the location SDK for OneSignal.
     /// </summary>
-    public interface ILocationManager {
+    public interface ILocationManager
+    {
         /// <summary>
         /// Disable or enable location collection by OneSignal (defaults to enabled if your app has location permission).
         /// </summary>

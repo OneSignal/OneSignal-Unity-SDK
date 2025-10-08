@@ -25,32 +25,41 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using System.Runtime.InteropServices;
 using OneSignalSDK.Debug;
 using OneSignalSDK.Debug.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS.Debug {
-    internal sealed class iOSDebugManager : IDebugManager {
-        [DllImport("__Internal")] private static extern void _oneSignalDebugSetLogLevel(int logLevel);
-        [DllImport("__Internal")] private static extern void _oneSignalDebugSetAlertLevel(int alertlLevel);
+namespace OneSignalSDK.iOS.Debug
+{
+    internal sealed class iOSDebugManager : IDebugManager
+    {
+        [DllImport("__Internal")]
+        private static extern void _oneSignalDebugSetLogLevel(int logLevel);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalDebugSetAlertLevel(int alertlLevel);
 
         private LogLevel _logLevel = LogLevel.Warn;
         private LogLevel _alertLevel = LogLevel.None;
 
-        public LogLevel LogLevel {
+        public LogLevel LogLevel
+        {
             get => _logLevel;
-            set {
+            set
+            {
                 _logLevel = value;
-                _oneSignalDebugSetLogLevel((int) value);
+                _oneSignalDebugSetLogLevel((int)value);
             }
         }
 
-        public LogLevel AlertLevel {
+        public LogLevel AlertLevel
+        {
             get => _alertLevel;
-            set {
+            set
+            {
                 _alertLevel = value;
-                _oneSignalDebugSetAlertLevel((int) value);
+                _oneSignalDebugSetAlertLevel((int)value);
             }
         }
     }

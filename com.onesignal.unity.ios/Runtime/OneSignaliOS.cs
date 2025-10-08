@@ -25,35 +25,51 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using OneSignalSDK.Notifications;
-using OneSignalSDK.InAppMessages;
+using System.Threading.Tasks;
 using OneSignalSDK.Debug;
 using OneSignalSDK.Debug.Utilities;
-using OneSignalSDK.Location;
-using OneSignalSDK.Session;
-using OneSignalSDK.User;
-using OneSignalSDK.LiveActivities;
-using OneSignalSDK.iOS.Notifications;
-using OneSignalSDK.iOS.InAppMessages;
+using OneSignalSDK.InAppMessages;
 using OneSignalSDK.iOS.Debug;
+using OneSignalSDK.iOS.InAppMessages;
+using OneSignalSDK.iOS.LiveActivities;
 using OneSignalSDK.iOS.Location;
+using OneSignalSDK.iOS.Notifications;
 using OneSignalSDK.iOS.Session;
 using OneSignalSDK.iOS.User;
-using OneSignalSDK.iOS.LiveActivities;
+using OneSignalSDK.LiveActivities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS {
-    public sealed partial class OneSignaliOS : OneSignalPlatform {
-        [DllImport("__Internal")] private static extern void _oneSignalSetConsentGiven(bool consent);
-        [DllImport("__Internal")] private static extern void _oneSignalSetConsentRequired(bool required);
-        [DllImport("__Internal")] private static extern void _oneSignalInitialize(string appId);
-        [DllImport("__Internal")] private static extern void _oneSignalLogin(string externalId);
-        [DllImport("__Internal")] private static extern void _oneSignalLoginWithJwtBearerToken(string externalId, string jwtBearerToken);
-        [DllImport("__Internal")] private static extern void _oneSignalLogout();
+namespace OneSignalSDK.iOS
+{
+    public sealed partial class OneSignaliOS : OneSignalPlatform
+    {
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSetConsentGiven(bool consent);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSetConsentRequired(bool required);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalInitialize(string appId);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalLogin(string externalId);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalLoginWithJwtBearerToken(
+            string externalId,
+            string jwtBearerToken
+        );
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalLogout();
 
         private iOSUserManager _user;
         private iOSSessionManager _session;
@@ -68,8 +84,10 @@ namespace OneSignalSDK.iOS {
         /// <summary>
         /// Used to provide a reference for and sets up the global callbacks
         /// </summary>
-        public OneSignaliOS() {
-            if (_instance != null) {
+        public OneSignaliOS()
+        {
+            if (_instance != null)
+            {
                 SDKDebug.Error("Additional instance of OneSignaliOS created.");
                 return;
             }
@@ -78,84 +96,105 @@ namespace OneSignalSDK.iOS {
             _debug = new iOSDebugManager();
         }
 
-        public override IUserManager User {
+        public override IUserManager User
+        {
             get => _user;
         }
 
-        public override ISessionManager Session {
+        public override ISessionManager Session
+        {
             get => _session;
         }
 
-        public override INotificationsManager Notifications {
+        public override INotificationsManager Notifications
+        {
             get => _notifications;
         }
 
-        public override ILocationManager Location {
+        public override ILocationManager Location
+        {
             get => _location;
         }
 
-        public override IInAppMessagesManager InAppMessages {
+        public override IInAppMessagesManager InAppMessages
+        {
             get => _inAppMessages;
         }
 
-        public override IDebugManager Debug {
+        public override IDebugManager Debug
+        {
             get => _debug;
         }
 
-        public override ILiveActivitiesManager LiveActivities {
+        public override ILiveActivitiesManager LiveActivities
+        {
             get => _liveActivities;
         }
 
-        public override bool ConsentGiven {
+        public override bool ConsentGiven
+        {
             set => _oneSignalSetConsentGiven(value);
         }
 
-        public override bool ConsentRequired {
+        public override bool ConsentRequired
+        {
             set => _oneSignalSetConsentRequired(value);
         }
 
-        public override void Initialize(string appId) {
+        public override void Initialize(string appId)
+        {
             _oneSignalInitialize(appId);
 
-            if (_inAppMessages == null) {
+            if (_inAppMessages == null)
+            {
                 _inAppMessages = new iOSInAppMessagesManager();
                 _inAppMessages.Initialize();
             }
 
-            if (_notifications == null) {
+            if (_notifications == null)
+            {
                 _notifications = new iOSNotificationsManager();
                 _notifications.Initialize();
             }
 
-            if (_user == null) {
+            if (_user == null)
+            {
                 _user = new iOSUserManager();
                 _user.Initialize();
             }
 
-            if (_location == null) {
+            if (_location == null)
+            {
                 _location = new iOSLocationManager();
             }
 
-            if (_session == null) {
+            if (_session == null)
+            {
                 _session = new iOSSessionManager();
             }
 
-            if (_liveActivities == null) {
+            if (_liveActivities == null)
+            {
                 _liveActivities = new iOSLiveActivitiesManager();
             }
 
             _completedInit(appId);
         }
 
-        public override void Login(string externalId, string jwtBearerToken = null) {
-            if (jwtBearerToken == null) {
+        public override void Login(string externalId, string jwtBearerToken = null)
+        {
+            if (jwtBearerToken == null)
+            {
                 _oneSignalLogin(externalId);
-            } else {
+            }
+            else
+            {
                 _oneSignalLoginWithJwtBearerToken(externalId, jwtBearerToken);
             }
         }
 
-        public override void Logout() {
+        public override void Logout()
+        {
             _oneSignalLogout();
         }
     }

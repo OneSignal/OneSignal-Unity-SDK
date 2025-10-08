@@ -29,21 +29,25 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Creates a unitypackage file for publishing
     /// </summary>
-    public static class OneSignalPackagePublisher {
-        public static void UpdateProjectVersion() {
+    public static class OneSignalPackagePublisher
+    {
+        public static void UpdateProjectVersion()
+        {
             var packageVersion = File.ReadAllText(VersionFilePath);
             PlayerSettings.bundleVersion = packageVersion;
         }
 
         [MenuItem("OneSignal/ExportUnityPackage")]
-        public static void ExportUnityPackage() {
+        public static void ExportUnityPackage()
+        {
             AssetDatabase.Refresh();
             var packageVersion = File.ReadAllText(VersionFilePath);
-            var packageName    = $"OneSignal-v{packageVersion}.unitypackage";
+            var packageName = $"OneSignal-v{packageVersion}.unitypackage";
 
             AssetDatabase.ExportPackage(
                 _filePaths(),
@@ -55,14 +59,17 @@ namespace OneSignalSDK {
         private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
         private static readonly string VersionFilePath = Path.Combine(PackagePath, "VERSION");
 
-        private static readonly string[] Exclusions = {
+        private static readonly string[] Exclusions =
+        {
             Path.Combine(PackagePath, "Attribution"),
-            ".DS_Store"
+            ".DS_Store",
         };
 
-        private static string[] _filePaths() {
+        private static string[] _filePaths()
+        {
             var files = Directory.GetFileSystemEntries(PackagePath);
-            var pathsToInclude = files.Where(file => {
+            var pathsToInclude = files.Where(file =>
+            {
                 if (file.EndsWith(".meta"))
                     file = file.Substring(0, file.Length - 5);
 

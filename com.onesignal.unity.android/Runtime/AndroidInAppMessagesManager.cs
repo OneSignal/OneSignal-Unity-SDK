@@ -25,20 +25,22 @@
  * THE SOFTWARE.
  */
 
-
-using UnityEngine;
 using System;
 using System.Collections.Generic;
-using OneSignalSDK.InAppMessages;
-using OneSignalSDK.InAppMessages.Models;
-using OneSignalSDK.InAppMessages.Internal;
 using OneSignalSDK.Android.Utilities;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.InAppMessages.Internal;
+using OneSignalSDK.InAppMessages.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.InAppMessages {
-    internal sealed class AndroidInAppMessagesManager : IInAppMessagesManager {
+namespace OneSignalSDK.Android.InAppMessages
+{
+    internal sealed class AndroidInAppMessagesManager : IInAppMessagesManager
+    {
         private readonly AndroidJavaObject _inAppMessages;
 
-        public AndroidInAppMessagesManager(AndroidJavaClass sdkClass) {
+        public AndroidInAppMessagesManager(AndroidJavaClass sdkClass)
+        {
             _inAppMessages = sdkClass.CallStatic<AndroidJavaObject>("getInAppMessages");
         }
 
@@ -48,44 +50,50 @@ namespace OneSignalSDK.Android.InAppMessages {
         public event EventHandler<InAppMessageDidDismissEventArgs> DidDismiss;
         public event EventHandler<InAppMessageClickEventArgs> Clicked;
 
-        public bool Paused {
+        public bool Paused
+        {
             get => _inAppMessages.Call<bool>("getPaused");
             set => _inAppMessages.Call("setPaused", value);
         }
 
-        public void AddTrigger(string key, string value)
-            => _inAppMessages.Call("addTrigger", key, value);
+        public void AddTrigger(string key, string value) =>
+            _inAppMessages.Call("addTrigger", key, value);
 
-        public void AddTriggers(Dictionary<string, string> triggers)
-            => _inAppMessages.Call("addTriggers", triggers.ToMap());
+        public void AddTriggers(Dictionary<string, string> triggers) =>
+            _inAppMessages.Call("addTriggers", triggers.ToMap());
 
-        public void RemoveTrigger(string key)
-            => _inAppMessages.Call("removeTrigger", key);
+        public void RemoveTrigger(string key) => _inAppMessages.Call("removeTrigger", key);
 
-        public void RemoveTriggers(params string[] keys)
-            => _inAppMessages.Call("removeTriggers", keys.ToArrayList());
+        public void RemoveTriggers(params string[] keys) =>
+            _inAppMessages.Call("removeTriggers", keys.ToArrayList());
 
-        public void ClearTriggers()
-            => _inAppMessages.Call("clearTriggers");
+        public void ClearTriggers() => _inAppMessages.Call("clearTriggers");
 
-        public void Initialize() {
+        public void Initialize()
+        {
             _inAppMessages.Call("addClickListener", new IInAppMessageClickListener(this));
             _inAppMessages.Call("addLifecycleListener", new IInAppMessageLifecycleHandler(this));
         }
 
-        private sealed class IInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy {
+        private sealed class IInAppMessageLifecycleHandler : OneSignalAndroidJavaProxy
+        {
             private AndroidInAppMessagesManager _parent;
 
-            public IInAppMessageLifecycleHandler(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageLifecycleListener") {
+            public IInAppMessageLifecycleHandler(AndroidInAppMessagesManager inAppMessagesManager)
+                : base("inAppMessages.IInAppMessageLifecycleListener")
+            {
                 _parent = inAppMessagesManager;
             }
 
             /// <param name="willDisplayEvent">IInAppMessageWillDisplayEvent</param>
-            public void onWillDisplay(AndroidJavaObject willDisplayEvent) {
+            public void onWillDisplay(AndroidJavaObject willDisplayEvent)
+            {
                 var messageJO = willDisplayEvent.Call<AndroidJavaObject>("getMessage");
                 var message = messageJO.ToSerializable<InAppMessage>();
 
-                InAppMessageWillDisplayEventArgs args = new InAppMessageWillDisplayEventArgs(message);
+                InAppMessageWillDisplayEventArgs args = new InAppMessageWillDisplayEventArgs(
+                    message
+                );
 
                 EventHandler<InAppMessageWillDisplayEventArgs> handler = _parent.WillDisplay;
                 if (handler != null)
@@ -95,7 +103,8 @@ namespace OneSignalSDK.Android.InAppMessages {
             }
 
             /// <param name="didDisplayEvent">IInAppMessageDidDisplayEvent</param>
-            public void onDidDisplay(AndroidJavaObject didDisplayEvent) {
+            public void onDidDisplay(AndroidJavaObject didDisplayEvent)
+            {
                 var messageJO = didDisplayEvent.Call<AndroidJavaObject>("getMessage");
                 var message = messageJO.ToSerializable<InAppMessage>();
 
@@ -109,11 +118,14 @@ namespace OneSignalSDK.Android.InAppMessages {
             }
 
             /// <param name="willDismissEvent">IInAppMessageWillDismissEvent</param>
-            public void onWillDismiss(AndroidJavaObject willDismissEvent) {
+            public void onWillDismiss(AndroidJavaObject willDismissEvent)
+            {
                 var messageJO = willDismissEvent.Call<AndroidJavaObject>("getMessage");
                 var message = messageJO.ToSerializable<InAppMessage>();
 
-                InAppMessageWillDismissEventArgs args = new InAppMessageWillDismissEventArgs(message);
+                InAppMessageWillDismissEventArgs args = new InAppMessageWillDismissEventArgs(
+                    message
+                );
 
                 EventHandler<InAppMessageWillDismissEventArgs> handler = _parent.WillDismiss;
                 if (handler != null)
@@ -123,7 +135,8 @@ namespace OneSignalSDK.Android.InAppMessages {
             }
 
             /// <param name="didDismissEvent">IInAppMessageDidDismissEvent</param>
-            public void onDidDismiss(AndroidJavaObject didDismissEvent) {
+            public void onDidDismiss(AndroidJavaObject didDismissEvent)
+            {
                 var messageJO = didDismissEvent.Call<AndroidJavaObject>("getMessage");
                 var message = messageJO.ToSerializable<InAppMessage>();
 
@@ -137,27 +150,31 @@ namespace OneSignalSDK.Android.InAppMessages {
             }
         }
 
-        private sealed class IInAppMessageClickListener : OneSignalAndroidJavaProxy {
+        private sealed class IInAppMessageClickListener : OneSignalAndroidJavaProxy
+        {
             private AndroidInAppMessagesManager _parent;
 
-            public IInAppMessageClickListener(AndroidInAppMessagesManager inAppMessagesManager) : base("inAppMessages.IInAppMessageClickListener") {
+            public IInAppMessageClickListener(AndroidInAppMessagesManager inAppMessagesManager)
+                : base("inAppMessages.IInAppMessageClickListener")
+            {
                 _parent = inAppMessagesManager;
             }
 
             /// <param name="clickEvent">IInAppMessageClickEvent</param>
-            public void onClick(AndroidJavaObject clickEvent) {
+            public void onClick(AndroidJavaObject clickEvent)
+            {
                 var messageJO = clickEvent.Call<AndroidJavaObject>("getMessage");
                 var message = messageJO.ToSerializable<InAppMessage>();
 
                 var resultJO = clickEvent.Call<AndroidJavaObject>("getResult");
-                
+
                 // Not having a 1:1 serializable class with matching primative types will result in ToSerialization being empty
                 var actionId = resultJO.Call<string>("getActionId");
-                
+
                 var urlTypeJO = resultJO.Call<AndroidJavaObject>("getUrlTarget");
                 var urlType = urlTypeJO.Call<string>("toString");
                 var urlTarget = StringToInAppMessageActionUrlType(urlType);
-                
+
                 var url = resultJO.Call<string>("getUrl");
                 var closingMessage = resultJO.Call<bool>("getClosingMessage");
 
@@ -172,7 +189,10 @@ namespace OneSignalSDK.Android.InAppMessages {
                 }
             }
 
-            public static InAppMessageActionUrlType StringToInAppMessageActionUrlType(string urlType) {
+            public static InAppMessageActionUrlType StringToInAppMessageActionUrlType(
+                string urlType
+            )
+            {
                 switch (urlType)
                 {
                     case "webview":

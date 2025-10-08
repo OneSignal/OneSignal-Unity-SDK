@@ -27,19 +27,21 @@
 
 using System;
 
-namespace OneSignalSDK.User.Models {
-    public interface IPushSubscriptionState {
+namespace OneSignalSDK.User.Models
+{
+    public interface IPushSubscriptionState
+    {
         /// <summary>
         /// Unique id of this subscription
         /// </summary>
         /// <remarks>See https://documentation.onesignal.com/docs/subscriptions for more information</remarks>
         string Id { get; }
-        
+
         /// <summary>
         /// Whether this subscription is currently active
         /// </summary>
         bool OptedIn { get; }
-        
+
         /// <summary>
         /// The unique token provided by the device's operating system used to send push notifications
         /// </summary>

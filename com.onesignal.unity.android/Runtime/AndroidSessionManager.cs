@@ -25,24 +25,25 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using OneSignalSDK.Session;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.Session {
-    internal sealed class AndroidSessionManager : ISessionManager {
+namespace OneSignalSDK.Android.Session
+{
+    internal sealed class AndroidSessionManager : ISessionManager
+    {
         private readonly AndroidJavaObject _session;
-        
-        public AndroidSessionManager(AndroidJavaClass sdkClass) {
+
+        public AndroidSessionManager(AndroidJavaClass sdkClass)
+        {
             _session = sdkClass.CallStatic<AndroidJavaObject>("getSession");
         }
 
-        public void AddOutcome(string name)
-            => _session.Call("addOutcome", name);
+        public void AddOutcome(string name) => _session.Call("addOutcome", name);
 
-        public void AddUniqueOutcome(string name)
-            => _session.Call("addUniqueOutcome", name);
+        public void AddUniqueOutcome(string name) => _session.Call("addUniqueOutcome", name);
 
-        public void AddOutcomeWithValue(string name, float value)
-            => _session.Call("addOutcomeWithValue", name, value);
+        public void AddOutcomeWithValue(string name, float value) =>
+            _session.Call("addOutcomeWithValue", name, value);
     }
 }

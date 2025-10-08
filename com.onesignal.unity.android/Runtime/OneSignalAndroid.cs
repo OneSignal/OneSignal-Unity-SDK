@@ -27,32 +27,36 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using OneSignalSDK.Notifications;
-using OneSignalSDK.InAppMessages;
-using OneSignalSDK.Debug;
-using OneSignalSDK.Debug.Utilities;
-using OneSignalSDK.Location;
-using OneSignalSDK.Session;
-using OneSignalSDK.User;
-using OneSignalSDK.LiveActivities;
-using OneSignalSDK.Android.Notifications;
-using OneSignalSDK.Android.InAppMessages;
 using OneSignalSDK.Android.Debug;
+using OneSignalSDK.Android.InAppMessages;
+using OneSignalSDK.Android.LiveActivities;
 using OneSignalSDK.Android.Location;
+using OneSignalSDK.Android.Notifications;
 using OneSignalSDK.Android.Session;
 using OneSignalSDK.Android.User;
-using OneSignalSDK.Android.LiveActivities;
+using OneSignalSDK.Debug;
+using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.LiveActivities;
+using OneSignalSDK.Location;
+using OneSignalSDK.Notifications;
+using OneSignalSDK.Session;
+using OneSignalSDK.User;
+using UnityEngine;
 
-namespace OneSignalSDK.Android {
-    public sealed partial class OneSignalAndroid : OneSignalPlatform {
+namespace OneSignalSDK.Android
+{
+    public sealed partial class OneSignalAndroid : OneSignalPlatform
+    {
         private const string SDKPackage = "com.onesignal";
         private const string SDKClassName = "OneSignal";
         private const string QualifiedSDKClass = SDKPackage + "." + SDKClassName;
 
         private readonly AndroidJavaClass _sdkClass = new AndroidJavaClass(QualifiedSDKClass);
 
-        private readonly AndroidJavaClass _sdkWrapperClass = new AndroidJavaClass(SDKPackage + ".common.OneSignalWrapper");
+        private readonly AndroidJavaClass _sdkWrapperClass = new AndroidJavaClass(
+            SDKPackage + ".common.OneSignalWrapper"
+        );
 
         private static OneSignalAndroid _instance;
 
@@ -67,8 +71,10 @@ namespace OneSignalSDK.Android {
         /// <summary>
         /// Used to provide a reference for the global callbacks
         /// </summary>
-        public OneSignalAndroid() {
-            if (_instance != null) {
+        public OneSignalAndroid()
+        {
+            if (_instance != null)
+            {
                 SDKDebug.Error("Additional instance of OneSignalAndroid created.");
                 return;
             }
@@ -77,86 +83,104 @@ namespace OneSignalSDK.Android {
             _debug = new AndroidDebugManager(_sdkClass);
         }
 
-        public override IUserManager User {
+        public override IUserManager User
+        {
             get => _user;
         }
 
-        public override ISessionManager Session {
+        public override ISessionManager Session
+        {
             get => _session;
         }
 
-        public override INotificationsManager Notifications {
+        public override INotificationsManager Notifications
+        {
             get => _notifications;
         }
 
-        public override ILocationManager Location {
+        public override ILocationManager Location
+        {
             get => _location;
         }
 
-        public override IInAppMessagesManager InAppMessages {
+        public override IInAppMessagesManager InAppMessages
+        {
             get => _inAppMessages;
         }
 
-        public override IDebugManager Debug {
+        public override IDebugManager Debug
+        {
             get => _debug;
         }
 
-        public override ILiveActivitiesManager LiveActivities {
+        public override ILiveActivitiesManager LiveActivities
+        {
             get => _liveActivities;
         }
 
-        public override bool ConsentGiven {
+        public override bool ConsentGiven
+        {
             set => _sdkClass.CallStatic("setConsentGiven", value);
         }
 
-        public override bool ConsentRequired {
+        public override bool ConsentRequired
+        {
             set => _sdkClass.CallStatic("setConsentRequired", value);
         }
 
-        public override void Initialize(string appId) {
+        public override void Initialize(string appId)
+        {
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            var activity    = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
             _sdkWrapperClass.CallStatic("setSdkType", "unity");
             _sdkWrapperClass.CallStatic("setSdkVersion", VersionHeader);
 
             _sdkClass.CallStatic("initWithContext", activity, appId);
 
-            if (_inAppMessages == null) {
+            if (_inAppMessages == null)
+            {
                 _inAppMessages = new AndroidInAppMessagesManager(_sdkClass);
                 _inAppMessages.Initialize();
             }
 
-            if (_notifications == null) {
+            if (_notifications == null)
+            {
                 _notifications = new AndroidNotificationsManager(_sdkClass);
                 _notifications.Initialize();
             }
 
-            if (_user == null) {
+            if (_user == null)
+            {
                 _user = new AndroidUserManager(_sdkClass);
                 _user.Initialize();
             }
 
-            if (_location == null) {
+            if (_location == null)
+            {
                 _location = new AndroidLocationManager(_sdkClass);
             }
 
-            if (_session == null) {
+            if (_session == null)
+            {
                 _session = new AndroidSessionManager(_sdkClass);
             }
 
-            if (_liveActivities == null) {
+            if (_liveActivities == null)
+            {
                 _liveActivities = new AndroidLiveActivitiesManager();
             }
 
             _completedInit(appId);
         }
 
-        public override void Login(string externalId, string jwtBearerToken = null) {
+        public override void Login(string externalId, string jwtBearerToken = null)
+        {
             _sdkClass.CallStatic("login", externalId, jwtBearerToken);
         }
 
-        public override void Logout() {
+        public override void Logout()
+        {
             _sdkClass.CallStatic("logout");
         }
     }

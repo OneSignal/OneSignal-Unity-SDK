@@ -29,12 +29,14 @@ using System.Collections.Generic;
 using System.IO;
 using OneSignalSDK.Installer;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Representation of Manifest JSON file.
     /// Can be used for adding dependencies, scopeRegistries, etc to .json file
     /// </summary>
-    public class Manifest {
+    public class Manifest
+    {
         const string k_ProjectManifestPath = "Packages/manifest.json";
         const string k_DependenciesKey = "dependencies";
         const string k_ScopedRegistriesKey = "scopedRegistries";
@@ -53,33 +55,44 @@ namespace OneSignalSDK {
         /// Initializes a new instance of the <see cref="Manifest"/> class.
         /// </summary>
         /// <param name="pathToFile">Path to manifest file.</param>
-        public Manifest(string pathToFile = k_ProjectManifestPath) {
-            Path              = pathToFile;
+        public Manifest(string pathToFile = k_ProjectManifestPath)
+        {
+            Path = pathToFile;
             m_ScopeRegistries = new Dictionary<string, ScopeRegistry>();
-            m_Dependencies    = new Dictionary<string, Dependency>();
+            m_Dependencies = new Dictionary<string, Dependency>();
         }
 
         /// <summary>
         /// Read the Manifest file and deserialize its content from JSON.
         /// </summary>
-        public void Fetch() {
+        public void Fetch()
+        {
             var manifestText = File.ReadAllText(Path);
             m_RawContent = (Dictionary<string, object>)Json.Deserialize(manifestText);
 
-            if (m_RawContent.TryGetValue(k_ScopedRegistriesKey, out var registriesBlob)) {
-                if (registriesBlob is List<object> registries) {
-                    foreach (var registry in registries) {
-                        var registryDict  = (Dictionary<string, object>)registry;
+            if (m_RawContent.TryGetValue(k_ScopedRegistriesKey, out var registriesBlob))
+            {
+                if (registriesBlob is List<object> registries)
+                {
+                    foreach (var registry in registries)
+                    {
+                        var registryDict = (Dictionary<string, object>)registry;
                         var scopeRegistry = new ScopeRegistry(registryDict);
                         m_ScopeRegistries.Add(scopeRegistry.Url, scopeRegistry);
                     }
                 }
             }
 
-            if (m_RawContent.TryGetValue(k_DependenciesKey, out var dependenciesBlob)) {
-                if (dependenciesBlob is Dictionary<string, object> dependencies) {
-                    foreach (var dependencyData in dependencies) {
-                        var dependency = new Dependency(dependencyData.Key, dependencyData.Value.ToString());
+            if (m_RawContent.TryGetValue(k_DependenciesKey, out var dependenciesBlob))
+            {
+                if (dependenciesBlob is Dictionary<string, object> dependencies)
+                {
+                    foreach (var dependencyData in dependencies)
+                    {
+                        var dependency = new Dependency(
+                            dependencyData.Key,
+                            dependencyData.Value.ToString()
+                        );
                         m_Dependencies.Add(dependency.Name, dependency);
                     }
                 }
@@ -91,7 +104,8 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="name">Name of the dependency.</param>
         /// <returns>Dependency with given name.</returns>
-        public Dependency GetDependency(string name) {
+        public Dependency GetDependency(string name)
+        {
             return m_Dependencies[name];
         }
 
@@ -100,7 +114,8 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="url">Scope registry url.</param>
         /// <returns>Scope registry with the given url.</returns>
-        public ScopeRegistry GetScopeRegistry(string url) {
+        public ScopeRegistry GetScopeRegistry(string url)
+        {
             return m_ScopeRegistries[url];
         }
 
@@ -108,8 +123,10 @@ namespace OneSignalSDK {
         /// Adds scope registry.
         /// </summary>
         /// <param name="registry">An entry to add.</param>
-        public void AddScopeRegistry(ScopeRegistry registry) {
-            if (!IsRegistryPresent(registry.Url)) {
+        public void AddScopeRegistry(ScopeRegistry registry)
+        {
+            if (!IsRegistryPresent(registry.Url))
+            {
                 m_ScopeRegistries.Add(registry.Url, registry);
             }
         }
@@ -118,8 +135,10 @@ namespace OneSignalSDK {
         /// Removes a scope registry
         /// </summary>
         /// <param name="url"></param>
-        public void RemoveScopeRegistry(string url) {
-            if (IsRegistryPresent(url)) {
+        public void RemoveScopeRegistry(string url)
+        {
+            if (IsRegistryPresent(url))
+            {
                 m_ScopeRegistries.Remove(url);
             }
         }
@@ -129,8 +148,10 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="name">Dependency name.</param>
         /// <param name="version">Dependency version.</param>
-        public void AddDependency(string name, string version) {
-            if (!IsDependencyPresent(name)) {
+        public void AddDependency(string name, string version)
+        {
+            if (!IsDependencyPresent(name))
+            {
                 var dependency = new Dependency(name, version);
                 m_Dependencies.Add(dependency.Name, dependency);
             }
@@ -140,8 +161,10 @@ namespace OneSignalSDK {
         /// Removes a dependency
         /// </summary>
         /// <param name="name"></param>
-        public void RemoveDependency(string name) {
-            if (IsDependencyPresent(name)) {
+        public void RemoveDependency(string name)
+        {
+            if (IsDependencyPresent(name))
+            {
                 m_Dependencies.Remove(name);
             }
         }
@@ -149,10 +172,12 @@ namespace OneSignalSDK {
         /// <summary>
         /// Writes changes back to the manifest file.
         /// </summary>
-        public void ApplyChanges() {
+        public void ApplyChanges()
+        {
             var registries = new List<object>();
 
-            foreach (var registry in m_ScopeRegistries.Values) {
+            foreach (var registry in m_ScopeRegistries.Values)
+            {
                 registries.Add(registry.ToDictionary());
             }
 
@@ -165,7 +190,8 @@ namespace OneSignalSDK {
 
             Dictionary<string, object> dependencies = new Dictionary<string, object>();
 
-            foreach (var dependency in m_Dependencies.Values) {
+            foreach (var dependency in m_Dependencies.Values)
+            {
                 dependencies.Add(dependency.Name, dependency.Version);
             }
 
@@ -180,7 +206,8 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="url">ScopeRegistry url to search for.</param>
         /// <returns>`true` if scoped registry found, `false` otherwise.</returns>
-        public bool IsRegistryPresent(string url) {
+        public bool IsRegistryPresent(string url)
+        {
             return m_ScopeRegistries.ContainsKey(url);
         }
 
@@ -189,7 +216,8 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="name">The dependency name to search for.</param>
         /// <returns>`true` if found, `false` otherwise.</returns>
-        public bool IsDependencyPresent(string name) {
+        public bool IsDependencyPresent(string name)
+        {
             return m_Dependencies.ContainsKey(name);
         }
     }

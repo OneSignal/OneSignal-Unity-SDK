@@ -25,23 +25,32 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using OneSignalSDK.Location;
-using System.Runtime.InteropServices;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS.Location {
-    internal sealed class iOSLocationManager : ILocationManager {
-        [DllImport("__Internal")] private static extern bool _oneSignalLocationGetIsShared();
-        [DllImport("__Internal")] private static extern void _oneSignalLocationSetIsShared(bool shared);
-        [DllImport("__Internal")] private static extern void _oneSignalLocationRequestPermission();
+namespace OneSignalSDK.iOS.Location
+{
+    internal sealed class iOSLocationManager : ILocationManager
+    {
+        [DllImport("__Internal")]
+        private static extern bool _oneSignalLocationGetIsShared();
 
-        public bool IsShared {
+        [DllImport("__Internal")]
+        private static extern void _oneSignalLocationSetIsShared(bool shared);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalLocationRequestPermission();
+
+        public bool IsShared
+        {
             get => _oneSignalLocationGetIsShared();
             set => _oneSignalLocationSetIsShared(value);
         }
 
-        public void RequestPermission() {
+        public void RequestPermission()
+        {
             _oneSignalLocationRequestPermission();
         }
     }

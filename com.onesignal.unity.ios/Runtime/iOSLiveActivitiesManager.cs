@@ -26,30 +26,57 @@
  */
 
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using OneSignalSDK.LiveActivities;
+using System.Threading.Tasks;
 using OneSignalSDK.iOS.Utilities;
+using OneSignalSDK.LiveActivities;
 
-namespace OneSignalSDK.iOS.LiveActivities {
-    internal sealed class iOSLiveActivitiesManager : ILiveActivitiesManager {
-        [DllImport("__Internal")] private static extern void _oneSignalSetupDefaultLiveActivity(string optionsJson);
-        [DllImport("__Internal")] private static extern void _oneSignalStartDefaultLiveActivity(string activityId, string attributesJson, string contentJson);
-        [DllImport("__Internal")] private static extern void _oneSignalEnterLiveActivity(string activityId, string token, int hashCode, BooleanResponseDelegate callback);
-        [DllImport("__Internal")] private static extern void _oneSignalExitLiveActivity(string activityId, int hashCode, BooleanResponseDelegate callback);
+namespace OneSignalSDK.iOS.LiveActivities
+{
+    internal sealed class iOSLiveActivitiesManager : ILiveActivitiesManager
+    {
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSetupDefaultLiveActivity(string optionsJson);
 
-        [DllImport("__Internal")] private static extern void _oneSignalSetPushToStartToken(string activityType, string token);
-        [DllImport("__Internal")] private static extern void _oneSignalRemovePushToStartToken(string activityType);
+        [DllImport("__Internal")]
+        private static extern void _oneSignalStartDefaultLiveActivity(
+            string activityId,
+            string attributesJson,
+            string contentJson
+        );
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalEnterLiveActivity(
+            string activityId,
+            string token,
+            int hashCode,
+            BooleanResponseDelegate callback
+        );
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalExitLiveActivity(
+            string activityId,
+            int hashCode,
+            BooleanResponseDelegate callback
+        );
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSetPushToStartToken(string activityType, string token);
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalRemovePushToStartToken(string activityType);
 
         private delegate void BooleanResponseDelegate(int hashCode, bool response);
 
-        public async Task<bool> EnterAsync(string activityId, string token) {
+        public async Task<bool> EnterAsync(string activityId, string token)
+        {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
             _oneSignalEnterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
             return await proxy;
         }
 
-        public async Task<bool> ExitAsync(string activityId) {
+        public async Task<bool> ExitAsync(string activityId)
+        {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
             _oneSignalExitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
             return await proxy;
@@ -57,7 +84,7 @@ namespace OneSignalSDK.iOS.LiveActivities {
 
         public void RemovePushToStartToken(string activityType)
         {
-           _oneSignalRemovePushToStartToken(activityType);
+            _oneSignalRemovePushToStartToken(activityType);
         }
 
         public void SetPushToStartToken(string activityType, string token)
@@ -70,23 +97,33 @@ namespace OneSignalSDK.iOS.LiveActivities {
             string optionsJson = null;
             if (options != null)
             {
-                optionsJson = Json.Serialize(new Dictionary<string, object>
-                {
-                    { "enablePushToStart", options.EnablePushToStart },
-                    { "enablePushToUpdate", options.EnablePushToUpdate }
-                });
+                optionsJson = Json.Serialize(
+                    new Dictionary<string, object>
+                    {
+                        { "enablePushToStart", options.EnablePushToStart },
+                        { "enablePushToUpdate", options.EnablePushToUpdate },
+                    }
+                );
             }
 
             _oneSignalSetupDefaultLiveActivity(optionsJson);
         }
 
-        public void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content)
+        public void StartDefault(
+            string activityId,
+            IDictionary<string, object> attributes,
+            IDictionary<string, object> content
+        )
         {
-            _oneSignalStartDefaultLiveActivity(activityId, Json.Serialize(attributes), Json.Serialize(content));
+            _oneSignalStartDefaultLiveActivity(
+                activityId,
+                Json.Serialize(attributes),
+                Json.Serialize(content)
+            );
         }
 
         [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]
-        private static void BooleanCallbackProxy(int hashCode, bool response)
-            => WaitingProxy.ResolveCallbackProxy(hashCode, response);
+        private static void BooleanCallbackProxy(int hashCode, bool response) =>
+            WaitingProxy.ResolveCallbackProxy(hashCode, response);
     }
 }

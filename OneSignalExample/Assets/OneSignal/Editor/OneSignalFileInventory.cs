@@ -29,11 +29,13 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Inventory distributed with the *.unitypackage in order to determine if there are any legacy files in need of removal
     /// </summary>
-    internal sealed class OneSignalFileInventory : ScriptableObject {
+    internal sealed class OneSignalFileInventory : ScriptableObject
+    {
         /// <summary>
         /// Array of paths within the OneSignal directory which were determined to be part of the distributed unitypackage
         /// </summary>
@@ -42,8 +44,10 @@ namespace OneSignalSDK {
         /// <summary>
         /// Array of current paths within the OneSignal directory
         /// </summary>
-        public static string[] GetCurrentPaths()
-            => ConvertPathsToUnix(Directory.GetFiles(PackageAssetsPath, "*", SearchOption.AllDirectories));
+        public static string[] GetCurrentPaths() =>
+            ConvertPathsToUnix(
+                Directory.GetFiles(PackageAssetsPath, "*", SearchOption.AllDirectories)
+            );
 
         /// <summary>
         /// Makes sure <see cref="paths"/> are using forward slash to be Unix compatible.
@@ -51,7 +55,8 @@ namespace OneSignalSDK {
         /// </summary>
         /// <param name="paths">the paths to check and convert</param>
         /// <returns>paths with / as the directory separator</returns>
-        public static string[] ConvertPathsToUnix(string[] paths) {
+        public static string[] ConvertPathsToUnix(string[] paths)
+        {
             if (Path.DirectorySeparatorChar == Path.AltDirectorySeparatorChar)
                 return paths;
 
@@ -64,7 +69,11 @@ namespace OneSignalSDK {
 
         public const string AssetName = "OneSignalFileInventory.asset";
         public static readonly string PackageAssetsPath = Path.Combine("Assets", "OneSignal");
-        public static readonly string EditorResourcesPath = Path.Combine(PackageAssetsPath, "Editor", "Resources");
+        public static readonly string EditorResourcesPath = Path.Combine(
+            PackageAssetsPath,
+            "Editor",
+            "Resources"
+        );
         public static readonly string AssetPath = Path.Combine(EditorResourcesPath, AssetName);
     }
 }

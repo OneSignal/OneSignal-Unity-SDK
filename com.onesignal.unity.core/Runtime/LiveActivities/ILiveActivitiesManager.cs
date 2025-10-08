@@ -28,8 +28,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OneSignalSDK.LiveActivities {
-    public interface ILiveActivitiesManager {
+namespace OneSignalSDK.LiveActivities
+{
+    public interface ILiveActivitiesManager
+    {
         /// <summary>
         /// Associates a customer defined activityId with a live activity temporary push token on OneSignal's server
         /// </summary>
@@ -54,7 +56,7 @@ namespace OneSignalSDK.LiveActivities {
         /// `DefaultLiveActivityAttributes`. This is most useful for users that (1) only have one Live
         /// Activity widget and (2) are using a cross-platform framework and do not want to create the
         /// cross-platform <-> iOS native bindings to manage ActivityKit.
-        /// 
+        ///
         /// Only applies to iOS.
         /// </summary>
         /// <param name="options">An optional structure to provide for more granular setup options.</param>
@@ -64,20 +66,24 @@ namespace OneSignalSDK.LiveActivities {
         /// Start a new LiveActivity that is modelled by the default`DefaultLiveActivityAttributes`
         /// structure. The `DefaultLiveActivityAttributes` is initialized with the dynamic `attributes`
         /// and `content` passed in.
-        /// 
+        ///
         /// Only applies to iOS.
         /// </summary>
         /// <param name="activityId">The activity identifier the live activity on this device will be started
         /// and eligible to receive updates for.</param>
         /// <param name="attributes">A dynamic type containing the static attributes passed into `DefaultLiveActivityAttributes`.</param>
         /// <param name="content">A dynamic type containing the content attributes passed into `DefaultLiveActivityAttributes`.</param>
-        void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content);
+        void StartDefault(
+            string activityId,
+            IDictionary<string, object> attributes,
+            IDictionary<string, object> content
+        );
 
         /// <summary>
         /// Indicate this device is capable of receiving pushToStart live activities for the `activityType`.
         /// The `activityType` **must** be the name of the struct conforming to `ActivityAttributes` that will be used
         /// to start the live activity.
-        /// 
+        ///
         /// Only applies to iOS.
         /// </summary>
         /// <param name="activityType">The name of the specific `ActivityAttributes` structure tied to the live activity.</param>
@@ -88,7 +94,7 @@ namespace OneSignalSDK.LiveActivities {
         /// Indicate this device is no longer capable of receiving pushToStart live activities for the `activityType`.
         /// The `activityType` **must** be the name of the struct conforming to `ActivityAttributes` that will be used
         /// to start the live activity.
-        /// 
+        ///
         /// Only applies to iOS.
         /// </summary>
         /// <param name="activityType">The name of the specific `ActivityAttributes` structure tied to the live activity.</param>

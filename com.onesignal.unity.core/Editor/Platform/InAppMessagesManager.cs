@@ -29,8 +29,10 @@ using System;
 using System.Collections.Generic;
 
 #pragma warning disable 0067 // the event 'x' is never used
-namespace OneSignalSDK.InAppMessages {
-    internal sealed class InAppMessagesManager : IInAppMessagesManager {
+namespace OneSignalSDK.InAppMessages
+{
+    internal sealed class InAppMessagesManager : IInAppMessagesManager
+    {
         public event EventHandler<InAppMessageWillDisplayEventArgs> WillDisplay;
         public event EventHandler<InAppMessageDidDisplayEventArgs> DidDisplay;
         public event EventHandler<InAppMessageWillDismissEventArgs> WillDismiss;
@@ -39,24 +41,14 @@ namespace OneSignalSDK.InAppMessages {
 
         public bool Paused { get; set; }
 
-        public void AddTrigger(string key, string value) {
+        public void AddTrigger(string key, string value) { }
 
-        }
+        public void AddTriggers(Dictionary<string, string> triggers) { }
 
-        public void AddTriggers(Dictionary<string, string> triggers) {
+        public void RemoveTrigger(string key) { }
 
-        }
+        public void RemoveTriggers(params string[] keys) { }
 
-        public void RemoveTrigger(string key) {
-
-        }
-
-        public void RemoveTriggers(params string[] keys) {
-
-        }
-
-        public void ClearTriggers() {
-
-        }
+        public void ClearTriggers() { }
     }
 }

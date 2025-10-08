@@ -25,25 +25,30 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using System.Threading.Tasks;
-using OneSignalSDK.Location;
 using OneSignalSDK.Android.Utilities;
+using OneSignalSDK.Location;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.Location {
-    internal sealed class AndroidLocationManager : ILocationManager {
+namespace OneSignalSDK.Android.Location
+{
+    internal sealed class AndroidLocationManager : ILocationManager
+    {
         private readonly AndroidJavaObject _location;
-        
-        public AndroidLocationManager(AndroidJavaClass sdkClass) {
+
+        public AndroidLocationManager(AndroidJavaClass sdkClass)
+        {
             _location = sdkClass.CallStatic<AndroidJavaObject>("getLocation");
         }
 
-        public bool IsShared {
+        public bool IsShared
+        {
             get => _location.Call<bool>("isShared");
             set => _location.Call("setShared", value);
         }
 
-        public void RequestPermission() {
+        public void RequestPermission()
+        {
             var continuation = new BoolContinuation();
             _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
         }

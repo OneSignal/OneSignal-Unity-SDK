@@ -25,40 +25,52 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using OneSignalSDK.Debug;
 using OneSignalSDK.Debug.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.Debug {
-    internal sealed class AndroidDebugManager : IDebugManager {
+namespace OneSignalSDK.Android.Debug
+{
+    internal sealed class AndroidDebugManager : IDebugManager
+    {
         private readonly AndroidJavaObject _debug;
 
         private LogLevel _logLevel = LogLevel.Warn;
         private LogLevel _alertLevel = LogLevel.None;
 
-        public AndroidDebugManager(AndroidJavaClass sdkClass) {
+        public AndroidDebugManager(AndroidJavaClass sdkClass)
+        {
             _debug = sdkClass.CallStatic<AndroidJavaObject>("getDebug");
         }
 
-        public LogLevel LogLevel {
+        public LogLevel LogLevel
+        {
             get => _logLevel;
-            set {
+            set
+            {
                 _logLevel = value;
                 _debug.Call("setLogLevel", ToLogLevel(value));
             }
         }
 
-        public LogLevel AlertLevel {
+        public LogLevel AlertLevel
+        {
             get => _alertLevel;
-            set {
+            set
+            {
                 _alertLevel = value;
                 _debug.Call("setAlertLevel", ToLogLevel(value));
             }
         }
 
-        private AndroidJavaObject ToLogLevel(LogLevel value) {
+        private AndroidJavaObject ToLogLevel(LogLevel value)
+        {
             var logLevelClass = new AndroidJavaClass("com.onesignal.debug.LogLevel");
-            var logLevelValue = logLevelClass.CallStatic<AndroidJavaObject>("valueOf", logLevelClass, value.ToString().ToUpper());
+            var logLevelValue = logLevelClass.CallStatic<AndroidJavaObject>(
+                "valueOf",
+                logLevelClass,
+                value.ToString().ToUpper()
+            );
             return logLevelValue;
         }
     }

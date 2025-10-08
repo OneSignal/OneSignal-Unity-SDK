@@ -26,30 +26,34 @@
  */
 
 using System;
-using UnityEngine;
 using System.Collections.Generic;
-using OneSignalSDK.Notifications;
-using OneSignalSDK.InAppMessages;
 using OneSignalSDK.Debug;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Location;
+using OneSignalSDK.Notifications;
 using OneSignalSDK.Session;
 using OneSignalSDK.User;
-using OneSignalSDK.LiveActivities;
+using UnityEngine;
 
-namespace OneSignalSDK {
-    public abstract class OneSignalPlatform {
+namespace OneSignalSDK
+{
+    public abstract class OneSignalPlatform
+    {
         public const string VersionHeader = "050115";
 
         internal static event Action<string> OnInitialize;
 
         internal static string AppId { get; private set; }
 
-        protected static void _completedInit(string appId) {
-            AppId         = appId;
+        protected static void _completedInit(string appId)
+        {
+            AppId = appId;
             OnInitialize?.Invoke(AppId);
         }
 
-        protected static void _init(string appId) {
+        protected static void _init(string appId)
+        {
             OnInitialize?.Invoke(appId);
         }
 
@@ -70,7 +74,7 @@ namespace OneSignalSDK {
         /// The notification manager for accessing device-scoped notification management. Initialized
         /// only after [initWithContext] has been called.
         /// </summary>
-        public abstract INotificationsManager Notifications{ get; }
+        public abstract INotificationsManager Notifications { get; }
 
         /// <summary>
         /// The notification manager for accessing device-scoped notification management. Initialized
@@ -87,18 +91,18 @@ namespace OneSignalSDK {
         /// <summary>
         /// Access to debug the SDK in the additional information is required to diagnose any
         /// SDK-related issues.  Initialized immediately (can be used prior to [initWithContext]).
-        /// 
+        ///
         /// WARNING: This should not be used in a production setting.
-        /// 
+        ///
         /// </summary>
         public abstract IDebugManager Debug { get; }
 
         /// <summary>
         /// Access to debug the SDK in the additional information is required to diagnose any
         /// SDK-related issues.  Initialized immediately (can be used prior to [initWithContext]).
-        /// 
+        ///
         /// WARNING: This should not be used in a production setting.
-        /// 
+        ///
         /// </summary>
         public abstract ILiveActivitiesManager LiveActivities { get; }
 
@@ -122,14 +126,14 @@ namespace OneSignalSDK {
         /// <summary>
         /// Login to OneSignal under the user identified by the [externalId] provided. The act of
         /// logging a user into the OneSignal SDK will switch the [user] context to that specific user.
-        /// 
+        ///
         /// * If the [externalId] exists the user will be retrieved and the context set from that
         ///   user information. If operations have already been performed under a guest user, they
         ///   *will not* be applied to the now logged in user (they will be lost).
         /// * If the [externalId] does not exist the user will be created and the context set from
         ///   the current local state. If operations have already been performed under a guest user
         ///   those operations *will* be applied to the newly created user.
-        /// 
+        ///
         /// *Push Notifications and In-App Messaging*
         /// Logging in a new user will automatically transfer push notification and in-app messaging
         /// subscriptions from the current user (if there is one) to the newly logged in user.  This is

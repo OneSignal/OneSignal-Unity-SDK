@@ -27,35 +27,40 @@
 
 using System.IO;
 
-namespace OneSignalSDK {
-/// <summary>
-/// Makes sure that the link.xml file for the OneSignal SDK exists
-/// </summary>
-public class LinkXMLStep : OneSignalSetupStep {
-    public override string Summary
-        => "Generate link.xml";
+namespace OneSignalSDK
+{
+    /// <summary>
+    /// Makes sure that the link.xml file for the OneSignal SDK exists
+    /// </summary>
+    public class LinkXMLStep : OneSignalSetupStep
+    {
+        public override string Summary => "Generate link.xml";
 
-    public override string Details
-        => $"Generates the link.xml file at {_destinationPath} which is needed to prevent OneSignal classes from being " +
-           $"removed by Unity's code stripping.";
+        public override string Details =>
+            $"Generates the link.xml file at {_destinationPath} which is needed to prevent OneSignal classes from being "
+            + $"removed by Unity's code stripping.";
 
-    public override bool IsRequired 
-        => true;
+        public override bool IsRequired => true;
 
-    protected override bool _getIsStepCompleted()
-        => File.Exists(_destinationPath);
+        protected override bool _getIsStepCompleted() => File.Exists(_destinationPath);
 
-    protected override void _runStep() {
-        if (!Directory.Exists(_destinationDir))
-            Directory.CreateDirectory(_destinationDir);
-        
-        if (!File.Exists(_destinationPath))
-            File.Copy(_sourcePath, _destinationPath);
-    }
-    
-    private static readonly string _destinationDir = Path.Combine("Assets", "OneSignal");
-    
-    private static readonly string _sourcePath = Path.Combine("Packages", "com.onesignal.unity.core", "Editor", "link.xml");
-    private static readonly string _destinationPath = Path.Combine(_destinationDir, "link.xml");
+        protected override void _runStep()
+        {
+            if (!Directory.Exists(_destinationDir))
+                Directory.CreateDirectory(_destinationDir);
+
+            if (!File.Exists(_destinationPath))
+                File.Copy(_sourcePath, _destinationPath);
+        }
+
+        private static readonly string _destinationDir = Path.Combine("Assets", "OneSignal");
+
+        private static readonly string _sourcePath = Path.Combine(
+            "Packages",
+            "com.onesignal.unity.core",
+            "Editor",
+            "link.xml"
+        );
+        private static readonly string _destinationPath = Path.Combine(_destinationDir, "link.xml");
     }
 }

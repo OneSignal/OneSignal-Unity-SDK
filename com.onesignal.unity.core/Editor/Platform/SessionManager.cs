@@ -25,18 +25,14 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDK.Session {
-    internal sealed class SessionManager : ISessionManager {
-        public void AddOutcome(string name) {
+namespace OneSignalSDK.Session
+{
+    internal sealed class SessionManager : ISessionManager
+    {
+        public void AddOutcome(string name) { }
 
-        }
+        public void AddUniqueOutcome(string name) { }
 
-        public void AddUniqueOutcome(string name) {
-
-        }
-
-        public void AddOutcomeWithValue(string name, float value) {
-
-        }
+        public void AddOutcomeWithValue(string name, float value) { }
     }
 }
