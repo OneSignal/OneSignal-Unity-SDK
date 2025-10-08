@@ -25,23 +25,28 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
-using OneSignalSDK.Session;
 using System.Runtime.InteropServices;
+using OneSignalSDK.Session;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS.Session {
-    internal sealed class iOSSessionManager : ISessionManager {
-        [DllImport("__Internal")] private static extern void _oneSignalSessionAddOutcome(string name);
-        [DllImport("__Internal")] private static extern void _oneSignalSessionAddUniqueOutcome(string name);
-        [DllImport("__Internal")] private static extern void _oneSignalSessionAddOutcomeWithValue(string name, float value);
+namespace OneSignalSDK.iOS.Session
+{
+    internal sealed class iOSSessionManager : ISessionManager
+    {
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSessionAddOutcome(string name);
 
-        public void AddOutcome(string name)
-            => _oneSignalSessionAddOutcome(name);
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSessionAddUniqueOutcome(string name);
 
-        public void AddUniqueOutcome(string name)
-            => _oneSignalSessionAddUniqueOutcome(name);
+        [DllImport("__Internal")]
+        private static extern void _oneSignalSessionAddOutcomeWithValue(string name, float value);
 
-        public void AddOutcomeWithValue(string name, float value)
-            => _oneSignalSessionAddOutcomeWithValue(name, value);
+        public void AddOutcome(string name) => _oneSignalSessionAddOutcome(name);
+
+        public void AddUniqueOutcome(string name) => _oneSignalSessionAddUniqueOutcome(name);
+
+        public void AddOutcomeWithValue(string name, float value) =>
+            _oneSignalSessionAddOutcomeWithValue(name, value);
     }
 }

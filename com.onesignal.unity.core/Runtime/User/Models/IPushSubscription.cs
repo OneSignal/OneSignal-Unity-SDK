@@ -30,7 +30,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace OneSignalSDK.User.Models {
+namespace OneSignalSDK.User.Models
+{
     /// <summary>
     /// Several states associated with the SDK can be changed in and outside of the application.
     /// </summary>
@@ -38,7 +39,8 @@ namespace OneSignalSDK.User.Models {
     {
         public PushSubscriptionChangedState State { get; }
 
-        public PushSubscriptionChangedEventArgs(PushSubscriptionChangedState state) {
+        public PushSubscriptionChangedEventArgs(PushSubscriptionChangedState state)
+        {
             State = state;
         }
     }
@@ -47,7 +49,8 @@ namespace OneSignalSDK.User.Models {
     /// A push subscription allows a user to receive notifications through the push
     /// channel.
     /// </summary>
-    public interface IPushSubscription {
+    public interface IPushSubscription
+    {
         /// <summary>
         /// When this uers's subscription to push notifications has changed
         /// </summary>

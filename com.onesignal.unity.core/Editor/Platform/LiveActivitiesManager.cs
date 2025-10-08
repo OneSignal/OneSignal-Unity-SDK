@@ -28,34 +28,30 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OneSignalSDK.LiveActivities {
-    internal sealed class LiveActivitiesManager : ILiveActivitiesManager {
-        public Task<bool> EnterAsync(string activityId, string token) {
+namespace OneSignalSDK.LiveActivities
+{
+    internal sealed class LiveActivitiesManager : ILiveActivitiesManager
+    {
+        public Task<bool> EnterAsync(string activityId, string token)
+        {
             return Task.FromResult(false);
         }
 
-        public Task<bool> ExitAsync(string activityId) {
+        public Task<bool> ExitAsync(string activityId)
+        {
             return Task.FromResult(false);
         }
 
-        public void RemovePushToStartToken(string activityType)
-        {
+        public void RemovePushToStartToken(string activityType) { }
 
-        }
+        public void SetPushToStartToken(string activityType, string token) { }
 
-        public void SetPushToStartToken(string activityType, string token)
-        {
+        public void SetupDefault(LiveActivitySetupOptions options = null) { }
 
-        }
-
-        public void SetupDefault(LiveActivitySetupOptions options = null)
-        {
-
-        }
-
-        public void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content)
-        {
-
-        }
+        public void StartDefault(
+            string activityId,
+            IDictionary<string, object> attributes,
+            IDictionary<string, object> content
+        ) { }
     }
 }

@@ -1,29 +1,35 @@
-using UnityEngine;
 using System;
-using Laters;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Laters;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.Utilities {
-    public abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy {
+namespace OneSignalSDK.Android.Utilities
+{
+    public abstract class OneSignalAndroidJavaProxy : AndroidJavaProxy
+    {
         private const string SDKPackage = "com.onesignal";
 
         protected OneSignalAndroidJavaProxy(string listenerClassName)
             : base(SDKPackage + "." + listenerClassName) { }
     }
-    
-    public abstract class OneSignalAwaitableAndroidJavaProxy<TResult> : AwaitableAndroidJavaProxy<TResult> {
+
+    public abstract class OneSignalAwaitableAndroidJavaProxy<TResult>
+        : AwaitableAndroidJavaProxy<TResult>
+    {
         private const string SDKPackage = "com.onesignal";
 
         protected OneSignalAwaitableAndroidJavaProxy(string listenerClassName)
             : base(SDKPackage + "." + listenerClassName) { }
     }
 
-    public sealed class Continuation {
+    public sealed class Continuation
+    {
         public AndroidJavaObject Proxy { get; }
         private AndroidConsumer _consumer;
 
-        public Continuation() {
+        public Continuation()
+        {
             var continuation = new AndroidJavaClass("com.onesignal.Continue");
             _consumer = new AndroidConsumer();
             Proxy = continuation.CallStatic<AndroidJavaObject>("with", _consumer);
@@ -32,30 +38,41 @@ namespace OneSignalSDK.Android.Utilities {
         public TaskAwaiter<object> GetAwaiter() => _consumer.GetAwaiter();
     }
 
-    public sealed class AndroidConsumer : AwaitableAndroidJavaProxy<object> {
-        public AndroidConsumer() : base("java.util.function.Consumer") { }
+    public sealed class AndroidConsumer : AwaitableAndroidJavaProxy<object>
+    {
+        public AndroidConsumer()
+            : base("java.util.function.Consumer") { }
 
-        public void accept(AndroidJavaObject obj) {
+        public void accept(AndroidJavaObject obj)
+        {
             var result = obj.Call<bool>("isSuccess");
 
-            if (result) {
+            if (result)
+            {
                 _complete(null);
-            } else {
+            }
+            else
+            {
                 var throwable = obj.Call<AndroidJavaObject>("getThrowable");
-                if (throwable != null) {
+                if (throwable != null)
+                {
                     _fail(throwable.Call<string>("getMessage"));
-                } else {
+                }
+                else
+                {
                     _fail("error with async method");
                 }
             }
         }
     }
 
-    public sealed class BoolContinuation {
+    public sealed class BoolContinuation
+    {
         public AndroidJavaObject Proxy { get; }
         private AndroidBoolConsumer _consumer;
 
-        public BoolContinuation() {
+        public BoolContinuation()
+        {
             var continuation = new AndroidJavaClass("com.onesignal.Continue");
             _consumer = new AndroidBoolConsumer();
             Proxy = continuation.CallStatic<AndroidJavaObject>("with", _consumer);
@@ -64,17 +81,23 @@ namespace OneSignalSDK.Android.Utilities {
         public TaskAwaiter<bool> GetAwaiter() => _consumer.GetAwaiter();
     }
 
-    public sealed class AndroidBoolConsumer : AwaitableAndroidJavaProxy<bool> {
-        public AndroidBoolConsumer() : base("java.util.function.Consumer") { }
+    public sealed class AndroidBoolConsumer : AwaitableAndroidJavaProxy<bool>
+    {
+        public AndroidBoolConsumer()
+            : base("java.util.function.Consumer") { }
 
-        public void accept(AndroidJavaObject obj) {
+        public void accept(AndroidJavaObject obj)
+        {
             var result = obj.Call<bool>("isSuccess");
 
-            if (result) {
+            if (result)
+            {
                 var data = obj.Call<AndroidJavaObject>("getData");
                 var value = data.Call<bool>("booleanValue");
                 _complete(value);
-            } else {
+            }
+            else
+            {
                 var throwable = obj.Call<AndroidJavaObject>("getThrowable");
                 if (throwable != null)
                     _fail(throwable.Call<string>("getMessage"));

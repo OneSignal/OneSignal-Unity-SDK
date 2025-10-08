@@ -24,24 +24,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.LiveActivities;
+using UnityEngine;
 
-namespace OneSignalSDK.Android.LiveActivities {
-    internal sealed class AndroidLiveActivitiesManager : ILiveActivitiesManager {
-        public Task<bool> EnterAsync(string activityId, string token) {
+namespace OneSignalSDK.Android.LiveActivities
+{
+    internal sealed class AndroidLiveActivitiesManager : ILiveActivitiesManager
+    {
+        public Task<bool> EnterAsync(string activityId, string token)
+        {
             SDKDebug.Warn("This feature is only available for iOS.");
             return Task.FromResult(false);
         }
 
-        public Task<bool> ExitAsync(string activityId) {
+        public Task<bool> ExitAsync(string activityId)
+        {
             SDKDebug.Warn("This feature is only available for iOS.");
             return Task.FromResult(false);
         }
-        
+
         public void RemovePushToStartToken(string activityType)
         {
             SDKDebug.Warn("This feature is only available for iOS.");
@@ -57,7 +61,11 @@ namespace OneSignalSDK.Android.LiveActivities {
             SDKDebug.Warn("This feature is only available for iOS.");
         }
 
-        public void StartDefault(string activityId, IDictionary<string, object> attributes, IDictionary<string, object> content)
+        public void StartDefault(
+            string activityId,
+            IDictionary<string, object> attributes,
+            IDictionary<string, object> content
+        )
         {
             SDKDebug.Warn("This feature is only available for iOS.");
         }

@@ -27,8 +27,10 @@
 
 using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDK.Debug {
-    internal sealed class DebugManager : IDebugManager {
+namespace OneSignalSDK.Debug
+{
+    internal sealed class DebugManager : IDebugManager
+    {
         public LogLevel LogLevel { get; set; }
         public LogLevel AlertLevel { get; set; }
     }

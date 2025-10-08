@@ -25,11 +25,13 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDK.Session {
+namespace OneSignalSDK.Session
+{
     /// <summary>
     /// The OneSignal session manager is responsible for managing the current session state.
     /// </summary>
-    public interface ISessionManager {
+    public interface ISessionManager
+    {
         /// <summary>
         /// Send a trackable custom event which is tied to push notification campaigns
         /// </summary>

@@ -29,11 +29,13 @@ using System;
 using UnityEditor;
 using UnityEngine.Networking;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// The EditorWebRequest is a wrapper around the `UnityWebRequest` that can work in Edit mode.
     /// </summary>
-    public class EditorWebRequest {
+    public class EditorWebRequest
+    {
         Action<UnityWebRequest> m_OnComplete = null;
 
         bool m_ShowProgress = false;
@@ -46,7 +48,8 @@ namespace OneSignalSDK {
         /// No custom flags or headers are set.
         /// </summary>
         /// <param name="url">The URI of the resource to retrieve via HTTP GET.</param>
-        public static EditorWebRequest Get(string url) {
+        public static EditorWebRequest Get(string url)
+        {
             var unityRequest = UnityWebRequest.Get(url);
 
             return new EditorWebRequest(unityRequest);
@@ -56,7 +59,8 @@ namespace OneSignalSDK {
         /// Create new `EditorWebRequest` instance based on `UnityWebRequest`.
         /// </summary>
         /// <param name="request"></param>
-        public EditorWebRequest(UnityWebRequest request) {
+        public EditorWebRequest(UnityWebRequest request)
+        {
             UnityRequest = request;
         }
 
@@ -64,8 +68,9 @@ namespace OneSignalSDK {
         /// Request will display editor progress dialog with the given title.
         /// </summary>
         /// <param name="title">Editor progress dialog title.</param>
-        public void AddEditorProgressDialog(string title) {
-            m_ShowProgress        = true;
+        public void AddEditorProgressDialog(string title)
+        {
+            m_ShowProgress = true;
             m_ProgressDialogTitle = title;
         }
 
@@ -73,8 +78,9 @@ namespace OneSignalSDK {
         /// Begin communicating with the remote server.
         /// </summary>
         /// <param name="callback">Communication callback.</param>
-        public void Send(Action<UnityWebRequest> callback) {
-            m_OnComplete             =  callback;
+        public void Send(Action<UnityWebRequest> callback)
+        {
+            m_OnComplete = callback;
             EditorApplication.update += OnEditorUpdate;
             UnityRequest.SendWebRequest();
         }
@@ -89,14 +95,23 @@ namespace OneSignalSDK {
         /// </summary>
         public string DataAsText => UnityRequest.downloadHandler.text;
 
-        void OnEditorUpdate() {
-            if (m_ShowProgress) {
-                var progress = $"Download Progress: {Convert.ToInt32(UnityRequest.downloadProgress * 100f)}%";
-                EditorUtility.DisplayProgressBar(m_ProgressDialogTitle, progress, UnityRequest.downloadProgress);
+        void OnEditorUpdate()
+        {
+            if (m_ShowProgress)
+            {
+                var progress =
+                    $"Download Progress: {Convert.ToInt32(UnityRequest.downloadProgress * 100f)}%";
+                EditorUtility.DisplayProgressBar(
+                    m_ProgressDialogTitle,
+                    progress,
+                    UnityRequest.downloadProgress
+                );
             }
 
-            if (UnityRequest.isDone) {
-                if (m_ShowProgress) {
+            if (UnityRequest.isDone)
+            {
+                if (m_ShowProgress)
+                {
                     EditorUtility.ClearProgressBar();
                 }
 

@@ -28,33 +28,38 @@
 using System;
 using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDK.Debug.Utilities {
+namespace OneSignalSDK.Debug.Utilities
+{
     /// <summary>
     /// Helper for printing Unity logs formatted to specify they are from this SDK
     /// </summary>
-    internal static class SDKDebug {
+    internal static class SDKDebug
+    {
         public static event Action<object> LogIntercept;
         public static event Action<object> WarnIntercept;
         public static event Action<object> ErrorIntercept;
-        
-        public static void Info(string message) {
+
+        public static void Info(string message)
+        {
             if (LogIntercept != null)
                 LogIntercept(message);
             else if (OneSignal.Debug.LogLevel >= LogLevel.Info)
                 UnityEngine.Debug.Log(_formatMessage(message));
         }
 
-        public static void Warn(string message) {
+        public static void Warn(string message)
+        {
             if (WarnIntercept != null)
                 WarnIntercept(message);
             else if (OneSignal.Debug.LogLevel >= LogLevel.Warn)
-               UnityEngine.Debug.LogWarning(_formatMessage(message));
+                UnityEngine.Debug.LogWarning(_formatMessage(message));
         }
 
-        public static void Error(string message) {
+        public static void Error(string message)
+        {
             if (ErrorIntercept != null)
                 ErrorIntercept(message);
-            else  if (OneSignal.Debug.LogLevel >= LogLevel.Error)
+            else if (OneSignal.Debug.LogLevel >= LogLevel.Error)
                 UnityEngine.Debug.LogError(_formatMessage(message));
         }
 

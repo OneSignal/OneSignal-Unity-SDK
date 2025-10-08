@@ -32,18 +32,23 @@ using OneSignalSDK.Installer;
 using UnityEditor;
 using UnityEngine;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Pop up window which displays any additional required or optional setup steps by the SDK
     /// </summary>
-    public sealed class OneSignalSetupWindow : EditorWindow {
-        [MenuItem("Window/OneSignal SDK Setup")] public static void ShowWindow() {
+    public sealed class OneSignalSetupWindow : EditorWindow
+    {
+        [MenuItem("Window/OneSignal SDK Setup")]
+        public static void ShowWindow()
+        {
             var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
             window.minSize = _minSize;
             window.Show();
         }
 
-        public static void CloseWindow() {
+        public static void CloseWindow()
+        {
             var window = GetWindow(typeof(OneSignalSetupWindow), false, _title);
             window.Close();
         }
@@ -51,7 +56,8 @@ namespace OneSignalSDK {
         private static readonly Vector2 _minSize = new Vector2(300, 400);
 
         private const string _title = "OneSignal SDK Setup";
-        private const string _description = "Additional steps required to get the OneSignal Unity SDK up and running";
+        private const string _description =
+            "Additional steps required to get the OneSignal Unity SDK up and running";
 
         private IReadOnlyList<OneSignalSetupStep> _setupSteps;
         private readonly Queue<OneSignalSetupStep> _stepsToRun = new Queue<OneSignalSetupStep>();
@@ -67,21 +73,28 @@ namespace OneSignalSDK {
 
         private Vector2 _scrollPosition;
 
-        private void OnEnable() {
-            var stepTypes = ReflectionHelpers.FindAllAssignableTypes<OneSignalSetupStep>("OneSignal");
-            var steps     = new List<OneSignalSetupStep>();
+        private void OnEnable()
+        {
+            var stepTypes = ReflectionHelpers.FindAllAssignableTypes<OneSignalSetupStep>(
+                "OneSignal"
+            );
+            var steps = new List<OneSignalSetupStep>();
 
-            foreach (var stepType in stepTypes) {
+            foreach (var stepType in stepTypes)
+            {
                 if (Activator.CreateInstance(stepType) is OneSignalSetupStep step)
                     steps.Add(step);
                 else
-                    UnityEngine.Debug.LogWarning($"could not create setup step from type {stepType.Name}");
+                    UnityEngine.Debug.LogWarning(
+                        $"could not create setup step from type {stepType.Name}"
+                    );
             }
 
             _setupSteps = steps;
         }
 
-        private void OnGUI() {
+        private void OnGUI()
+        {
             _setupGUI();
 
             GUILayout.Label(_description);
@@ -90,13 +103,15 @@ namespace OneSignalSDK {
             if (_setupSteps == null)
                 return;
 
-            var willDisableControls = _stepsToRun.Count > 0
+            var willDisableControls =
+                _stepsToRun.Count > 0
                 || EditorApplication.isUpdating
                 || EditorApplication.isCompiling;
 
             EditorGUI.BeginDisabledGroup(willDisableControls);
 
-            if (GUILayout.Button("Run All Steps")) {
+            if (GUILayout.Button("Run All Steps"))
+            {
                 foreach (var step in _setupSteps)
                     _stepsToRun.Enqueue(step);
             }
@@ -109,11 +124,12 @@ namespace OneSignalSDK {
             EditorGUILayout.BeginHorizontal();
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
-            foreach (var step in _setupSteps) {
+            foreach (var step in _setupSteps)
+            {
                 EditorGUILayout.BeginHorizontal();
 
                 var sumContent = new GUIContent(step.Summary);
-                var sumRect    = GUILayoutUtility.GetRect(sumContent, _summaryStyle);
+                var sumRect = GUILayoutUtility.GetRect(sumContent, _summaryStyle);
 
                 var checkRect = new Rect(sumRect.x, sumRect.y, sumRect.height, sumRect.height);
                 GUI.DrawTexture(checkRect, step.IsStepCompleted ? _checkTexture : _boxTexture);
@@ -144,10 +160,12 @@ namespace OneSignalSDK {
             EditorGUILayout.EndHorizontal();
         }
 
-        private void OnInspectorUpdate() {
+        private void OnInspectorUpdate()
+        {
             var runnerCount = _stepsToRun.Count + 1.0f;
 
-            while (_stepsToRun.Count > 0) {
+            while (_stepsToRun.Count > 0)
+            {
                 var step = _stepsToRun.Dequeue();
 
                 EditorUtility.DisplayProgressBar(
@@ -162,24 +180,25 @@ namespace OneSignalSDK {
             EditorUtility.ClearProgressBar();
         }
 
-        private void _setupGUI() {
+        private void _setupGUI()
+        {
             if (_guiSetupComplete)
                 return;
 
             _summaryStyle = EditorStyles.boldLabel;
 
-            _detailsStyle          = new GUIStyle(GUI.skin.textField);
+            _detailsStyle = new GUIStyle(GUI.skin.textField);
             _detailsStyle.wordWrap = true;
 
-            _runStyle            = new GUIStyle(GUI.skin.button);
+            _runStyle = new GUIStyle(GUI.skin.button);
             _runStyle.fixedWidth = _minSize.x * .3f;
 
-            _requiredStyle                  = new GUIStyle(EditorStyles.miniBoldLabel);
+            _requiredStyle = new GUIStyle(EditorStyles.miniBoldLabel);
             _requiredStyle.normal.textColor = Color.red;
 
-            _optionalStyle                  = new GUIStyle(EditorStyles.miniBoldLabel);
+            _optionalStyle = new GUIStyle(EditorStyles.miniBoldLabel);
             _optionalStyle.normal.textColor = Color.yellow;
-            _optionalStyle.fontStyle        = FontStyle.Italic;
+            _optionalStyle.fontStyle = FontStyle.Italic;
 
             var checkContent = EditorGUIUtility.IconContent("TestPassed");
             _checkTexture = checkContent.image;

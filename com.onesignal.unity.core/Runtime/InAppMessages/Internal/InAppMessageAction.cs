@@ -26,14 +26,17 @@
  */
 
 using System;
-using UnityEngine;
 using OneSignalSDK.InAppMessages.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.InAppMessages.Internal {
+namespace OneSignalSDK.InAppMessages.Internal
+{
     /// <summary>
     /// Action associated with clicking a button in an In-App Message
     /// </summary>
-    [Serializable] public sealed class InAppMessageAction : IInAppMessageAction {
+    [Serializable]
+    public sealed class InAppMessageAction : IInAppMessageAction
+    {
         /// <summary>
         /// An optional click name defined for the action element
         /// </summary>
@@ -55,10 +58,10 @@ namespace OneSignalSDK.InAppMessages.Internal {
         public bool ClosesMessage => closes_message;
 
         #region Native Field Handling
-            public string click_name;
-            public string click_url;
-            public bool first_click;
-            public bool closes_message;
+        public string click_name;
+        public string click_url;
+        public bool first_click;
+        public bool closes_message;
         #endregion
     }
 }

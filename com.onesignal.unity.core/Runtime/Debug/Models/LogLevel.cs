@@ -25,17 +25,19 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDK.Debug.Models {
+namespace OneSignalSDK.Debug.Models
+{
     /// <summary>
     /// Direct mapping of native SDK log levels
-    /// </summary> 
-    public enum LogLevel {
-        None = 0, 
-        Fatal, 
-        Error, 
-        Warn, 
-        Info, 
-        Debug, 
-        Verbose
+    /// </summary>
+    public enum LogLevel
+    {
+        None = 0,
+        Fatal,
+        Error,
+        Warn,
+        Info,
+        Debug,
+        Verbose,
     }
 }

@@ -27,8 +27,10 @@
 
 using System;
 
-namespace OneSignalSDK.InAppMessages.Models {
-    public interface IInAppMessageClickResult {
+namespace OneSignalSDK.InAppMessages.Models
+{
+    public interface IInAppMessageClickResult
+    {
         /// <summary>
         /// Action the user took on the in-app message
         /// </summary>

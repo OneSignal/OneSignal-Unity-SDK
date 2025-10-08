@@ -33,7 +33,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace OneSignalSDK.Installer {
+namespace OneSignalSDK.Installer
+{
     // Forked from  https://github.com/Jackyjjc/MiniJSON.cs
     // version: 6de00beb134bbab9d873033a48b32e4067ed0c25
 
@@ -117,7 +118,7 @@ namespace OneSignalSDK.Installer {
                 NUMBER,
                 TRUE,
                 FALSE,
-                NULL
+                NULL,
             };
 
             StringReader json;
@@ -304,7 +305,7 @@ namespace OneSignalSDK.Installer {
                                         hex[i] = NextChar;
                                     }
 
-                                    s.Append((char) Convert.ToInt32(new string(hex), 16));
+                                    s.Append((char)Convert.ToInt32(new string(hex), 16));
                                     break;
                                 default:
                                     s.Append(c);
@@ -325,17 +326,29 @@ namespace OneSignalSDK.Installer {
             {
                 string number = NextWord;
 
-                if (number.IndexOf('.') == -1 && number.IndexOf('E') == -1 && number.IndexOf('e') == -1)
+                if (
+                    number.IndexOf('.') == -1
+                    && number.IndexOf('E') == -1
+                    && number.IndexOf('e') == -1
+                )
                 {
                     long parsedInt;
-                    Int64.TryParse(number, System.Globalization.NumberStyles.Any,
-                        System.Globalization.CultureInfo.InvariantCulture, out parsedInt);
+                    Int64.TryParse(
+                        number,
+                        System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out parsedInt
+                    );
                     return parsedInt;
                 }
 
                 double parsedDouble;
-                Double.TryParse(number, System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out parsedDouble);
+                Double.TryParse(
+                    number,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out parsedDouble
+                );
                 return parsedDouble;
             }
 
@@ -449,9 +462,7 @@ namespace OneSignalSDK.Installer {
         /// indentations.</param>
         /// <param name="indentSpaces">Number of spaces for each level of indentation.</param>
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-        public static string Serialize(object obj,
-            bool humanReadable = false,
-            int indentSpaces = 2)
+        public static string Serialize(object obj, bool humanReadable = false, int indentSpaces = 2)
         {
             return Serializer.MakeSerialization(obj, humanReadable, indentSpaces);
         }
@@ -496,7 +507,7 @@ namespace OneSignalSDK.Installer {
                 }
                 else if (value is bool)
                 {
-                    builder.Append((bool) value ? "true" : "false");
+                    builder.Append((bool)value ? "true" : "false");
                 }
                 else if ((asList = value as IList) != null)
                 {
@@ -508,7 +519,7 @@ namespace OneSignalSDK.Installer {
                 }
                 else if (value is char)
                 {
-                    SerializeString(new string((char) value, 1));
+                    SerializeString(new string((char)value, 1));
                 }
                 else
                 {
@@ -533,17 +544,20 @@ namespace OneSignalSDK.Installer {
                 {
                     if (first)
                     {
-                        if (humanReadable) AppendNewLineFunc();
+                        if (humanReadable)
+                            AppendNewLineFunc();
                     }
                     else
                     {
                         builder.Append(',');
-                        if (humanReadable) AppendNewLineFunc();
+                        if (humanReadable)
+                            AppendNewLineFunc();
                     }
 
                     SerializeString(e.ToString());
                     builder.Append(':');
-                    if (humanReadable) builder.Append(' ');
+                    if (humanReadable)
+                        builder.Append(' ');
 
                     SerializeValue(obj[e]);
 
@@ -551,7 +565,8 @@ namespace OneSignalSDK.Installer {
                 }
 
                 --indentLevel;
-                if (humanReadable && obj.Count > 0) AppendNewLineFunc();
+                if (humanReadable && obj.Count > 0)
+                    AppendNewLineFunc();
 
                 builder.Append('}');
             }
@@ -568,12 +583,14 @@ namespace OneSignalSDK.Installer {
                     object obj = anArray[i];
                     if (first)
                     {
-                        if (humanReadable) AppendNewLineFunc();
+                        if (humanReadable)
+                            AppendNewLineFunc();
                     }
                     else
                     {
                         builder.Append(',');
-                        if (humanReadable) AppendNewLineFunc();
+                        if (humanReadable)
+                            AppendNewLineFunc();
                     }
 
                     SerializeValue(obj);
@@ -582,7 +599,8 @@ namespace OneSignalSDK.Installer {
                 }
 
                 --indentLevel;
-                if (humanReadable && anArray.Count > 0) AppendNewLineFunc();
+                if (humanReadable && anArray.Count > 0)
+                    AppendNewLineFunc();
 
                 builder.Append(']');
             }
@@ -644,24 +662,33 @@ namespace OneSignalSDK.Installer {
                 // Previously floats and doubles lost precision too.
                 if (value is float)
                 {
-                    builder.Append(((float) value).ToString("R", System.Globalization.CultureInfo.InvariantCulture));
+                    builder.Append(
+                        ((float)value).ToString(
+                            "R",
+                            System.Globalization.CultureInfo.InvariantCulture
+                        )
+                    );
                 }
-                else if (value is int
-                         || value is uint
-                         || value is long
-                         || value is sbyte
-                         || value is byte
-                         || value is short
-                         || value is ushort
-                         || value is ulong)
+                else if (
+                    value is int
+                    || value is uint
+                    || value is long
+                    || value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is ulong
+                )
                 {
                     builder.Append(value);
                 }
-                else if (value is double
-                         || value is decimal)
+                else if (value is double || value is decimal)
                 {
-                    builder.Append(Convert.ToDouble(value)
-                        .ToString("R", System.Globalization.CultureInfo.InvariantCulture));
+                    builder.Append(
+                        Convert
+                            .ToDouble(value)
+                            .ToString("R", System.Globalization.CultureInfo.InvariantCulture)
+                    );
                 }
                 else
                 {

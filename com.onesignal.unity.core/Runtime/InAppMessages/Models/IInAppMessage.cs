@@ -27,8 +27,10 @@
 
 using System;
 
-namespace OneSignalSDK.InAppMessages.Models {
-    public interface IInAppMessage {
+namespace OneSignalSDK.InAppMessages.Models
+{
+    public interface IInAppMessage
+    {
         /// <summary>
         /// Unique id of this in-app message
         /// </summary>

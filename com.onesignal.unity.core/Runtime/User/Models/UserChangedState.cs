@@ -28,11 +28,14 @@
 using System;
 using OneSignalSDK.User.Internal;
 
-namespace OneSignalSDK.User {
-    public sealed class UserChangedState {
+namespace OneSignalSDK.User
+{
+    public sealed class UserChangedState
+    {
         public UserState Current { get; }
 
-        public UserChangedState(UserState state) {
+        public UserChangedState(UserState state)
+        {
             Current = state;
         }
     }

@@ -28,28 +28,32 @@
 using System;
 using OneSignalSDK.Notifications.Models;
 
-namespace OneSignalSDK.Notifications.Internal {
-    [Serializable] public sealed class NotificationClickResult : INotificationClickResult {
+namespace OneSignalSDK.Notifications.Internal
+{
+    [Serializable]
+    public sealed class NotificationClickResult : INotificationClickResult
+    {
         /// <summary>
         /// Custom id of action taken.
         /// </summary>
         public string ActionId => actionId;
-        
+
         /// <summary>
         /// The launch url for the notification
         /// </summary>
         public string Url => url;
 
-        public NotificationClickResult() {}
+        public NotificationClickResult() { }
 
-        public NotificationClickResult(string actionId, string url) {
+        public NotificationClickResult(string actionId, string url)
+        {
             this.actionId = actionId;
             this.url = url;
         }
 
         #region Native Field Handling
-            public string actionId;
-            public string url;
+        public string actionId;
+        public string url;
         #endregion
     }
 }

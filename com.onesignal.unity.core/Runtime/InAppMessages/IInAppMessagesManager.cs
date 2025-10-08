@@ -29,7 +29,8 @@ using System;
 using System.Collections.Generic;
 using OneSignalSDK.InAppMessages.Models;
 
-namespace OneSignalSDK.InAppMessages {
+namespace OneSignalSDK.InAppMessages
+{
     /// <summary>
     /// When any client side will display event in an In-App Message's occurs there will be a corresponding event with
     /// this arguement.
@@ -38,7 +39,8 @@ namespace OneSignalSDK.InAppMessages {
     {
         public IInAppMessage Message { get; }
 
-        public InAppMessageWillDisplayEventArgs(IInAppMessage message) {
+        public InAppMessageWillDisplayEventArgs(IInAppMessage message)
+        {
             Message = message;
         }
     }
@@ -51,7 +53,8 @@ namespace OneSignalSDK.InAppMessages {
     {
         public IInAppMessage Message { get; }
 
-        public InAppMessageDidDisplayEventArgs(IInAppMessage message) {
+        public InAppMessageDidDisplayEventArgs(IInAppMessage message)
+        {
             Message = message;
         }
     }
@@ -64,7 +67,8 @@ namespace OneSignalSDK.InAppMessages {
     {
         public IInAppMessage Message { get; }
 
-        public InAppMessageWillDismissEventArgs(IInAppMessage message) {
+        public InAppMessageWillDismissEventArgs(IInAppMessage message)
+        {
             Message = message;
         }
     }
@@ -77,7 +81,8 @@ namespace OneSignalSDK.InAppMessages {
     {
         public IInAppMessage Message { get; }
 
-        public InAppMessageDidDismissEventArgs(IInAppMessage message) {
+        public InAppMessageDidDismissEventArgs(IInAppMessage message)
+        {
             Message = message;
         }
     }
@@ -90,7 +95,8 @@ namespace OneSignalSDK.InAppMessages {
         public IInAppMessage Message { get; }
         public IInAppMessageClickResult Result { get; }
 
-        public InAppMessageClickEventArgs(IInAppMessage message, IInAppMessageClickResult result) {
+        public InAppMessageClickEventArgs(IInAppMessage message, IInAppMessageClickResult result)
+        {
             Message = message;
             Result = result;
         }
@@ -102,7 +108,8 @@ namespace OneSignalSDK.InAppMessages {
     /// if the current user qualifies for any IAMs sent down by the OneSignal backend. To
     /// blanket disable IAMs, set [paused] to `true` on startup.
     /// </summary>
-    public interface IInAppMessagesManager {
+    public interface IInAppMessagesManager
+    {
         /// <summary>
         /// When an In-App Message is ready to be displayed to the screen
         /// </summary>

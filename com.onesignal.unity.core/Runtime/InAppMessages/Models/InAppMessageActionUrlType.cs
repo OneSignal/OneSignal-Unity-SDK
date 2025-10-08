@@ -25,11 +25,14 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDK.InAppMessages.Models {
-    public class InAppMessageActionUrlType {
+namespace OneSignalSDK.InAppMessages.Models
+{
+    public class InAppMessageActionUrlType
+    {
         private string _type;
 
-        private InAppMessageActionUrlType(string type) {
+        private InAppMessageActionUrlType(string type)
+        {
             _type = type;
         }
 
@@ -38,8 +41,12 @@ namespace OneSignalSDK.InAppMessages.Models {
             return _type;
         }
 
-        public static InAppMessageActionUrlType InAppWebview = new InAppMessageActionUrlType("Webview");
+        public static InAppMessageActionUrlType InAppWebview = new InAppMessageActionUrlType(
+            "Webview"
+        );
         public static InAppMessageActionUrlType Browser = new InAppMessageActionUrlType("Browser");
-        public static InAppMessageActionUrlType RepalceContent = new InAppMessageActionUrlType("Replacement");
+        public static InAppMessageActionUrlType RepalceContent = new InAppMessageActionUrlType(
+            "Replacement"
+        );
     }
 }

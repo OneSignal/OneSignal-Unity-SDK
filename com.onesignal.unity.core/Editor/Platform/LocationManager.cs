@@ -27,12 +27,12 @@
 
 using System.Threading.Tasks;
 
-namespace OneSignalSDK.Location {
-    internal sealed class LocationManager : ILocationManager {
+namespace OneSignalSDK.Location
+{
+    internal sealed class LocationManager : ILocationManager
+    {
         public bool IsShared { get; set; }
 
-        public void RequestPermission() {
-
-        }
+        public void RequestPermission() { }
     }
 }

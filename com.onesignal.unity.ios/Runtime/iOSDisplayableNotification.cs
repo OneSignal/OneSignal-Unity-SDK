@@ -26,16 +26,18 @@
  */
 
 using System;
-using UnityEngine;
 using System.Runtime.InteropServices;
 using OneSignalSDK.Notifications.Internal;
 using OneSignalSDK.Notifications.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS.Notifications.Models {
-    public sealed class iOSDisplayableNotification : Notification, IDisplayableNotification {
-        [DllImport("__Internal")] private static extern void _oneSignalNotificationsDisplay(string notificationId);
+namespace OneSignalSDK.iOS.Notifications.Models
+{
+    public sealed class iOSDisplayableNotification : Notification, IDisplayableNotification
+    {
+        [DllImport("__Internal")]
+        private static extern void _oneSignalNotificationsDisplay(string notificationId);
 
-        public void Display()
-            => _oneSignalNotificationsDisplay(this.NotificationId);
+        public void Display() => _oneSignalNotificationsDisplay(this.NotificationId);
     }
 }

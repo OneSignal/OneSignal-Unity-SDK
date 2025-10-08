@@ -28,15 +28,19 @@
 using System.Linq;
 using UnityEditor;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Handles informing the user on startup/import if the legacy SDK has been detected
     /// </summary>
-    public static class OneSignalBootstrapper {
+    public static class OneSignalBootstrapper
+    {
         /// <summary>
         /// Asks to open the SDK Setup if legacy files are found or core is missing
         /// </summary>
-        [InitializeOnLoadMethod] public static void CheckForLegacy() {
+        [InitializeOnLoadMethod]
+        public static void CheckForLegacy()
+        {
             if (SessionState.GetBool(_sessionCheckKey, false))
                 return;
 
@@ -45,24 +49,28 @@ namespace OneSignalSDK {
             EditorApplication.delayCall += _checkForLegacy;
         }
 
-        private static void _checkForLegacy() {
-        #if !ONE_SIGNAL_INSTALLED
+        private static void _checkForLegacy()
+        {
+#if !ONE_SIGNAL_INSTALLED
             EditorApplication.delayCall += _showOpenSetupDialog;
-        #else
-            var inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(OneSignalFileInventory.AssetPath);
+#else
+            var inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(
+                OneSignalFileInventory.AssetPath
+            );
 
             if (inventory == null)
                 return; // error
 
             var currentPaths = OneSignalFileInventory.GetCurrentPaths();
-            var diff         = currentPaths.Except(inventory.DistributedPaths);
+            var diff = currentPaths.Except(inventory.DistributedPaths);
 
             if (diff.Any())
                 EditorApplication.delayCall += _showOpenSetupDialog;
-        #endif
+#endif
         }
 
-        private static void _showOpenSetupDialog() {
+        private static void _showOpenSetupDialog()
+        {
             var dialogResult = EditorUtility.DisplayDialog(
                 "OneSignal",
                 "The project contains an outdated or incomplete install of OneSignal SDK! We recommend running the OneSignal SDK Setup.",

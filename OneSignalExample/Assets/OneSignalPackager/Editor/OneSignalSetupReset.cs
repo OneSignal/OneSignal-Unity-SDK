@@ -28,21 +28,26 @@
 using System.IO;
 using UnityEditor;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// For debugging all of the OneSignalSetupSteps
     /// </summary>
-    public static class OneSignalSetupReset {
+    public static class OneSignalSetupReset
+    {
         /// <summary>
         /// Resets all setup steps
         /// </summary>
         [MenuItem("OneSignal/Reset All Setup Steps", false, 100)]
-        public static void ResetAllSteps() {
+        public static void ResetAllSteps()
+        {
             /*
              * ExportAndroidResourcesStep
              * deletes the OneSignalConfig.androidlib directory
              */
-            AssetDatabase.DeleteAsset(Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.androidlib"));
+            AssetDatabase.DeleteAsset(
+                Path.Combine("Assets", "Plugins", "Android", "OneSignalConfig.androidlib")
+            );
 
             /*
              * InstallEdm4UStep
@@ -74,9 +79,9 @@ namespace OneSignalSDK {
             manifest.RemoveScopeRegistry("https://registry.npmjs.org");
             manifest.ApplyChanges();
 
-        #if UNITY_2020_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
             UnityEditor.PackageManager.Client.Resolve();
-        #endif
+#endif
         }
     }
 }

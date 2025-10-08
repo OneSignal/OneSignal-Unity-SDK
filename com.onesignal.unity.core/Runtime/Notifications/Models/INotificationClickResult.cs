@@ -27,13 +27,15 @@
 
 using System;
 
-namespace OneSignalSDK.Notifications.Models {
-    public interface INotificationClickResult {
+namespace OneSignalSDK.Notifications.Models
+{
+    public interface INotificationClickResult
+    {
         /// <summary>
         /// Custom id of action taken.
         /// </summary>
         string ActionId { get; }
-        
+
         /// <summary>
         /// The launch url for the notification.
         /// </summary>

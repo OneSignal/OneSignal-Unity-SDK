@@ -25,15 +25,17 @@
  * THE SOFTWARE.
  */
 
-using UnityEngine;
 using OneSignalSDK;
 using OneSignalSDK.Debug.Models;
+using UnityEngine;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Behaviour attached to the OneSignalController.prefab which can be dragged into your scene fora codeless init
     /// </summary>
-    public class OneSignalBehaviour : MonoBehaviour {
+    public class OneSignalBehaviour : MonoBehaviour
+    {
         /// <summary>
         /// The unique identifier for your application from the OneSignal dashboard
         /// https://documentation.onesignal.com/docs/keys-and-ids#app-id
@@ -44,7 +46,7 @@ namespace OneSignalSDK {
         /// The minimum level of logs which will be logged to the console
         /// </summary>
         public LogLevel LogLevel = LogLevel.Warn;
-        
+
         /// <summary>
         /// The minimum level of log events which will be converted into foreground alerts
         /// </summary>
@@ -62,11 +64,12 @@ namespace OneSignalSDK {
         /// <remarks>This method must be called before <see cref="OneSignal.Initialize"/> on iOS.</remarks>
         public bool IsShared = false;
 
-        private void Start() {
-            OneSignal.Debug.LogLevel               = LogLevel;
-            OneSignal.Debug.AlertLevel             = AlertLevel;
-            OneSignal.ConsentRequired              = ConsentRequired;
-            OneSignal.Location.IsShared            = IsShared;
+        private void Start()
+        {
+            OneSignal.Debug.LogLevel = LogLevel;
+            OneSignal.Debug.AlertLevel = AlertLevel;
+            OneSignal.ConsentRequired = ConsentRequired;
+            OneSignal.Location.IsShared = IsShared;
 
             OneSignal.Initialize(AppId);
         }

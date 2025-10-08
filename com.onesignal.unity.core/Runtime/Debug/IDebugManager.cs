@@ -27,15 +27,17 @@
 
 using OneSignalSDK.Debug.Models;
 
-namespace OneSignalSDK.Debug {
+namespace OneSignalSDK.Debug
+{
     /// <summary>
     /// Access to debug the SDK in the event additional information is required to diagnose any
     /// SDK-related issues.
-    /// 
+    ///
     /// WARNING: This should not be used in a production setting.
-    /// 
+    ///
     /// </summary>
-    public interface IDebugManager {
+    public interface IDebugManager
+    {
         /// <summary>
         /// The minimum level of logs which will be logged to the console
         /// </summary>

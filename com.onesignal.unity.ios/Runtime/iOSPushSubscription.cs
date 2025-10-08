@@ -26,21 +26,35 @@
  */
 
 using System;
-using UnityEngine;
 using System.Runtime.InteropServices;
-using OneSignalSDK.User.Models;
-using OneSignalSDK.User.Internal;
-
 using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.User.Internal;
+using OneSignalSDK.User.Models;
+using UnityEngine;
 
-namespace OneSignalSDK.iOS.User.Models {
-    internal sealed class iOSPushSubscription : IPushSubscription {
-        [DllImport("__Internal")] private static extern string _oneSignalPushSubscriptionGetId();
-        [DllImport("__Internal")] private static extern string _oneSignalPushSubscriptionGetToken();
-        [DllImport("__Internal")] private static extern bool _oneSignalPushSubscriptionGetOptedIn();
-        [DllImport("__Internal")] private static extern void _oneSignalPushSubscriptionOptIn();
-        [DllImport("__Internal")] private static extern void _oneSignalPushSubscriptionOptOut();
-        [DllImport("__Internal")] private static extern void _oneSignalPushSubscriptionAddStateChangedCallback(StateListenerDelegate callback);
+namespace OneSignalSDK.iOS.User.Models
+{
+    internal sealed class iOSPushSubscription : IPushSubscription
+    {
+        [DllImport("__Internal")]
+        private static extern string _oneSignalPushSubscriptionGetId();
+
+        [DllImport("__Internal")]
+        private static extern string _oneSignalPushSubscriptionGetToken();
+
+        [DllImport("__Internal")]
+        private static extern bool _oneSignalPushSubscriptionGetOptedIn();
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalPushSubscriptionOptIn();
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalPushSubscriptionOptOut();
+
+        [DllImport("__Internal")]
+        private static extern void _oneSignalPushSubscriptionAddStateChangedCallback(
+            StateListenerDelegate callback
+        );
 
         public delegate void StateListenerDelegate(string current, string previous);
 
@@ -48,34 +62,38 @@ namespace OneSignalSDK.iOS.User.Models {
 
         private static iOSPushSubscription _instance;
 
-        public iOSPushSubscription() {
+        public iOSPushSubscription()
+        {
             _instance = this;
         }
 
-        public string Id {
+        public string Id
+        {
             get => _oneSignalPushSubscriptionGetId();
         }
 
-        public string Token {
+        public string Token
+        {
             get => _oneSignalPushSubscriptionGetToken();
         }
 
-        public bool OptedIn {
+        public bool OptedIn
+        {
             get => _oneSignalPushSubscriptionGetOptedIn();
         }
 
-        public void OptIn()
-            => _oneSignalPushSubscriptionOptIn();
+        public void OptIn() => _oneSignalPushSubscriptionOptIn();
 
-        public void OptOut()
-            => _oneSignalPushSubscriptionOptOut();
+        public void OptOut() => _oneSignalPushSubscriptionOptOut();
 
-        public void Initialize() {
+        public void Initialize()
+        {
             _oneSignalPushSubscriptionAddStateChangedCallback(_onPushSubscriptionStateChanged);
         }
 
         [AOT.MonoPInvokeCallback(typeof(StateListenerDelegate))]
-        private static void _onPushSubscriptionStateChanged(string current, string previous) {
+        private static void _onPushSubscriptionStateChanged(string current, string previous)
+        {
             var curr = JsonUtility.FromJson<PushSubscriptionState>(current);
             var prev = JsonUtility.FromJson<PushSubscriptionState>(previous);
 

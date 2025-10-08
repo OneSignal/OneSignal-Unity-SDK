@@ -28,18 +28,21 @@
 using System;
 using System.Collections.Generic;
 
-namespace OneSignalSDK.Notifications.Models {
+namespace OneSignalSDK.Notifications.Models
+{
     /// <summary>
     /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
     /// </summary>
     /// <remarks>Android 5+ only</remarks>
-    public enum LockScreenVisibility {
-        Secret = -1,    // Not shown
-        Private = 0,    // Contents are hidden
-        Public = 1      // (default) Fully visible
+    public enum LockScreenVisibility
+    {
+        Secret = -1, // Not shown
+        Private = 0, // Contents are hidden
+        Public = 1, // (default) Fully visible
     }
 
-    public interface IActionButton {
+    public interface IActionButton
+    {
         string Id { get; }
         string Text { get; }
         string Icon { get; }
@@ -49,37 +52,39 @@ namespace OneSignalSDK.Notifications.Models {
     /// If a background image was set, this object will be available
     /// </summary>
     /// <remarks>Android only</remarks>
-    public interface IBackgroundImageLayout {
+    public interface IBackgroundImageLayout
+    {
         string Image { get; }
         string TitleTextColor { get; }
         string BodyTextColor { get; }
     }
-    
+
     /// <summary>
     /// See full documentation at
     /// https://documentation.onesignal.com/docs/mobile-push-notifications-guide#notification-payload-and-methods
     /// </summary>
-    public interface INotificationBase {
+    public interface INotificationBase
+    {
         /// <summary>
         /// OneSignal notification UUID
         /// </summary>
         string NotificationId { get; }
-        
+
         /// <summary>
         /// Name of Template from <a href="https://documentation.onesignal.com/docs/templates">Templates</a>
         /// </summary>
         string TemplateName { get; }
-        
+
         /// <summary>
         /// Unique Template Identifier from <a href="https://documentation.onesignal.com/docs/templates">Templates</a>
         /// </summary>
         string TemplateId { get; }
-        
+
         /// <summary>
         /// Title text of the notification
         /// </summary>
         string Title { get; }
-        
+
         /// <summary>
         /// Body text of the notification
         /// </summary>
@@ -89,7 +94,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// URL opened when opening the notification
         /// </summary>
         string LaunchURL { get; }
-        
+
         /// <summary>
         /// Sound resource played when the notification is shown
         /// https://documentation.onesignal.com/docs/customize-notification-sounds
@@ -100,7 +105,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// Collapse id for the notification
         /// </summary>
         string CollapseId { get; }
-        
+
         /// <summary>
         /// Gets custom additional data that was sent with the notification. Set on the dashboard under
         /// Options > Additional Data or with the data field on the REST API.
@@ -117,7 +122,7 @@ namespace OneSignalSDK.Notifications.Models {
         /// </summary>
         string RawPayload { get; }
 
-    #region Android
+        #region Android
         /// <summary>
         /// Unique Android Native API identifier
         /// </summary>
@@ -129,55 +134,55 @@ namespace OneSignalSDK.Notifications.Models {
         /// </summary>
         /// <remarks>Android only</remarks>
         string SmallIcon { get; }
-        
+
         /// <summary>
         /// Large icon resource name set on the notification
         /// </summary>
         /// <remarks>Android only</remarks>
         string LargeIcon { get; }
-        
+
         /// <summary>
         /// Big picture image set on the notification
         /// </summary>
         /// <remarks>Android only</remarks>
         string BigPicture { get; }
-        
+
         /// <summary>
         /// Accent color shown around small notification icon on Android 5+ devices. ARGB format.
         /// </summary>
         /// <remarks>Android 5+ only</remarks>
         string SmallIconAccentColor { get; }
-        
+
         /// <summary>
         /// LED string. Devices that have a notification LED will blink in this color. ARGB format.
         /// </summary>
         /// <remarks>Android only</remarks>
         string LedColor { get; }
-        
+
         /// <summary>
         /// Privacy setting for how the notification should be shown on the lockscreen of Android 5+ devices
         /// </summary>
         /// <remarks>Android 5+ only</remarks>
         LockScreenVisibility LockScreenVisibility { get; }
-        
+
         /// <summary>
         /// Notifications with this same key will be grouped together as a single summary notification
         /// </summary>
         /// <remarks>Android only</remarks>
         string GroupKey { get; }
-        
+
         /// <summary>
         /// Summary text displayed in the summary notification
         /// </summary>
         /// <remarks>Android only</remarks>
         string GroupMessage { get; }
-        
+
         /// <summary>
         /// Google project number the notification was sent under
         /// </summary>
         /// <remarks>Android only</remarks>
         string FromProjectNumber { get; }
-        
+
         /// <summary>
         /// Priority of the notification. Values range from -2 to 2 (see
         /// https://developer.android.com/reference/androidx/core/app/NotificationCompat for more info)
@@ -190,9 +195,9 @@ namespace OneSignalSDK.Notifications.Models {
         /// </summary>
         /// <remarks>Android only</remarks>
         IBackgroundImageLayout BackgroundImageLayout { get; }
-    #endregion
+        #endregion
 
-    #region iOS
+        #region iOS
         /// <summary>
         /// Message Subtitle, iOS only
         /// </summary>
@@ -258,10 +263,11 @@ namespace OneSignalSDK.Notifications.Models {
         /// </summary>
         /// <remarks>iOS 10+ only</remarks>
         IDictionary<string, object> Attachments { get; }
-    #endregion
+        #endregion
     }
 
-    public interface INotification : INotificationBase {
+    public interface INotification : INotificationBase
+    {
         /// <summary>
         /// Gets the notification payloads a summary notification was created from
         /// </summary>

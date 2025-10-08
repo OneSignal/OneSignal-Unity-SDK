@@ -28,17 +28,21 @@
 using System;
 using OneSignalSDK.User;
 
-namespace OneSignalSDK.User.Internal {
-    [Serializable] public sealed class UserState {
+namespace OneSignalSDK.User.Internal
+{
+    [Serializable]
+    public sealed class UserState
+    {
         public string OneSignalId => onesignalId;
         public string ExternalId => externalId;
 
         #region Native Field Handling
-            public string onesignalId;
-            public string externalId;
+        public string onesignalId;
+        public string externalId;
         #endregion
 
-        public UserState(string onesignalId, string externalId) {
+        public UserState(string onesignalId, string externalId)
+        {
             this.onesignalId = onesignalId;
             this.externalId = externalId;
         }

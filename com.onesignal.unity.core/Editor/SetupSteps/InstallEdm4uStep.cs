@@ -25,32 +25,34 @@
  * THE SOFTWARE.
  */
 
-using System.Linq;
-using UnityEditor.Compilation;
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using OneSignalSDK.Debug.Utilities;
+using UnityEditor.Compilation;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Checks for EDM4U assemblies and installs the package from its github releases
     /// </summary>
-    public sealed class InstallEdm4uStep : OneSignalSetupStep {
-        public override string Summary
-            => $"Install EDM4U {_edm4UVersion}";
+    public sealed class InstallEdm4uStep : OneSignalSetupStep
+    {
+        public override string Summary => $"Install EDM4U {_edm4UVersion}";
 
-        public override string Details
-            => $"Downloads and imports version {_edm4UVersion} from Google's repo. This library resolves dependencies " +
-                $"among included libraries on Android.";
+        public override string Details =>
+            $"Downloads and imports version {_edm4UVersion} from Google's repo. This library resolves dependencies "
+            + $"among included libraries on Android.";
 
-        public override bool IsRequired
-            => true;
+        public override bool IsRequired => true;
 
-        private Version _getAssetsEDM4UVersion() {
-            var isInstalled = CompilationPipeline.GetPrecompiledAssemblyNames()
-               .Any(assemblyName => assemblyName.StartsWith("Google.VersionHandler"));
+        private Version _getAssetsEDM4UVersion()
+        {
+            var isInstalled = CompilationPipeline
+                .GetPrecompiledAssemblyNames()
+                .Any(assemblyName => assemblyName.StartsWith("Google.VersionHandler"));
 
             if (!isInstalled)
                 return null;
@@ -63,13 +65,19 @@ namespace OneSignalSDK {
 
             FileInfo[] files;
 
-            try {
-                files = directoryInfo.GetFiles("external-dependency-manager_version-*_manifest.txt");
-            } catch (Exception) {
+            try
+            {
+                files = directoryInfo.GetFiles(
+                    "external-dependency-manager_version-*_manifest.txt"
+                );
+            }
+            catch (Exception)
+            {
                 return null;
             }
 
-            if (files.Length != 1) {
+            if (files.Length != 1)
+            {
                 return null;
             }
 
@@ -81,8 +89,11 @@ namespace OneSignalSDK {
             return version;
         }
 
-        private Version _getPackagesEDM4UVersion() {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.GetName().Name.StartsWith("Google.PackageManagerResolver"));
+        private Version _getPackagesEDM4UVersion()
+        {
+            var assembly = AppDomain
+                .CurrentDomain.GetAssemblies()
+                .FirstOrDefault(x => x.GetName().Name.StartsWith("Google.PackageManagerResolver"));
             if (assembly == null)
                 return null;
 
@@ -98,12 +109,14 @@ namespace OneSignalSDK {
             return version;
         }
 
-        protected override bool _getIsStepCompleted() {
+        protected override bool _getIsStepCompleted()
+        {
             var version = _getAssetsEDM4UVersion();
             if (version == null)
                 version = _getPackagesEDM4UVersion();
 
-            if (version == null) {
+            if (version == null)
+            {
                 SDKDebug.Warn("EDM4U version number could not be determined.");
                 return false;
             }
@@ -113,17 +126,23 @@ namespace OneSignalSDK {
             return version >= expectedVersion;
         }
 
-        protected override void _runStep() {
+        protected override void _runStep()
+        {
             const string msg = "Downloading Google External Dependency Manager";
-            UnityPackageInstaller.DownloadAndInstall(_edm4UPackageDownloadUrl, msg, result => {
-                if (result)
-                    _shouldCheckForCompletion = true;
-            });
+            UnityPackageInstaller.DownloadAndInstall(
+                _edm4UPackageDownloadUrl,
+                msg,
+                result =>
+                {
+                    if (result)
+                        _shouldCheckForCompletion = true;
+                }
+            );
         }
 
         private const string _edm4UVersion = "1.2.177";
 
-        private static readonly string _edm4UPackageDownloadUrl
-            = $"https://github.com/googlesamples/unity-jar-resolver/blob/v{_edm4UVersion}/external-dependency-manager-{_edm4UVersion}.unitypackage?raw=true";
+        private static readonly string _edm4UPackageDownloadUrl =
+            $"https://github.com/googlesamples/unity-jar-resolver/blob/v{_edm4UVersion}/external-dependency-manager-{_edm4UVersion}.unitypackage?raw=true";
     }
 }

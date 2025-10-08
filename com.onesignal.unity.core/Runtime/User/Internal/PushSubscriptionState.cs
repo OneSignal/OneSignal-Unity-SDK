@@ -28,33 +28,37 @@
 using System;
 using OneSignalSDK.User.Models;
 
-namespace OneSignalSDK.User.Internal {
-    [Serializable] public sealed class PushSubscriptionState : IPushSubscriptionState {
+namespace OneSignalSDK.User.Internal
+{
+    [Serializable]
+    public sealed class PushSubscriptionState : IPushSubscriptionState
+    {
         /// <summary>
         /// Unique id of this subscription
         /// </summary>
         /// <remarks>See https://documentation.onesignal.com/docs/subscriptions for more information</remarks>
         public string Id => id;
-        
+
         /// <summary>
         /// Whether this subscription is currently active
         /// </summary>
         public bool OptedIn => optedIn;
-        
+
         /// <summary>
         /// The unique token provided by the device's operating system used to send push notifications
         /// </summary>
         public string Token => token;
 
         #region Native Field Handling
-            public string id;
-            public bool optedIn;
-            public string token;
+        public string id;
+        public bool optedIn;
+        public string token;
         #endregion
 
-        public PushSubscriptionState() {}
+        public PushSubscriptionState() { }
 
-        public PushSubscriptionState(string id, bool optedIn, string token) {
+        public PushSubscriptionState(string id, bool optedIn, string token)
+        {
             this.id = id;
             this.optedIn = optedIn;
             this.token = token;

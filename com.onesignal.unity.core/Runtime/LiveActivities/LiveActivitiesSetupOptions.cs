@@ -27,7 +27,8 @@
 
 using System.Threading.Tasks;
 
-namespace OneSignalSDK.LiveActivities {
+namespace OneSignalSDK.LiveActivities
+{
     /// <summary>
     /// The setup options for <see cref="ILiveActivitiesManager.SetupDefault"/>.
     /// </summary>

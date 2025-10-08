@@ -27,8 +27,10 @@
 
 using System;
 
-namespace OneSignalSDK.Notifications.Models {
-    public interface IDisplayableNotification : INotification {
+namespace OneSignalSDK.Notifications.Models
+{
+    public interface IDisplayableNotification : INotification
+    {
         /// <summary>
         /// Display the notification on the device.
         /// </summary>

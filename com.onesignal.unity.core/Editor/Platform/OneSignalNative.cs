@@ -27,20 +27,22 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OneSignalSDK.Notifications;
-using OneSignalSDK.InAppMessages;
 using OneSignalSDK.Debug;
 using OneSignalSDK.Debug.Utilities;
+using OneSignalSDK.InAppMessages;
+using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Location;
+using OneSignalSDK.Notifications;
 using OneSignalSDK.Session;
 using OneSignalSDK.User;
-using OneSignalSDK.LiveActivities;
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Implementationless variation of the OneSignal SDK so that it "runs" in the Editor
     /// </summary>
-    internal sealed class OneSignalNative : OneSignalPlatform {
+    internal sealed class OneSignalNative : OneSignalPlatform
+    {
         private UserManager _user = new UserManager();
         private SessionManager _session = new SessionManager();
         private NotificationsManager _notifications = new NotificationsManager();
@@ -51,59 +53,68 @@ namespace OneSignalSDK {
         private bool _consentGiven;
         private bool _consentRequired;
 
-        public override IUserManager User {
+        public override IUserManager User
+        {
             get => _user;
         }
-        
-        public override ISessionManager Session {
+
+        public override ISessionManager Session
+        {
             get => _session;
         }
-        
-        public override INotificationsManager Notifications {
+
+        public override INotificationsManager Notifications
+        {
             get => _notifications;
         }
-        
-        public override ILocationManager Location {
+
+        public override ILocationManager Location
+        {
             get => _location;
         }
 
-        public override IInAppMessagesManager InAppMessages {
+        public override IInAppMessagesManager InAppMessages
+        {
             get => _inAppMessages;
         }
 
-        public override IDebugManager Debug {
+        public override IDebugManager Debug
+        {
             get => _debug;
         }
 
-        public override ILiveActivitiesManager LiveActivities {
+        public override ILiveActivitiesManager LiveActivities
+        {
             get => _liveActivities;
         }
 
-        public override bool ConsentGiven {
+        public override bool ConsentGiven
+        {
             set => _consentGiven = value;
         }
 
-        public override bool ConsentRequired {
+        public override bool ConsentRequired
+        {
             set => _consentRequired = value;
         }
 
-        public override void Initialize(string appId) {
-            if (string.IsNullOrEmpty(appId)) {
+        public override void Initialize(string appId)
+        {
+            if (string.IsNullOrEmpty(appId))
+            {
                 SDKDebug.Error("appId is null or empty");
                 return;
             }
 
             _init(appId);
 
-            SDKDebug.Warn("Native SDK is a placeholder. Please run on supported platform (iOS or Android).");
+            SDKDebug.Warn(
+                "Native SDK is a placeholder. Please run on supported platform (iOS or Android)."
+            );
         }
 
-        public override void Login(string externalId, string jwtBearerToken = null) {
+        public override void Login(string externalId, string jwtBearerToken = null) { }
 
-        }
-
-        public override void Logout() {
-
-        }
+        public override void Logout() { }
     }
 }

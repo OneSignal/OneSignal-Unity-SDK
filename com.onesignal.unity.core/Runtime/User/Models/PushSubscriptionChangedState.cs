@@ -27,13 +27,19 @@
 
 using System;
 
-namespace OneSignalSDK.User.Models {
-    public sealed class PushSubscriptionChangedState {
+namespace OneSignalSDK.User.Models
+{
+    public sealed class PushSubscriptionChangedState
+    {
         public IPushSubscriptionState Previous { get; }
 
         public IPushSubscriptionState Current { get; }
 
-        public PushSubscriptionChangedState(IPushSubscriptionState previous, IPushSubscriptionState current) {
+        public PushSubscriptionChangedState(
+            IPushSubscriptionState previous,
+            IPushSubscriptionState current
+        )
+        {
             Previous = previous;
             Current = current;
         }

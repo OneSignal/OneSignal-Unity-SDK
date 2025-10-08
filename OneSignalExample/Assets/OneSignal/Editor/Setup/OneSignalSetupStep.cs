@@ -26,11 +26,13 @@
  * THE SOFTWARE.
  */
 
-namespace OneSignalSDK {
+namespace OneSignalSDK
+{
     /// <summary>
     /// Abstract class which must be inherited from in order to create a new setup step
     /// </summary>
-    public abstract class OneSignalSetupStep {
+    public abstract class OneSignalSetupStep
+    {
         /// <summary>
         /// Short description of what this step will do
         /// </summary>
@@ -52,12 +54,14 @@ namespace OneSignalSDK {
         /// <remarks>
         /// The result is cached and only reset on run or specific other conditions
         /// </remarks>
-        public bool IsStepCompleted {
-            get {
+        public bool IsStepCompleted
+        {
+            get
+            {
                 if (!_shouldCheckForCompletion)
                     return _isComplete;
 
-                _isComplete               = _getIsStepCompleted();
+                _isComplete = _getIsStepCompleted();
                 _shouldCheckForCompletion = false;
 
                 return _isComplete;
@@ -67,7 +71,8 @@ namespace OneSignalSDK {
         /// <summary>
         /// Runs all code necessary in order to fulfill the step
         /// </summary>
-        public void RunStep() {
+        public void RunStep()
+        {
             if (IsStepCompleted)
                 return;
 
