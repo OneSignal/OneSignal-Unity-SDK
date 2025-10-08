@@ -1,0 +1,24 @@
+name: Run Checks
+on:
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install CSharpier
+        run: dotnet tool install -g csharpier
+
+      - name: Check formatting
+        run: csharpier check .
