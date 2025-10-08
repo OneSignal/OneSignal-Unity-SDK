@@ -2,6 +2,7 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
+/.utmp/
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -9,6 +10,7 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
+/UserSettings/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -57,4 +59,13 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+# User-specific Unity Editor settings
+/[Uu]serSettings/
+
+# Gradle template backup files
+*.backup
+*.backup.meta
+*.backup2
+*.backup2.meta
 

@@ -91,6 +91,9 @@ namespace OneSignalSDK.iOS.User
             UserStateListenerDelegate callback
         );
 
+        [DllImport("__Internal")]
+        private static extern void _oneSignalUserTrackEvent(string name, string propertiesJson);
+
         public delegate void UserStateListenerDelegate(string current);
 
         public event EventHandler<UserStateChangedEventArgs> Changed;
@@ -162,6 +165,14 @@ namespace OneSignalSDK.iOS.User
         public void AddSms(string sms) => _oneSignalUserAddSms(sms);
 
         public void RemoveSms(string sms) => _oneSignalUserRemoveSms(sms);
+
+        public void TrackEvent(string name, Dictionary<string, object> properties = null)
+        {
+            if (properties != null)
+                _oneSignalUserTrackEvent(name, Json.Serialize(properties));
+            else
+                _oneSignalUserTrackEvent(name, null);
+        }
 
         public void Initialize()
         {
