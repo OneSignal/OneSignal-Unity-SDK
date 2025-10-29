@@ -51,6 +51,14 @@ jobs:
           modules: 'linux-il2cpp android ios'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 🏗️ Run composeRelease.sh
+        run: |
+          chmod +x ./composeRelease.sh
+          if [[ -n "$POSTFIX" ]]; then
+            ./composeRelease.sh "$BUMP_COMMAND" "$POSTFIX" || echo "composeRelease.sh failed, continuing to patch manually"
+          else
+            ./composeRelease.sh "$BUMP_COMMAND" || echo "composeRelease.sh failed, continuing to patch manually"
+          fi
 
       - name: 🔍 Confirm PR Exists
         run: |
