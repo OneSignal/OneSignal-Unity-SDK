@@ -43,13 +43,34 @@ jobs:
         run: |
           brew install gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
-          
-      - name: Set up Unity
-        uses: buildalon/unity-action@v3
-        with:
-          editor-path: "/Applications/Unity/Hub/Editor"
-          args: ./composeRelease.sh "$BUMP_COMMAND"
 
+      - name: Cache Unity installation
+        id: cache-unity
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/Unity
+          key: unity-${{ runner.os }}-2021.3.0f1
+
+      - name: Setup Unity
+        if: steps.cache-unity.outputs.cache-hit != 'true'
+        uses: buildalon/unity-setup@v2.1.1
+        with:
+          version: 2021.3.0f1
+
+      - name: Verify Unity install
+        run: |
+          UNITY_PATH=$(find /home/runner -type f -name Unity | grep "Editor/Unity" | head -n 1)
+          echo "Unity found at: $UNITY_PATH"
+          $UNITY_PATH -version
+
+      - name: 🏗️ Run composeRelease.sh
+        run: |
+          chmod +x ./composeRelease.sh
+          if [[ -n "$POSTFIX" ]]; then
+            ./composeRelease.sh "$BUMP_COMMAND" "$POSTFIX" || echo "composeRelease.sh failed, continuing to patch manually"
+          else
+            ./composeRelease.sh "$BUMP_COMMAND" || echo "composeRelease.sh failed, continuing to patch manually"
+          fi
 
       - name: 🔍 Confirm PR Exists
         run: |
