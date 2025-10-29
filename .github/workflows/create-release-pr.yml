@@ -45,10 +45,11 @@ jobs:
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
           
       - name: Set up Unity
-        uses: buildalon/unity-action@v3
+        uses: buildalon/unity-setup@v2.1.1
         with:
-          editor-path: "/Applications/Unity/Hub/Editor"
-          args: ./composeRelease.sh "$BUMP_COMMAND"
+          unity-version: '2021.3.0f1'  # the oldest version of Unity we want to support and upload from
+          modules: 'linux-il2cpp android ios'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: 🔍 Confirm PR Exists

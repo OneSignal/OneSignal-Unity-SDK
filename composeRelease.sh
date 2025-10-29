@@ -68,7 +68,7 @@ fi
 # try to find unity executable
 unity_project_version_path="OneSignalExample/ProjectSettings/ProjectVersion.txt"
 unity_project_version=$(cat ${unity_project_version_path} | sed -n 's/^m_EditorVersion: //p')
-unity_versions_path="/Applications/Unity/Hub/Editor"
+unity_versions_path="/opt/unity/Editor/Unity"
 unity_path="${unity_versions_path}/${unity_project_version}"
 
 if [[ ! -d "${unity_versions_path}" ]]
