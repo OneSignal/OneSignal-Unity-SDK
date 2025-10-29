@@ -67,38 +67,35 @@ fi
 
 # try to find unity executable
 unity_project_version_path="OneSignalExample/ProjectSettings/ProjectVersion.txt"
-unity_project_version=$(cat ${unity_project_version_path} | sed -n 's/^m_EditorVersion: //p')
-unity_versions_path="/opt/unity/Editor/Unity"
-unity_path="${unity_versions_path}/${unity_project_version}"
+unity_project_version=$(cat "${unity_project_version_path}" | sed -n 's/^m_EditorVersion: //p')
 
-if [[ ! -d "${unity_versions_path}" ]]
-then
-    echo "Could not find any versions of Unity installed at path: ${unity_versions_path}"
-    exit 1
-elif [[ ! -d "${unity_path}" ]]
-then
-    echo "Could not find Unity ${unity_project_version}"
-    pushd "${unity_versions_path}" > /dev/null 2>&1
-    
-    options=(* "Exit")
-    PS3="Please select an installed Unity version: "
-    select option in "${options[@]}"
-    do
-        if [[ "$option" = "Exit" ]]
-        then
-            exit 1
-        elif [[ "${options[@]}" =~ "$option" ]]
-        then
-            echo "Using ${option}"
-            unity_path="${unity_versions_path}/${option}"
-            break
-        fi
-    done
+# Unity project path from CI environment if available
+unity_project_path="${UNITY_PROJECT_PATH:-OneSignalExample}"
 
-    popd > /dev/null 2>&1
+# Common installation locations (CI, macOS, local)
+unity_candidates=(
+  "/opt/unity/Editor/Unity"                                                               # Linux runner (GitHub Actions)
+  "/Applications/Unity/Hub/Editor/${unity_project_version}/Unity.app/Contents/MacOS/Unity" # macOS
+  "/home/runner/Unity/Hub/Editor/${unity_project_version}/Editor/Unity"                   # legacy Linux path
+  "/home/runner/Unity/Hub/Editor/${unity_project_version}/Unity.app/Contents/MacOS/Unity" # legacy macOS path
+)
+
+unity_executable=""
+for candidate in "${unity_candidates[@]}"; do
+  if [[ -x "$candidate" ]]; then
+    unity_executable="$candidate"
+    break
+  fi
+done
+
+if [[ -z "$unity_executable" ]]; then
+  echo "❌ Could not locate Unity executable for version ${unity_project_version}"
+  echo "Checked the following paths:"
+  printf ' - %s\n' "${unity_candidates[@]}"
+  exit 1
+else
+  echo "✅ Found Unity executable: ${unity_executable}"
 fi
-
-unity_executable="${unity_path}/Unity.app/Contents/MacOS/Unity"
 
 # VERSION file will act as the source of truth
 version_filepath="OneSignalExample/Assets/OneSignal/VERSION"
