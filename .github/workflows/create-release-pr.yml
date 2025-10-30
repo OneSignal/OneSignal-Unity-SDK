@@ -48,7 +48,7 @@ jobs:
         id: cache-unity
         uses: actions/cache@v4
         with:
-          path: /opt/unity
+          path: /home/runner/Unity
           key: unity-${{ runner.os }}-2021.3.0f1
 
       - name: Setup Unity
@@ -57,8 +57,11 @@ jobs:
         with:
           version: 2021.3.0f1
 
-      - name: Verify Unity
-        run: /opt/unity/Editor/Unity -version
+      - name: Verify Unity install
+        run: |
+          UNITY_PATH=$(find /home/runner -type f -name Unity | grep "Editor/Unity" | head -n 1)
+          echo "Unity found at: $UNITY_PATH"
+          $UNITY_PATH -version
 
       - name: 🏗️ Run composeRelease.sh
         run: |

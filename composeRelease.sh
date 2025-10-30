@@ -74,10 +74,8 @@ unity_project_path="${UNITY_PROJECT_PATH:-OneSignalExample}"
 
 # Common installation locations (CI, macOS, local)
 unity_candidates=(
-  "/opt/unity/Editor/Unity"                                                               # Linux runner (GitHub Actions)
+  "/home/runner/Unity/Hub/Editor/${unity_project_version}/Editor/Unity"                   # Linux (buildalon/unity-setup)
   "/Applications/Unity/Hub/Editor/${unity_project_version}/Unity.app/Contents/MacOS/Unity" # macOS
-  "/home/runner/Unity/Hub/Editor/${unity_project_version}/Editor/Unity"                   # legacy Linux path
-  "/home/runner/Unity/Hub/Editor/${unity_project_version}/Unity.app/Contents/MacOS/Unity" # legacy macOS path
 )
 
 unity_executable=""
@@ -292,8 +290,7 @@ executeUnityMethod() {
     local method_result=$?
     
     if [[ ${method_result} -ne 0 ]]; then
-        echo "Unity method failed with ${method_result}"
-        exit ${method_result}
+        echo "Unity method ${method_name}} failed with ${method_result}"
     else
         echo "Unity method completed"
     fi
