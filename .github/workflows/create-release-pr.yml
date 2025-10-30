@@ -43,13 +43,22 @@ jobs:
         run: |
           brew install gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
-          
-      - name: Set up Unity
+
+      - name: Cache Unity installation
+        id: cache-unity
+        uses: actions/cache@v4
+        with:
+          path: /opt/unity
+          key: unity-${{ runner.os }}-2021.3.0f1
+
+      - name: Setup Unity
+        if: steps.cache-unity.outputs.cache-hit != 'true'
         uses: buildalon/unity-setup@v2.1.1
         with:
-          unity-version: '2021.3.0f1'  # the oldest version of Unity we want to support and upload from
-          modules: 'linux-il2cpp android ios'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: 2021.3.0f1
+
+      - name: Verify Unity
+        run: /opt/unity/Editor/Unity -version
 
       - name: 🏗️ Run composeRelease.sh
         run: |
