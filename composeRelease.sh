@@ -277,22 +277,38 @@ executeUnityMethod() {
     local project_path=$1
     local build_target=$2
     local method_name=$3
-    local log_path="${PWD}/logs/${method_name}-${build_target}-$(date +%Y%m%d%H%M%S).txt"
-    
-    ${unity_executable} -projectpath "${project_path}"\
-                        -quit\
-                        -batchmode\
-                        -nographics\
-                        -buildTarget "${build_target}"\
-                        -executeMethod "${method_name}"\
-                        -logFile "${log_path}"
-   
+    local log_dir="${PWD}/logs"
+    mkdir -p "${log_dir}"
+
+    local log_path="${log_dir}/${method_name}-${build_target}-$(date +%Y%m%d%H%M%S).txt"
+
+    echo "▶️ Running Unity method: ${method_name} (${build_target})"
+    echo "   Log file: ${log_path}"
+
+    # Clean up stale locks before running
+    pkill -f Unity || true
+    rm -f "${project_path}/Temp/UnityLockfile"
+
+    # Run Unity in batchmode
+    "${unity_executable}" \
+        -projectPath "${project_path}" \
+        -quit \
+        -batchmode \
+        -nographics \
+        -buildTarget "${build_target}" \
+        -executeMethod "${method_name}" \
+        -logFile "${log_path}"
+
     local method_result=$?
-    
+
     if [[ ${method_result} -ne 0 ]]; then
-        echo "Unity method ${method_name}} failed with ${method_result}"
+        echo "❌ Unity method ${method_name} failed with exit code ${method_result}"
+        echo "----- Unity log tail (last 40 lines) -----"
+        tail -n 40 "${log_path}" || echo "(no log file found)"
+        echo "------------------------------------------"
     else
-        echo "Unity method completed"
+        echo "✅ Unity method ${method_name} completed successfully"
+        echo "   Full log: ${log_path}"
     fi
 }
 
