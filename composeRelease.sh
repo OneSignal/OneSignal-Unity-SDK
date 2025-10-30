@@ -296,6 +296,10 @@ executeUnityMethod() {
     fi
 }
 
+echo "Cleaning up Unity locks..."
+pkill -f Unity || true
+rm -f OneSignalExample/Temp/UnityLockfile
+
 # update project version
 projectsettings_path="OneSignalExample/ProjectSettings/ProjectSettings.asset"
 executeUnityMethod "OneSignalExample" "Android" "OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion"
