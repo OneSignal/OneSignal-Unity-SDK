@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       android_version:
-        description: "Target OneSignal-Android-SDK version (e.g., 5.1.31)"
+        description: "Target OneSignal-Android-SDK version (e.g., 5.1.38)"
         required: true
         type: string
       ios_version:
-        description: "Target OneSignal-iOS-SDK version (e.g., 5.2.10)"
+        description: "Target OneSignal-iOS-SDK version (e.g., 5.2.15)"
         required: true
         type: string
 
@@ -20,7 +20,7 @@ jobs:
   bump-native-sdks:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.ONESIGNAL_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -28,164 +28,135 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install gh CLI
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y gh jq
-
-      - name: Configure GitHub CLI
-        run: gh auth status || gh auth login --with-token <<< "${GH_TOKEN}"
-
-      - name: Debug GH CLI access
-        run: |
-          echo "🔍 Checking authentication"
-          gh auth status
-          echo "🔍 Listing releases from Android SDK repo"
-          gh release list --repo OneSignal/OneSignal-Android-SDK --limit 5
-          echo "🔍 Listing releases from iOS SDK repo"
-          gh release list --repo OneSignal/OneSignal-iOS-SDK --limit 5
-
       - name: Get current native SDK versions
         id: current
         run: |
-          set -e
-          cd "${GITHUB_WORKSPACE}" || exit 1
-
           ANDROID_FILE="com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml"
           IOS_FILE="com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
 
-          if [[ ! -f "$ANDROID_FILE" ]]; then
-            echo "❌ Android dependency file not found!"
-            find . -name "OneSignalAndroidDependencies.xml"
+          echo "✅ Checking dependency files..."
+          if [[ ! -f "$ANDROID_FILE" || ! -f "$IOS_FILE" ]]; then
+            echo "❌ Missing dependency file(s)"
             exit 1
           fi
-
-          if [[ ! -f "$IOS_FILE" ]]; then
-            echo "❌ iOS dependency file not found!"
-            find . -name "OneSignaliOSDependencies.xml"
-            exit 1
-          fi
-
-          echo "✅ Found both dependency files."
-          echo "→ Android: $ANDROID_FILE"
-          echo "→ iOS: $IOS_FILE"
 
           ANDROID_CURRENT=$(grep -oE 'com\.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+' "$ANDROID_FILE" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           IOS_CURRENT=$(grep -oE 'OneSignalXCFramework\" version=\"[0-9]+\.[0-9]+\.[0-9]+' "$IOS_FILE" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 
-          echo "Detected current Android SDK: ${ANDROID_CURRENT:-<none>}"
-          echo "Detected current iOS SDK: ${IOS_CURRENT:-<none>}"
+          echo "📦 Android current: ${ANDROID_CURRENT:-unknown}"
+          echo "📦 iOS current: ${IOS_CURRENT:-unknown}"
 
           echo "android_current=${ANDROID_CURRENT}" >> $GITHUB_OUTPUT
           echo "ios_current=${IOS_CURRENT}" >> $GITHUB_OUTPUT
 
-      - name: Gather all release notes between versions
+      - name: Gather native release notes
         id: notes
-        shell: bash {0}
-        run: |
-          ANDROID_OLD=${{ steps.current.outputs.android_current }}
-          ANDROID_NEW=${{ inputs.android_version }}
-          IOS_OLD=${{ steps.current.outputs.ios_current }}
-          IOS_NEW=${{ inputs.ios_version }}
+        uses: actions/github-script@v8
+        env:
+          ANDROID_OLD: ${{ steps.current.outputs.android_current }}
+          ANDROID_NEW: ${{ inputs.android_version }}
+          IOS_OLD: ${{ steps.current.outputs.ios_current }}
+          IOS_NEW: ${{ inputs.ios_version }}
+        with:
+          script: |
+            const androidRepo = 'OneSignal/OneSignal-Android-SDK';
+            const iosRepo = 'OneSignal/OneSignal-iOS-SDK';
 
-          echo "ANDROID_OLD=${ANDROID_OLD}, ANDROID_NEW=${ANDROID_NEW}"
-          echo "IOS_OLD=${IOS_OLD}, IOS_NEW=${IOS_NEW}"
+            async function getReleaseNotesBetween(repo, fromTag, toTag) {
+              const [owner, repoName] = repo.split('/');
+              const releases = await github.paginate(github.rest.repos.listReleases, {
+                owner,
+                repo: repoName,
+                per_page: 100
+              });
 
-          get_notes_between() {
-            local repo=$1
-            local from=$2
-            local to=$3
+              const tags = releases.map(r => r.tag_name.replace(/^Release\s+/, ''));
+              const fromIndex = tags.indexOf(fromTag);
+              const toIndex = tags.indexOf(toTag);
 
-            echo "🔎 Gathering release notes for $repo from $from → $to"
-            RELEASES=$(gh release list --repo "$repo" --limit 200 --json tagName --jq '.[] | .tagName' | sed 's/^Release //g' | sort -V)
-            START=0
-            NOTES=""
-            FOUND=0
+              if (fromIndex === -1 || toIndex === -1) {
+                core.warning(`⚠️ Could not find ${fromTag} or ${toTag} in ${repo}`);
+                return '';
+              }
 
-            for TAG in $RELEASES; do
-              echo "Checking tag: $TAG"
-              if [[ "$TAG" == "$from" ]]; then
-                START=1
-                continue
-              fi
-              if [[ "$START" -eq 1 ]]; then
-                BODY=$(gh release view "$TAG" --repo "$repo" --json body,tagName --jq '".  - ### " + .tagName + "\n" + (.body // "")' 2>/dev/null || true)
-                if [[ -n "$BODY" ]]; then
-                  NOTES+="$BODY\n\n"
-                  FOUND=1
-                fi
-              fi
-              if [[ "$TAG" == "$to" ]]; then
-                break
-              fi
-            done
+              const slice = releases.slice(Math.min(fromIndex, toIndex), Math.max(fromIndex, toIndex) + 1);
+              let notes = '';
+              for (const rel of slice.reverse()) {
+                if (!rel || /alpha|beta|rc/i.test(rel.tag_name)) continue; // skip prerelease
+                const body = (rel.body || '').split('<!--')[0].trim();
+                notes += `\n- ### ${rel.tag_name}\n${body}\n`;
+              }
 
-            if [[ "$FOUND" -eq 0 ]]; then
-              echo "⚠️ No notes found between $from → $to (possibly mismatched tags)"
-            fi
+              return notes.trim();
+            }
 
-            echo -e "$NOTES"
-          }
+            const androidNotes = await getReleaseNotesBetween(androidRepo, process.env.ANDROID_OLD, process.env.ANDROID_NEW);
+            const iosNotes = await getReleaseNotesBetween(iosRepo, process.env.IOS_OLD, process.env.IOS_NEW);
 
-          ANDROID_NOTES=$(get_notes_between "OneSignal/OneSignal-Android-SDK" "$ANDROID_OLD" "$ANDROID_NEW")
-          IOS_NOTES=$(get_notes_between "OneSignal/OneSignal-iOS-SDK" "$IOS_OLD" "$IOS_NEW")
+            core.setOutput('android_notes', androidNotes);
+            core.setOutput('ios_notes', iosNotes);
 
-          echo "android_notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$ANDROID_NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "ios_notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$IOS_NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-
-
+      # --- update xml and gradle references ---
       - name: Update native SDK versions in Unity dependencies
         run: |
           ANDROID_NEW=${{ inputs.android_version }}
           IOS_NEW=${{ inputs.ios_version }}
 
-          echo "🔧 Updating Android SDK to $ANDROID_NEW in XML and Gradle..."
-          for FILE in \
-            com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml \
-            com.onesignal.unity.android/Editor/mainTemplate.gradle \
-            com.onesignal.unity.android/Editor/AndroidResolverDependencies.xml
-          do
-            if [[ -f "$FILE" ]]; then
-              sed -i "s#com\.onesignal:OneSignal:[0-9.]\+#com.onesignal:OneSignal:${ANDROID_NEW}#g" "$FILE"
-              echo "✅ Updated $FILE"
-            else
-              echo "⚠️ Skipping missing file: $FILE"
-            fi
-          done
+          echo "🔧 Updating Android SDK → $ANDROID_NEW"
+          sed -i "s/com\.onesignal:OneSignal:[0-9.]\+/com.onesignal:OneSignal:${ANDROID_NEW}/g" \
+            com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml || true
+          sed -i "s/com\.onesignal:OneSignal:[0-9.]\+/com.onesignal:OneSignal:${ANDROID_NEW}/g" \
+            OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle || true
+          sed -i "s/com\.onesignal:OneSignal:[0-9.]\+/com.onesignal:OneSignal:${ANDROID_NEW}/g" \
+            OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml || true
 
-          echo "🔧 Updating iOS SDK to $IOS_NEW..."
-          IOS_FILE="com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
-          if [[ -f "$IOS_FILE" ]]; then
-            sed -i "s/OneSignalXCFramework\" version=\"[0-9.]\+/OneSignalXCFramework\" version=\"${IOS_NEW}/g" "$IOS_FILE"
-            echo "✅ Updated $IOS_FILE"
-          else
-            echo "⚠️ Skipping missing file: $IOS_FILE"
-          fi
+          echo "🔧 Updating iOS SDK → $IOS_NEW"
+          sed -i "s/OneSignalXCFramework\" version=\"[0-9.]\+/OneSignalXCFramework\" version=\"${IOS_NEW}/g" \
+            com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml || true
 
       - name: Insert formatted Android/iOS release notes under '## [Unreleased]'
+        shell: bash
         run: |
+          set -e
           ANDROID_OLD=${{ steps.current.outputs.android_current }}
           IOS_OLD=${{ steps.current.outputs.ios_current }}
           ANDROID_NEW=${{ inputs.android_version }}
           IOS_NEW=${{ inputs.ios_version }}
-          ANDROID_NOTES="${{ steps.notes.outputs.android_notes }}"
-          IOS_NOTES="${{ steps.notes.outputs.ios_notes }}"
+
+          # Normalize line endings
+          git config core.autocrlf false
+          find . -type f -name "*.md" -exec sed -i 's/\r$//' {} \;
+
           CHANGELOG="OneSignalExample/Assets/OneSignal/CHANGELOG.md"
           TMPFILE=$(mktemp)
 
-          INSERTION="\
-            - Updated included Android SDK from ${ANDROID_OLD} to [${ANDROID_NEW}](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/${ANDROID_NEW})\n${ANDROID_NOTES}\n\
-            - Updated included iOS SDK from ${IOS_OLD} to [${IOS_NEW}](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/${IOS_NEW})\n${IOS_NOTES}\n\
-            \nFor full changes, see the [native release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases) and [iOS native release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)\n"
+          echo "🪄 Updating changelog: $CHANGELOG"
 
-          awk -v insert="$INSERTION" '/## \[Unreleased\]/ && !done {print; print insert; done=1; next}1' "$CHANGELOG" > "$TMPFILE" && mv "$TMPFILE" "$CHANGELOG"
+          # Build markdown safely — literal heredoc (no expansion or parsing)
+          cat <<'EOF_INSERT' > insert.md
+          - Updated included Android SDK from {{ANDROID_OLD}} to [{{ANDROID_NEW}}](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/{{ANDROID_NEW}})
+          {{ANDROID_NOTES}}
+          - Updated included iOS SDK from {{IOS_OLD}} to [{{IOS_NEW}}](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/{{IOS_NEW}})
+          {{IOS_NOTES}}
 
-          echo "✅ Added detailed changelog under ## [Unreleased]"
+          For full changes, see the [Android release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases) and [iOS release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+          EOF_INSERT
+
+          # Replace placeholders using envsubst-style sed
+          sed -i "s|{{ANDROID_OLD}}|${ANDROID_OLD}|g" insert.md
+          sed -i "s|{{ANDROID_NEW}}|${ANDROID_NEW}|g" insert.md
+          sed -i "s|{{IOS_OLD}}|${IOS_OLD}|g" insert.md
+          sed -i "s|{{IOS_NEW}}|${IOS_NEW}|g" insert.md
+
+          # Append the actual release notes text
+          echo "${{ steps.notes.outputs.android_notes }}" | sed 's/\r$//' >> insert.md
+          echo "${{ steps.notes.outputs.ios_notes }}" | sed 's/\r$//' >> insert.md
+
+          # Inject under ## [Unreleased]
+          awk -v insert="$(cat insert.md)" '/## \[Unreleased\]/ && !done {print; print insert; done=1; next}1' "$CHANGELOG" > "$TMPFILE" && mv "$TMPFILE" "$CHANGELOG"
+
+          echo "✅ CHANGELOG updated successfully."
+
 
       - name: Commit and create PR
         run: |
@@ -201,9 +172,9 @@ jobs:
           gh pr create \
             --title "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" \
             --body "### 🧩 Native SDK Updates  
-          - Android: ${{ inputs.android_version }}
-          - iOS: ${{ inputs.ios_version }}
+          - **Android:** ${{ inputs.android_version }}  
+          - **iOS:** ${{ inputs.ios_version }}  
 
-          This PR updates Unity dependency files and inserts a detailed changelog entry under **[Unreleased]** in the Unity SDK changelog." \
+          This PR updates Unity dependency files and adds detailed native SDK changelogs under **[Unreleased]** in the Unity CHANGELOG." \
             --base main \
             --label "native-sdk-bump"
