@@ -64,7 +64,7 @@ jobs:
           sed -i "s/OneSignalXCFramework\" version=\"[0-9.]\+/OneSignalXCFramework\" version=\"${IOS_NEW}/g" \
             com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
 
-      - name: Gather and combine release notes 
+      - name: Gather and combine release notes
         id: combined
         uses: actions/github-script@v8
         env:
@@ -80,16 +80,21 @@ jobs:
               console.log(`🔎 Gathering release notes for ${repo} from ${from} → ${to}`);
               const [owner, name] = repo.split('/');
               const releases = await github.paginate(github.rest.repos.listReleases, {
-                owner, repo: name, per_page: 100
+                owner,
+                repo: name,
+                per_page: 100
               });
 
-              const normalize = t => t.replace(/^Release /, '');
+              // Normalize "Release 5.2.15" → "5.2.15"
+              const normalize = tag => tag.replace(/^Release\s*/i, '').trim();
+
               const tags = releases.map(r => normalize(r.tag_name));
               const startIndex = tags.indexOf(from);
               const endIndex = tags.indexOf(to);
 
               if (startIndex === -1 || endIndex === -1) {
                 console.warn(`⚠️ Could not find tags ${from} or ${to} in ${repo}`);
+                console.warn('Available tags:', tags.slice(0, 10));
                 return '';
               }
 
@@ -99,7 +104,11 @@ jobs:
               }).reverse();
 
               return selected
-                .map(r => `- ### ${normalize(r.tag_name)}\n${r.body || '_No notes provided._'}`)
+                .map(r => {
+                  const tag = normalize(r.tag_name);
+                  const body = r.body?.trim() || '_No release notes provided._';
+                  return `- ### ${tag}\n${body}`;
+                })
                 .join('\n\n');
             };
 
@@ -147,13 +156,14 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           BRANCH="bump-native-${{ inputs.android_version }}-${{ inputs.ios_version }}"
-          git checkout -b "$BRANCH"
+          git checkout -B "$BRANCH"  # create or reset local branch to latest
           git add .
-          git commit -m "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}"
-          git push origin "$BRANCH"
+          git commit -m "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" || echo "No changes to commit"
+          git push origin "$BRANCH" --force
 
           gh pr create \
             --title "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" \
             --body "${{ steps.combined.outputs.combined }}" \
             --base main \
-            --label "native-sdk-bump"
+            --label "native-sdk-bump" || echo "PR already exists, skipping creation"
+
