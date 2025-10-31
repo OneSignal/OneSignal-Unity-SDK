@@ -147,13 +147,14 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           BRANCH="bump-native-${{ inputs.android_version }}-${{ inputs.ios_version }}"
-          git checkout -b "$BRANCH"
+          git checkout -B "$BRANCH"  # create or reset local branch to latest
           git add .
-          git commit -m "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}"
-          git push origin "$BRANCH"
+          git commit -m "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" || echo "No changes to commit"
+          git push origin "$BRANCH" --force
 
           gh pr create \
             --title "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" \
             --body "${{ steps.combined.outputs.combined }}" \
             --base main \
-            --label "native-sdk-bump"
+            --label "native-sdk-bump" || echo "PR already exists, skipping creation"
+
