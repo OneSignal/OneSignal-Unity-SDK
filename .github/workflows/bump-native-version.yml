@@ -35,16 +35,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh auth status || gh auth login --with-token <<< "${GH_TOKEN}"
 
-      - name: Detect current SDK versions
+      - name: Get current native SDK versions
         id: current
         run: |
-          # Example: extract versions from a constants file or C# source
-          ANDROID_CURRENT=$(grep -Eo 'OneSignalAndroidSDKVersion = "[^"]+"' com.onesignal.unity.core/Runtime/OneSignalPlatform.cs | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
-          IOS_CURRENT=$(grep -Eo 'OneSignaliOSSDKVersion = "[^"]+"' com.onesignal.unity.core/Runtime/OneSignalPlatform.cs | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
+          ANDROID_CURRENT=$(grep -oP '(?<=OneSignal-Android-SDK:)[0-9]+\.[0-9]+\.[0-9]+' com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | head -1)
+          IOS_CURRENT=$(grep -oP '(?<=OneSignal-iOS-SDK:)[0-9]+\.[0-9]+\.[0-9]+' com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml | head -1)
 
           echo "android_current=${ANDROID_CURRENT}" >> $GITHUB_OUTPUT
           echo "ios_current=${IOS_CURRENT}" >> $GITHUB_OUTPUT
-
           echo "Detected current Android SDK: ${ANDROID_CURRENT}"
           echo "Detected current iOS SDK: ${IOS_CURRENT}"
 
@@ -97,12 +95,14 @@ jobs:
           IOS_NEW=${{ inputs.ios_version }}
 
           echo "🔧 Updating Android SDK to $ANDROID_NEW in XML and Gradle..."
-          sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" OneSignalExample/Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+          sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" \
+              com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
           sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
           sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" OneSignalExample/Assets/Plugins/Android/AndroidResolverDependencies.xml
 
           echo "🔧 Updating iOS SDK to $IOS_NEW in XML..."
-          sed -i "s/OneSignal-iOS-SDK:[0-9.]\+/OneSignal-iOS-SDK:${IOS_NEW}/g" OneSignalExample/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml
+          sed -i "s/OneSignal-iOS-SDK:[0-9.]\+/OneSignal-iOS-SDK:${IOS_NEW}/g" \
+              com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
 
       - name: Insert formatted Android/iOS release notes under '## [Unreleased]'
         run: |
