@@ -81,32 +81,49 @@ jobs:
 
       - name: Gather all release notes between versions
         id: notes
+        shell: bash {0}
         run: |
           ANDROID_OLD=${{ steps.current.outputs.android_current }}
           ANDROID_NEW=${{ inputs.android_version }}
           IOS_OLD=${{ steps.current.outputs.ios_current }}
           IOS_NEW=${{ inputs.ios_version }}
 
+          echo "ANDROID_OLD=${ANDROID_OLD}, ANDROID_NEW=${ANDROID_NEW}"
+          echo "IOS_OLD=${IOS_OLD}, IOS_NEW=${IOS_NEW}"
+
           get_notes_between() {
             local repo=$1
             local from=$2
             local to=$3
-            RELEASES=$(gh release list --repo "$repo" --limit 200 --json tagName --jq '.[] | .tagName' | sort -V)
+
+            echo "🔎 Gathering release notes for $repo from $from → $to"
+            RELEASES=$(gh release list --repo "$repo" --limit 200 --json tagName --jq '.[] | .tagName' | sed 's/^Release //g' | sort -V)
             START=0
             NOTES=""
+            FOUND=0
+
             for TAG in $RELEASES; do
+              echo "Checking tag: $TAG"
               if [[ "$TAG" == "$from" ]]; then
                 START=1
                 continue
               fi
               if [[ "$START" -eq 1 ]]; then
-                BODY=$(gh release view "$TAG" --repo "$repo" --json body,tagName --jq '".  - ### " + .tagName + "\n" + .body')
-                NOTES+="$BODY\n\n"
+                BODY=$(gh release view "$TAG" --repo "$repo" --json body,tagName --jq '".  - ### " + .tagName + "\n" + (.body // "")' 2>/dev/null || true)
+                if [[ -n "$BODY" ]]; then
+                  NOTES+="$BODY\n\n"
+                  FOUND=1
+                fi
               fi
               if [[ "$TAG" == "$to" ]]; then
                 break
               fi
             done
+
+            if [[ "$FOUND" -eq 0 ]]; then
+              echo "⚠️ No notes found between $from → $to (possibly mismatched tags)"
+            fi
+
             echo -e "$NOTES"
           }
 
@@ -119,6 +136,8 @@ jobs:
           echo "ios_notes<<EOF" >> $GITHUB_OUTPUT
           echo "$IOS_NOTES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
+
 
       - name: Update native SDK versions in Unity dependencies
         run: |
