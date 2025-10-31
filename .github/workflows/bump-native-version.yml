@@ -1,9 +1,6 @@
 name: Bump Native OneSignal SDKs
 
 on:
-  push:
-    branches:
-      - "ci-bump-native-version"
   workflow_dispatch:
     inputs:
       android_version:
@@ -15,9 +12,15 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   bump-native-sdks:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -31,25 +34,44 @@ jobs:
           sudo apt-get install -y gh jq
 
       - name: Configure GitHub CLI
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh auth status || gh auth login --with-token <<< "${GH_TOKEN}"
 
       - name: Get current native SDK versions
         id: current
         run: |
-          ANDROID_CURRENT=$(grep -oP '(?<=OneSignal-Android-SDK:)[0-9]+\.[0-9]+\.[0-9]+' com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | head -1)
-          IOS_CURRENT=$(grep -oP '(?<=OneSignal-iOS-SDK:)[0-9]+\.[0-9]+\.[0-9]+' com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml | head -1)
+          set -e
+          cd "${GITHUB_WORKSPACE}" || exit 1
+
+          ANDROID_FILE="com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml"
+          IOS_FILE="com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
+
+          if [[ ! -f "$ANDROID_FILE" ]]; then
+            echo "❌ Android dependency file not found!"
+            find . -name "OneSignalAndroidDependencies.xml"
+            exit 1
+          fi
+
+          if [[ ! -f "$IOS_FILE" ]]; then
+            echo "❌ iOS dependency file not found!"
+            find . -name "OneSignaliOSDependencies.xml"
+            exit 1
+          fi
+
+          echo "✅ Found both dependency files."
+          echo "→ Android: $ANDROID_FILE"
+          echo "→ iOS: $IOS_FILE"
+
+          ANDROID_CURRENT=$(grep -oE 'com\.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+' "$ANDROID_FILE" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          IOS_CURRENT=$(grep -oE 'OneSignalXCFramework\" version=\"[0-9]+\.[0-9]+\.[0-9]+' "$IOS_FILE" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+
+          echo "Detected current Android SDK: ${ANDROID_CURRENT:-<none>}"
+          echo "Detected current iOS SDK: ${IOS_CURRENT:-<none>}"
 
           echo "android_current=${ANDROID_CURRENT}" >> $GITHUB_OUTPUT
           echo "ios_current=${IOS_CURRENT}" >> $GITHUB_OUTPUT
-          echo "Detected current Android SDK: ${ANDROID_CURRENT}"
-          echo "Detected current iOS SDK: ${IOS_CURRENT}"
 
       - name: Gather all release notes between versions
         id: notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ANDROID_OLD=${{ steps.current.outputs.android_current }}
           ANDROID_NEW=${{ inputs.android_version }}
@@ -95,14 +117,27 @@ jobs:
           IOS_NEW=${{ inputs.ios_version }}
 
           echo "🔧 Updating Android SDK to $ANDROID_NEW in XML and Gradle..."
-          sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" \
-              com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
-          sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
-          sed -i "s/OneSignal-Android-SDK:[0-9.]\+/OneSignal-Android-SDK:${ANDROID_NEW}/g" OneSignalExample/Assets/Plugins/Android/AndroidResolverDependencies.xml
+          for FILE in \
+            com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml \
+            com.onesignal.unity.android/Editor/mainTemplate.gradle \
+            com.onesignal.unity.android/Editor/AndroidResolverDependencies.xml
+          do
+            if [[ -f "$FILE" ]]; then
+              sed -i "s#com\.onesignal:OneSignal:[0-9.]\+#com.onesignal:OneSignal:${ANDROID_NEW}#g" "$FILE"
+              echo "✅ Updated $FILE"
+            else
+              echo "⚠️ Skipping missing file: $FILE"
+            fi
+          done
 
-          echo "🔧 Updating iOS SDK to $IOS_NEW in XML..."
-          sed -i "s/OneSignal-iOS-SDK:[0-9.]\+/OneSignal-iOS-SDK:${IOS_NEW}/g" \
-              com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
+          echo "🔧 Updating iOS SDK to $IOS_NEW..."
+          IOS_FILE="com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
+          if [[ -f "$IOS_FILE" ]]; then
+            sed -i "s/OneSignalXCFramework\" version=\"[0-9.]\+/OneSignalXCFramework\" version=\"${IOS_NEW}/g" "$IOS_FILE"
+            echo "✅ Updated $IOS_FILE"
+          else
+            echo "⚠️ Skipping missing file: $IOS_FILE"
+          fi
 
       - name: Insert formatted Android/iOS release notes under '## [Unreleased]'
         run: |
@@ -125,8 +160,6 @@ jobs:
           echo "✅ Added detailed changelog under ## [Unreleased]"
 
       - name: Commit and create PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -140,8 +173,8 @@ jobs:
           gh pr create \
             --title "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" \
             --body "### 🧩 Native SDK Updates  
-          - Android: ${{ inputs.android_version }}  
-          - iOS: ${{ inputs.ios_version }}  
+          - Android: ${{ inputs.android_version }}
+          - iOS: ${{ inputs.ios_version }}
 
           This PR updates Unity dependency files and inserts a detailed changelog entry under **[Unreleased]** in the Unity SDK changelog." \
             --base main \
