@@ -20,7 +20,7 @@ jobs:
   bump-native-sdks:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.ONESIGNAL_PAT }}
 
     steps:
       - name: Checkout repository
@@ -35,6 +35,15 @@ jobs:
 
       - name: Configure GitHub CLI
         run: gh auth status || gh auth login --with-token <<< "${GH_TOKEN}"
+
+      - name: Debug GH CLI access
+        run: |
+          echo "🔍 Checking authentication"
+          gh auth status
+          echo "🔍 Listing releases from Android SDK repo"
+          gh release list --repo OneSignal/OneSignal-Android-SDK --limit 5
+          echo "🔍 Listing releases from iOS SDK repo"
+          gh release list --repo OneSignal/OneSignal-iOS-SDK --limit 5
 
       - name: Get current native SDK versions
         id: current
