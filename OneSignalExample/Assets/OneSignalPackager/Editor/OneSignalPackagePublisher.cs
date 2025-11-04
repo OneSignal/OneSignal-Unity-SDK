@@ -45,27 +45,35 @@ namespace OneSignalSDK
         [MenuItem("OneSignal/ExportUnityPackage")]
         public static void ExportUnityPackage()
         {
+            Debug.Log("=== Starting Package Export ===");
             AssetDatabase.Refresh();
             var packageVersion = File.ReadAllText(VersionFilePath);
             var packageName = $"OneSignal-v{packageVersion}.unitypackage";
 
-            // detect CLI argument for exportPath
-            string[] args = System.Environment.GetCommandLineArgs();
-            string exportPathArg = args.FirstOrDefault(a => a.StartsWith("exportPath="));
+            Debug.Log($"Package version: {packageVersion}");
+            Debug.Log($"Package name: {packageName}");
 
-            string exportPath =
-                exportPathArg != null
-                    ? exportPathArg.Split('=')[1]
-                    : Path.Combine(Directory.GetCurrentDirectory(), packageName);
+            var filePaths = _filePaths();
+            Debug.Log($"File paths to export: {filePaths}");
 
-            if (!exportPath.EndsWith(".unitypackage"))
-                exportPath = Path.Combine(exportPath, packageName);
+            if (filePaths.Length == 0)
+            {
+                Debug.LogError("ERROR: No file paths returned by _filePaths()!");
+                EditorApplication.Exit(1);
+                return;
+            }
+
+            Debug.Log("Starting AssetDatabase.ExportPackage...");
 
             AssetDatabase.ExportPackage(
                 _filePaths(),
-                exportPath,
+                packageName,
                 ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
             );
+
+            Debug.Log("ExportPackage completed");
+
+            EditorApplication.Exit(0);
         }
 
         private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
