@@ -57,6 +57,12 @@ jobs:
         with:
           version: 2021.3.0f1
 
+      - uses: buildalon/activate-unity-license@v2
+        with:
+          license: 'Personal'
+          username: '${{ secrets.UNITY_USERNAME }}'
+          password: '${{ secrets.UNITY_PASSWORD }}'
+
       - name: Verify Unity install
         run: |
           UNITY_PATH=$(find /home/runner -type f -name Unity | grep "Editor/Unity" | head -n 1)
