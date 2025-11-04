@@ -44,15 +44,7 @@ jobs:
           brew install gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
 
-      - name: Cache Unity installation
-        id: cache-unity
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/Unity
-          key: unity-${{ runner.os }}-2021.3.0f1
-
       - name: Setup Unity
-        if: steps.cache-unity.outputs.cache-hit != 'true'
         uses: buildalon/unity-setup@v2.1.1
         with:
           version: 2021.3.0f1
