@@ -49,9 +49,21 @@ namespace OneSignalSDK
             var packageVersion = File.ReadAllText(VersionFilePath);
             var packageName = $"OneSignal-v{packageVersion}.unitypackage";
 
+            // detect CLI argument for exportPath
+            string[] args = System.Environment.GetCommandLineArgs();
+            string exportPathArg = args.FirstOrDefault(a => a.StartsWith("exportPath="));
+
+            string exportPath =
+                exportPathArg != null
+                    ? exportPathArg.Split('=')[1]
+                    : Path.Combine(Directory.GetCurrentDirectory(), packageName);
+
+            if (!exportPath.EndsWith(".unitypackage"))
+                exportPath = Path.Combine(exportPath, packageName);
+
             AssetDatabase.ExportPackage(
                 _filePaths(),
-                packageName,
+                exportPath,
                 ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
             );
         }
