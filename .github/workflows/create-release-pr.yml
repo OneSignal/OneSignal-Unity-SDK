@@ -47,7 +47,7 @@ jobs:
       - name: Setup Unity
         uses: buildalon/unity-setup@v2.1.1
         with:
-          version: 2021.3.0f1
+          unity-version: 2021.3.0f1
 
       - uses: buildalon/activate-unity-license@v2
         with:
