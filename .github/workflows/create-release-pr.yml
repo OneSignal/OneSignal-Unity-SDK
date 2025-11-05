@@ -24,7 +24,7 @@ permissions:
 jobs:
   compose-unity-release:
     name: Compose Unity Release
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -43,22 +43,24 @@ jobs:
           brew install gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
 
+      - name: Cache Unity
+        uses: actions/cache@v4
+        with:
+          path: /Applications/Unity/Hub
+          key: UnityEditor-${{ runner.os }}
+          restore-keys: |
+            UnityEditor-${{ runner.os }}
+
       - name: Setup Unity
         uses: buildalon/unity-setup@v2.1.1
         with:
-          unity-version: 2021.3.0f1
+          version-file: 'OneSignalExample/ProjectSettings/ProjectVersion.txt'
 
       - uses: buildalon/activate-unity-license@v2
         with:
           license: 'Personal'
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
-
-      - name: Verify Unity install
-        run: |
-          UNITY_PATH=$(find /home/runner -type f -name Unity | grep "Editor/Unity" | head -n 1)
-          echo "Unity found at: $UNITY_PATH"
-          $UNITY_PATH -version
 
       - name: 🏗️ Run composeRelease.sh
         run: |
