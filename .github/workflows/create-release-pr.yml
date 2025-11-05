@@ -33,6 +33,10 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   prep:
     uses: OneSignal/sdk-actions/.github/workflows/prep-release.yml@main
@@ -188,12 +192,17 @@ jobs:
           sed -i '' "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" \
             com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
+      - name: Cleaning up Unity locks
+        run: |
+          pkill -f Unity || true
+          rm -f OneSignalExample/Temp/UnityLockfile
+          rm -rf OneSignalExample/Library OneSignalExample/Temp OneSignalExample/obj OneSignalExample/UserSettings || true
+          
       - name: Run UpdateProjectVersion
         uses: buildalon/unity-action@v3
         with:
           project-path: OneSignalExample
           args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion
-          
 
       - name: Run ExportUnityPackage
         uses: buildalon/unity-action@v3
