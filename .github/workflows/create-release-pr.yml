@@ -1,48 +1,67 @@
 name: Create Unity Release PR
 
 on:
-  workflow_dispatch:
+  # For making a release pr from android / ios sdk actions
+  workflow_call:
     inputs:
-      bump_command:
-        description: "Version bump type (major, minor, patch, specify)"
+      unity_version:
+        description: 'New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)'
         required: true
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
-          - specify
-      postfix:
-        description: "Optional postfix (e.g. preview, beta, or specific version when using 'specify')"
+        type: string
+      android_version:
+        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        required: false
+        type: string
+      ios_version:
+        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
         required: false
         type: string
 
-permissions:
-  contents: write
-  pull-requests: write
+  # For making a release pr from github actions
+  workflow_dispatch:
+    inputs:
+      unity_version:
+        description: 'New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        required: true
+        type: string
+      android_version:
+        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        required: false
+        type: string
+      ios_version:
+        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        required: false
+        type: string
 
 jobs:
-  compose-unity-release:
-    name: Compose Unity Release
-    runs-on: macos-latest
+  prep:
+    uses: OneSignal/sdk-actions/.github/workflows/prep-release.yml@main
+    with:
+      version: ${{ inputs.unity_version }}
 
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BUMP_COMMAND: ${{ github.event.inputs.bump_command }}
-      POSTFIX: ${{ github.event.inputs.postfix }}
+  # Unity specific steps
+  update-version:
+    needs: prep
+    runs-on: macos-latest
+    outputs:
+      unity_from: ${{ steps.current_versions.outputs.unity_from }}
+      ios_from: ${{ steps.current_versions.outputs.ios_from }}
+      android_from: ${{ steps.current_versions.outputs.android_from }}
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
-          fetch-depth: 0
-          fetch-tags: true
+          ref: ${{ needs.prep.outputs.release_branch }}
           
       - name: Prepare Environment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           brew install gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
 
+      # to save time, use cached Unity installation if available
       - name: Cache Unity
         uses: actions/cache@v4
         with:
@@ -51,32 +70,159 @@ jobs:
           restore-keys: |
             UnityEditor-${{ runner.os }}
 
+      # setup Unity using the version file
       - name: Setup Unity
         uses: buildalon/unity-setup@v2.1.1
         with:
           version-file: 'OneSignalExample/ProjectSettings/ProjectVersion.txt'
 
+      # need to activate the Unity license to run Unity in batchmode; required for exportPackage
       - uses: buildalon/activate-unity-license@v2
         with:
           license: 'Personal'
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
 
-      - name: 🏗️ Run composeRelease.sh
+      - name: Get current native SDK versions
+        id: current_versions
         run: |
-          chmod +x ./composeRelease.sh
-          if [[ -n "$POSTFIX" ]]; then
-            ./composeRelease.sh "$BUMP_COMMAND" "$POSTFIX" || echo "composeRelease.sh failed, continuing to patch manually"
-          else
-            ./composeRelease.sh "$BUMP_COMMAND" || echo "composeRelease.sh failed, continuing to patch manually"
+          # Current Unity version
+          CURRENT_VERSION=$(cat OneSignalExample/Assets/OneSignal/VERSION | tr -d '\n\r' | xargs)
+
+          # Extract current Android SDK version
+          ANDROID_VERSION=$(grep -oE 'spec="com.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+"' com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | sed -E 's/.*OneSignal:([0-9]+\.[0-9]+\.[0-9]+)".*/\1/' | head -1)
+
+          # Extract current iOS SDK version
+          IOS_VERSION=$(grep -oE 'version="[0-9.]+"' com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml | grep -oE '[0-9.]+' | head -1)
+
+          echo "unity_from=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+          echo "android_from=${ANDROID_VERSION}" >> $GITHUB_OUTPUT
+          echo "ios_from=${IOS_VERSION}" >> $GITHUB_OUTPUT
+          
+          echo "  unity_from: ${CURRENT_VERSION}"
+          echo "  android_from: ${ANDROID_VERSION}"
+          echo "  ios_from: ${IOS_VERSION}"
+
+      - name: Update Android SDK version
+        if: inputs.android_version != ''
+        run: |
+          VERSION="${{ inputs.android_version }}"
+
+          # Validate version exists on GitHub
+          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}")
+
+          if [ -z "$RELEASE" ]; then
+            echo "✗ Android SDK version ${VERSION} not found"
+            exit 1
           fi
 
-      - name: 🔍 Confirm PR Exists
+          sed -i '' -E "s/spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/spec=\"com.onesignal:OneSignal:$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
+          sed -i '' -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
+          sed -i '' -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml
+
+          echo "✓ Updated Android SDK to ${VERSION}"
+          git add .
+          git commit -m "Bump Android SDK $VERSION"
+          git push
+
+      - name: Update iOS SDK version
+        if: inputs.ios_version != ''
         run: |
-          PR_URL=$(gh pr list --head "release/$VERSION" --json url --jq '.[0].url')
-          if [[ -n "$PR_URL" ]]; then
-            echo "✅ Release PR found: $PR_URL"
-          else
-            echo "⚠️ No PR found. composeRelease.sh should have created one."
-            echo "If missing, create manually from release/$VERSION → main."
+          VERSION="${{ inputs.ios_version }}"
+
+          # Validate version exists on GitHub
+          RELEASE=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}")
+
+          if [ -z "$RELEASE" ]; then
+            echo "✗ iOS SDK version ${VERSION} not found"
+            exit 1
           fi
+
+          sed -i '' -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
+
+          echo "✓ Updated iOS SDK to ${VERSION}"
+          git add .
+          git commit -m "Bump iOS SDK $VERSION"
+          git push
+
+      - name: Update Unity SDK version
+        run: |
+          echo "Updating Unity SDK version to ${{ inputs.unity_version }}"
+
+          # Version string formats
+          PADDED_VERSION=$(printf "%06d" $(echo "${{ inputs.unity_version }}" | sed 's/[^0-9]//g'))
+
+          # VERSION file
+          echo "${{ inputs.unity_version }}" > OneSignalExample/Assets/OneSignal/VERSION
+
+          # package.json files
+          for file in com.onesignal.unity.core/package.json com.onesignal.unity.android/package.json com.onesignal.unity.ios/package.json; do
+            sed -i '' "s/\"version\": \".*\"/\"version\": \"${{ inputs.unity_version }}\"/" "$file"
+            sed -i '' "s/\"com.onesignal.unity.core\": \".*\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/" "$file"
+          done
+
+          sed -i '' "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" \
+            com.onesignal.unity.core/Runtime/OneSignal.cs
+          sed -i '' "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" \
+            com.onesignal.unity.core/Runtime/OneSignalPlatform.cs
+
+          # asmdef files
+          for asm in \
+            OneSignalExample/Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef \
+            OneSignalExample/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef \
+            OneSignalExample/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef; do
+            sed -i '' "s/\"expression\": \".*\"/\"expression\": \"${{ inputs.unity_version }}\"/" "$asm"
+          done
+
+          # packages-lock.json
+          sed -i '' "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" \
+            OneSignalExample/Packages/packages-lock.json
+
+          # ProjectSettings.asset
+          sed -i '' "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" \
+            OneSignalExample/ProjectSettings/ProjectSettings.asset
+
+          # iOS plugin version (UIApplication+OneSignalUnity.mm)
+          sed -i '' "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" \
+            com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
+
+      - name: Run UpdateProjectVersion
+        uses: buildalon/unity-action@v3
+        with:
+          project-path: OneSignalExample
+          args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion
+          
+
+      - name: Run ExportUnityPackage
+        uses: buildalon/unity-action@v3
+        with:
+          project-path: OneSignalExample
+          args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.ExportUnityPackage
+
+      - name: Commit Release
+        run: |
+          git add .
+          git commit -m "Release ${{ inputs.unity_version }}"
+          git push
+
+      - name: Draft Release
+        run: |
+          package_path="OneSignalExample/OneSignal-v${{ inputs.unity_version }}.unitypackage"
+          gh release create "${{ inputs.unity_version }}" "${package_path}"\
+            --draft\
+            --title "${{ inputs.unity_version }} Release"\
+            --notes "TODO"
+
+  create-pr:
+    needs: [prep, update-version]
+    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    with:
+      release_branch: ${{ needs.prep.outputs.release_branch }}
+      version_from: ${{ needs.update-version.outputs.unity_from }}
+      version_to: ${{ inputs.unity_version }}
+      android_from: ${{ needs.update-version.outputs.android_from }}
+      android_to: ${{ inputs.android_version }}
+      ios_from: ${{ needs.update-version.outputs.ios_from }}
+      ios_to: ${{ inputs.ios_version }}
