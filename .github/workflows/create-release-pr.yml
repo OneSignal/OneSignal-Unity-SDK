@@ -87,6 +87,12 @@ jobs:
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
 
+      - name: Resolve Unity Package
+        uses: buildalon/unity-action@v3
+        with:
+          project-path: OneSignalExample
+          args: -quit -batchmode -projectPath . -executeMethod UnityEditor.PackageManager.Client.Resolve
+
       - name: Get current native SDK versions
         id: current_versions
         run: |
