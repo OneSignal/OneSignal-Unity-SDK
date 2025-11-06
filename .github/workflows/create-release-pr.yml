@@ -65,15 +65,6 @@ jobs:
           brew install gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
 
-      # to save time, use cached Unity installation if available
-      - name: Cache Unity
-        uses: actions/cache@v4
-        with:
-          path: /Applications/Unity/Hub
-          key: UnityEditor-${{ runner.os }}
-          restore-keys: |
-            UnityEditor-${{ runner.os }}
-
       # setup Unity using the version file
       - name: Setup Unity
         uses: buildalon/unity-setup@v2.1.1
