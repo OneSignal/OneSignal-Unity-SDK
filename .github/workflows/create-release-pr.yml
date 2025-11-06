@@ -71,28 +71,6 @@ jobs:
           sudo apt-get install -y gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
 
-      # to save time, use cached Unity installation if available
-      - name: Cache Unity
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/Unity/Hub
-          key: UnityEditor-${{ runner.os }}
-          restore-keys: |
-            UnityEditor-${{ runner.os }}
-
-      # setup Unity using the version file
-      - name: Setup Unity
-        uses: buildalon/unity-setup@v2.1.1
-        with:
-          version-file: 'OneSignalExample/ProjectSettings/ProjectVersion.txt'
-
-      # need to activate the Unity license to run Unity in batchmode; required for exportPackage
-      - uses: buildalon/activate-unity-license@v2
-        with:
-          license: 'Personal'
-          username: '${{ secrets.UNITY_USERNAME }}'
-          password: '${{ secrets.UNITY_PASSWORD }}'
-
       - name: Get current native SDK versions
         id: current_versions
         run: |
@@ -198,6 +176,28 @@ jobs:
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" \
             com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
+      # to save time, use cached Unity installation if available
+      - name: Cache Unity
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/Unity/Hub
+          key: UnityEditor-${{ runner.os }}
+          restore-keys: |
+            UnityEditor-${{ runner.os }}
+
+      # setup Unity using the version file
+      - name: Setup Unity
+        uses: buildalon/unity-setup@v2.1.1
+        with:
+          version-file: 'OneSignalExample/ProjectSettings/ProjectVersion.txt'
+
+      # need to activate the Unity license to run Unity in batchmode; required for exportPackage
+      - uses: buildalon/activate-unity-license@v2
+        with:
+          license: 'Personal'
+          username: '${{ secrets.UNITY_USERNAME }}'
+          password: '${{ secrets.UNITY_PASSWORD }}'
+
       - name: Cleaning up Unity locks
         run: |
           pkill -f Unity || true
@@ -227,6 +227,8 @@ jobs:
           git push
 
       - name: Draft Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           package_path="OneSignalExample/OneSignal-v${{ inputs.unity_version }}.unitypackage"
           gh release create "${{ inputs.unity_version }}" "${package_path}"\
