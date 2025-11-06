@@ -202,13 +202,13 @@ jobs:
         uses: buildalon/unity-action@v3
         with:
           project-path: OneSignalExample
-          args: -quit -batchmode -nographics -buildTarget Android -silent-crashes -executeMethod OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion
+          args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion
 
       - name: Run ExportUnityPackage
         uses: buildalon/unity-action@v3
         with:
           project-path: OneSignalExample
-          args: -quit -batchmode -nographics -buildTarget Android -silent-crashes -executeMethod OneSignalSDK.OneSignalPackagePublisher.ExportUnityPackage
+          args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.ExportUnityPackage
 
       - name: Commit Release
         run: |
