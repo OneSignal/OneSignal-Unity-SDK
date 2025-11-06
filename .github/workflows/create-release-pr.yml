@@ -180,7 +180,7 @@ jobs:
       - name: Cache Unity
         uses: actions/cache@v4
         with:
-          path: /home/runner/Unity/Hub
+          path: /home/runner/Unity/Hub/Editor
           key: UnityEditor-${{ runner.os }}
           restore-keys: |
             UnityEditor-${{ runner.os }}
@@ -204,9 +204,6 @@ jobs:
           rm -f OneSignalExample/Temp/UnityLockfile
           rm -rf OneSignalExample/Library OneSignalExample/Temp OneSignalExample/obj OneSignalExample/UserSettings || true
 
-      - name: Disable Parallel Compilation
-        run: |
-          echo "-parallel-" > OneSignalExample/Assets/csc.rsp
           
       - name: Run UpdateProjectVersion
         uses: buildalon/unity-action@v3
@@ -220,6 +217,30 @@ jobs:
           project-path: OneSignalExample
           args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.ExportUnityPackage
 
+      - name: Find Unity Package
+        id: find_package
+        run: |
+          # Unity exports packages to the project root directory
+          package_name="OneSignal-v${{ inputs.unity_version }}.unitypackage"
+          
+          # Check multiple possible locations
+          if [[ -f "OneSignalExample/${package_name}" ]]; then
+            package_path="OneSignalExample/${package_name}"
+          elif [[ -f "${package_name}" ]]; then
+            package_path="${package_name}"
+          elif [[ -f "OneSignalExample/Assets/${package_name}" ]]; then
+            package_path="OneSignalExample/Assets/${package_name}"
+          else
+            echo "Searching for package file..."
+            find . -name "${package_name}" -type f 2>/dev/null | head -1 || true
+            echo "❌ Package file not found: ${package_name}"
+            exit 1
+          fi
+          
+          echo "✅ Found package at: ${package_path}"
+          echo "package_path=${package_path}" >> $GITHUB_OUTPUT
+          ls -lh "${package_path}"
+
       - name: Commit Release
         run: |
           git add .
@@ -230,8 +251,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          package_path="OneSignalExample/OneSignal-v${{ inputs.unity_version }}.unitypackage"
-          gh release create "${{ inputs.unity_version }}" "${package_path}"\
+          gh release create "${{ inputs.unity_version }}" "${{ steps.find_package.outputs.package_path }}"\
             --draft\
             --title "${{ inputs.unity_version }} Release"\
             --notes "TODO"
