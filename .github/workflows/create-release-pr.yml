@@ -46,7 +46,7 @@ jobs:
   # Unity specific steps
   update-version:
     needs: prep
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     outputs:
       unity_from: ${{ steps.current_versions.outputs.unity_from }}
       ios_from: ${{ steps.current_versions.outputs.ios_from }}
@@ -58,18 +58,24 @@ jobs:
         with:
           ref: ${{ needs.prep.outputs.release_branch }}
           
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
       - name: Prepare Environment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          brew install gh jq || true
+          sudo apt-get update
+          sudo apt-get install -y gh jq || true
           gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
 
       # to save time, use cached Unity installation if available
       - name: Cache Unity
         uses: actions/cache@v4
         with:
-          path: /Applications/Unity/Hub
+          path: /home/runner/Unity/Hub
           key: UnityEditor-${{ runner.os }}
           restore-keys: |
             UnityEditor-${{ runner.os }}
@@ -121,9 +127,9 @@ jobs:
             exit 1
           fi
 
-          sed -i '' -E "s/spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/spec=\"com.onesignal:OneSignal:$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
-          sed -i '' -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
-          sed -i '' -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml
+          sed -i -E "s/spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/spec=\"com.onesignal:OneSignal:$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
+          sed -i -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
+          sed -i -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml
 
           echo "✓ Updated Android SDK to ${VERSION}"
           git add .
@@ -144,7 +150,7 @@ jobs:
             exit 1
           fi
 
-          sed -i '' -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
+          sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
 
           echo "✓ Updated iOS SDK to ${VERSION}"
           git add .
@@ -163,13 +169,13 @@ jobs:
 
           # package.json files
           for file in com.onesignal.unity.core/package.json com.onesignal.unity.android/package.json com.onesignal.unity.ios/package.json; do
-            sed -i '' "s/\"version\": \".*\"/\"version\": \"${{ inputs.unity_version }}\"/" "$file"
-            sed -i '' "s/\"com.onesignal.unity.core\": \".*\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/" "$file"
+            sed -i "s/\"version\": \".*\"/\"version\": \"${{ inputs.unity_version }}\"/" "$file"
+            sed -i "s/\"com.onesignal.unity.core\": \".*\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/" "$file"
           done
 
-          sed -i '' "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" \
+          sed -i "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" \
             com.onesignal.unity.core/Runtime/OneSignal.cs
-          sed -i '' "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" \
+          sed -i "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" \
             com.onesignal.unity.core/Runtime/OneSignalPlatform.cs
 
           # asmdef files
@@ -177,19 +183,19 @@ jobs:
             OneSignalExample/Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef \
             OneSignalExample/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef \
             OneSignalExample/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef; do
-            sed -i '' "s/\"expression\": \".*\"/\"expression\": \"${{ inputs.unity_version }}\"/" "$asm"
+            sed -i "s/\"expression\": \".*\"/\"expression\": \"${{ inputs.unity_version }}\"/" "$asm"
           done
 
           # packages-lock.json
-          sed -i '' "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" \
+          sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" \
             OneSignalExample/Packages/packages-lock.json
 
           # ProjectSettings.asset
-          sed -i '' "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" \
+          sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" \
             OneSignalExample/ProjectSettings/ProjectSettings.asset
 
           # iOS plugin version (UIApplication+OneSignalUnity.mm)
-          sed -i '' "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" \
+          sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" \
             com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
       - name: Cleaning up Unity locks
