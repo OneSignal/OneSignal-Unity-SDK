@@ -197,6 +197,10 @@ jobs:
           pkill -f Unity || true
           rm -f OneSignalExample/Temp/UnityLockfile
           rm -rf OneSignalExample/Library OneSignalExample/Temp OneSignalExample/obj OneSignalExample/UserSettings || true
+
+      - name: Disable Parallel Compilation
+        run: |
+          echo "-parallel-" > OneSignalExample/Assets/csc.rsp
           
       - name: Run UpdateProjectVersion
         uses: buildalon/unity-action@v3
