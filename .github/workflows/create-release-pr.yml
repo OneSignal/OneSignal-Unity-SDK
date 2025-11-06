@@ -79,13 +79,6 @@ jobs:
         uses: buildalon/unity-setup@v2.1.1
         with:
           version-file: 'OneSignalExample/ProjectSettings/ProjectVersion.txt'
-          build-targets: 'Android'
-
-      - name: Add Build Pipeline Package
-        working-directory: OneSignalExample
-        run: |
-          npm install -g openupm-cli
-          openupm add com.virtualmaker.buildalon
 
       # need to activate the Unity license to run Unity in batchmode; required for exportPackage
       - uses: buildalon/activate-unity-license@v2
