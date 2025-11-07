@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [5.1.16]
+### Changed
+- Update Android SDK from 5.1.37 to 5.1.38
+  - Feat: Detect for timezone changes and update the user ([#2378](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2378))
+  - Fix: ANR on POST to Outcomes endpoint ([#2371](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2371))
+  - add: security hardening around webview javaScriptEnabled ([#2377](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2377))
+  - - -
+- Update iOS SDK from 5.2.14 to 5.2.15
+  - Add confirmed deliveries for live activities notifications for OneSignal-aware activities (https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1592)
+  - New Log Listener methods to allow an app developer to capture logs as strings at runtime. The log listener is independent of logLevel, all message are always sent to listeners. Please see linked PR for example usage (https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1580)
+  - Prevent extra server calls to send duplicate live activity requests (https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1589)
+  - Fix an `NSInvalidArgumentException` that happens on rare occasions when localized description is not copied properly (https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1594)
+<!-- Reviewable:start -->
+This change is [<img src="https://reviewable.io/review_button.svg" height="34" align="absmiddle" alt="Reviewable"/>](https://reviewable.io/reviews/OneSignal/OneSignal-Unity-SDK/813)
+<!-- Reviewable:end -->
+
 ## [5.1.15]
 ### Changed
 - Updated included Android SDK from 5.1.31 to [5.1.37](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/5.1.37)
