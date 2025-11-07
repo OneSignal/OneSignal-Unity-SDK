@@ -1,11 +1,6 @@
 name: 'Setup Environment'
 description: 'Common setup steps for Unity release workflows (Git config and environment prep)'
 
-inputs:
-  gh_token:
-    description: 'GitHub token for gh CLI authentication'
-    required: true
-
 runs:
   using: 'composite'
   steps:
@@ -17,7 +12,7 @@ runs:
 
     - name: Prepare Environment
       env:
-        GH_TOKEN: ${{ inputs.gh_token }}
+        GH_TOKEN: ${{ github.token }}
       shell: bash
       run: |
         sudo apt-get update

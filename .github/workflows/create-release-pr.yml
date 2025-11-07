@@ -60,8 +60,6 @@ jobs:
 
       - name: Setup Environment
         uses: ./.github/actions/setup-environment
-        with:
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get current native SDK versions
         id: current_versions
@@ -140,7 +138,7 @@ jobs:
       ios_to: ${{ inputs.ios_version }}
 
   draft-release:
-    needs: [prep, update-version]
+    needs: [prep, update-version, create-pr]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -150,8 +148,6 @@ jobs:
 
       - name: Setup Environment
         uses: ./.github/actions/setup-environment
-        with:
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Unity SDK version
         run: |
@@ -240,10 +236,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          release_notes=$(gh pr view "${{ github.event.pull_request.number }}" --json body -q '.body')
+          # Find the PR with the release branch as head
+          RELEASE_BRANCH="${{ needs.prep.outputs.release_branch }}"
+          echo "Looking for PR with head branch: $RELEASE_BRANCH"
+          
+          # Get PR number from the branch
+          PR_NUMBER=$(gh pr list --head "$RELEASE_BRANCH" --json number -q '.[0].number' || echo "")
+          
+          if [ -z "$PR_NUMBER" ]; then
+            echo "⚠️ No PR found for branch $RELEASE_BRANCH"
+            echo "RELEASE_NOTES=" >> $GITHUB_ENV
+            exit 0
+          fi
+          
+          echo "Found PR #$PR_NUMBER"
+          release_notes=$(gh pr view "$PR_NUMBER" --json body -q '.body')
+          
+          echo "Raw RELEASE_NOTES contents:"
+          echo "$release_notes"
 
           cleaned_notes=$(echo "$release_notes" \
-            | awk '/^Update/{found=1} found' \
+            | awk '/^- Update/{found=1} found' \
             | sed '/^- - -$/d' \
             | sed '/^[[:space:]]*$/d')
 
