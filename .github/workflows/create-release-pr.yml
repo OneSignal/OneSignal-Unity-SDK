@@ -145,6 +145,15 @@ jobs:
           sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" OneSignalExample/ProjectSettings/ProjectSettings.asset
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
+      - name: Update CHANGELOG.md
+        run: |
+          awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
+            '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
+            OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
+
+      - name: Commit Release
+        run: git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
+        
       - name: Cache Unity
         uses: actions/cache@v4
         with:
@@ -190,15 +199,6 @@ jobs:
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "$cleaned_notes" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-      - name: Update CHANGELOG.md
-        run: |
-          awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
-            '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
-            OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
-
-      - name: Commit Release
-        run: git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
 
       - name: Draft Release
         env:
