@@ -57,19 +57,11 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ needs.prep.outputs.release_branch }}
-          
-      - name: Configure Git
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          
-      - name: Prepare Environment
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gh jq || true
-          gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get current native SDK versions
         id: current_versions
@@ -156,6 +148,11 @@ jobs:
         with:
           ref: ${{ needs.prep.outputs.release_branch }}
 
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Update Unity SDK version
         run: |
           echo "Updating Unity SDK version to ${{ inputs.unity_version }}"
@@ -201,7 +198,7 @@ jobs:
       - name: Cache Unity
         uses: actions/cache@v4
         with:
-          path: /home/runner/Unity/Hub/Editor
+          path: /home/runner/Unity/Hub
           key: UnityEditor-${{ runner.os }}
           restore-keys: |
             UnityEditor-${{ runner.os }}
