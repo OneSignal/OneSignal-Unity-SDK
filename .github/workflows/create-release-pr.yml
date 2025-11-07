@@ -135,6 +135,27 @@ jobs:
           git commit -m "Bump iOS SDK $VERSION"
           git push
 
+  create-pr:
+    needs: [prep, update-version]
+    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    with:
+      release_branch: ${{ needs.prep.outputs.release_branch }}
+      version_from: ${{ needs.update-version.outputs.unity_from }}
+      version_to: ${{ inputs.unity_version }}
+      android_from: ${{ needs.update-version.outputs.android_from }}
+      android_to: ${{ inputs.android_version }}
+      ios_from: ${{ needs.update-version.outputs.ios_from }}
+      ios_to: ${{ inputs.ios_version }}
+
+  draft-release:
+    needs: [prep, update-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prep.outputs.release_branch }}
+
       - name: Update Unity SDK version
         run: |
           echo "Updating Unity SDK version to ${{ inputs.unity_version }}"
@@ -222,6 +243,17 @@ jobs:
           git commit -m "Release ${{ inputs.unity_version }}"
           git push
 
+      - name: Debug — list Unity package files
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo ""
+          echo "List of all files under OneSignalExample:"
+          ls -Rlh OneSignalExample || true
+          echo ""
+          echo "Searching for .unitypackage files:"
+          find OneSignalExample -type f -name "*.unitypackage" -print
+
       - name: Draft Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -231,15 +263,3 @@ jobs:
             --draft\
             --title "${{ inputs.unity_version }} Release"\
             --notes "TODO"
-
-  create-pr:
-    needs: [prep, update-version]
-    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
-    with:
-      release_branch: ${{ needs.prep.outputs.release_branch }}
-      version_from: ${{ needs.update-version.outputs.unity_from }}
-      version_to: ${{ inputs.unity_version }}
-      android_from: ${{ needs.update-version.outputs.android_from }}
-      android_to: ${{ inputs.android_version }}
-      ios_from: ${{ needs.update-version.outputs.ios_from }}
-      ios_to: ${{ inputs.ios_version }}
