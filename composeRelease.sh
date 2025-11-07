@@ -67,33 +67,38 @@ fi
 
 # try to find unity executable
 unity_project_version_path="OneSignalExample/ProjectSettings/ProjectVersion.txt"
-unity_project_version=$(cat "${unity_project_version_path}" | sed -n 's/^m_EditorVersion: //p')
+unity_project_version=$(cat ${unity_project_version_path} | sed -n 's/^m_EditorVersion: //p')
+unity_versions_path="/Applications/Unity/Hub/Editor"
+unity_path="${unity_versions_path}/${unity_project_version}"
 
-# Unity project path from CI environment if available
-unity_project_path="${UNITY_PROJECT_PATH:-OneSignalExample}"
+if [[ ! -d "${unity_versions_path}" ]]
+then
+    echo "Could not find any versions of Unity installed at path: ${unity_versions_path}"
+    exit 1
+elif [[ ! -d "${unity_path}" ]]
+then
+    echo "Could not find Unity ${unity_project_version}"
+    pushd "${unity_versions_path}" > /dev/null 2>&1
+    
+    options=(* "Exit")
+    PS3="Please select an installed Unity version: "
+    select option in "${options[@]}"
+    do
+        if [[ "$option" = "Exit" ]]
+        then
+            exit 1
+        elif [[ "${options[@]}" =~ "$option" ]]
+        then
+            echo "Using ${option}"
+            unity_path="${unity_versions_path}/${option}"
+            break
+        fi
+    done
 
-# Common installation locations (CI, macOS, local)
-unity_candidates=(
-  "/home/runner/Unity/Hub/Editor/${unity_project_version}/Editor/Unity"                   # Linux (buildalon/unity-setup)
-  "/Applications/Unity/Hub/Editor/${unity_project_version}/Unity.app/Contents/MacOS/Unity" # macOS
-)
-
-unity_executable=""
-for candidate in "${unity_candidates[@]}"; do
-  if [[ -x "$candidate" ]]; then
-    unity_executable="$candidate"
-    break
-  fi
-done
-
-if [[ -z "$unity_executable" ]]; then
-  echo "❌ Could not locate Unity executable for version ${unity_project_version}"
-  echo "Checked the following paths:"
-  printf ' - %s\n' "${unity_candidates[@]}"
-  exit 1
-else
-  echo "✅ Found Unity executable: ${unity_executable}"
+    popd > /dev/null 2>&1
 fi
+
+unity_executable="${unity_path}/Unity.app/Contents/MacOS/Unity"
 
 # VERSION file will act as the source of truth
 version_filepath="OneSignalExample/Assets/OneSignal/VERSION"
@@ -277,44 +282,25 @@ executeUnityMethod() {
     local project_path=$1
     local build_target=$2
     local method_name=$3
-    local log_dir="${PWD}/logs"
-    mkdir -p "${log_dir}"
-
-    local log_path="${log_dir}/${method_name}-${build_target}-$(date +%Y%m%d%H%M%S).txt"
-
-    echo "▶️ Running Unity method: ${method_name} (${build_target})"
-    echo "   Log file: ${log_path}"
-
-    # Clean up stale locks before running
-    pkill -f Unity || true
-    rm -f "${project_path}/Temp/UnityLockfile"
-
-    # Run Unity in batchmode
-    "${unity_executable}" \
-        -projectPath "${project_path}" \
-        -quit \
-        -batchmode \
-        -nographics \
-        -buildTarget "${build_target}" \
-        -executeMethod "${method_name}" \
-        -logFile "${log_path}"
-
+    local log_path="${PWD}/logs/${method_name}-${build_target}-$(date +%Y%m%d%H%M%S).txt"
+    
+    ${unity_executable} -projectpath "${project_path}"\
+                        -quit\
+                        -batchmode\
+                        -nographics\
+                        -buildTarget "${build_target}"\
+                        -executeMethod "${method_name}"\
+                        -logFile "${log_path}"
+   
     local method_result=$?
-
+    
     if [[ ${method_result} -ne 0 ]]; then
-        echo "❌ Unity method ${method_name} failed with exit code ${method_result}"
-        echo "----- Unity log tail (last 40 lines) -----"
-        tail -n 40 "${log_path}" || echo "(no log file found)"
-        echo "------------------------------------------"
+        echo "Unity method failed with ${method_result}"
+        exit ${method_result}
     else
-        echo "✅ Unity method ${method_name} completed successfully"
-        echo "   Full log: ${log_path}"
+        echo "Unity method completed"
     fi
 }
-
-echo "Cleaning up Unity locks..."
-pkill -f Unity || true
-rm -f OneSignalExample/Temp/UnityLockfile
 
 # update project version
 projectsettings_path="OneSignalExample/ProjectSettings/ProjectSettings.asset"
