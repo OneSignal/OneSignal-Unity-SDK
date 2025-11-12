@@ -92,7 +92,6 @@ jobs:
           sed -i -E "s/spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/spec=\"com.onesignal:OneSignal:$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
           sed -i -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
           sed -i -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml
-          git add . && git commit -m "Bump Android SDK $VERSION" && git push
 
       - name: Update iOS SDK version
         if: inputs.ios_version != ''
@@ -101,32 +100,6 @@ jobs:
           # validate the version exists on GitHub
           curl -sfH "Authorization: token ${{ github.token }}" "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}" >/dev/null || { echo "✗ iOS SDK version ${VERSION} not found"; exit 1; }
           sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
-          git add . && git commit -m "Bump iOS SDK $VERSION" && git push
-
-  create-pr:
-    needs: [prep, update-version]
-    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
-    with:
-      release_branch: ${{ needs.prep.outputs.release_branch }}
-      target_branch: ${{ inputs.target_branch }}
-      android_from: ${{ needs.update-version.outputs.android_from }}
-      android_to: ${{ inputs.android_version }}
-      ios_from: ${{ needs.update-version.outputs.ios_from }}
-      ios_to: ${{ inputs.ios_version }}
-
-  draft-release:
-    needs: [prep, update-version, create-pr]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ needs.prep.outputs.release_branch }}
-
-      - name: Configure Git
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
 
       - name: Update Unity SDK version
         run: |
@@ -144,68 +117,15 @@ jobs:
           sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" OneSignalExample/Packages/packages-lock.json
           sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" OneSignalExample/ProjectSettings/ProjectSettings.asset
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
+          git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
 
-      - name: Get PR release notes
-        id: notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          sudo apt-get update && sudo apt-get install -y gh || true
-          PR_NUMBER=$(gh pr list --head "${{ needs.prep.outputs.release_branch }}" --json number -q '.[0].number' || echo "")
-          if [ -z "$PR_NUMBER" ]; then echo "RELEASE_NOTES=" >> $GITHUB_ENV; exit 0; fi
-          cleaned_notes=$(gh pr view "$PR_NUMBER" --json body -q '.body' | awk 'BEGIN{found=0} /^- Update/{found=1} /^<!-- Reviewable:start -->/{found=0;next} found' | sed '/^- - -$/d' | sed '/^[[:space:]]*$/d')
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo "$cleaned_notes" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-      - name: Update CHANGELOG.md
-        run: |
-          awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
-            '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
-            OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
-
-      - name: Commit Release
-        run: git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
-        
-      - name: Cache Unity
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/Unity/Hub
-          key: UnityEditor-${{ runner.os }}
-          restore-keys: UnityEditor-${{ runner.os }}
-
-      - name: Setup Unity
-        uses: buildalon/unity-setup@v2.1.1
-        with:
-          version-file: 'OneSignalExample/ProjectSettings/ProjectVersion.txt'
-
-      - uses: buildalon/activate-unity-license@v2
-        with:
-          license: 'Personal'
-          username: '${{ secrets.UNITY_USERNAME }}'
-          password: '${{ secrets.UNITY_PASSWORD }}'
-
-      - name: Clean Unity locks
-        run: pkill -f Unity || true; rm -rf OneSignalExample/{Temp,Library,obj,UserSettings} OneSignalExample/Temp/UnityLockfile 2>/dev/null || true
-          
-      - name: Run UpdateProjectVersion
-        uses: buildalon/unity-action@v3
-        with:
-          project-path: OneSignalExample
-          args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.UpdateProjectVersion
-
-      - name: Run ExportUnityPackage
-        uses: buildalon/unity-action@v3
-        with:
-          project-path: OneSignalExample
-          args: -quit -batchmode -nographics -buildTarget Android -executeMethod OneSignalSDK.OneSignalPackagePublisher.ExportUnityPackage
-
-      - name: Draft Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          package_path="OneSignalExample/OneSignal-v${{ inputs.unity_version }}.unitypackage"
-          gh release create "${{ inputs.unity_version }}" "${package_path}"\
-            --draft\
-            --title "${{ inputs.unity_version }} Release"\
-            --notes "TODO"
+  create-pr:
+    needs: [prep, update-version]
+    uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    with:
+      release_branch: ${{ needs.prep.outputs.release_branch }}
+      target_branch: ${{ inputs.target_branch }}
+      android_from: ${{ needs.update-version.outputs.android_from }}
+      android_to: ${{ inputs.android_version }}
+      ios_from: ${{ needs.update-version.outputs.ios_from }}
+      ios_to: ${{ inputs.ios_version }}
