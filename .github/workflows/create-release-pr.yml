@@ -68,11 +68,6 @@ jobs:
         with:
           ref: ${{ needs.prep.outputs.release_branch }}
 
-      - name: Configure Git
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-
       - name: Get current native SDK versions
         id: current_versions
         run: |
@@ -117,6 +112,9 @@ jobs:
           sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" OneSignalExample/Packages/packages-lock.json
           sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" OneSignalExample/ProjectSettings/ProjectSettings.asset
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
 
   create-pr:
@@ -129,3 +127,32 @@ jobs:
       android_to: ${{ inputs.android_version }}
       ios_from: ${{ needs.update-version.outputs.ios_from }}
       ios_to: ${{ inputs.ios_version }}
+
+  update-changelog:
+    needs: [prep, create-pr]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prep.outputs.release_branch }}
+
+      - name: Get PR release notes
+        id: notes
+        run: |
+          sudo apt-get update && sudo apt-get install -y gh || true
+          PR_NUMBER=$(gh pr list --head "${{ needs.prep.outputs.release_branch }}" --json number -q '.[0].number' || echo "")
+          if [ -z "$PR_NUMBER" ]; then echo "RELEASE_NOTES=" >> $GITHUB_ENV; exit 0; fi
+          cleaned_notes=$(gh pr view "$PR_NUMBER" --json body -q '.body' | awk 'BEGIN{found=0} /^- Update/{found=1} /^<!-- Reviewable:start -->/{found=0;next} found' | sed '/^- - -$/d' | sed '/^[[:space:]]*$/d')
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$cleaned_notes" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Update CHANGELOG.md
+        run: |
+          awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
+            '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
+            OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -m "Update CHANGELOG.md for ${{ inputs.unity_version }}" && git push
