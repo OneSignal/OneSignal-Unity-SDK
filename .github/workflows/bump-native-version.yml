@@ -1,0 +1,169 @@
+name: Bump Native OneSignal SDKs
+
+on:
+  workflow_dispatch:
+    inputs:
+      android_version:
+        description: "Target OneSignal-Android-SDK version (e.g., 5.1.38)"
+        required: true
+        type: string
+      ios_version:
+        description: "Target OneSignal-iOS-SDK version (e.g., 5.2.15)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-native-sdks:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitHub CLI
+        run: sudo apt-get update -y && sudo apt-get install -y gh jq
+
+      - name: Configure GitHub Auth
+        run: gh auth status || gh auth login --with-token <<< "${GH_TOKEN}"
+
+      - name: Get current native SDK versions
+        id: current
+        run: |
+          ANDROID_FILE="com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml"
+          IOS_FILE="com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
+
+          ANDROID_CURRENT=$(grep -oE 'com\.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+' "$ANDROID_FILE" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          IOS_CURRENT=$(grep -oE 'OneSignalXCFramework\" version=\"[0-9]+\.[0-9]+\.[0-9]+' "$IOS_FILE" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+
+          echo "android_current=$ANDROID_CURRENT" >> $GITHUB_OUTPUT
+          echo "ios_current=$IOS_CURRENT" >> $GITHUB_OUTPUT
+          echo "Detected Android SDK: $ANDROID_CURRENT, iOS SDK: $IOS_CURRENT"
+
+      - name: Update native SDK versions in Unity dependencies
+        run: |
+          ANDROID_NEW=${{ inputs.android_version }}
+          IOS_NEW=${{ inputs.ios_version }}
+
+          echo "🔧 Updating Android SDK → $ANDROID_NEW"
+          sed -i "s/com\.onesignal:OneSignal:[0-9.]\+/com.onesignal:OneSignal:${ANDROID_NEW}/g" \
+            com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
+          sed -i "s/com\.onesignal:OneSignal:[0-9.]\+/com.onesignal:OneSignal:${ANDROID_NEW}/g" \
+            OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle || true
+          sed -i "s/com\.onesignal:OneSignal:[0-9.]\+/com.onesignal:OneSignal:${ANDROID_NEW}/g" \
+            OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml || true
+
+          echo "🔧 Updating iOS SDK → $IOS_NEW"
+          sed -i "s/OneSignalXCFramework\" version=\"[0-9.]\+/OneSignalXCFramework\" version=\"${IOS_NEW}/g" \
+            com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
+
+      - name: Gather and combine release notes
+        id: combined
+        uses: actions/github-script@v8
+        env:
+          ANDROID_OLD: ${{ steps.current.outputs.android_current }}
+          IOS_OLD: ${{ steps.current.outputs.ios_current }}
+          ANDROID_NEW: ${{ inputs.android_version }}
+          IOS_NEW: ${{ inputs.ios_version }}
+        with:
+          script: |
+            const { ANDROID_OLD, ANDROID_NEW, IOS_OLD, IOS_NEW } = process.env;
+
+            const getNotesBetween = async (repo, from, to) => {
+              console.log(`🔎 Gathering release notes for ${repo} from ${from} → ${to}`);
+              const [owner, name] = repo.split('/');
+              const releases = await github.paginate(github.rest.repos.listReleases, {
+                owner,
+                repo: name,
+                per_page: 100
+              });
+
+              // Normalize "Release 5.2.15" → "5.2.15"
+              const normalize = tag => tag.replace(/^Release\s*/i, '').trim();
+
+              const tags = releases.map(r => normalize(r.tag_name));
+              const startIndex = tags.indexOf(from);
+              const endIndex = tags.indexOf(to);
+
+              if (startIndex === -1 || endIndex === -1) {
+                console.warn(`⚠️ Could not find tags ${from} or ${to} in ${repo}`);
+                console.warn('Available tags:', tags.slice(0, 10));
+                return '';
+              }
+
+              const selected = releases.filter(r => {
+                const tag = normalize(r.tag_name);
+                return tags.indexOf(tag) > startIndex && tags.indexOf(tag) <= endIndex;
+              }).reverse();
+
+              return selected
+                .map(r => {
+                  const tag = normalize(r.tag_name);
+                  const body = r.body?.trim() || '_No release notes provided._';
+                  return `- ### ${tag}\n${body}`;
+                })
+                .join('\n\n');
+            };
+
+            const androidNotes = await getNotesBetween(
+              'OneSignal/OneSignal-Android-SDK',
+              ANDROID_OLD,
+              ANDROID_NEW
+            );
+            const iosNotes = await getNotesBetween(
+              'OneSignal/OneSignal-iOS-SDK',
+              IOS_OLD,
+              IOS_NEW
+            );
+
+            const combined = `
+            - Updated included Android SDK from ${ANDROID_OLD} to [${ANDROID_NEW}](https://github.com/OneSignal/OneSignal-Android-SDK/releases/tag/${ANDROID_NEW})
+            ${androidNotes}
+
+            - Updated included iOS SDK from ${IOS_OLD} to [${IOS_NEW}](https://github.com/OneSignal/OneSignal-iOS-SDK/releases/tag/${IOS_NEW})
+            ${iosNotes}
+
+            For full changes, see the [Android release notes](https://github.com/OneSignal/OneSignal-Android-SDK/releases) and [iOS release notes](https://github.com/OneSignal/OneSignal-iOS-SDK/releases)
+            `.trim();
+
+            core.setOutput('combined', combined);
+            console.log('✅ Combined release notes generated.');  
+
+      - name: Update CHANGELOG.md
+        uses: actions/github-script@v8
+        env:
+          NOTES: ${{ steps.combined.outputs.combined }}
+        with:
+          script: |
+            const fs = require('fs');
+            const file = 'OneSignalExample/Assets/OneSignal/CHANGELOG.md';
+            let changelog = fs.readFileSync(file, 'utf8');
+            const insert = process.env.NOTES;
+            changelog = changelog.replace(/(## \[Unreleased\])/, `$1\n${insert}\n`);
+            fs.writeFileSync(file, changelog);
+            console.log('✅ CHANGELOG.md updated successfully.');
+
+      - name: Commit and create PR
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="bump-native-${{ inputs.android_version }}-${{ inputs.ios_version }}"
+          git checkout -B "$BRANCH"  # create or reset local branch to latest
+          git add .
+          git commit -m "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" || echo "No changes to commit"
+          git push origin "$BRANCH" --force
+
+          gh pr create \
+            --title "Bump native OneSignal SDKs; OneSignal-Android-SDK ${{ inputs.android_version }}, OneSignal-iOS-SDK ${{ inputs.ios_version }}" \
+            --body "${{ steps.combined.outputs.combined }}" \
+            --base main \
+            --label "native-sdk-bump" || echo "PR already exists, skipping creation"
+
