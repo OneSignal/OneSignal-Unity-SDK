@@ -45,12 +45,24 @@ namespace OneSignalSDK
         [MenuItem("OneSignal/ExportUnityPackage")]
         public static void ExportUnityPackage()
         {
+            UnityEngine.Debug.Log($"[OneSignalPackagePublisher] start exporting package");
             AssetDatabase.Refresh();
             var packageVersion = File.ReadAllText(VersionFilePath);
             var packageName = $"OneSignal-v{packageVersion}.unitypackage";
 
+            UnityEngine.Debug.Log($"[OneSignalPackagePublisher] package name: {packageName}");
+
+            string[] filePaths = _filePaths();
+            UnityEngine.Debug.Log(
+                $"[OneSignalPackagePublisher] Found {filePaths.Length} files/directories to include:"
+            );
+            foreach (var path in filePaths)
+            {
+                UnityEngine.Debug.Log($"[OneSignalPackagePublisher]   - {path}");
+            }
+
             AssetDatabase.ExportPackage(
-                _filePaths(),
+                filePaths,
                 packageName,
                 ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
             );
@@ -68,6 +80,9 @@ namespace OneSignalSDK
         private static string[] _filePaths()
         {
             var files = Directory.GetFileSystemEntries(PackagePath);
+            UnityEngine.Debug.Log(
+                $"[OneSignalPackagePublisher] Getting file paths from: {PackagePath}"
+            );
             var pathsToInclude = files.Where(file =>
             {
                 if (file.EndsWith(".meta"))
