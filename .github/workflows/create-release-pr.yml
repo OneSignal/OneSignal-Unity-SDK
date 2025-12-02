@@ -1,23 +1,27 @@
-name: Create Unity Release PR
+name: Create Release PR
 
 on:
   # For making a release pr from android / ios sdk actions
   workflow_call:
+    secrets:
+      GH_PUSH_TOKEN:
+        required: false
+        description: "GitHub token for pushing changes (from a different caller repo)"
     inputs:
       unity_version:
-        description: 'New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        description: "New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)"
         required: true
         type: string
       android_version:
-        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        description: "New Android SDK Version (e.g., 2.3.0). Leave blank to skip."
         required: false
         type: string
       ios_version:
-        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        description: "New iOS SDK Version (e.g., 1.5.0). Leave blank to skip."
         required: false
         type: string
       target_branch:
-        description: 'Target branch to create the release PR on. Defaults to main.'
+        description: "Target branch to create the release PR on. Defaults to main."
         required: false
         type: string
         default: main
@@ -26,19 +30,19 @@ on:
   workflow_dispatch:
     inputs:
       unity_version:
-        description: 'New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)'
+        description: "New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)"
         required: true
         type: string
       android_version:
-        description: 'New Android SDK Version (e.g., 2.3.0). Leave blank to skip.'
+        description: "New Android SDK Version (e.g., 2.3.0). Leave blank to skip."
         required: false
         type: string
       ios_version:
-        description: 'New iOS SDK Version (e.g., 1.5.0). Leave blank to skip.'
+        description: "New iOS SDK Version (e.g., 1.5.0). Leave blank to skip."
         required: false
         type: string
       target_branch:
-        description: 'Target branch to create the release PR on. Defaults to main.'
+        description: "Target branch to create the release PR on. Defaults to main."
         required: false
         type: string
         default: main
@@ -50,7 +54,12 @@ permissions:
 jobs:
   prep:
     uses: OneSignal/sdk-actions/.github/workflows/prep-release.yml@main
+    secrets:
+      # Need this cross-repo token (sdk-actions & this repo) to perform changes
+      GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
+      # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
+      target_repo: OneSignal/OneSignal-Unity-SDK
       version: ${{ inputs.unity_version }}
 
   # Unity specific steps
@@ -66,7 +75,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          repository: OneSignal/OneSignal-Unity-SDK
           ref: ${{ needs.prep.outputs.release_branch }}
+          token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
       - name: Get current native SDK versions
         id: current_versions
@@ -112,7 +123,7 @@ jobs:
           sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" OneSignalExample/Packages/packages-lock.json
           sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" OneSignalExample/ProjectSettings/ProjectSettings.asset
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
-          
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
@@ -121,6 +132,8 @@ jobs:
     needs: [prep, update-version]
     uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
     with:
+      # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
+      target_repo: OneSignal/OneSignal-Unity-SDK
       release_branch: ${{ needs.prep.outputs.release_branch }}
       target_branch: ${{ inputs.target_branch }}
       android_from: ${{ needs.update-version.outputs.android_from }}
