@@ -131,6 +131,9 @@ jobs:
   create-pr:
     needs: [prep, update-version]
     uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
+    secrets:
+      # Need this cross-repo token (sdk-actions & this repo) to perform changes
+      GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
       # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-actions)
       target_repo: OneSignal/OneSignal-Unity-SDK
@@ -148,7 +151,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          repository: OneSignal/OneSignal-Unity-SDK
           ref: ${{ needs.prep.outputs.release_branch }}
+          token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
       - name: Get PR release notes
         id: notes
