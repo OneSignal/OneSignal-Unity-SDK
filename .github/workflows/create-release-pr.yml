@@ -63,7 +63,7 @@ jobs:
       version: ${{ inputs.unity_version }}
 
   # Unity specific steps
-  update-version:
+  update_version:
     needs: prep
     runs-on: ubuntu-latest
     outputs:
@@ -128,8 +128,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
 
-  create-pr:
-    needs: [prep, update-version]
+  create_pr:
+    needs: [prep, update_version]
     uses: OneSignal/sdk-actions/.github/workflows/create-release.yml@main
     secrets:
       # Need this cross-repo token (sdk-actions & this repo) to perform changes
@@ -139,13 +139,13 @@ jobs:
       target_repo: OneSignal/OneSignal-Unity-SDK
       release_branch: ${{ needs.prep.outputs.release_branch }}
       target_branch: ${{ inputs.target_branch }}
-      android_from: ${{ needs.update-version.outputs.android_from }}
+      android_from: ${{ needs.update_version.outputs.android_from }}
       android_to: ${{ inputs.android_version }}
-      ios_from: ${{ needs.update-version.outputs.ios_from }}
+      ios_from: ${{ needs.update_version.outputs.ios_from }}
       ios_to: ${{ inputs.ios_version }}
 
-  update-changelog:
-    needs: [prep, create-pr]
+  update_changelog:
+    needs: [prep, create_pr]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
