@@ -79,6 +79,9 @@ jobs:
           ref: ${{ needs.prep.outputs.release_branch }}
           token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
+      - name: Setup Git User
+        uses: OneSignal/sdk-actions/.github/actions/setup-git-user@main
+
       - name: Get current native SDK versions
         id: current_versions
         run: |
@@ -134,9 +137,6 @@ jobs:
           sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" OneSignalExample/ProjectSettings/ProjectSettings.asset
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
           # Only commit if there are changes
           git add -A 
           git diff --staged --quiet && exit 0
@@ -169,6 +169,9 @@ jobs:
           ref: ${{ needs.prep.outputs.release_branch }}
           token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
 
+      - name: Setup Git User
+        uses: OneSignal/sdk-actions/.github/actions/setup-git-user@main
+
       - name: Get PR release notes
         id: notes
         run: |
@@ -185,8 +188,6 @@ jobs:
           awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
             '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
             OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Only commit if there are changes
           git add -A
