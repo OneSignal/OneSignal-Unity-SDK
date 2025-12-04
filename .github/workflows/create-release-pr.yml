@@ -99,6 +99,11 @@ jobs:
           sed -i -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" OneSignalExample/Assets/Plugins/Android/mainTemplate.gradle
           sed -i -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" OneSignalExample/ProjectSettings/AndroidResolverDependencies.xml
 
+          # Only commit if there are changes
+          git add -A
+          git diff --staged --quiet && exit 0
+          git commit -m "Update Android SDK to ${VERSION}" && git push
+
       - name: Update iOS SDK version
         if: inputs.ios_version != ''
         run: |
@@ -106,6 +111,11 @@ jobs:
           # validate the version exists on GitHub
           curl -sfH "Authorization: token ${{ github.token }}" "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}" >/dev/null || { echo "✗ iOS SDK version ${VERSION} not found"; exit 1; }
           sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
+
+          # Only commit if there are changes
+          git add -A
+          git diff --staged --quiet && exit 0
+          git commit -m "Update iOS SDK to ${VERSION}" && git push
 
       - name: Update Unity SDK version
         run: |
@@ -126,7 +136,11 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add . && git commit -m "Release ${{ inputs.unity_version }}" && git push
+
+          # Only commit if there are changes
+          git add -A 
+          git diff --staged --quiet && exit 0
+          git commit -m "Release ${{ inputs.unity_version }}" && git push
 
   create_pr:
     needs: [prep, update_version]
@@ -173,4 +187,8 @@ jobs:
             OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add . && git commit -m "Update CHANGELOG.md for ${{ inputs.unity_version }}" && git push
+
+          # Only commit if there are changes
+          git add -A
+          git diff --staged --quiet && exit 0
+          git commit -m "Update CHANGELOG.md for ${{ inputs.unity_version }}" && git push
