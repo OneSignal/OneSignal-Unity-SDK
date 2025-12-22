@@ -47,6 +47,10 @@ jobs:
             build-mode: none
           - language: csharp
             build-mode: none
+            # Using 'none' because Unity SDK packages don't include .csproj/.sln files.
+            # CodeQL autobuild cannot detect build scripts for Unity packages.
+            # Lower quality metrics (66% call targets, 79% type resolution) are acceptable
+            # for static analysis of Unity SDK code without a full build context.
           # c-cpp and Swift analysis removed: Unity SDKs don't include build projects in the repo
           # (Unity generates Xcode/Android projects during build). CodeQL's C/C++ autobuilder
           # doesn't recognize .mm (Objective-C++) files as source files. The minimal native
@@ -82,23 +86,6 @@ jobs:
           # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # Consider enabling security queries for better coverage:
           # queries: security-extended,security-and-quality
-
-      # If the analyze step fails for one of the languages you are analyzing with
-      # "We were unable to automatically build your code", modify the matrix above
-      # to set the build mode to "manual" for that language. Then modify this step
-      # to build your code.
-      # ℹ️ Command-line programs to run using the OS shell.
-      # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-      - name: Run manual build steps
-        if: matrix.build-mode == 'manual'
-        shell: bash
-        run: |
-          echo 'If you are using a "manual" build mode for one or more of the' \
-            'languages you are analyzing, replace this with the commands to build' \
-            'your code, for example:'
-          echo '  make bootstrap'
-          echo '  make release'
-          exit 1
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
