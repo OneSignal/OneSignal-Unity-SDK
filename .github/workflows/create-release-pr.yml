@@ -82,12 +82,15 @@ jobs:
       - name: Setup Git User
         uses: OneSignal/sdk-actions/.github/actions/setup-git-user@main
 
-      - name: Get current native SDK versions
+      - name: Get current native SDK versions from target branch
         id: current_versions
         run: |
-          CURRENT_VERSION=$(cat OneSignalExample/Assets/OneSignal/VERSION | tr -d '\n\r' | xargs)
-          ANDROID_VERSION=$(grep -oE 'spec="com.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+"' com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | sed -E 's/.*OneSignal:([0-9]+\.[0-9]+\.[0-9]+)".*/\1/' | head -1)
-          IOS_VERSION=$(grep -oE 'version="[0-9.]+"' com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml | grep -oE '[0-9.]+' | head -1)
+          git fetch origin ${{ inputs.target_branch }}
+
+          # Get versions from target branch (not the release branch)
+          CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:OneSignalExample/Assets/OneSignal/VERSION | tr -d '\n\r' | xargs)
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | grep -oE 'spec="com.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+"' | sed -E 's/.*OneSignal:([0-9]+\.[0-9]+\.[0-9]+)".*/\1/' | head -1)
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml | grep -oE 'version="[0-9.]+"' | grep -oE '[0-9.]+' | head -1)
           echo "unity_from=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
           echo "android_from=${ANDROID_VERSION}" >> $GITHUB_OUTPUT
           echo "ios_from=${IOS_VERSION}" >> $GITHUB_OUTPUT
