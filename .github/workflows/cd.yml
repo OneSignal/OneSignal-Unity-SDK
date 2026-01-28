@@ -1,6 +1,7 @@
 # Filename (cd.yml) should match the workflow filename in Trusted Publisher setting on npmjs
 name: Publish to NPM & Github
 on:
+  workflow_dispatch:
   pull_request:
     types:
       - closed
@@ -15,8 +16,9 @@ permissions:
 jobs:
   publish:
     if: |
-      github.event.pull_request.merged == true &&
-      contains(github.event.pull_request.title, 'chore: Release')
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.title, 'chore: Release'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,19 +29,45 @@ jobs:
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
+          cache: ""
 
       - name: Determine npm tag
         id: npm-tag
         run: |
           VERSION=$(node -p "require('./com.onesignal.unity.core/package.json').version")
-          if [[ "$VERSION" == *"alpha"* ]]; then
-            echo "tag=--tag alpha" >> $GITHUB_OUTPUT
-          elif [[ "$VERSION" == *"beta"* ]]; then
-            echo "tag=--tag beta" >> $GITHUB_OUTPUT
+          echo "Detected version: $VERSION"
+          TAG=""
+          if echo "$VERSION" | grep -qi "alpha"; then
+            TAG="alpha"
+          elif echo "$VERSION" | grep -qi "beta"; then
+            TAG="beta"
           fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Using tag: [$TAG]"
 
-      - run: npm publish com.onesignal.unity.core --access public --provenance ${{ steps.npm-tag.outputs.tag }}
+      - name: Debug tag output
+        run: |
+          echo "Tag from output: [${{ steps.npm-tag.outputs.tag }}]"
 
-      - run: npm publish com.onesignal.unity.android --access public --provenance ${{ steps.npm-tag.outputs.tag }}
-
-      - run: npm publish com.onesignal.unity.ios --access public --provenance ${{ steps.npm-tag.outputs.tag }}
+      - name: Publish packages
+        run: |
+          publish_pkg() {
+            local pkg=$1
+            cd "$pkg"
+            VERSION=$(node -p "require('./package.json').version")
+            echo "Publishing $pkg@$VERSION"
+            if npm view "$pkg@$VERSION" version 2>/dev/null; then
+              echo "Version $VERSION already published, skipping"
+            else
+              TAG="${{ steps.npm-tag.outputs.tag }}"
+              if [ -n "$TAG" ]; then
+                npm publish --access public --provenance --tag "$TAG"
+              else
+                npm publish --access public --provenance
+              fi
+            fi
+            cd ..
+          }
+          publish_pkg com.onesignal.unity.core
+          publish_pkg com.onesignal.unity.android
+          publish_pkg com.onesignal.unity.ios
