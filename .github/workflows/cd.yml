@@ -17,7 +17,29 @@ jobs:
     if: |
       github.event.pull_request.merged == true &&
       contains(github.event.pull_request.title, 'chore: Release')
-    uses: OneSignal/sdk-actions/.github/workflows/publish-npm-github.yml@main
-    with:
-      branch: ${{ github.event.pull_request.base.ref }}
-      packages: '["com.onesignal.unity.core", "com.onesignal.unity.android", "com.onesignal.unity.ios"]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          VERSION=$(node -p "require('./com.onesignal.unity.core/package.json').version")
+          if [[ "$VERSION" == *"alpha"* ]]; then
+            echo "tag=--tag alpha" >> $GITHUB_OUTPUT
+          elif [[ "$VERSION" == *"beta"* ]]; then
+            echo "tag=--tag beta" >> $GITHUB_OUTPUT
+          fi
+
+      - run: npm publish com.onesignal.unity.core --access public --provenance ${{ steps.npm-tag.outputs.tag }}
+
+      - run: npm publish com.onesignal.unity.android --access public --provenance ${{ steps.npm-tag.outputs.tag }}
+
+      - run: npm publish com.onesignal.unity.ios --access public --provenance ${{ steps.npm-tag.outputs.tag }}

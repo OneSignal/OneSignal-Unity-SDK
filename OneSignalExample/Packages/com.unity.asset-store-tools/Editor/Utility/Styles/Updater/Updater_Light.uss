@@ -1,7 +1,0 @@
-﻿.loading-container > VisualElement > Image {
-	--unity-image: resource("WaitSpin00");
-}
-
-.fail-container > Image {
-	--unity-image: resource("console.erroricon@2x");
-}
