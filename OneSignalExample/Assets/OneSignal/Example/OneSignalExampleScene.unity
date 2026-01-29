@@ -2716,9 +2716,6 @@ MonoBehaviour:
   triggerValue: 
   outcomeKey: 
   outcomeValue: 0
-  eventName: 
-  eventPropertyKey: 
-  eventPropertyValue: 
   liveActivityId: 
   liveActivityIdToken: 
   liveActivityType: 

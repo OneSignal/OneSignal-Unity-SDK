@@ -110,7 +110,49 @@ namespace OneSignalSDK.Android.User
         public void RemoveSms(string sms) => _user.Call("removeSms", sms);
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null) =>
-            _user.Call("trackEvent", name, properties?.ToMap());
+            _user.Call("trackEvent", name, FilterNulls(properties)?.ToMap());
+
+        /// <summary>
+        /// Recursively filters null values from properties since the native SDK doesn't accept them
+        /// </summary>
+        private static Dictionary<string, object> FilterNulls(Dictionary<string, object> source)
+        {
+            if (source == null)
+                return null;
+
+            var result = new Dictionary<string, object>();
+            foreach (var kv in source)
+            {
+                if (kv.Value == null)
+                    continue;
+
+                if (kv.Value is Dictionary<string, object> nestedDict)
+                    result[kv.Key] = FilterNulls(nestedDict);
+                else if (kv.Value is System.Collections.IList nestedList)
+                    result[kv.Key] = FilterNullsFromList(nestedList);
+                else
+                    result[kv.Key] = kv.Value;
+            }
+            return result;
+        }
+
+        private static System.Collections.IList FilterNullsFromList(System.Collections.IList source)
+        {
+            var result = new List<object>();
+            foreach (var item in source)
+            {
+                if (item == null)
+                    continue;
+
+                if (item is Dictionary<string, object> nestedDict)
+                    result.Add(FilterNulls(nestedDict));
+                else if (item is System.Collections.IList nestedList)
+                    result.Add(FilterNullsFromList(nestedList));
+                else
+                    result.Add(item);
+            }
+            return result;
+        }
 
         public void Initialize()
         {
