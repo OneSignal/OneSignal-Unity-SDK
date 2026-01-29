@@ -489,6 +489,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour
                         "nested",
                         new Dictionary<string, object> { { "def", "456" } }
                     },
+                    { "ghi", null },
                 }
             },
             {
@@ -502,6 +503,7 @@ public class OneSignalExampleBehaviour : MonoBehaviour
                     1,
                     "2",
                     new Dictionary<string, object> { { "abc", "123" } },
+                    null,
                 }
             },
             { "someNull", null },
