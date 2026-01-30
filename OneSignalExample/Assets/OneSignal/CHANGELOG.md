@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.0]
+
+Channels: Current
+
+### 🎉 Custom Events Support
+
+This release introduces Custom Events support for the unity sdk.
+
+Please see documentation on [Custom Events](https://documentation.onesignal.com/docs/mobile-sdk-reference#trackevent).
+
+### 🚀 New Features
+
+- feat: add custom events support (#845)
+
+### 🛠️ Native Dependency Updates
+
+- Update Android SDK from 5.4.2 to 5.6.1
+  - fix: custom events now handle null object within the event properties (https://github.com/OneSignal/OneSignal-Android-SDK/pull/2537)
+  - feat: 🎉 introduces Custom Events Support for the Android SDK. To get started with using Custom Events, please contact [support@onesignal.com](mailto:support@onesignal.com) to enable this feature for your app. Please see documentation on [Custom Events](https://documentation.onesignal.com/docs/mobile-sdk-reference#trackevent).
+  - feat: IAMs now display when triggers added before first fetch ([#2528](https://github.com/OneSignal/OneSignal-Android-SDK/issues/2528))
+  - fix: end initialization early if device storage is locked ([#2520](https://github.com/OneSignal/OneSignal-Android-SDK/issues/2520))
+  ***
+  - feature: Exposing accessors thru suspend ([#2502](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2502))
+  - fix: a rare NPE from PermissionViewModel introduced in 5.4.0 ([#2504](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2504))
+  - fix: NPE in SyncJobService since 5.4 ([#2500](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2500))
+  - fix: Rare User and Subscription creates and updates processing out of order (introduced in 5.4.0) ([#2419](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2419))
+  - fix: Remove throwing "initWithContext was not called or timed out", introduced in 5.4.0 ([#2408](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2408))
+  - Improvement: failure message shows that appID is missing ([#2506](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2506))
+  - improvement: Offloaded work on background threads. ([#2394](https://github.com/OneSignal/OneSignal-Android-SDK/pull/2394))
+  ***
+- Update iOS SDK from 5.2.16 to 5.4.0
+  - feat: IAMs now display when triggers added before first fetch ([OneSignal-iOS-SDK#1635](https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1635))
+  - fix: use locale-independent formatting for purchase prices ([OneSignal-iOS-SDK#1634](https://github.com/OneSignal/OneSignal-iOS-SDK/pull/1634))
+  - It is recommended to test this beta version with a new iOS-only app, as Identity Verification is not yet supported on the OneSignal Android and Web SDKs.
+  - Enabling Identity Verification in the dashboard will affect all existing app installations using the OneSignal user model SDKs.
+  - Please test thoroughly prior to production use, and reach out with any questions, feedback, or concerns.
+  - While emails and sms numbers can be added using the SDK, removing them is not yet supported.
+  - Live Activities is not yet supported.
+  - Rebased to 5.2.14 for more bug fixes and stability improvement.
+  - add public log listener methods (see PR for usage) #1576
+  - It is recommended to test this beta version with a new iOS-only app, as Identity Verification is not yet supported on the OneSignal Android and Web SDKs.
+  - Enabling Identity Verification in the dashboard will affect all existing app installations using the OneSignal user model SDKs.
+  - Please test thoroughly prior to production use, and reach out with any questions, feedback, or concerns.
+  - While emails and sms numbers can be added using the SDK, removing them is not yet supported.
+  - Live Activities is not yet supported.
+
 ## [5.1.16]
 
 Channels: Current
