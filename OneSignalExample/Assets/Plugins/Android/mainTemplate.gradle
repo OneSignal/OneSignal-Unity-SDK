@@ -7,7 +7,7 @@ apply from: '../shared/keepUnitySymbols.gradle'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.onesignal:OneSignal:5.6.0' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
+    implementation 'com.onesignal:OneSignal:5.6.1' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
 // Android Resolver Dependencies End
 **DEPS**}
 
