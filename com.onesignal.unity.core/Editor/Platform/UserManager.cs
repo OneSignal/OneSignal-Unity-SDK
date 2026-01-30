@@ -85,5 +85,7 @@ namespace OneSignalSDK.User
         public void AddSms(string sms) { }
 
         public void RemoveSms(string sms) { }
+
+        public void TrackEvent(string name, Dictionary<string, object> properties = null) { }
     }
 }

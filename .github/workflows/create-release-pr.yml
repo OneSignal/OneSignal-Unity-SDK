@@ -125,7 +125,7 @@ jobs:
 
       - name: Update Unity SDK version
         run: |
-          PADDED_VERSION=$(printf "%06d" $(echo "${{ inputs.unity_version }}" | sed 's/[^0-9]//g'))
+          PADDED_VERSION=$(echo "${{ inputs.unity_version }}" | awk -F. '{printf "%02d%02d%02d", $1, $2, $3}')
           printf "%s" "${{ inputs.unity_version }}" > OneSignalExample/Assets/OneSignal/VERSION
           for file in com.onesignal.unity.core/package.json com.onesignal.unity.android/package.json com.onesignal.unity.ios/package.json; do
             sed -i "s/\"version\": \".*\"/\"version\": \"${{ inputs.unity_version }}\"/" "$file"

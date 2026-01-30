@@ -135,6 +135,9 @@ namespace OneSignalSDK.Android.Utilities
 
         public static AndroidJavaObject ToMap(this Dictionary<string, object> source)
         {
+            if (source == null)
+                return null;
+
             var map = new AndroidJavaObject("java.util.HashMap");
             var put = AndroidJNIHelper.GetMethodID(
                 map.GetRawClass(),
@@ -145,18 +148,67 @@ namespace OneSignalSDK.Android.Utilities
             var entryArgs = new object[2];
             foreach (var kv in source)
             {
-                var key = new AndroidJavaObject("java.lang.String", kv.Key);
-                var value = new AndroidJavaClass("java.lang.String").CallStatic<string>(
-                    "valueOf",
-                    kv.Value
-                );
-                entryArgs[0] = key;
-                entryArgs[1] = value;
-                AndroidJNI.CallObjectMethod(
-                    map.GetRawObject(),
-                    put,
-                    AndroidJNIHelper.CreateJNIArgArray(entryArgs)
-                );
+                using (var key = new AndroidJavaObject("java.lang.String", kv.Key))
+                {
+                    AndroidJavaObject value = null;
+
+                    // Preserve original data types
+                    switch (kv.Value)
+                    {
+                        case string stringValue:
+                            value = new AndroidJavaObject("java.lang.String", stringValue);
+                            break;
+                        case int intValue:
+                            value = new AndroidJavaObject("java.lang.Integer", intValue);
+                            break;
+                        case long longValue:
+                            value = new AndroidJavaObject("java.lang.Long", longValue);
+                            break;
+                        case float floatValue:
+                            value = new AndroidJavaObject("java.lang.Float", floatValue);
+                            break;
+                        case double doubleValue:
+                            value = new AndroidJavaObject("java.lang.Double", doubleValue);
+                            break;
+                        case bool boolValue:
+                            value = new AndroidJavaObject("java.lang.Boolean", boolValue);
+                            break;
+                        case Dictionary<string, object> dictValue:
+                            value = new AndroidJavaObject(
+                                "org.json.JSONObject",
+                                Json.Serialize(dictValue)
+                            );
+                            break;
+                        case System.Collections.IList listValue:
+                            value = new AndroidJavaObject(
+                                "org.json.JSONArray",
+                                Json.Serialize(listValue)
+                            );
+                            break;
+                        case null:
+                            value = null;
+                            break;
+                        default:
+                            // Fallback to string representation for unsupported types
+                            value = new AndroidJavaObject("java.lang.String", kv.Value.ToString());
+                            break;
+                    }
+
+                    try
+                    {
+                        entryArgs[0] = key;
+                        entryArgs[1] = value;
+                        AndroidJNI.CallObjectMethod(
+                            map.GetRawObject(),
+                            put,
+                            AndroidJNIHelper.CreateJNIArgArray(entryArgs)
+                        );
+                    }
+                    finally
+                    {
+                        value?.Dispose();
+                    }
+                }
             }
 
             return map;

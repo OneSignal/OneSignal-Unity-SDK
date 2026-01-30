@@ -461,6 +461,60 @@ public class OneSignalExampleBehaviour : MonoBehaviour
         _log($"Get all user tags " + dictionaryString.TrimEnd(',', ' ') + "}");
     }
 
+    public void TrackEvent()
+    {
+        // Detect platform
+        string platform =
+            Application.platform == RuntimePlatform.Android ? "android"
+            : Application.platform == RuntimePlatform.IPhonePlayer ? "ios"
+            : "unknown";
+
+        // Track event without properties
+        _log($"Tracking an event <b>Unity-{platform}-noprops</b> without properties");
+        OneSignal.User.TrackEvent($"Unity-{platform}-noprops");
+
+        // Track event with comprehensive properties
+        var properties = new Dictionary<string, object>
+        {
+            { "someNum", 123 },
+            { "someFloat", 3.14159f },
+            { "someString", "abc" },
+            { "someBool", true },
+            {
+                "someObject",
+                new Dictionary<string, object>
+                {
+                    { "abc", "123" },
+                    {
+                        "nested",
+                        new Dictionary<string, object> { { "def", "456" } }
+                    },
+                    { "ghi", null },
+                }
+            },
+            {
+                "someArray",
+                new List<object> { 1, 2 }
+            },
+            {
+                "someMixedArray",
+                new List<object>
+                {
+                    1,
+                    "2",
+                    new Dictionary<string, object> { { "abc", "123" } },
+                    null,
+                }
+            },
+            { "someNull", null },
+        };
+
+        _log(
+            $"Tracking an event <b>Unity-{platform}</b> with properties: {Json.Serialize(properties)}"
+        );
+        OneSignal.User.TrackEvent($"Unity-{platform}", properties);
+    }
+
     /*
      * Outcomes
      */

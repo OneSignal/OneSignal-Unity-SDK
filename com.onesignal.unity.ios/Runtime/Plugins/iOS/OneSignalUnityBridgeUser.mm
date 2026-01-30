@@ -249,4 +249,16 @@ extern "C" {
     void _oneSignalUserAddStateChangedCallback(UserStateListenerDelegate callback) {
         [[OneSignalUserStateObserver sharedUserObserver] setUserStateDelegate:callback];
     }
+
+    void _oneSignalUserTrackEvent(const char *name, const char *propertiesJson) {
+        NSString *eventName = TO_NSSTRING(name);
+
+        if (propertiesJson != NULL) {
+            NSDictionary *properties =
+                oneSignalDictionaryFromJsonString(propertiesJson);
+            [OneSignal.User trackEventWithName:eventName properties:properties];
+        } else {
+            [OneSignal.User trackEventWithName:eventName properties:nil];
+        }
+    }
 }

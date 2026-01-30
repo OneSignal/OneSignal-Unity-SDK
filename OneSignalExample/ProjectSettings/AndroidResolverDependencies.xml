@@ -1,6 +1,6 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:OneSignal:5.4.2</package>
+    <package>com.onesignal:OneSignal:5.6.1</package>
   </packages>
   <files />
   <settings>
@@ -18,6 +18,6 @@
     <setting name="projectExportEnabled" value="False" />
     <setting name="useFullCustomMavenRepoPathWhenExport" value="True" />
     <setting name="useFullCustomMavenRepoPathWhenNotExport" value="False" />
-    <setting name="useJetifier" value="False" />
+    <setting name="useJetifier" value="True" />
   </settings>
 </dependencies>

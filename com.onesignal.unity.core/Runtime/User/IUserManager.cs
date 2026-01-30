@@ -179,5 +179,12 @@ namespace OneSignalSDK.User
         /// </summary>
         /// <param name="sms">The sms address that the current user was subscribed for, and should no longer be.</param>
         void RemoveSms(string sms);
+
+        /// <summary>
+        /// Track a custom event for the current user.
+        /// </summary>
+        /// <param name="name">The name of the event to track.</param>
+        /// <param name="properties">A dictionary of properties associated with the event. Values can be strings, numbers, or booleans.</param>
+        void TrackEvent(string name, Dictionary<string, object> properties = null);
     }
 }
