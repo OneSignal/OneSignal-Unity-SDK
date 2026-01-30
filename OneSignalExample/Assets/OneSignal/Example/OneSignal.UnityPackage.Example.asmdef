@@ -18,7 +18,7 @@
     "versionDefines": [
         {
             "name": "com.onesignal.unity.core",
-            "expression": "5.1.16",
+            "expression": "5.1.17",
             "define": "ONE_SIGNAL_INSTALLED"
         }
     ],
