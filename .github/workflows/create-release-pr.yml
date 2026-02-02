@@ -185,14 +185,3 @@ jobs:
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "$cleaned_notes" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-      - name: Update CHANGELOG.md
-        run: |
-          awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
-            '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
-            OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
-
-          # Only commit if there are changes
-          git add -A
-          git diff --staged --quiet && exit 0
-          git commit -m "Update CHANGELOG.md for ${{ inputs.unity_version }}" && git push
