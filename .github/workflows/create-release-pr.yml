@@ -160,39 +160,3 @@ jobs:
       android_to: ${{ inputs.android_version }}
       ios_from: ${{ needs.update_version.outputs.ios_from }}
       ios_to: ${{ inputs.ios_version }}
-
-  update_changelog:
-    needs: [prep, create_pr]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          repository: OneSignal/OneSignal-Unity-SDK
-          ref: ${{ needs.prep.outputs.release_branch }}
-          token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
-
-      - name: Setup Git User
-        uses: OneSignal/sdk-actions/.github/actions/setup-git-user@main
-
-      - name: Get PR release notes
-        id: notes
-        run: |
-          sudo apt-get update && sudo apt-get install -y gh || true
-          PR_NUMBER=$(gh pr list --head "${{ needs.prep.outputs.release_branch }}" --json number -q '.[0].number' || echo "")
-          if [ -z "$PR_NUMBER" ]; then echo "RELEASE_NOTES=" >> $GITHUB_ENV; exit 0; fi
-          cleaned_notes=$(gh pr view "$PR_NUMBER" --json body -q '.body' | awk 'BEGIN{found=0} /^- Update/{found=1} /^<!-- Reviewable:start -->/{found=0;next} found' | sed '/^- - -$/d' | sed '/^[[:space:]]*$/d')
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo "$cleaned_notes" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Update CHANGELOG.md
-        run: |
-          awk -v ver="${{ inputs.unity_version }}" -v notes="$RELEASE_NOTES" \
-            '/^## \[Unreleased\]/ { print $0; print "## [" ver "]\n### Changed"; print notes "\n"; next } { print $0 }' \
-            OneSignalExample/Assets/OneSignal/CHANGELOG.md > /tmp/changelog.tmp && mv /tmp/changelog.tmp OneSignalExample/Assets/OneSignal/CHANGELOG.md
-
-          # Only commit if there are changes
-          git add -A
-          git diff --staged --quiet && exit 0
-          git commit -m "Update CHANGELOG.md for ${{ inputs.unity_version }}" && git push
