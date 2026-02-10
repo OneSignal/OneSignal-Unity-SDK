@@ -46,6 +46,16 @@ using OneSignalSDK.Debug.Utilities;
 public class OneSignalExampleBehaviour : MonoBehaviour
 {
     /// <summary>
+    /// Reference to the UI controller for screen navigation and state
+    /// </summary>
+    [Header("UI Controllers")]
+    public UIController uiController;
+    
+    /// <summary>
+    /// Reference to the dialog manager for modal dialogs
+    /// </summary>
+    public DialogManager dialogManager;
+    /// <summary>
     /// set to an email address you would like to test notifications against
     /// </summary>
     public string email;
@@ -241,6 +251,13 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     {
         _log($"Push subscription changed from previous: {JsonUtility.ToJson(e.State.Previous)}");
         _log($"Push subscription changed to current: {JsonUtility.ToJson(e.State.Current)}");
+        
+        // Update UI
+        if (uiController != null)
+        {
+            uiController.UpdatePushId(e.State.Current.Id);
+            uiController.UpdatePushEnabled(e.State.Current.OptedIn);
+        }
     }
 
     private void _userStateChanged(object sender, UserStateChangedEventArgs e)
@@ -432,6 +449,9 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     {
         _log($"Toggling Pausing InAppMessages to <b>{!OneSignal.InAppMessages.Paused}</b>");
         OneSignal.InAppMessages.Paused = !OneSignal.InAppMessages.Paused;
+        
+        if (uiController != null)
+            uiController.UpdatePauseIam(OneSignal.InAppMessages.Paused);
     }
 
     /*
@@ -551,6 +571,175 @@ public class OneSignalExampleBehaviour : MonoBehaviour
     {
         _log($"Toggling Location IsShared to <b>{!OneSignal.Location.IsShared}</b>");
         OneSignal.Location.IsShared = !OneSignal.Location.IsShared;
+        
+        if (uiController != null)
+            uiController.UpdateLocationShared(OneSignal.Location.IsShared);
+    }
+    
+    /*
+     * Dialog-based actions for new UI
+     */
+    
+    /// <summary>
+    /// Show login user dialog
+    /// </summary>
+    public void ShowLoginDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowLoginDialog((externalUserId) =>
+            {
+                if (!string.IsNullOrEmpty(externalUserId))
+                {
+                    externalId = externalUserId;
+                    LoginOneSignalUser();
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Show add email dialog
+    /// </summary>
+    public void ShowEmailDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowEmailDialog((newEmail) =>
+            {
+                if (!string.IsNullOrEmpty(newEmail))
+                {
+                    email = newEmail;
+                    AddEmail();
+                    if (uiController != null)
+                        uiController.AddEmail(newEmail);
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Show add SMS dialog
+    /// </summary>
+    public void ShowSmsDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowSmsDialog((newSms) =>
+            {
+                if (!string.IsNullOrEmpty(newSms))
+                {
+                    phoneNumber = newSms;
+                    AddSms();
+                    if (uiController != null)
+                        uiController.AddSms(newSms);
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Show add alias dialog
+    /// </summary>
+    public void ShowAliasDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowAliasDialog((key, value) =>
+            {
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                {
+                    aliasKey = key;
+                    aliasValue = value;
+                    AddAlias();
+                    if (uiController != null)
+                        uiController.AddAlias(key, value);
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Show add tag dialog
+    /// </summary>
+    public void ShowTagDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowTagDialog((key, value) =>
+            {
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                {
+                    tagKey = key;
+                    tagValue = value;
+                    AddTag();
+                    if (uiController != null)
+                        uiController.AddTag(key, value);
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Show add trigger dialog
+    /// </summary>
+    public void ShowTriggerDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowTriggerDialog((key, value) =>
+            {
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                {
+                    triggerKey = key;
+                    triggerValue = value;
+                    AddTrigger();
+                    if (uiController != null)
+                        uiController.AddTrigger(key, value);
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Show send outcome dialog
+    /// </summary>
+    public void ShowOutcomeDialog()
+    {
+        if (dialogManager != null)
+        {
+            dialogManager.ShowOutcomeDialog((name, value, outcomeType) =>
+            {
+                if (!string.IsNullOrEmpty(name))
+                {
+                    outcomeKey = name;
+                    outcomeValue = value;
+                    
+                    switch (outcomeType)
+                    {
+                        case DialogManager.OutcomeType.Normal:
+                            AddOutcome();
+                            break;
+                        case DialogManager.OutcomeType.Unique:
+                            AddUniqueOutcome();
+                            break;
+                        case DialogManager.OutcomeType.WithValue:
+                            AddOutcomeWithValue();
+                            break;
+                    }
+                }
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Revoke consent
+    /// </summary>
+    public void RevokeConsent()
+    {
+        consentGiven = false;
+        _log($"Revoking consent");
+        OneSignal.ConsentGiven = false;
     }
 
     /*
@@ -666,28 +855,42 @@ public class OneSignalExampleBehaviour : MonoBehaviour
         SDKDebug.LogIntercept += _log;
         SDKDebug.WarnIntercept += _warn;
         SDKDebug.ErrorIntercept += _error;
-        appIdText.text = appId;
+        
+        // Find UI controllers if not assigned
+        if (uiController == null)
+            uiController = FindObjectOfType<UIController>();
+        if (dialogManager == null)
+            dialogManager = FindObjectOfType<DialogManager>();
+        
+        // Update app ID display
+        if (appIdText != null)
+            appIdText.text = appId;
+        if (uiController != null)
+            uiController.UpdateAppId(appId);
     }
 
     private void _log(object message)
     {
         string green = "#3BB674";
         UnityEngine.Debug.Log(message);
-        console.text += $"\n<color={green}><b>I></b></color> {message}";
+        if (console != null)
+            console.text += $"\n<color={green}><b>I></b></color> {message}";
     }
 
     private void _warn(object message)
     {
         string yellow = "#FFA940";
         UnityEngine.Debug.LogWarning(message);
-        console.text += $"\n<color={yellow}><b>W></b></color> {message}";
+        if (console != null)
+            console.text += $"\n<color={yellow}><b>W></b></color> {message}";
     }
 
     private void _error(object message)
     {
         string red = "#E54B4D";
         UnityEngine.Debug.LogError(message);
-        console.text += $"\n<color={red}><b>E></b></color> {message}";
+        if (console != null)
+            console.text += $"\n<color={red}><b>E></b></color> {message}";
     }
     #endregion
 
