@@ -77,7 +77,7 @@ jobs:
 
   create_github_release:
     needs: publish
-    uses: OneSignal/sdk-actions/.github/workflows/github-release.yml@main
+    uses: OneSignal/sdk-shared/.github/workflows/github-release.yml@main
     secrets:
       GH_PUSH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
     with:
