@@ -33,15 +33,16 @@
 }
 
 .app-bar-logo {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
+    width: 99px;
+    height: 22px;
+    margin-right: 8px;
     -unity-background-image-tint-color: white;
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .app-bar-title {
-    font-size: 18px;
-    -unity-font-style: bold;
+    font-size: 14px;
+    -unity-font-style: normal;
     color: white;
 }
 

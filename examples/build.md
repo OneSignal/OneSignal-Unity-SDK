@@ -108,10 +108,14 @@ Build the app with:
 - Separate UXML/USS per section to keep files focused and readable
 - Use SerializeField for Inspector-configurable references; avoid public fields
 
-Download the app bar logo from:
+Download the app bar logo SVG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo.svg
-Save it to the demo project at Assets/Resources/onesignal_logo (import as Sprite or
-use Unity's Vector Graphics package for SVG rendering in UI Toolkit).
+Convert the SVG to PNG (e.g. `rsvg-convert -w 800 -h 200 onesignal_logo.svg -o onesignal_logo.png`)
+and save to Assets/Resources/onesignal_logo.png. Unity cannot load SVGs as Texture2D natively.
+
+App bar layout:
+- Logo: 120x30px, -unity-background-scale-mode: scale-to-fit, tinted white
+- "Sample App" label: 14px, normal (400) weight, white
 
 Download the padded app icon PNG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png

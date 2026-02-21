@@ -54,8 +54,25 @@ namespace OneSignalDemo
             _viewModel.LoadInitialState();
             await _viewModel.LoadInitialDataAsync();
 
+            SetStatusBarColor(0xFFE5535A);
+
             _ = TooltipHelper.Instance.InitAsync();
             LogManager.Instance.Info(Tag, "App initialized");
+        }
+
+        private static void SetStatusBarColor(uint argbColor)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+                using var window = activity.Call<AndroidJavaObject>("getWindow");
+                window.Call("clearFlags", 0x04000000); // FLAG_TRANSLUCENT_STATUS
+                window.Call("addFlags", unchecked((int)0x80000000)); // FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                window.Call("setStatusBarColor", unchecked((int)argbColor));
+            }));
+#endif
         }
 
         private void RegisterSdkListeners()
