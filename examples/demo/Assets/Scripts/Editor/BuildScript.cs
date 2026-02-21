@@ -11,20 +11,17 @@ public static class BuildScript
     [MenuItem("Build/Android APK")]
     public static void BuildAndroid()
     {
+        SceneSetup.SetupScenes();
+
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, DefaultBundleId);
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
         PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
+        PlayerSettings.productName = "OneSignal Demo";
 
         var scenes = EditorBuildSettings.scenes
             .Where(s => s.enabled)
             .Select(s => s.path)
             .ToArray();
-
-        if (scenes.Length == 0)
-        {
-            Debug.LogWarning("No scenes in build settings, searching for scenes...");
-            scenes = System.IO.Directory.GetFiles("Assets", "*.unity", System.IO.SearchOption.AllDirectories);
-        }
 
         var outputPath = GetArg("-outputPath") ?? "Build/OneSignalDemo.apk";
 
