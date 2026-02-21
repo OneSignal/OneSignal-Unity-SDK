@@ -86,7 +86,7 @@ namespace OneSignalDemo.UI.Dialogs
             var entry = (keyField, valueField, row);
 
             var deleteBtn = new Button(() => RemoveRow(entry));
-            deleteBtn.text = "\u2716";
+            deleteBtn.text = "\uE5CD";
             deleteBtn.AddToClassList("dialog-row-delete");
             row.Add(deleteBtn);
 

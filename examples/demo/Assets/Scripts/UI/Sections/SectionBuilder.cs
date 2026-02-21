@@ -22,7 +22,7 @@ namespace OneSignalDemo.UI.Sections
             {
                 var infoBtn = new Button(onInfoTap);
                 infoBtn.name = $"{name}_info";
-                infoBtn.text = "i";
+                infoBtn.text = "\uE88E";
                 infoBtn.AddToClassList("info-button");
                 header.Add(infoBtn);
             }
@@ -120,7 +120,7 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
-                deleteBtn.text = "\u2716";
+                deleteBtn.text = "\uE5CD";
                 deleteBtn.AddToClassList("delete-button");
                 item.Add(deleteBtn);
             }
@@ -162,7 +162,7 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
-                deleteBtn.text = "\u2716";
+                deleteBtn.text = "\uE5CD";
                 deleteBtn.AddToClassList("delete-button");
                 item.Add(deleteBtn);
             }

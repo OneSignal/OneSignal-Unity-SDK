@@ -25,10 +25,10 @@ namespace OneSignalDemo.UI.Sections
             var section = SectionBuilder.CreateSection("Send In-App Message", "send_iam_section",
                 () => OnInfoTap?.Invoke());
 
-            section.Add(CreateIamButton("TOP BANNER", "\u2191", "send_iam_top", InAppMessageType.TopBanner));
-            section.Add(CreateIamButton("BOTTOM BANNER", "\u2193", "send_iam_bottom", InAppMessageType.BottomBanner));
-            section.Add(CreateIamButton("CENTER MODAL", "\u25A1", "send_iam_center", InAppMessageType.CenterModal));
-            section.Add(CreateIamButton("FULL SCREEN", "\u2922", "send_iam_full", InAppMessageType.FullScreen));
+            section.Add(CreateIamButton("TOP BANNER", "\uE5D8", "send_iam_top", InAppMessageType.TopBanner));
+            section.Add(CreateIamButton("BOTTOM BANNER", "\uE5DB", "send_iam_bottom", InAppMessageType.BottomBanner));
+            section.Add(CreateIamButton("CENTER MODAL", "\uE3C6", "send_iam_center", InAppMessageType.CenterModal));
+            section.Add(CreateIamButton("FULL SCREEN", "\uE5D0", "send_iam_full", InAppMessageType.FullScreen));
 
             return section;
         }

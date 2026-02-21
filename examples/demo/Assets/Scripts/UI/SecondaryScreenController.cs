@@ -24,8 +24,9 @@ namespace OneSignalDemo.UI
 
             var backButton = new Button(() => SceneManager.LoadScene("Main"));
             backButton.name = "back_button";
-            backButton.text = "\u2190";
-            backButton.style.fontSize = 20;
+            backButton.text = "\uE5C4";
+            backButton.AddToClassList("material-icon");
+            backButton.style.fontSize = 22;
             backButton.style.backgroundColor = new StyleColor(Color.clear);
             backButton.style.borderTopWidth = 0;
             backButton.style.borderBottomWidth = 0;

@@ -41,7 +41,7 @@ namespace OneSignalDemo.UI
 
             var clearButton = new Button(ClearLogs);
             clearButton.name = "log_view_clear_button";
-            clearButton.text = "\u2716";
+            clearButton.text = "\uE5CD";
             clearButton.AddToClassList("log-clear-button");
             header.Add(clearButton);
 

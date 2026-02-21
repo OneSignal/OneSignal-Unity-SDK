@@ -74,14 +74,18 @@
     letter-spacing: 1px;
 }
 
+.material-icon {
+    -unity-font-definition: resource("MaterialIcons-Regular");
+}
+
 .info-button {
     width: 20px;
     height: 20px;
     border-radius: 10px;
     background-color: var(--os-text-hint);
     color: white;
-    font-size: 12px;
-    -unity-font-style: bold;
+    font-size: 14px;
+    -unity-font-definition: resource("MaterialIcons-Regular");
     -unity-text-align: middle-center;
     border-width: 0;
     padding: 0;
@@ -190,10 +194,11 @@
 }
 
 .iam-button-icon {
-    font-size: 16px;
+    font-size: 18px;
     color: white;
     margin-right: 10px;
     width: 20px;
+    -unity-font-definition: resource("MaterialIcons-Regular");
     -unity-text-align: middle-center;
 }
 
@@ -251,10 +256,11 @@
 .delete-button {
     width: 24px;
     height: 24px;
-    font-size: 16px;
+    font-size: 18px;
     color: var(--os-text-hint);
     background-color: transparent;
     border-width: 0;
+    -unity-font-definition: resource("MaterialIcons-Regular");
     -unity-text-align: middle-center;
     padding: 0;
     margin: 0;
@@ -438,10 +444,11 @@
 .dialog-row-delete {
     width: 32px;
     height: 32px;
-    font-size: 18px;
+    font-size: 20px;
     color: var(--os-text-hint);
     background-color: transparent;
     border-width: 0;
+    -unity-font-definition: resource("MaterialIcons-Regular");
     -unity-text-align: middle-center;
     padding: 0;
     align-self: center;
