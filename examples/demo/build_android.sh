@@ -1,167 +1,71 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Build the OneSignal Unity demo as an APK for Android emulator (x86_64 / Mono).
+# Usage:
+#   ./build_android.sh [--install]   # --install deploys to the first running emulator
 set -euo pipefail
 
-DEV_BUILD=false
-POSITIONAL_ARGS=()
-for arg in "$@"; do
-    case $arg in
-        --dev) DEV_BUILD=true ;;
-        *) POSITIONAL_ARGS+=("$arg") ;;
-    esac
-done
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_PATH="$SCRIPT_DIR"
-OUTPUT_PATH="${POSITIONAL_ARGS[0]:-$PROJECT_PATH/Build/OneSignalDemo.apk}"
+UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
+PROJECT_SETTINGS="$SCRIPT_DIR/ProjectSettings/ProjectSettings.asset"
+OUTPUT_APK="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
+LOG_FILE="$SCRIPT_DIR/Build/build.log"
+INSTALL=false
 
-# --- Device selection (before build) ---
-SELECTED=""
-if command -v adb &>/dev/null; then
-    adb start-server 2>/dev/null || true
+# AndroidArchitecture flags: ARMv7=1, X86=2, ARM64=4, X86_64=8
+ARCH_EMULATOR=8    # X86_64 only — fastest emulator build
+ARCH_ORIGINAL=""
 
-    DEVICE_LIST=()
-    while IFS= read -r line; do
-        dev=$(echo "$line" | awk '{print $1}')
-        [ -n "$dev" ] && DEVICE_LIST+=("$dev")
-    done < <(adb devices | tail -n +2 | grep -w "device")
-
-    DEVICE_COUNT=${#DEVICE_LIST[@]}
-
-    get_device_name() {
-        local name
-        name=$(adb -s "$1" emu avd name 2>/dev/null | head -1 | tr -d '\r' | sed 's/_/ /g')
-        [ -z "$name" ] && name=$(adb -s "$1" shell getprop ro.product.model 2>/dev/null | tr -d '\r')
-        echo "${name:-unknown}"
-    }
-
-    if [ "$DEVICE_COUNT" -eq 1 ]; then
-        SELECTED="${DEVICE_LIST[0]}"
-        echo "Target device: $SELECTED ($(get_device_name "$SELECTED"))"
-    elif [ "$DEVICE_COUNT" -gt 1 ]; then
-        echo "Available devices:"
-        for i in "${!DEVICE_LIST[@]}"; do
-            echo "  $((i + 1))) ${DEVICE_LIST[$i]} ($(get_device_name "${DEVICE_LIST[$i]}"))"
-        done
-
-        echo ""
-        read -rp "Select device [1-$DEVICE_COUNT]: " CHOICE
-
-        if ! [[ "$CHOICE" =~ ^[0-9]+$ ]] || [ "$CHOICE" -lt 1 ] || [ "$CHOICE" -gt "$DEVICE_COUNT" ]; then
-            echo "Invalid selection, will build without installing."
-        else
-            SELECTED="${DEVICE_LIST[$((CHOICE - 1))]}"
-            echo "Target device: $SELECTED"
-        fi
-    else
-        echo "No devices connected, will build without installing."
-    fi
-    echo ""
-fi
-
-# --- Unity build ---
-UNITY_VERSION=$(grep 'm_EditorVersion:' "$PROJECT_PATH/ProjectSettings/ProjectVersion.txt" | awk '{print $2}')
-
-case "$(uname)" in
-    Darwin)
-        UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity"
-        ;;
-    Linux)
-        UNITY_PATH="$HOME/Unity/Hub/Editor/$UNITY_VERSION/Editor/Unity"
-        ;;
-    MINGW*|MSYS*|CYGWIN*)
-        UNITY_PATH="C:/Program Files/Unity/Hub/Editor/$UNITY_VERSION/Editor/Unity.exe"
-        ;;
-esac
-
-if [ ! -f "$UNITY_PATH" ]; then
-    echo "Error: Unity $UNITY_VERSION not found at $UNITY_PATH"
-    echo "Install it via Unity Hub or set UNITY_PATH env var."
-    exit 1
-fi
-
-mkdir -p "$(dirname "$OUTPUT_PATH")"
-
-BUILD_LOG="$PROJECT_PATH/Build/build.log"
-BUILD_MODE="Release (IL2CPP)"
-DEV_ARGS=""
-if $DEV_BUILD; then
-    BUILD_MODE="Development (Mono)"
-    DEV_ARGS="-devBuild"
-fi
-
-echo "Building Android APK..."
-echo "  Unity:   $UNITY_VERSION"
-echo "  Mode:    $BUILD_MODE"
-echo "  Project: $PROJECT_PATH"
-echo "  Output:  $OUTPUT_PATH"
-echo "  Log:     $BUILD_LOG"
-echo ""
-
-if $DEV_BUILD; then
-    rm -rf "$PROJECT_PATH/Library/Bee/Android/Prj/Mono" 2>/dev/null
-fi
-rm -f "$OUTPUT_PATH"
-
-BUILD_START=$SECONDS
-UNITY_EXIT_CODE=0
-
-"$UNITY_PATH" \
-    -batchmode \
-    -nographics \
-    -quit \
-    -buildTarget Android \
-    -projectPath "$PROJECT_PATH" \
-    -executeMethod BuildScript.BuildAndroid \
-    -outputPath "$OUTPUT_PATH" \
-    $DEV_ARGS \
-    -logFile "$BUILD_LOG" || UNITY_EXIT_CODE=$?
-
-BUILD_ELAPSED=$(( SECONDS - BUILD_START ))
-echo ""
-echo "Build time: $((BUILD_ELAPSED / 60))m $((BUILD_ELAPSED % 60))s"
-
-if [ "$UNITY_EXIT_CODE" -ne 0 ]; then
-    echo ""
-    echo "Error: Unity exited with code $UNITY_EXIT_CODE"
-    echo "Check log: $BUILD_LOG"
-    exit "$UNITY_EXIT_CODE"
-fi
-
-GRADLE_APK_IL2CPP="$PROJECT_PATH/Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"
-GRADLE_APK_MONO="$PROJECT_PATH/Library/Bee/Android/Prj/Mono/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"
-GRADLE_APK_DEV="$PROJECT_PATH/Library/Bee/Android/Prj/Mono/Gradle/launcher/build/outputs/apk/debug/launcher-debug.apk"
-
-for apk in "$GRADLE_APK_IL2CPP" "$GRADLE_APK_MONO" "$GRADLE_APK_DEV"; do
-    if [ ! -f "$OUTPUT_PATH" ] && [ -f "$apk" ]; then
-        cp "$apk" "$OUTPUT_PATH"
-        break
-    fi
+for arg in "$@"; do
+  [[ "$arg" == "--install" ]] && INSTALL=true
 done
 
-if [ ! -f "$OUTPUT_PATH" ]; then
-    echo ""
-    echo "Error: APK not found at $OUTPUT_PATH"
-    echo "Check log: $BUILD_LOG"
-    exit 1
+if [[ ! -x "$UNITY" ]]; then
+  echo "Unity not found at: $UNITY"
+  echo "Set UNITY_PATH to the correct Unity binary, e.g.:"
+  echo "  UNITY_PATH=/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity ./build_android.sh"
+  exit 1
 fi
 
-echo ""
-echo "Build complete: $OUTPUT_PATH"
+mkdir -p "$SCRIPT_DIR/Build/Android"
 
-# --- Install and launch ---
-if [ -z "$SELECTED" ]; then
-    exit 0
-fi
+# --- Patch ProjectSettings to use X86_64 for fast emulator build ---
+ARCH_ORIGINAL=$(grep "AndroidTargetArchitectures:" "$PROJECT_SETTINGS" | awk '{print $2}')
+sed -i '' "s/AndroidTargetArchitectures: ${ARCH_ORIGINAL}/AndroidTargetArchitectures: ${ARCH_EMULATOR}/" "$PROJECT_SETTINGS"
 
-adb start-server 2>/dev/null || true
-adb -s "$SELECTED" wait-for-device
-
-echo "Installing on $SELECTED..."
-adb -s "$SELECTED" install -r "$OUTPUT_PATH" || {
-    echo "Signature mismatch, uninstalling first..."
-    adb -s "$SELECTED" uninstall com.onesignal.example || true
-    adb -s "$SELECTED" install "$OUTPUT_PATH"
+restore_settings() {
+  sed -i '' "s/AndroidTargetArchitectures: ${ARCH_EMULATOR}/AndroidTargetArchitectures: ${ARCH_ORIGINAL}/" "$PROJECT_SETTINGS"
 }
+trap restore_settings EXIT
 
-echo "Launching app..."
-adb -s "$SELECTED" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
+echo "Building Android APK (emulator / x86_64 / Mono)..."
+echo "Log: $LOG_FILE"
+echo ""
+
+"$UNITY" \
+  -batchmode \
+  -quit \
+  -buildTarget Android \
+  -projectPath "$SCRIPT_DIR" \
+  -executeMethod BuildScript.BuildAndroidEmulator \
+  -logFile "$LOG_FILE"
+
+BUILD_EXIT=$?
+
+if [[ $BUILD_EXIT -ne 0 ]] || [[ ! -f "$OUTPUT_APK" ]]; then
+  echo "Build failed (exit $BUILD_EXIT). Check $LOG_FILE for details."
+  exit 1
+fi
+
+echo "APK: $OUTPUT_APK"
+
+if [[ "$INSTALL" == true ]]; then
+  EMULATOR=$(adb devices | awk '/emulator-[0-9]+\s+device/{print $1; exit}')
+  if [[ -z "$EMULATOR" ]]; then
+    echo "No running emulator found. Start one and re-run with --install."
+    exit 1
+  fi
+  echo "Installing on $EMULATOR..."
+  adb -s "$EMULATOR" install -r "$OUTPUT_APK"
+  echo "Done. Launch with:"
+  echo "  adb -s $EMULATOR shell am start -n com.onesignal.example/.UnityPlayerActivity"
+fi

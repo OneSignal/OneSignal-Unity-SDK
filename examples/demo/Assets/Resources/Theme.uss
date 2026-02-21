@@ -253,6 +253,10 @@
     -unity-text-align: middle-right;
 }
 
+#app_id_value {
+    font-size: 12px;
+}
+
 .delete-button {
     width: 24px;
     height: 24px;
