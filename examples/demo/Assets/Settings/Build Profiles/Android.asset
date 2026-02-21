@@ -23,8 +23,7 @@ MonoBehaviour:
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
-    m_Settings:
-    - line: "  AndroidTargetArchitectures: 8"
+    m_Settings: []
   references:
     version: 2
     RefIds:

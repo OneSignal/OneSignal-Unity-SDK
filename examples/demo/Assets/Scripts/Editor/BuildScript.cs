@@ -11,16 +11,21 @@ public static class BuildScript
     private const string ApkName = "onesignal-demo.apk";
 
     /// <summary>
-    /// Fast build targeting x86_64 Android emulators with Mono scripting backend.
-    /// Invoked by build_android.sh via -executeMethod BuildScript.BuildAndroidEmulator
+    /// Builds an Android APK using the architecture and scripting backend
+    /// pre-configured in ProjectSettings.asset by build_android.sh.
+    ///
+    /// In Unity 6, only ARMv7 supports Mono; ARM64 requires IL2CPP.
+    /// The shell script patches the correct values before launching Unity.
     /// </summary>
     public static void BuildAndroidEmulator()
     {
         var outputPath = Path.Combine(OutputDir, ApkName);
         Directory.CreateDirectory(OutputDir);
 
-        Debug.Log($"[BuildScript] targetArchitectures before: {PlayerSettings.Android.targetArchitectures}");
-        Debug.Log($"[BuildScript] scriptingBackend before: {PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android)}");
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+
+        Debug.Log($"[BuildScript] arch={PlayerSettings.Android.targetArchitectures} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android)}");
 
         EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
         EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
@@ -34,7 +39,6 @@ public static class BuildScript
             options = BuildOptions.Development | BuildOptions.AllowDebugging,
         };
 
-        Debug.Log($"[BuildScript] Starting build → {outputPath}");
         var report = BuildPipeline.BuildPlayer(options);
         HandleReport(report, outputPath);
     }
