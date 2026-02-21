@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &156168665
+--- !u!1 &160586816
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,9 +127,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 156168668}
-  - component: {fileID: 156168667}
-  - component: {fileID: 156168666}
+  - component: {fileID: 160586819}
+  - component: {fileID: 160586818}
+  - component: {fileID: 160586817}
   m_Layer: 0
   m_Name: UIDocument
   m_TagString: Untagged
@@ -137,27 +137,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &156168666
+--- !u!114 &160586817
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156168665}
+  m_GameObject: {fileID: 160586816}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34b9f69fc9e0145ea8249449eeaa43e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OneSignalDemo.UI.HomeScreenController
-  _uiDocument: {fileID: 156168667}
-  _viewModel: {fileID: 1735746059}
---- !u!114 &156168667
+  _uiDocument: {fileID: 160586818}
+  _viewModel: {fileID: 1458073693}
+--- !u!114 &160586818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156168665}
+  m_GameObject: {fileID: 160586816}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
@@ -174,13 +174,13 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
---- !u!4 &156168668
+--- !u!4 &160586819
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156168665}
+  m_GameObject: {fileID: 160586816}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -189,7 +189,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1146865410
+--- !u!1 &888325545
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,8 +197,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1146865412}
-  - component: {fileID: 1146865411}
+  - component: {fileID: 888325547}
+  - component: {fileID: 888325546}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -206,13 +206,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!20 &1146865411
+--- !u!20 &888325546
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1146865410}
+  m_GameObject: {fileID: 888325545}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -257,13 +257,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &1146865412
+--- !u!4 &888325547
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1146865410}
+  m_GameObject: {fileID: 888325545}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -272,7 +272,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1735746058
+--- !u!1 &1458073692
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -280,9 +280,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1735746061}
-  - component: {fileID: 1735746060}
-  - component: {fileID: 1735746059}
+  - component: {fileID: 1458073695}
+  - component: {fileID: 1458073694}
+  - component: {fileID: 1458073693}
   m_Layer: 0
   m_Name: AppManager
   m_TagString: Untagged
@@ -290,38 +290,38 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1735746059
+--- !u!114 &1458073693
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735746058}
+  m_GameObject: {fileID: 1458073692}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 52bd3f5376d4c4d27b74d2dcfd71fe48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OneSignalDemo.ViewModels.AppViewModel
---- !u!114 &1735746060
+--- !u!114 &1458073694
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735746058}
+  m_GameObject: {fileID: 1458073692}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16c66df82b399462ea83e78d7c9bc9d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OneSignalDemo.AppBootstrapper
-  _viewModel: {fileID: 1735746059}
---- !u!4 &1735746061
+  _viewModel: {fileID: 1458073693}
+--- !u!4 &1458073695
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735746058}
+  m_GameObject: {fileID: 1458073692}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -334,6 +334,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1146865412}
-  - {fileID: 1735746061}
-  - {fileID: 156168668}
+  - {fileID: 888325547}
+  - {fileID: 1458073695}
+  - {fileID: 160586819}

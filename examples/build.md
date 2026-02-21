@@ -121,7 +121,9 @@ Save to Assets/Resources/onesignal_logo.png and set the texture import settings 
 App bar layout:
 - Logo: 99x22px, flex-shrink: 0, scale-to-fit, tinted white
 - "Sample App" label: 14px, normal (400) weight, white
-- Status bar color set to match app bar red (#E5535A) via Android JNI at runtime
+- Status bar area: a red spacer element (status_bar_spacer) fills the safe area
+  top inset so the status bar blends with the app bar. Unity renders in fullscreen
+  mode behind the status bar, so Android's setStatusBarColor has no effect.
 
 Download the padded app icon PNG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
@@ -1000,8 +1002,11 @@ PanelSettings (Assets/UI/PanelSettings.asset):
 Safe Area:
 - HomeScreenController reads Screen.safeArea every frame in Update()
 - Computes top/bottom insets relative to the root VisualElement's resolved height
-- Applies as paddingTop/paddingBottom on the screen root container
-- This pushes content below the status bar and above the navigation bar
+- Top inset: sets the height of a red status_bar_spacer element above the app bar
+  so the status bar area matches the app bar color (Unity renders in fullscreen
+  mode behind the status bar, so Android's setStatusBarColor API has no effect)
+- Bottom inset: applies as paddingBottom on the screen root container
+- This keeps content below the status bar and above the navigation bar
   on devices with notches, rounded corners, or gesture navigation
 ```
 

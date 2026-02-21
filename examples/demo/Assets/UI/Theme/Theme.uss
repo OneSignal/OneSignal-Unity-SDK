@@ -23,6 +23,10 @@
     padding-top: 8px;
 }
 
+.status-bar-spacer {
+    background-color: var(--os-red);
+}
+
 .app-bar {
     flex-direction: row;
     align-items: center;
@@ -47,8 +51,6 @@
     font-size: 14px;
     -unity-font-style: normal;
     color: white;
-    height: 22px;
-    -unity-text-align: middle-left;
 }
 
 .section-container {

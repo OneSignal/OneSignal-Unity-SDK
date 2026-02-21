@@ -77,14 +77,15 @@ namespace OneSignalDemo.UI
         {
             if (_root == null) return;
             var safe = Screen.safeArea;
-            float top = (Screen.height - safe.yMax) / (Screen.height / _root.resolvedStyle.height);
-            float bottom = safe.y / (Screen.height / _root.resolvedStyle.height);
+            float scale = _root.resolvedStyle.height / Screen.height;
+            float top = (Screen.height - safe.yMax) * scale;
+            float bottom = safe.y * scale;
             var screenRoot = _root.Q("screen_root");
             if (screenRoot != null)
-            {
-                screenRoot.style.paddingTop = top;
                 screenRoot.style.paddingBottom = bottom;
-            }
+            var statusSpacer = _root.Q("status_bar_spacer");
+            if (statusSpacer != null)
+                statusSpacer.style.height = top;
         }
 
         private void BuildScreen()
@@ -92,6 +93,12 @@ namespace OneSignalDemo.UI
             var screenRoot = new VisualElement();
             screenRoot.name = "screen_root";
             screenRoot.AddToClassList("screen-root");
+
+            var statusSpacer = new VisualElement();
+            statusSpacer.name = "status_bar_spacer";
+            statusSpacer.AddToClassList("status-bar-spacer");
+            statusSpacer.style.height = 0;
+            screenRoot.Add(statusSpacer);
 
             var appBar = new VisualElement();
             appBar.AddToClassList("app-bar");

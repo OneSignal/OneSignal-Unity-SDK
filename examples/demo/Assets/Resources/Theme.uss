@@ -23,6 +23,10 @@
     padding-top: 8px;
 }
 
+.status-bar-spacer {
+    background-color: var(--os-red);
+}
+
 .app-bar {
     flex-direction: row;
     align-items: center;
