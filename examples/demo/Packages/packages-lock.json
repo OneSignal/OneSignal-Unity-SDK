@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.onesignal.unity.android": {
-      "version": "file:../../com.onesignal.unity.android",
+      "version": "file:../../../com.onesignal.unity.android",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -9,13 +9,13 @@
       }
     },
     "com.onesignal.unity.core": {
-      "version": "file:../../com.onesignal.unity.core",
+      "version": "file:../../../com.onesignal.unity.core",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.onesignal.unity.ios": {
-      "version": "file:../../com.onesignal.unity.ios",
+      "version": "file:../../../com.onesignal.unity.ios",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -30,14 +30,6 @@
         "com.unity.modules.ai": "1.0.0"
       },
       "url": "https://packages.unity.com"
-    },
-    "com.unity.asset-store-tools": {
-      "version": "file:com.unity.asset-store-tools",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "3.2.1"
-      }
     },
     "com.unity.ext.nunit": {
       "version": "2.0.5",
@@ -72,8 +64,8 @@
       }
     },
     "com.unity.nuget.newtonsoft-json": {
-      "version": "3.2.2",
-      "depth": 1,
+      "version": "3.2.1",
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

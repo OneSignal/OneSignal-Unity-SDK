@@ -104,7 +104,7 @@ namespace OneSignalDemo.ViewModels
             }
         }
 
-        public async void LoginUser(string externalUserId)
+        public void LoginUser(string externalUserId)
         {
             if (string.IsNullOrEmpty(externalUserId)) return;
 

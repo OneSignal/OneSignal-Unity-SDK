@@ -92,10 +92,10 @@ namespace OneSignalDemo.UI
 
             if (entries.Count == 0)
             {
-                _emptyLabel = new Label("No logs yet");
-                _emptyLabel.name = "log_view_empty";
-                _emptyLabel.AddToClassList("log-empty");
-                _scrollContent.Add(_emptyLabel);
+                var empty = new Label("No logs yet");
+                empty.name = "log_view_empty";
+                empty.AddToClassList("log-empty");
+                _scrollContent.Add(empty);
                 return;
             }
 
