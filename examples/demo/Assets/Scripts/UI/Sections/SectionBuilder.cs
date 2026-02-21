@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Sections
@@ -22,7 +23,7 @@ namespace OneSignalDemo.UI.Sections
             {
                 var infoBtn = new Button(onInfoTap);
                 infoBtn.name = $"{name}_info";
-                infoBtn.text = "\uE88E";
+                infoBtn.text = MaterialIcons.Info;
                 infoBtn.AddToClassList("info-button");
                 header.Add(infoBtn);
             }
@@ -120,7 +121,7 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
-                deleteBtn.text = "\uE5CD";
+                deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
                 item.Add(deleteBtn);
             }
@@ -162,7 +163,7 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
-                deleteBtn.text = "\uE5CD";
+                deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
                 item.Add(deleteBtn);
             }

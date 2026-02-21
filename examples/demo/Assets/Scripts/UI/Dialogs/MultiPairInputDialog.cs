@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OneSignalDemo.UI;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
@@ -85,7 +86,7 @@ namespace OneSignalDemo.UI.Dialogs
             var entry = (keyField, valueField, row);
 
             var deleteBtn = new Button(() => RemoveRow(entry));
-            deleteBtn.text = "\uE5CD";
+            deleteBtn.text = MaterialIcons.Close;
             deleteBtn.AddToClassList("dialog-row-delete");
             row.Add(deleteBtn);
 

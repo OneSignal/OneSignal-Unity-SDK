@@ -12,6 +12,7 @@ namespace OneSignalDemo.UI
         private readonly ScrollView _scrollView;
         private readonly Label _countLabel;
         private readonly Label _emptyLabel;
+        private readonly Button _chevronButton;
         private bool _expanded = true;
 
         public LogViewController(VisualElement root)
@@ -39,11 +40,22 @@ namespace OneSignalDemo.UI
 
             header.Add(headerLeft);
 
+            var headerRight = new VisualElement();
+            headerRight.AddToClassList("log-header-right");
+
             var clearButton = new Button(ClearLogs);
             clearButton.name = "log_view_clear_button";
-            clearButton.text = "\uE5CD";
+            clearButton.text = MaterialIcons.Delete;
             clearButton.AddToClassList("log-clear-button");
-            header.Add(clearButton);
+            headerRight.Add(clearButton);
+
+            _chevronButton = new Button(ToggleExpand);
+            _chevronButton.name = "log_view_toggle";
+            _chevronButton.text = MaterialIcons.ExpandLess;
+            _chevronButton.AddToClassList("log-clear-button");
+            headerRight.Add(_chevronButton);
+
+            header.Add(headerRight);
 
             _container.Add(header);
 
@@ -71,6 +83,7 @@ namespace OneSignalDemo.UI
         {
             _expanded = !_expanded;
             _scrollView.style.display = _expanded ? DisplayStyle.Flex : DisplayStyle.None;
+            _chevronButton.text = _expanded ? MaterialIcons.ExpandLess : MaterialIcons.ExpandMore;
         }
 
         private void ClearLogs()

@@ -18,6 +18,11 @@
     align-items: center;
 }
 
+.log-header-right {
+    flex-direction: row;
+    align-items: center;
+}
+
 .log-header-title {
     font-size: 12px;
     color: #E0E0E0;

@@ -24,7 +24,7 @@ namespace OneSignalDemo.UI
 
             var backButton = new Button(() => SceneManager.LoadScene("Main"));
             backButton.name = "back_button";
-            backButton.text = "\uE5C4";
+            backButton.text = MaterialIcons.ArrowBack;
             backButton.AddToClassList("back-button");
             appBar.Add(backButton);
 
