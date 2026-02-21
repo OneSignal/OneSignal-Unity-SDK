@@ -1,5 +1,0 @@
-<linker>
-  <assembly fullname="OneSignal.Core" preserve="all" />
-  <assembly fullname="OneSignal.Android" preserve="all" />
-  <assembly fullname="OneSignal.iOS" preserve="all" />
-</linker>
