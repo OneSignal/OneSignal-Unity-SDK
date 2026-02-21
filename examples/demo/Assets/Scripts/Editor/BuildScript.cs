@@ -18,6 +18,13 @@ public static class BuildScript
         PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
         PlayerSettings.productName = "OneSignal Demo";
 
+        bool devBuild = HasArg("-devBuild");
+        if (devBuild)
+        {
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.Mono2x);
+            Debug.Log("Dev build: Mono + Development");
+        }
+
         var scenes = EditorBuildSettings.scenes
             .Where(s => s.enabled)
             .Select(s => s.path)
@@ -25,12 +32,16 @@ public static class BuildScript
 
         var outputPath = GetArg("-outputPath") ?? "Build/OneSignalDemo.apk";
 
+        var buildOptions = BuildOptions.None;
+        if (devBuild)
+            buildOptions = BuildOptions.Development | BuildOptions.CompressWithLz4;
+
         var options = new BuildPlayerOptions
         {
             scenes = scenes,
             locationPathName = outputPath,
             target = BuildTarget.Android,
-            options = BuildOptions.None
+            options = buildOptions
         };
 
         var report = BuildPipeline.BuildPlayer(options);
@@ -57,4 +68,7 @@ public static class BuildScript
         }
         return null;
     }
+
+    private static bool HasArg(string name) =>
+        Array.Exists(Environment.GetCommandLineArgs(), a => a == name);
 }

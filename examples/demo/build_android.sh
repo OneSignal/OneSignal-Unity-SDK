@@ -1,15 +1,23 @@
 #!/bin/bash
 set -euo pipefail
 
+DEV_BUILD=false
+POSITIONAL_ARGS=()
+for arg in "$@"; do
+    case $arg in
+        --dev) DEV_BUILD=true ;;
+        *) POSITIONAL_ARGS+=("$arg") ;;
+    esac
+done
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_PATH="$SCRIPT_DIR"
-OUTPUT_PATH="${1:-$PROJECT_PATH/Build/OneSignalDemo.apk}"
+OUTPUT_PATH="${POSITIONAL_ARGS[0]:-$PROJECT_PATH/Build/OneSignalDemo.apk}"
 
 # --- Device selection (before build) ---
 SELECTED=""
 if command -v adb &>/dev/null; then
     adb start-server 2>/dev/null || true
-    sleep 1
 
     DEVICE_LIST=()
     while IFS= read -r line; do
@@ -73,11 +81,23 @@ fi
 
 mkdir -p "$(dirname "$OUTPUT_PATH")"
 
+BUILD_LOG="$PROJECT_PATH/Build/build.log"
+BUILD_MODE="Release (IL2CPP)"
+DEV_ARGS=""
+if $DEV_BUILD; then
+    BUILD_MODE="Development (Mono)"
+    DEV_ARGS="-devBuild"
+fi
+
 echo "Building Android APK..."
 echo "  Unity:   $UNITY_VERSION"
+echo "  Mode:    $BUILD_MODE"
 echo "  Project: $PROJECT_PATH"
 echo "  Output:  $OUTPUT_PATH"
+echo "  Log:     $BUILD_LOG"
 echo ""
+
+BUILD_START=$SECONDS
 
 "$UNITY_PATH" \
     -batchmode \
@@ -86,17 +106,28 @@ echo ""
     -projectPath "$PROJECT_PATH" \
     -executeMethod BuildScript.BuildAndroid \
     -outputPath "$OUTPUT_PATH" \
-    -logFile -
+    $DEV_ARGS \
+    -logFile "$BUILD_LOG"
 
-GRADLE_APK="$PROJECT_PATH/Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"
+BUILD_ELAPSED=$(( SECONDS - BUILD_START ))
+echo ""
+echo "Build time: $((BUILD_ELAPSED / 60))m $((BUILD_ELAPSED % 60))s"
 
-if [ ! -f "$OUTPUT_PATH" ] && [ -f "$GRADLE_APK" ]; then
-    cp "$GRADLE_APK" "$OUTPUT_PATH"
-fi
+GRADLE_APK_IL2CPP="$PROJECT_PATH/Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"
+GRADLE_APK_MONO="$PROJECT_PATH/Library/Bee/Android/Prj/Mono/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"
+GRADLE_APK_DEV="$PROJECT_PATH/Library/Bee/Android/Prj/Mono/Gradle/launcher/build/outputs/apk/debug/launcher-debug.apk"
+
+for apk in "$GRADLE_APK_IL2CPP" "$GRADLE_APK_MONO" "$GRADLE_APK_DEV"; do
+    if [ ! -f "$OUTPUT_PATH" ] && [ -f "$apk" ]; then
+        cp "$apk" "$OUTPUT_PATH"
+        break
+    fi
+done
 
 if [ ! -f "$OUTPUT_PATH" ]; then
     echo ""
     echo "Error: APK not found at $OUTPUT_PATH"
+    echo "Check log: $BUILD_LOG"
     exit 1
 fi
 
@@ -108,10 +139,7 @@ if [ -z "$SELECTED" ]; then
     exit 0
 fi
 
-echo ""
-echo "Waiting for adb..."
 adb start-server 2>/dev/null || true
-sleep 3
 adb -s "$SELECTED" wait-for-device
 
 echo "Installing on $SELECTED..."
