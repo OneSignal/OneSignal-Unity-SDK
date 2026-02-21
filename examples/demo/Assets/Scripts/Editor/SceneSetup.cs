@@ -74,7 +74,16 @@ public static class SceneSetup
     private static PanelSettings GetOrCreatePanelSettings()
     {
         var existing = AssetDatabase.LoadAssetAtPath<PanelSettings>("Assets/UI/PanelSettings.asset");
-        if (existing != null) return existing;
+        if (existing != null)
+        {
+            existing.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+            existing.referenceResolution = new Vector2Int(412, 892);
+            existing.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
+            existing.match = 0f;
+            EditorUtility.SetDirty(existing);
+            AssetDatabase.SaveAssets();
+            return existing;
+        }
 
         var settings = ScriptableObject.CreateInstance<PanelSettings>();
         settings.scaleMode = PanelScaleMode.ScaleWithScreenSize;

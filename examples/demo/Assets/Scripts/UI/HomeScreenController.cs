@@ -68,9 +68,29 @@ namespace OneSignalDemo.UI
             _logView?.Destroy();
         }
 
+        private void Update()
+        {
+            ApplySafeArea();
+        }
+
+        private void ApplySafeArea()
+        {
+            if (_root == null) return;
+            var safe = Screen.safeArea;
+            float top = (Screen.height - safe.yMax) / (Screen.height / _root.resolvedStyle.height);
+            float bottom = safe.y / (Screen.height / _root.resolvedStyle.height);
+            var screenRoot = _root.Q("screen_root");
+            if (screenRoot != null)
+            {
+                screenRoot.style.paddingTop = top;
+                screenRoot.style.paddingBottom = bottom;
+            }
+        }
+
         private void BuildScreen()
         {
             var screenRoot = new VisualElement();
+            screenRoot.name = "screen_root";
             screenRoot.AddToClassList("screen-root");
 
             var appBar = new VisualElement();

@@ -19,30 +19,30 @@
 }
 
 .scroll-content {
-    padding: 12px;
-    padding-top: 0;
+    padding: 16px;
+    padding-top: 8px;
 }
 
 .app-bar {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 12px 16px;
-    background-color: var(--os-card-bg);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--os-divider);
+    padding: 14px 16px;
+    background-color: var(--os-red);
+    border-bottom-width: 0;
 }
 
 .app-bar-logo {
-    width: 28px;
-    height: 28px;
-    margin-right: 8px;
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    -unity-background-image-tint-color: white;
 }
 
 .app-bar-title {
     font-size: 18px;
     -unity-font-style: bold;
-    color: var(--os-text-primary);
+    color: white;
 }
 
 .section-container {

@@ -24,9 +24,9 @@ MonoBehaviour:
   m_Scale: 1
   m_ReferenceDpi: 96
   m_FallbackDpi: 96
-  m_ReferenceResolution: {x: 1080, y: 2400}
+  m_ReferenceResolution: {x: 412, y: 892}
   m_ScreenMatchMode: 0
-  m_Match: 0.5
+  m_Match: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
   m_BindingLogLevel: 0
