@@ -84,3 +84,7 @@
     -unity-text-align: middle-center;
     padding: 8px;
 }
+
+.log-scroll .unity-scroller {
+    display: none;
+}

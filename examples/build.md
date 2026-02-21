@@ -972,6 +972,25 @@ Theme.uss (imported by all UXML files):
 - Button styles with rounded corners (8px border-radius)
 - Input field styles with outline border
 - Consistent font sizes and spacing
+- Hide all scrollbars (Scroller, .unity-scroller, .unity-scroller--vertical,
+  .unity-scroller--horizontal set to display: none) — touch/swipe scrolling
+  still works, the bars just don't render
+- App bar: red background (--os-red) with white text and white-tinted logo
+
+PanelSettings (Assets/UI/PanelSettings.asset):
+- ScaleMode: ScaleWithScreenSize
+- Reference Resolution: 412 x 892 (standard Android dp dimensions)
+- ScreenMatchMode: MatchWidthOrHeight
+- Match: 0 (match width only)
+- This ensures 1 USS pixel ≈ 1 dp on device for consistent sizing across
+  screen densities
+
+Safe Area:
+- HomeScreenController reads Screen.safeArea every frame in Update()
+- Computes top/bottom insets relative to the root VisualElement's resolved height
+- Applies as paddingTop/paddingBottom on the screen root container
+- This pushes content below the status bar and above the navigation bar
+  on devices with notches, rounded corners, or gesture navigation
 ```
 
 ### Prompt 8.6 - Log View (Appium-Ready)
@@ -1183,6 +1202,8 @@ If you change the identifier, you must also update these files with your own Fir
 - **async/await** with Task-based APIs where the SDK supports it (RequestPermissionAsync, EnterAsync)
 - **PlayerPrefs wrapped** in a typed PreferencesService to avoid scattered string keys
 - **UI Toolkit** (UXML + USS) for resolution-independent, stylesheet-driven UI over legacy Canvas
+- **PanelSettings** with ScaleWithScreenSize (412x892 reference) for dp-accurate scaling on mobile
+- **Safe area** insets applied via Screen.safeArea to handle notches and system bars
 - **Separation of concerns**: Repository wraps SDK, ViewModel holds state, Controllers bind UI
 - **Unsubscribe in OnDestroy** from all SDK events and C# events to prevent memory leaks
 - **Assembly definitions** (.asmdef) to organize scripts into compiled units for faster iteration

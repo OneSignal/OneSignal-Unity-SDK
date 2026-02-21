@@ -525,3 +525,19 @@
     margin-top: 2px;
     white-space: normal;
 }
+
+Scroller {
+    display: none;
+}
+
+.unity-scroller {
+    display: none;
+}
+
+.unity-scroller--vertical {
+    display: none;
+}
+
+.unity-scroller--horizontal {
+    display: none;
+}

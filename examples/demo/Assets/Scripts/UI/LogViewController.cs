@@ -64,7 +64,7 @@ namespace OneSignalDemo.UI
             LogManager.Instance.OnLogAdded += OnLogAdded;
             Refresh();
 
-            root.Insert(0, _container);
+            root.Add(_container);
         }
 
         private void ToggleExpand()
