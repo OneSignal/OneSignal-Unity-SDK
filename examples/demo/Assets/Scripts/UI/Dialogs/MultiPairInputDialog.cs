@@ -68,15 +68,14 @@ namespace OneSignalDemo.UI.Dialogs
             var keyField = new TextField();
             keyField.name = $"multi_key_{_rows.Count}";
             keyField.AddToClassList("input-field");
-            keyField.style.flexGrow = 1;
-            keyField.style.marginRight = 8;
+            keyField.AddToClassList("dialog-field-group-left");
             keyField.textEdition.placeholder = _keyLabel;
             keyField.RegisterValueChangedCallback(_ => ValidateAll());
 
             var valueField = new TextField();
             valueField.name = $"multi_value_{_rows.Count}";
             valueField.AddToClassList("input-field");
-            valueField.style.flexGrow = 1;
+            valueField.AddToClassList("dialog-field-group");
             valueField.textEdition.placeholder = _valueLabel;
             valueField.RegisterValueChangedCallback(_ => ValidateAll());
 

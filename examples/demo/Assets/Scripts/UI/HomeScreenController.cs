@@ -119,7 +119,7 @@ namespace OneSignalDemo.UI
             _logView = new LogViewController(screenRoot);
 
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
-            scrollView.style.flexGrow = 1;
+            scrollView.AddToClassList("flex-grow");
 
             _contentRoot = new VisualElement();
             _contentRoot.AddToClassList("scroll-content");

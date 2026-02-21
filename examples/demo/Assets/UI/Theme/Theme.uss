@@ -541,6 +541,45 @@
     white-space: normal;
 }
 
+.back-button {
+    font-size: 22px;
+    background-color: transparent;
+    border-width: 0;
+    margin-right: 8px;
+    color: white;
+    -unity-font-definition: resource("MaterialIcons-Regular");
+}
+
+.centered-content {
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-heading {
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+.tooltip-description {
+    font-size: 14px;
+    white-space: normal;
+    margin-bottom: 12px;
+}
+
+.dialog-field-group {
+    flex-grow: 1;
+}
+
+.dialog-field-group-left {
+    flex-grow: 1;
+    margin-right: 8px;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
 Scroller {
     width: 0;
     height: 0;

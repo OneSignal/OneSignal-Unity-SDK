@@ -156,7 +156,7 @@ namespace OneSignalDemo.UI.Sections
 
             var label = new Label(value);
             label.AddToClassList("key-value-key");
-            label.style.flexGrow = 1;
+            label.AddToClassList("flex-grow");
             item.Add(label);
 
             if (onDelete != null)

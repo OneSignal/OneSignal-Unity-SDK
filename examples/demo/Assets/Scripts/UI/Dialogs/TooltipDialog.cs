@@ -21,9 +21,7 @@ namespace OneSignalDemo.UI.Dialogs
             if (!string.IsNullOrEmpty(_data.Description))
             {
                 var desc = new Label(_data.Description);
-                desc.style.fontSize = 14;
-                desc.style.whiteSpace = WhiteSpace.Normal;
-                desc.style.marginBottom = 12;
+                desc.AddToClassList("tooltip-description");
                 container.Add(desc);
             }
 

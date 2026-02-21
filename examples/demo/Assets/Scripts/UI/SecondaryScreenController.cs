@@ -25,14 +25,7 @@ namespace OneSignalDemo.UI
             var backButton = new Button(() => SceneManager.LoadScene("Main"));
             backButton.name = "back_button";
             backButton.text = "\uE5C4";
-            backButton.AddToClassList("material-icon");
-            backButton.style.fontSize = 22;
-            backButton.style.backgroundColor = new StyleColor(Color.clear);
-            backButton.style.borderTopWidth = 0;
-            backButton.style.borderBottomWidth = 0;
-            backButton.style.borderLeftWidth = 0;
-            backButton.style.borderRightWidth = 0;
-            backButton.style.marginRight = 8;
+            backButton.AddToClassList("back-button");
             appBar.Add(backButton);
 
             var title = new Label("Secondary Activity");
@@ -42,14 +35,11 @@ namespace OneSignalDemo.UI
             screenRoot.Add(appBar);
 
             var content = new VisualElement();
-            content.style.flexGrow = 1;
-            content.style.justifyContent = Justify.Center;
-            content.style.alignItems = Align.Center;
+            content.AddToClassList("centered-content");
 
             var heading = new Label("Secondary Activity");
             heading.name = "secondary_heading";
-            heading.style.fontSize = 24;
-            heading.style.unityFontStyleAndWeight = FontStyle.Bold;
+            heading.AddToClassList("page-heading");
             content.Add(heading);
 
             screenRoot.Add(content);

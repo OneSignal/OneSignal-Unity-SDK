@@ -39,8 +39,7 @@ namespace OneSignalDemo.UI.Dialogs
             row.AddToClassList("dialog-row");
 
             var keyContainer = new VisualElement();
-            keyContainer.style.flexGrow = 1;
-            keyContainer.style.marginRight = 8;
+            keyContainer.AddToClassList("dialog-field-group-left");
             var keyLabel = new Label(_keyLabel);
             keyLabel.AddToClassList("input-label");
             keyContainer.Add(keyLabel);
@@ -51,7 +50,7 @@ namespace OneSignalDemo.UI.Dialogs
             keyContainer.Add(_keyField);
 
             var valueContainer = new VisualElement();
-            valueContainer.style.flexGrow = 1;
+            valueContainer.AddToClassList("dialog-field-group");
             var valueLabel = new Label(_valueLabel);
             valueLabel.AddToClassList("input-label");
             valueContainer.Add(valueLabel);
