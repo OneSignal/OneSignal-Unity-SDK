@@ -110,12 +110,18 @@ Build the app with:
 
 Download the app bar logo SVG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo.svg
-Convert the SVG to PNG (e.g. `rsvg-convert -w 800 -h 200 onesignal_logo.svg -o onesignal_logo.png`)
-and save to Assets/Resources/onesignal_logo.png. Unity cannot load SVGs as Texture2D natively.
+Convert to PNG preserving aspect ratio (e.g. `rsvg-convert -w 632 onesignal_logo.svg -o onesignal_logo.png`).
+Only specify width so rsvg-convert derives height from the SVG viewBox (316x70). Unity cannot
+load SVGs as Texture2D natively.
+Save to Assets/Resources/onesignal_logo.png and set the texture import settings in the .meta file:
+  nPOTScale: 0 (None — keep original dimensions, do not resize to power-of-2)
+  enableMipMap: 0
+  alphaIsTransparency: 1
 
 App bar layout:
-- Logo: 120x30px, -unity-background-scale-mode: scale-to-fit, tinted white
+- Logo: 99x22px, flex-shrink: 0, scale-to-fit, tinted white
 - "Sample App" label: 14px, normal (400) weight, white
+- Status bar color set to match app bar red (#E5535A) via Android JNI at runtime
 
 Download the padded app icon PNG from:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
@@ -976,9 +982,11 @@ Theme.uss (imported by all UXML files):
 - Button styles with rounded corners (8px border-radius)
 - Input field styles with outline border
 - Consistent font sizes and spacing
-- Hide all scrollbars (Scroller, .unity-scroller, .unity-scroller--vertical,
-  .unity-scroller--horizontal set to display: none) — touch/swipe scrolling
-  still works, the bars just don't render
+- Hide all scrollbars by collapsing Scroller elements to 0 width/height
+  (display: none alone is insufficient). Target Scroller type selector,
+  .unity-scroller--vertical (width: 0), .unity-scroller--horizontal
+  (height: 0), .unity-base-slider and .unity-repeat-button (display: none).
+  Touch/swipe scrolling still works, the bars just don't render
 - App bar: red background (--os-red) with white text and white-tinted logo
 
 PanelSettings (Assets/UI/PanelSettings.asset):

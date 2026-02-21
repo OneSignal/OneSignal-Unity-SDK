@@ -35,6 +35,9 @@
 .app-bar-logo {
     width: 99px;
     height: 22px;
+    min-width: 99px;
+    min-height: 22px;
+    flex-shrink: 0;
     margin-right: 8px;
     -unity-background-image-tint-color: white;
     -unity-background-scale-mode: scale-to-fit;
@@ -528,17 +531,31 @@
 }
 
 Scroller {
-    display: none;
-}
-
-.unity-scroller {
-    display: none;
+    width: 0;
+    height: 0;
+    min-width: 0;
+    min-height: 0;
+    max-width: 0;
+    max-height: 0;
+    overflow: hidden;
 }
 
 .unity-scroller--vertical {
-    display: none;
+    width: 0;
+    min-width: 0;
+    max-width: 0;
 }
 
 .unity-scroller--horizontal {
+    height: 0;
+    min-height: 0;
+    max-height: 0;
+}
+
+.unity-base-slider {
+    display: none;
+}
+
+.unity-repeat-button {
     display: none;
 }
