@@ -22,6 +22,10 @@ public static class BuildScript
         if (devBuild)
         {
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.Mono2x);
+            PlayerSettings.Android.targetArchitectures =
+                AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
+            EditorUserBuildSettings.connectProfiler = false;
+            EditorUserBuildSettings.allowDebugging = false;
             Debug.Log("Dev build: Mono + Development");
         }
 

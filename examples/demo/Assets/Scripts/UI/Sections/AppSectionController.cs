@@ -35,9 +35,13 @@ namespace OneSignalDemo.UI.Sections
             var section = SectionBuilder.CreateSection("App", "app_section");
 
             var appIdCard = SectionBuilder.CreateCard("app_id_card");
-            var appIdRow = SectionBuilder.CreateInlineKeyValue("App ID", _viewModel.AppId, "app_id");
-            _appIdLabel = appIdRow.Q<Label>("app_id_value");
-            appIdCard.Add(appIdRow);
+            var appIdReadonlyLabel = new Label("App ID");
+            appIdReadonlyLabel.AddToClassList("readonly-label");
+            appIdCard.Add(appIdReadonlyLabel);
+            _appIdLabel = new Label(_viewModel.AppId);
+            _appIdLabel.name = "app_id_value";
+            _appIdLabel.AddToClassList("readonly-field");
+            appIdCard.Add(_appIdLabel);
             section.Add(appIdCard);
 
             var banner = new VisualElement();

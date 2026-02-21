@@ -98,16 +98,9 @@ echo "  Log:     $BUILD_LOG"
 echo ""
 
 if $DEV_BUILD; then
-    MONO_GRADLE="$PROJECT_PATH/Library/Bee/Android/Prj/Mono2x/Gradle"
-    NEEDS_CLEAN=false
-    if [ -d "$MONO_GRADLE" ]; then
-        grep -q compileSdk "$MONO_GRADLE/launcher/build.gradle" 2>/dev/null || NEEDS_CLEAN=true
-    fi
-    if $NEEDS_CLEAN; then
-        rm -rf "$MONO_GRADLE"
-        echo "Cleaned stale Mono Gradle cache"
-    fi
+    rm -rf "$PROJECT_PATH/Library/Bee/Android/Prj/Mono2x" 2>/dev/null
 fi
+rm -f "$OUTPUT_PATH"
 
 BUILD_START=$SECONDS
 
