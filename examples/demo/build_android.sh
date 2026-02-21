@@ -98,25 +98,34 @@ echo "  Log:     $BUILD_LOG"
 echo ""
 
 if $DEV_BUILD; then
-    rm -rf "$PROJECT_PATH/Library/Bee/Android/Prj/Mono2x" 2>/dev/null
+    rm -rf "$PROJECT_PATH/Library/Bee/Android/Prj/Mono" 2>/dev/null
 fi
 rm -f "$OUTPUT_PATH"
 
 BUILD_START=$SECONDS
+UNITY_EXIT_CODE=0
 
 "$UNITY_PATH" \
     -batchmode \
     -nographics \
     -quit \
+    -buildTarget Android \
     -projectPath "$PROJECT_PATH" \
     -executeMethod BuildScript.BuildAndroid \
     -outputPath "$OUTPUT_PATH" \
     $DEV_ARGS \
-    -logFile "$BUILD_LOG" || true
+    -logFile "$BUILD_LOG" || UNITY_EXIT_CODE=$?
 
 BUILD_ELAPSED=$(( SECONDS - BUILD_START ))
 echo ""
 echo "Build time: $((BUILD_ELAPSED / 60))m $((BUILD_ELAPSED % 60))s"
+
+if [ "$UNITY_EXIT_CODE" -ne 0 ]; then
+    echo ""
+    echo "Error: Unity exited with code $UNITY_EXIT_CODE"
+    echo "Check log: $BUILD_LOG"
+    exit "$UNITY_EXIT_CODE"
+fi
 
 GRADLE_APK_IL2CPP="$PROJECT_PATH/Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"
 GRADLE_APK_MONO="$PROJECT_PATH/Library/Bee/Android/Prj/Mono/Gradle/launcher/build/outputs/apk/release/launcher-release.apk"

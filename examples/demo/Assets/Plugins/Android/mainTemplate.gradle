@@ -2,6 +2,7 @@
 
 apply plugin: 'com.android.library'
 apply from: '../shared/keepUnitySymbols.gradle'
+apply from: '../shared/common.gradle'
 **APPLY_PLUGINS**
 
 dependencies {
@@ -13,39 +14,37 @@ dependencies {
 
 // Android Resolver Exclusions Start
 android {
-    namespace "com.unity3d.player"
-    ndkPath "**NDKPATH**"
-    ndkVersion "**NDKVERSION**"
   packagingOptions {
-      exclude ('/lib/arm64-v8a/*' + '*')
       exclude ('/lib/armeabi/*' + '*')
       exclude ('/lib/mips/*' + '*')
       exclude ('/lib/mips64/*' + '*')
-      exclude ('/lib/x86/*' + '*')
-      exclude ('/lib/x86_64/*' + '*')
   }
 }
 // Android Resolver Exclusions End
 android {
+    namespace "com.unity3d.player"
+    ndkPath "**NDKPATH**"
+    ndkVersion "**NDKVERSION**"
+
     compileSdk **APIVERSION**
-    buildToolsVersion '**BUILDTOOLS**'
+    buildToolsVersion = "**BUILDTOOLS**"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     defaultConfig {
-**DEFAULT_CONFIG_SETUP**
         minSdk **MINSDK**
         targetSdk **TARGETSDK**
         ndk {
-            debugSymbolLevel **DEBUGSYMBOLLEVEL**
             abiFilters **ABIFILTERS**
+            debugSymbolLevel **DEBUGSYMBOLLEVEL**
         }
         versionCode **VERSIONCODE**
         versionName '**VERSIONNAME**'
         consumerProguardFiles 'proguard-unity.txt'**USER_PROGUARD**
+**DEFAULT_CONFIG_SETUP**
     }
 
     lint {
@@ -53,8 +52,8 @@ android {
     }
 
     androidResources {
-    noCompress = **BUILTIN_NOCOMPRESS** + unityStreamingAssets.tokenize(', ')
-        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~"
+        noCompress = **BUILTIN_NOCOMPRESS** + unityStreamingAssets.tokenize(', ')
+        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~"
     }**PACKAGING**
 }**REPOSITORIES**
 **IL_CPP_BUILD_SETUP**

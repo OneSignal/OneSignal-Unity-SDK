@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -13,26 +14,27 @@ public static class BuildScript
     {
         SceneSetup.SetupScenes();
 
-        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, DefaultBundleId);
-        PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
+        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, DefaultBundleId);
+        PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel25;
         PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
         PlayerSettings.productName = "OneSignal Demo";
 
         bool devBuild = HasArg("-devBuild");
         if (devBuild)
         {
-            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.Mono2x);
-            PlayerSettings.Android.targetArchitectures =
-                AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.Mono2x);
             EditorUserBuildSettings.connectProfiler = false;
             EditorUserBuildSettings.allowDebugging = false;
             Debug.Log("Dev build: Mono + Development");
         }
+        else
+        {
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+            Debug.Log("Release build: IL2CPP");
+        }
 
-        var scenes = EditorBuildSettings.scenes
-            .Where(s => s.enabled)
-            .Select(s => s.path)
-            .ToArray();
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.All;
+        Debug.Log($"Android target architectures: {PlayerSettings.Android.targetArchitectures}");
 
         var outputPath = GetArg("-outputPath") ?? "Build/OneSignalDemo.apk";
 
@@ -40,16 +42,26 @@ public static class BuildScript
         if (devBuild)
             buildOptions = BuildOptions.Development | BuildOptions.CompressWithLz4;
 
+        var scenes = EditorBuildSettings.scenes
+            .Where(s => s.enabled)
+            .Select(s => s.path)
+            .ToArray();
+
         var options = new BuildPlayerOptions
         {
             scenes = scenes,
             locationPathName = outputPath,
             target = BuildTarget.Android,
+            targetGroup = BuildTargetGroup.Android,
             options = buildOptions
         };
 
         var report = BuildPipeline.BuildPlayer(options);
+        HandleReport(report);
+    }
 
+    private static void HandleReport(BuildReport report)
+    {
         if (report.summary.result != BuildResult.Succeeded)
         {
             Debug.LogError($"Build failed: {report.summary.totalErrors} error(s)");

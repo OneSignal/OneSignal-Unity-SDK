@@ -29,13 +29,10 @@ namespace OneSignalDemo.UI.Sections
 
             var card = SectionBuilder.CreateCard("push_card");
 
-            var pushIdReadonlyLabel = new Label("Push Subscription ID");
-            pushIdReadonlyLabel.AddToClassList("readonly-label");
-            card.Add(pushIdReadonlyLabel);
-            _pushIdLabel = new Label(_viewModel.PushSubscriptionId ?? "\u2013");
-            _pushIdLabel.name = "push_subscription_id";
-            _pushIdLabel.AddToClassList("readonly-field");
-            card.Add(_pushIdLabel);
+            var pushIdRow = SectionBuilder.CreateInlineKeyValue("Push ID",
+                _viewModel.PushSubscriptionId ?? "\u2013", "push_subscription_id");
+            _pushIdLabel = pushIdRow.Q<Label>("push_subscription_id_value");
+            card.Add(pushIdRow);
 
             card.Add(SectionBuilder.CreateDivider());
 
