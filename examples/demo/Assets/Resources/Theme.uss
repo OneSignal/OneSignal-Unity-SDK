@@ -96,8 +96,14 @@
     border-radius: 12px;
     padding: 12px;
     margin-bottom: var(--card-gap);
-    border-width: 0;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.3);
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 2px;
+    border-top-color: rgba(0, 0, 0, 0.08);
+    border-left-color: rgba(0, 0, 0, 0.08);
+    border-right-color: rgba(0, 0, 0, 0.08);
+    border-bottom-color: rgba(0, 0, 0, 0.15);
 }
 
 .card-no-margin {
