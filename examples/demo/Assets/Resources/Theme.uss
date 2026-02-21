@@ -96,8 +96,8 @@
     border-radius: 12px;
     padding: 12px;
     margin-bottom: var(--card-gap);
-    border-width: 1px;
-    border-color: var(--os-divider);
+    border-width: 0;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.3);
 }
 
 .card-no-margin {
@@ -132,6 +132,37 @@
     font-size: 12px;
     color: var(--os-text-secondary);
     margin-top: 2px;
+}
+
+.switch-track {
+    width: 52px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: #BDBDBD;
+    flex-shrink: 0;
+}
+
+.switch-track--on {
+    background-color: var(--os-red);
+}
+
+.switch-track--disabled {
+    opacity: 0.4;
+}
+
+.switch-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    background-color: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+}
+
+.switch-thumb--on {
+    left: auto;
+    right: 2px;
 }
 
 .primary-button {
@@ -237,7 +268,7 @@
 .key-value-inline {
     flex-direction: row;
     align-items: center;
-    padding: 10px 0;
+    padding: 0;
 }
 
 .key-value-inline-key {

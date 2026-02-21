@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ namespace OneSignalDemo.UI.Sections
     {
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
-        private Toggle _pauseToggle;
+        private SwitchToggle _pauseToggle;
 
         public Action OnInfoTap;
 
@@ -32,7 +33,7 @@ namespace OneSignalDemo.UI.Sections
                 "iam_paused_toggle",
                 _viewModel.InAppMessagesPaused,
                 OnPauseChanged);
-            _pauseToggle = toggleRow.Q<Toggle>();
+            _pauseToggle = toggleRow.Q<SwitchToggle>();
             card.Add(toggleRow);
             section.Add(card);
 

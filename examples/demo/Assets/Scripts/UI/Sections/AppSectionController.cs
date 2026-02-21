@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,8 +13,8 @@ namespace OneSignalDemo.UI.Sections
         private Label _appIdLabel;
         private Label _statusValue;
         private Label _externalIdValue;
-        private Toggle _consentToggle;
-        private Toggle _privacyToggle;
+        private SwitchToggle _consentToggle;
+        private SwitchToggle _privacyToggle;
         private VisualElement _privacyRow;
         private VisualElement _privacyDivider;
         private Button _loginButton;
@@ -59,7 +60,7 @@ namespace OneSignalDemo.UI.Sections
                 "consent_required_toggle",
                 _viewModel.ConsentRequired,
                 OnConsentRequiredChanged);
-            _consentToggle = consentRow.Q<Toggle>();
+            _consentToggle = consentRow.Q<SwitchToggle>();
             consentCard.Add(consentRow);
 
             _privacyDivider = SectionBuilder.CreateDivider();
@@ -72,7 +73,7 @@ namespace OneSignalDemo.UI.Sections
                 "privacy_consent_toggle",
                 _viewModel.PrivacyConsentGiven,
                 OnPrivacyConsentChanged);
-            _privacyToggle = _privacyRow.Q<Toggle>();
+            _privacyToggle = _privacyRow.Q<SwitchToggle>();
             _privacyRow.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
             consentCard.Add(_privacyRow);
             section.Add(consentCard);

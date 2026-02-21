@@ -63,10 +63,10 @@ namespace OneSignalDemo.UI.Sections
 
             row.Add(labelContainer);
 
-            var toggle = new Toggle();
+            var toggle = new SwitchToggle();
             toggle.name = name;
-            toggle.value = initialValue;
-            toggle.RegisterValueChangedCallback(e => onChanged?.Invoke(e.newValue));
+            toggle.SetValueWithoutNotify(initialValue);
+            toggle.ValueChanged += v => onChanged?.Invoke(v);
             row.Add(toggle);
 
             return row;

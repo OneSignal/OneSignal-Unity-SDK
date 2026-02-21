@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -9,7 +10,7 @@ namespace OneSignalDemo.UI.Sections
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
         private Label _pushIdLabel;
-        private Toggle _enabledToggle;
+        private SwitchToggle _enabledToggle;
         private Button _promptButton;
 
         public Action OnInfoTap;
@@ -39,7 +40,7 @@ namespace OneSignalDemo.UI.Sections
             var toggleRow = SectionBuilder.CreateToggleRow(
                 "Enabled", null, "push_enabled_toggle",
                 _viewModel.PushOptedIn, OnEnabledChanged);
-            _enabledToggle = toggleRow.Q<Toggle>();
+            _enabledToggle = toggleRow.Q<SwitchToggle>();
             _enabledToggle.SetEnabled(_viewModel.HasPermission);
             card.Add(toggleRow);
 

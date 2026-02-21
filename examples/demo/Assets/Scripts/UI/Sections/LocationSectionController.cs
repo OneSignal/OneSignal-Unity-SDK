@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ namespace OneSignalDemo.UI.Sections
     {
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
-        private Toggle _locationToggle;
+        private SwitchToggle _locationToggle;
 
         public Action OnInfoTap;
 
@@ -32,7 +33,7 @@ namespace OneSignalDemo.UI.Sections
                 "location_shared_toggle",
                 _viewModel.LocationShared,
                 OnLocationChanged);
-            _locationToggle = toggleRow.Q<Toggle>();
+            _locationToggle = toggleRow.Q<SwitchToggle>();
             card.Add(toggleRow);
             section.Add(card);
 
