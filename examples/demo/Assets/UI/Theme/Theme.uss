@@ -19,8 +19,7 @@
 }
 
 .scroll-content {
-    padding: 16px;
-    padding-top: 8px;
+    padding: 12px 16px 24px 16px;
 }
 
 .status-bar-spacer {
@@ -66,12 +65,12 @@
 }
 
 .section-title {
-    font-size: 14px;
+    font-size: 12px;
     -unity-font-style: bold;
-    color: var(--os-text-secondary);
+    color: #616161;
     text-transform: uppercase;
     flex-grow: 1;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .material-icon {
@@ -79,9 +78,9 @@
 }
 
 .info-button {
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
     background-color: var(--os-text-hint);
     color: white;
     font-size: 14px;
@@ -95,7 +94,7 @@
 .card {
     background-color: var(--os-card-bg);
     border-radius: 12px;
-    padding: 16px;
+    padding: 12px;
     margin-bottom: var(--card-gap);
     border-width: 1px;
     border-color: var(--os-divider);
@@ -124,7 +123,7 @@
 }
 
 .toggle-label {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--os-text-primary);
     -unity-font-style: bold;
 }
@@ -139,7 +138,8 @@
     background-color: var(--os-red);
     color: white;
     border-radius: 8px;
-    padding: 12px 16px;
+    min-height: 48px;
+    padding: 0 16px;
     border-width: 0;
     font-size: 14px;
     -unity-font-style: bold;
@@ -166,7 +166,8 @@
     background-color: transparent;
     color: var(--os-red);
     border-radius: 8px;
-    padding: 12px 16px;
+    min-height: 48px;
+    padding: 0 16px;
     border-width: 1px;
     border-color: var(--os-red);
     font-size: 14px;
@@ -348,7 +349,7 @@
     border-radius: 8px;
     border-width: 1px;
     border-color: var(--os-divider);
-    padding: 10px 12px;
+    padding: 14px 12px;
     font-size: 14px;
     margin-bottom: 8px;
 }
@@ -386,7 +387,7 @@
     background-color: var(--os-card-bg);
     border-radius: 16px;
     padding: 24px;
-    margin: 24px;
+    margin: 24px 16px;
     width: 100%;
     max-width: 400px;
 }
