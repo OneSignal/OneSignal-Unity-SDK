@@ -97,6 +97,18 @@ echo "  Output:  $OUTPUT_PATH"
 echo "  Log:     $BUILD_LOG"
 echo ""
 
+if $DEV_BUILD; then
+    MONO_GRADLE="$PROJECT_PATH/Library/Bee/Android/Prj/Mono2x/Gradle"
+    NEEDS_CLEAN=false
+    if [ -d "$MONO_GRADLE" ]; then
+        grep -q compileSdk "$MONO_GRADLE/launcher/build.gradle" 2>/dev/null || NEEDS_CLEAN=true
+    fi
+    if $NEEDS_CLEAN; then
+        rm -rf "$MONO_GRADLE"
+        echo "Cleaned stale Mono Gradle cache"
+    fi
+fi
+
 BUILD_START=$SECONDS
 
 "$UNITY_PATH" \
@@ -107,7 +119,7 @@ BUILD_START=$SECONDS
     -executeMethod BuildScript.BuildAndroid \
     -outputPath "$OUTPUT_PATH" \
     $DEV_ARGS \
-    -logFile "$BUILD_LOG"
+    -logFile "$BUILD_LOG" || true
 
 BUILD_ELAPSED=$(( SECONDS - BUILD_START ))
 echo ""
