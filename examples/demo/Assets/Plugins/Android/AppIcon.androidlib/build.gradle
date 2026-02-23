@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'com.onesignal.example.icon'
+
+    def unityLib = project(':unityLibrary').extensions.getByName('android')
+
+    defaultConfig {
+        minSdkVersion unityLib.defaultConfig.minSdkVersion.mApiLevel
+        targetSdkVersion unityLib.defaultConfig.targetSdkVersion.mApiLevel
+    }
+
+    compileSdkVersion unityLib.compileSdkVersion
+    buildToolsVersion unityLib.buildToolsVersion
+}
