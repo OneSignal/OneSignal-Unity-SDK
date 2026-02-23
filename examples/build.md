@@ -125,11 +125,12 @@ App bar layout:
   top inset so the status bar blends with the app bar. Unity renders in fullscreen
   mode behind the status bar, so Android's setStatusBarColor has no effect.
 
-Download the padded app icon PNG from:
+Run generate-icons.sh to download the padded app icon and produce Android
+launcher icons at all mipmap densities. The script creates an androidlib at
+Assets/Plugins/Android/AppIcon.androidlib/ that Unity merges into the Gradle
+build, replacing the default icon. Source icon:
   https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
-Save it to Assets/Resources/ temporarily, set as the default icon in
-Project Settings > Player for both Android and iOS, then remove the
-source file from version control.
+For iOS, set the icon manually in Project Settings > Player.
 
 Reference the OneSignal Unity SDK from the parent repo using a local path dependency
 in Packages/manifest.json:

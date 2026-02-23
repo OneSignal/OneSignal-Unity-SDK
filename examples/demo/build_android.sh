@@ -1,114 +1,72 @@
 #!/bin/sh
-# Build the OneSignal Unity demo APK for Android emulators and install it.
-# Uses ARM64 + IL2CPP (Unity 6 dropped Mono support for 64-bit architectures).
+# Build the OneSignal Unity demo APK and install it on a running emulator.
 #
 # Usage:
-#   ./build_android.sh [--no-install] [--aab]
+#   ./build_android.sh [--no-install] [--install-only]
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
 ADB="/Applications/Unity/Hub/Editor/6000.3.6f1/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb"
-OUTPUT_APK="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
-OUTPUT_AAB="$SCRIPT_DIR/Build/Android/onesignal-demo.aab"
-LOG_FILE="$SCRIPT_DIR/Build/build.log"
+OUTPUT="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
+LOG="$SCRIPT_DIR/Build/build.log"
 INSTALL=true
-EMULATOR=""
-BUILD_AAB=false
-EXECUTE_METHOD="BuildScript.BuildAndroidEmulator"
+SKIP_BUILD=false
 
 for arg in "$@"; do
-  [ "$arg" = "--no-install" ] && INSTALL=false
-  [ "$arg" = "--aab" ] && BUILD_AAB=true && INSTALL=false && EXECUTE_METHOD="BuildScript.BuildAndroidAAB"
+  case "$arg" in
+    --no-install)   INSTALL=false ;;
+    --install-only) SKIP_BUILD=true ;;
+  esac
 done
 
-if [ ! -x "$UNITY" ]; then
-  echo "Unity not found at: $UNITY"
-  echo "Set UNITY_PATH, e.g.:"
-  echo "  UNITY_PATH=/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity ./build_android.sh"
-  exit 1
-fi
+pick_emulator() {
+  LIST=$("$ADB" devices | awk '/emulator-[0-9]+[[:space:]]+device/{print $1}')
+  COUNT=$(printf '%s\n' "$LIST" | grep -c . || true)
 
-# --- Select emulator before building ---
-if [ "$INSTALL" = true ]; then
-  EMULATOR_LIST=$("$ADB" devices | awk '/emulator-[0-9]+[[:space:]]+device/{print $1}')
-  EMULATOR_COUNT=$(echo "$EMULATOR_LIST" | grep -c . || true)
+  [ "$COUNT" -eq 0 ] && echo "No running emulators found." && exit 1
+  [ "$COUNT" -eq 1 ] && EMULATOR="$LIST" && return
 
-  if [ "$EMULATOR_COUNT" -eq 0 ]; then
-    echo "No running emulators found. Start one and re-run."
-    exit 1
-  fi
+  echo "Multiple emulators running — pick one:"
+  i=1
+  printf '%s\n' "$LIST" | while IFS= read -r S; do
+    NAME=$("$ADB" -s "$S" emu avd name 2>/dev/null | head -1 | tr -d '\r')
+    printf "  [%d] %s  (%s)\n" "$i" "$S" "$NAME"
+    i=$((i + 1))
+  done
+  printf "Choice [1-%d]: " "$COUNT"
+  read -r CHOICE
+  EMULATOR=$(printf '%s\n' "$LIST" | sed -n "${CHOICE}p")
+  [ -z "$EMULATOR" ] && echo "Invalid choice." && exit 1
+}
 
-  if [ "$EMULATOR_COUNT" -eq 1 ]; then
-    EMULATOR="$EMULATOR_LIST"
-  else
-    echo "Multiple emulators running — pick one:"
-    i=1
-    OLDIFS="$IFS"
-    IFS='
-'
-    for SERIAL in $EMULATOR_LIST; do
-      NAME=$("$ADB" -s "$SERIAL" emu avd name 2>/dev/null | head -1 | tr -d '\r')
-      printf "  [%d] %s  (%s)\n" "$i" "$SERIAL" "$NAME"
-      i=$((i + 1))
-    done
-    IFS="$OLDIFS"
-    printf "Choice [1-%d]: " "$EMULATOR_COUNT"
-    read -r CHOICE
-    case "$CHOICE" in
-      ''|*[!0-9]*) echo "Invalid choice."; exit 1 ;;
-    esac
-    if [ "$CHOICE" -lt 1 ] || [ "$CHOICE" -gt "$EMULATOR_COUNT" ]; then
-      echo "Invalid choice."
-      exit 1
-    fi
-    EMULATOR=$(echo "$EMULATOR_LIST" | sed -n "${CHOICE}p")
-  fi
-  echo "Target: $EMULATOR"
+EMULATOR=""
+[ "$INSTALL" = true ] && pick_emulator && echo "Target: $EMULATOR" && echo ""
+
+if [ "$SKIP_BUILD" = true ]; then
+  [ ! -f "$OUTPUT" ] && echo "No existing build. Run without --install-only first." && exit 1
+  echo "Skipping build, using existing $(du -sh "$OUTPUT" | awk '{print $1}') APK"
+else
+  [ ! -x "$UNITY" ] && echo "Unity not found at $UNITY — set UNITY_PATH" && exit 1
+  mkdir -p "$SCRIPT_DIR/Build/Android"
+  echo "Building APK (ARM64 / IL2CPP)..."
+  echo "Log: $LOG"
   echo ""
+
+  START=$(date +%s)
+  "$UNITY" -batchmode -nographics -quit -buildTarget Android \
+    -projectPath "$SCRIPT_DIR" -executeMethod BuildScript.BuildAndroidEmulator \
+    -logFile "$LOG"
+  ELAPSED=$(( $(date +%s) - START ))
+
+  [ ! -f "$OUTPUT" ] && echo "Build failed after $((ELAPSED/60))m $((ELAPSED%60))s. Check $LOG" && exit 1
+  echo "Build complete in $((ELAPSED/60))m $((ELAPSED%60))s — $(du -sh "$OUTPUT" | awk '{print $1}')  $OUTPUT"
 fi
 
-# --- Build ---
-mkdir -p "$SCRIPT_DIR/Build/Android"
-
-if [ "$BUILD_AAB" = true ]; then
-  echo "Building Android AAB (ARM64 / IL2CPP)..."
-else
-  echo "Building Android APK (ARM64 / IL2CPP)..."
-fi
-
-echo "Log: $LOG_FILE"
-echo ""
-
-BUILD_START=$(date +%s)
-
-"$UNITY" -batchmode -nographics -quit -buildTarget Android -projectPath "$SCRIPT_DIR" -executeMethod "$EXECUTE_METHOD" -logFile "$LOG_FILE"
-
-BUILD_ELAPSED=$(( $(date +%s) - BUILD_START ))
-BUILD_MIN=$(( BUILD_ELAPSED / 60 ))
-BUILD_SEC=$(( BUILD_ELAPSED % 60 ))
-
-if [ "$BUILD_AAB" = true ]; then
-  OUTPUT_FILE="$OUTPUT_AAB"
-else
-  OUTPUT_FILE="$OUTPUT_APK"
-fi
-
-if [ ! -f "$OUTPUT_FILE" ]; then
-  echo "Build failed after ${BUILD_MIN}m ${BUILD_SEC}s. Check $LOG_FILE for details."
-  exit 1
-fi
-
-FILE_SIZE=$(du -sh "$OUTPUT_FILE" | awk '{print $1}')
-echo "Build complete in ${BUILD_MIN}m ${BUILD_SEC}s — ${FILE_SIZE}  $OUTPUT_FILE"
-
-# --- Install & launch ---
 if [ "$INSTALL" = true ] && [ -n "$EMULATOR" ]; then
-  # Unity kills the ADB server during builds; restart and wait for reconnect.
-#   "$ADB" kill-server >/dev/null 2>&1
   "$ADB" start-server >/dev/null 2>&1
   "$ADB" -s "$EMULATOR" wait-for-device
   echo "Installing on $EMULATOR..."
-  "$ADB" -s "$EMULATOR" install -r "$OUTPUT_FILE"
+  "$ADB" -s "$EMULATOR" install -r "$OUTPUT"
   "$ADB" -s "$EMULATOR" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
 fi
