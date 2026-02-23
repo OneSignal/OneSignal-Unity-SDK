@@ -3,7 +3,7 @@ namespace OneSignalDemo.UI
 {
     public static class MaterialIcons
     {
-        public const string Info = "\uE88E";
+        public const string Info = "\uE88F";
         public const string Close = "\uE5CD";
         public const string Delete = "\uE872";
         public const string Add = "\uE145";
