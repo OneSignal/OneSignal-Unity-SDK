@@ -36,6 +36,18 @@ public static class BuildScript
             NamedBuildTarget.Android,
             Il2CppCodeGeneration.OptimizeSize
         );
+        PlayerSettings.SetManagedStrippingLevel(
+            NamedBuildTarget.Android,
+            ManagedStrippingLevel.High
+        );
+        PlayerSettings.Android.minifyRelease = true;
+        PlayerSettings.Android.minifyWithR8 = true;
+        PlayerSettings.stripEngineCode = true;
+
+        PlayerSettings.SetIl2CppCompilerConfiguration(
+            NamedBuildTarget.Android,
+            Il2CppCompilerConfiguration.Release
+        );
         EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
         EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
 

@@ -73,7 +73,7 @@ echo ""
 
 BUILD_START=$(date +%s)
 
-"$UNITY" -batchmode -quit -buildTarget Android -projectPath "$SCRIPT_DIR" -executeMethod BuildScript.BuildAndroidEmulator -logFile "$LOG_FILE"
+"$UNITY" -batchmode -nographics -quit -buildTarget Android -projectPath "$SCRIPT_DIR" -executeMethod BuildScript.BuildAndroidEmulator -logFile "$LOG_FILE"
 
 BUILD_ELAPSED=$(( $(date +%s) - BUILD_START ))
 BUILD_MIN=$(( BUILD_ELAPSED / 60 ))
