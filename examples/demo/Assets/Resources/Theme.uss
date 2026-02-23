@@ -369,7 +369,7 @@
 
 .guidance-link {
     font-size: 13px;
-    color: #1565C0;
+    color: var(--os-red);
     margin-top: 4px;
     cursor: link;
 }
