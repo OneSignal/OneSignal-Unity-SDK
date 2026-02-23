@@ -56,8 +56,6 @@ namespace OneSignalDemo.UI
 
             BuildScreen();
             WireEvents();
-
-            _viewModel.PromptPush();
         }
 
         private void OnDisable()

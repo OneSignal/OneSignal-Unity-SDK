@@ -54,6 +54,9 @@ namespace OneSignalDemo
             _viewModel.LoadInitialState();
             await _viewModel.LoadInitialDataAsync();
 
+            if (!_viewModel.HasPermission)
+                _viewModel.PromptPush();
+
             _ = TooltipHelper.Instance.InitAsync();
             LogManager.Instance.Info(Tag, "App initialized");
         }
