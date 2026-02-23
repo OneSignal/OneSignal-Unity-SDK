@@ -121,9 +121,16 @@ Save to Assets/Resources/onesignal_logo.png and set the texture import settings 
 App bar layout:
 - Logo: 99x22px, flex-shrink: 0, scale-to-fit, tinted white
 - "Sample App" label: 14px, normal (400) weight, white
-- Status bar area: a red spacer element (status_bar_spacer) fills the safe area
-  top inset so the status bar blends with the app bar. Unity renders in fullscreen
-  mode behind the status bar, so Android's setStatusBarColor has no effect.
+
+Android status bar:
+- Project settings: androidStartInFullscreen: 0, androidRenderOutsideSafeArea: 0
+- At runtime in HomeScreenController, set Screen.fullScreen = false and call
+  Window.addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS),
+  Window.clearFlags(FLAG_TRANSLUCENT_STATUS), and
+  Window.setStatusBarColor(0xFFE54B4D) via AndroidJavaObject to match the app bar color
+- All three window calls are required: addFlags enables drawing bar backgrounds,
+  clearFlags removes the translucent override, setStatusBarColor sets the color
+- The app viewport sits below the system status bar; no spacer needed on Android
 
 Run generate-icons.sh to download the padded app icon and produce Android
 launcher icons at all mipmap densities. The script creates an androidlib at
@@ -1010,12 +1017,16 @@ PanelSettings (Assets/UI/PanelSettings.asset):
 Safe Area:
 - HomeScreenController reads Screen.safeArea every frame in Update()
 - Computes top/bottom insets relative to the root VisualElement's resolved height
-- Top inset: sets the height of a red status_bar_spacer element above the app bar
-  so the status bar area matches the app bar color (Unity renders in fullscreen
-  mode behind the status bar, so Android's setStatusBarColor API has no effect)
+- Guards against NaN/zero values from resolvedStyle.height before computing scale
+- Top inset: sets the height of a status_bar_spacer element above the app bar
 - Bottom inset: applies as paddingBottom on the screen root container
-- This keeps content below the status bar and above the navigation bar
-  on devices with notches, rounded corners, or gesture navigation
+- On Android, androidRenderOutsideSafeArea is disabled so the system handles
+  the status bar area natively; the spacer calculates to 0 which is correct
+- On iOS, the spacer handles the notch/Dynamic Island inset
+- Android status bar color is set programmatically via ConfigureAndroidStatusBar()
+  which calls Window.addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS),
+  Window.clearFlags(FLAG_TRANSLUCENT_STATUS), and
+  Window.setStatusBarColor(0xFFE54B4D) through AndroidJavaObject; all three are required
 ```
 
 ### Prompt 8.6 - Log View (Appium-Ready)

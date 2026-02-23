@@ -40,6 +40,8 @@ namespace OneSignalDemo.UI
 
         private void OnEnable()
         {
+            ConfigureAndroidStatusBar();
+
             if (_viewModel == null)
             {
                 _viewModel = FindAnyObjectByType<AppViewModel>();
@@ -73,13 +75,39 @@ namespace OneSignalDemo.UI
             ApplySafeArea();
         }
 
+        private static void ConfigureAndroidStatusBar()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            Screen.fullScreen = false;
+            try
+            {
+                var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+                {
+                    var window = activity.Call<AndroidJavaObject>("getWindow");
+                    window.Call("addFlags", unchecked((int)0x80000000));
+                    window.Call("clearFlags", 0x04000000);
+                    window.Call("setStatusBarColor", unchecked((int)0xFFE54B4D));
+                }));
+            }
+            catch (System.Exception) { }
+#endif
+        }
+
         private void ApplySafeArea()
         {
             if (_root == null) return;
+
+            float rootHeight = _root.resolvedStyle.height;
+            if (float.IsNaN(rootHeight) || rootHeight <= 0 || Screen.height <= 0)
+                return;
+
             var safe = Screen.safeArea;
-            float scale = _root.resolvedStyle.height / Screen.height;
+            float scale = rootHeight / Screen.height;
             float top = (Screen.height - safe.yMax) * scale;
             float bottom = safe.y * scale;
+
             var screenRoot = _root.Q("screen_root");
             if (screenRoot != null)
                 screenRoot.style.paddingBottom = bottom;
