@@ -3,19 +3,23 @@
 # Uses ARM64 + IL2CPP (Unity 6 dropped Mono support for 64-bit architectures).
 #
 # Usage:
-#   ./build_android.sh [--no-install]
+#   ./build_android.sh [--no-install] [--aab]
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
 ADB="/Applications/Unity/Hub/Editor/6000.3.6f1/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb"
 OUTPUT_APK="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
+OUTPUT_AAB="$SCRIPT_DIR/Build/Android/onesignal-demo.aab"
 LOG_FILE="$SCRIPT_DIR/Build/build.log"
 INSTALL=true
 EMULATOR=""
+BUILD_AAB=false
+EXECUTE_METHOD="BuildScript.BuildAndroidEmulator"
 
 for arg in "$@"; do
   [ "$arg" = "--no-install" ] && INSTALL=false
+  [ "$arg" = "--aab" ] && BUILD_AAB=true && INSTALL=false && EXECUTE_METHOD="BuildScript.BuildAndroidAAB"
 done
 
 if [ ! -x "$UNITY" ]; then
@@ -67,25 +71,36 @@ fi
 # --- Build ---
 mkdir -p "$SCRIPT_DIR/Build/Android"
 
-echo "Building Android APK (ARM64 / IL2CPP)..."
+if [ "$BUILD_AAB" = true ]; then
+  echo "Building Android AAB (ARM64 / IL2CPP)..."
+else
+  echo "Building Android APK (ARM64 / IL2CPP)..."
+fi
+
 echo "Log: $LOG_FILE"
 echo ""
 
 BUILD_START=$(date +%s)
 
-"$UNITY" -batchmode -nographics -quit -buildTarget Android -projectPath "$SCRIPT_DIR" -executeMethod BuildScript.BuildAndroidEmulator -logFile "$LOG_FILE"
+"$UNITY" -batchmode -nographics -quit -buildTarget Android -projectPath "$SCRIPT_DIR" -executeMethod "$EXECUTE_METHOD" -logFile "$LOG_FILE"
 
 BUILD_ELAPSED=$(( $(date +%s) - BUILD_START ))
 BUILD_MIN=$(( BUILD_ELAPSED / 60 ))
 BUILD_SEC=$(( BUILD_ELAPSED % 60 ))
 
-if [ ! -f "$OUTPUT_APK" ]; then
+if [ "$BUILD_AAB" = true ]; then
+  OUTPUT_FILE="$OUTPUT_AAB"
+else
+  OUTPUT_FILE="$OUTPUT_APK"
+fi
+
+if [ ! -f "$OUTPUT_FILE" ]; then
   echo "Build failed after ${BUILD_MIN}m ${BUILD_SEC}s. Check $LOG_FILE for details."
   exit 1
 fi
 
-APK_SIZE=$(du -sh "$OUTPUT_APK" | awk '{print $1}')
-echo "Build complete in ${BUILD_MIN}m ${BUILD_SEC}s — ${APK_SIZE}  $OUTPUT_APK"
+FILE_SIZE=$(du -sh "$OUTPUT_FILE" | awk '{print $1}')
+echo "Build complete in ${BUILD_MIN}m ${BUILD_SEC}s — ${FILE_SIZE}  $OUTPUT_FILE"
 
 # --- Install & launch ---
 if [ "$INSTALL" = true ] && [ -n "$EMULATOR" ]; then
@@ -94,6 +109,6 @@ if [ "$INSTALL" = true ] && [ -n "$EMULATOR" ]; then
   "$ADB" start-server >/dev/null 2>&1
   "$ADB" -s "$EMULATOR" wait-for-device
   echo "Installing on $EMULATOR..."
-  "$ADB" -s "$EMULATOR" install -r "$OUTPUT_APK"
+  "$ADB" -s "$EMULATOR" install -r "$OUTPUT_FILE"
   "$ADB" -s "$EMULATOR" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
 fi

@@ -9,6 +9,7 @@ public static class BuildScript
 {
     private const string OutputDir = "Build/Android";
     private const string ApkName = "onesignal-demo.apk";
+    private const string AabName = "onesignal-demo.aab";
 
     /// <summary>
     /// Builds an Android APK using the architecture and scripting backend
@@ -50,6 +51,55 @@ public static class BuildScript
         );
         EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
         EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
+        EditorUserBuildSettings.buildAppBundle = false;
+
+        var options = new BuildPlayerOptions
+        {
+            scenes = GetScenes(),
+            locationPathName = outputPath,
+            target = BuildTarget.Android,
+            subtarget = 0,
+            options = BuildOptions.None,
+        };
+
+        var report = BuildPipeline.BuildPlayer(options);
+        HandleReport(report, outputPath);
+    }
+
+    public static void BuildAndroidAAB()
+    {
+        var outputPath = Path.Combine(OutputDir, AabName);
+        Directory.CreateDirectory(OutputDir);
+
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+        PlayerSettings.SetScriptingBackend(
+            NamedBuildTarget.Android,
+            ScriptingImplementation.IL2CPP
+        );
+
+        Debug.Log(
+            $"[BuildScript] arch={PlayerSettings.Android.targetArchitectures} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android)}"
+        );
+
+        PlayerSettings.SetIl2CppCodeGeneration(
+            NamedBuildTarget.Android,
+            Il2CppCodeGeneration.OptimizeSize
+        );
+        PlayerSettings.SetManagedStrippingLevel(
+            NamedBuildTarget.Android,
+            ManagedStrippingLevel.High
+        );
+        PlayerSettings.Android.minifyRelease = true;
+        PlayerSettings.Android.minifyWithR8 = true;
+        PlayerSettings.stripEngineCode = true;
+
+        PlayerSettings.SetIl2CppCompilerConfiguration(
+            NamedBuildTarget.Android,
+            Il2CppCompilerConfiguration.Release
+        );
+        EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
+        EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
+        EditorUserBuildSettings.buildAppBundle = true;
 
         var options = new BuildPlayerOptions
         {
