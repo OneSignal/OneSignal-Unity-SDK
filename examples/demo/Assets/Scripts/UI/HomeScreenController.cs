@@ -185,16 +185,16 @@ namespace OneSignalDemo.UI
             _contentRoot.Add(_pushSection.Root);
 
             _sendPushSection = new SendPushSectionController(_viewModel);
-            _sendPushSection.OnInfoTap = () => ShowTooltip("send_push_notification");
+            _sendPushSection.OnInfoTap = () => ShowTooltip("sendPushNotification");
             _sendPushSection.OnCustomTap = ShowCustomNotificationDialog;
             _contentRoot.Add(_sendPushSection.Root);
 
             _inAppSection = new InAppSectionController(_viewModel);
-            _inAppSection.OnInfoTap = () => ShowTooltip("in_app_messaging");
+            _inAppSection.OnInfoTap = () => ShowTooltip("inAppMessaging");
             _contentRoot.Add(_inAppSection.Root);
 
             _sendIamSection = new SendIamSectionController(_viewModel);
-            _sendIamSection.OnInfoTap = () => ShowTooltip("send_in_app_message");
+            _sendIamSection.OnInfoTap = () => ShowTooltip("sendInAppMessage");
             _contentRoot.Add(_sendIamSection.Root);
 
             _aliasesSection = new AliasesSectionController(_viewModel);
@@ -221,7 +221,7 @@ namespace OneSignalDemo.UI
             _contentRoot.Add(_tagsSection.Root);
 
             _outcomesSection = new OutcomesSectionController(_viewModel);
-            _outcomesSection.OnInfoTap = () => ShowTooltip("outcome_events");
+            _outcomesSection.OnInfoTap = () => ShowTooltip("outcomes");
             _outcomesSection.OnSendOutcomeTap = ShowOutcomeDialog;
             _contentRoot.Add(_outcomesSection.Root);
 
@@ -233,7 +233,7 @@ namespace OneSignalDemo.UI
             _contentRoot.Add(_triggersSection.Root);
 
             _trackEventSection = new TrackEventSectionController(_viewModel);
-            _trackEventSection.OnInfoTap = () => ShowTooltip("track_event");
+            _trackEventSection.OnInfoTap = () => ShowTooltip("trackEvent");
             _trackEventSection.OnTrackEventTap = ShowTrackEventDialog;
             _contentRoot.Add(_trackEventSection.Root);
 

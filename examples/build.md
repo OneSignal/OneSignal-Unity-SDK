@@ -717,9 +717,14 @@ For each section, pass an onInfoTap callback to SectionCard:
 - TooltipDialog displays title, description, and options (if present)
 - Dismiss button text: "OK" (not "Close")
 
+Tooltip keys must match the camelCase keys in tooltip_content.json exactly:
+  push, sendPushNotification, inAppMessaging, sendInAppMessage,
+  aliases, emails, sms, tags, outcomes, triggers, trackEvent, location
+
 Example in HomeScreen:
 
 aliasesSection.OnInfoTap = () => ShowTooltipDialog("aliases");
+outcomesSection.OnInfoTap = () => ShowTooltipDialog("outcomes");
 
 private void ShowTooltipDialog(string key)
 {
