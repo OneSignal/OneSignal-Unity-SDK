@@ -19,6 +19,8 @@ namespace OneSignalDemo.UI
         private VisualElement _root;
         private VisualElement _contentRoot;
         private VisualElement _loadingOverlay;
+        private VisualElement _spinner;
+        private IVisualElementScheduledItem _spinnerAnim;
         private LogViewController _logView;
         private ToastView _toastView;
 
@@ -134,9 +136,9 @@ namespace OneSignalDemo.UI
             _loadingOverlay.AddToClassList("loading-overlay");
             _loadingOverlay.style.display = DisplayStyle.None;
 
-            var spinner = new VisualElement();
-            spinner.AddToClassList("loading-spinner");
-            _loadingOverlay.Add(spinner);
+            _spinner = new VisualElement();
+            _spinner.AddToClassList("loading-spinner");
+            _loadingOverlay.Add(_spinner);
 
             screenRoot.Add(_loadingOverlay);
 
@@ -237,8 +239,24 @@ namespace OneSignalDemo.UI
             _triggersSection?.Refresh();
             _locationSection?.Refresh();
 
-            _loadingOverlay.style.display = _viewModel.IsLoading
+            var showLoading = _viewModel.IsLoading;
+            _loadingOverlay.style.display = showLoading
                 ? DisplayStyle.Flex : DisplayStyle.None;
+
+            if (showLoading && _spinnerAnim == null)
+            {
+                float angle = 0f;
+                _spinnerAnim = _spinner.schedule.Execute(() =>
+                {
+                    angle = (angle + 12f) % 360f;
+                    _spinner.style.rotate = new Rotate(Angle.Degrees(angle));
+                }).Every(16);
+            }
+            else if (!showLoading && _spinnerAnim != null)
+            {
+                _spinnerAnim.Pause();
+                _spinnerAnim = null;
+            }
         }
 
         private void ShowToast(string message) => _toastView?.Show(message);

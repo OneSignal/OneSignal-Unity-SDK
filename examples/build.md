@@ -567,9 +567,12 @@ Secondary Activity (launched by "Next Activity" button at bottom of main screen)
 
 ```
 Loading indicator overlay:
-- Full-screen semi-transparent overlay with centered spinner (Unity UI Toolkit or a rotating image)
+- Full-screen semi-transparent overlay (rgba(0, 0, 0, 0.26)) with centered spinner
 - isLoading flag in AppViewModel
 - Show/hide via VisualElement display style (DisplayStyle.Flex / DisplayStyle.None)
+- Spinner must animate: use `VisualElement.schedule.Execute().Every(16)` to rotate
+  the spinner element ~12 degrees per tick (~60fps). Start the scheduled item when
+  loading becomes visible, pause and null it when hidden
 - IMPORTANT: Add a short delay after populating data before dismissing loading indicator
   - This gives the UI Toolkit layout a frame to rebuild
   - Use await Task.Yield() or await Task.Delay(100) after setting state
@@ -982,7 +985,10 @@ Spacing constants (USS variables):
 Theme.uss (imported by all UXML files):
 - Card style with rounded corners (12px border-radius), white background, subtle shadow
 - Button styles with rounded corners (8px border-radius)
-- Input field styles with outline border
+- Input field styles with outline border. Override Unity's internal
+  `.unity-base-text-field__input` on `.input-field` to remove the default
+  background and border (set background-color: transparent, border-width: 0),
+  and move padding to the inner element so only the outer border shows
 - Consistent font sizes and spacing
 - Hide all scrollbars by collapsing Scroller elements to 0 width/height
   (display: none alone is insufficient). Target Scroller type selector,
