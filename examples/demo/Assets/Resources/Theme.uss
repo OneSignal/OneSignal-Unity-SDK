@@ -295,7 +295,8 @@
     -unity-text-align: middle-right;
 }
 
-#app_id_value {
+#app_id_value,
+#push_subscription_id_value {
     font-size: 12px;
 }
 
