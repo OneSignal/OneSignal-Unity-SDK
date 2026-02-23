@@ -707,6 +707,7 @@ For each section, pass an onInfoTap callback to SectionCard:
 - SectionCard has an optional info icon Button that invokes onInfoTap when clicked
 - In HomeScreen, wire onInfoTap to show a TooltipDialog
 - TooltipDialog displays title, description, and options (if present)
+- Dismiss button text: "OK" (not "Close")
 
 Example in HomeScreen:
 

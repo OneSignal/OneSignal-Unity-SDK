@@ -52,7 +52,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             var actions = new VisualElement();
             actions.AddToClassList("dialog-actions");
-            actions.Add(CreateCancelButton("CLOSE"));
+            actions.Add(CreateCancelButton("OK"));
             container.Add(actions);
         }
     }
