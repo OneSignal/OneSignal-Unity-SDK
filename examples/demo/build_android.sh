@@ -8,6 +8,7 @@ set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
+ADB="/Applications/Unity/Hub/Editor/6000.3.6f1/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb"
 OUTPUT_APK="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
 LOG_FILE="$SCRIPT_DIR/Build/build.log"
 INSTALL=true
@@ -26,7 +27,7 @@ fi
 
 # --- Select emulator before building ---
 if [ "$INSTALL" = true ]; then
-  EMULATOR_LIST=$(adb devices | awk '/emulator-[0-9]+[[:space:]]+device/{print $1}')
+  EMULATOR_LIST=$("$ADB" devices | awk '/emulator-[0-9]+[[:space:]]+device/{print $1}')
   EMULATOR_COUNT=$(echo "$EMULATOR_LIST" | grep -c . || true)
 
   if [ "$EMULATOR_COUNT" -eq 0 ]; then
@@ -43,7 +44,7 @@ if [ "$INSTALL" = true ]; then
     IFS='
 '
     for SERIAL in $EMULATOR_LIST; do
-      NAME=$(adb -s "$SERIAL" emu avd name 2>/dev/null | head -1 | tr -d '\r')
+      NAME=$("$ADB" -s "$SERIAL" emu avd name 2>/dev/null | head -1 | tr -d '\r')
       printf "  [%d] %s  (%s)\n" "$i" "$SERIAL" "$NAME"
       i=$((i + 1))
     done
@@ -88,10 +89,11 @@ echo "Build complete in ${BUILD_MIN}m ${BUILD_SEC}s — ${APK_SIZE}  $OUTPUT_APK
 
 # --- Install & launch ---
 if [ "$INSTALL" = true ] && [ -n "$EMULATOR" ]; then
-  # Unity kills the ADB server during builds; wait for it to reconnect.
-  adb start-server >/dev/null 2>&1
-  adb -s "$EMULATOR" wait-for-device
+  # Unity kills the ADB server during builds; restart and wait for reconnect.
+#   "$ADB" kill-server >/dev/null 2>&1
+  "$ADB" start-server >/dev/null 2>&1
+  "$ADB" -s "$EMULATOR" wait-for-device
   echo "Installing on $EMULATOR..."
-  adb -s "$EMULATOR" install -r "$OUTPUT_APK"
-  adb -s "$EMULATOR" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
+  "$ADB" -s "$EMULATOR" install -r "$OUTPUT_APK"
+  "$ADB" -s "$EMULATOR" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
 fi

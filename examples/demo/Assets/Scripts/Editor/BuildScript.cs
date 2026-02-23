@@ -23,10 +23,19 @@ public static class BuildScript
         Directory.CreateDirectory(OutputDir);
 
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
-        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+        PlayerSettings.SetScriptingBackend(
+            NamedBuildTarget.Android,
+            ScriptingImplementation.IL2CPP
+        );
 
-        Debug.Log($"[BuildScript] arch={PlayerSettings.Android.targetArchitectures} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android)}");
+        Debug.Log(
+            $"[BuildScript] arch={PlayerSettings.Android.targetArchitectures} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android)}"
+        );
 
+        PlayerSettings.SetIl2CppCodeGeneration(
+            NamedBuildTarget.Android,
+            Il2CppCodeGeneration.OptimizeSize
+        );
         EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
         EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
 
@@ -36,7 +45,7 @@ public static class BuildScript
             locationPathName = outputPath,
             target = BuildTarget.Android,
             subtarget = 0,
-            options = BuildOptions.Development | BuildOptions.AllowDebugging,
+            options = BuildOptions.None,
         };
 
         var report = BuildPipeline.BuildPlayer(options);
@@ -48,7 +57,9 @@ public static class BuildScript
         var scenes = EditorBuildSettings.scenes;
         if (scenes.Length == 0)
         {
-            Debug.LogWarning("[BuildScript] No scenes in build settings; falling back to Assets/Scenes/Main.unity");
+            Debug.LogWarning(
+                "[BuildScript] No scenes in build settings; falling back to Assets/Scenes/Main.unity"
+            );
             return new[] { "Assets/Scenes/Main.unity" };
         }
         return Array.ConvertAll(scenes, s => s.path);
@@ -59,11 +70,15 @@ public static class BuildScript
         if (report.summary.result == BuildResult.Succeeded)
         {
             var sizeMb = report.summary.totalSize / 1024.0 / 1024.0;
-            Debug.Log($"[BuildScript] Build succeeded: {outputPath} ({sizeMb:F1} MB) in {report.summary.totalTime.TotalSeconds:F1}s");
+            Debug.Log(
+                $"[BuildScript] Build succeeded: {outputPath} ({sizeMb:F1} MB) in {report.summary.totalTime.TotalSeconds:F1}s"
+            );
         }
         else
         {
-            Debug.LogError($"[BuildScript] Build failed: {report.summary.result} — {report.summary.totalErrors} error(s)");
+            Debug.LogError(
+                $"[BuildScript] Build failed: {report.summary.result} — {report.summary.totalErrors} error(s)"
+            );
             EditorApplication.Exit(1);
         }
     }
