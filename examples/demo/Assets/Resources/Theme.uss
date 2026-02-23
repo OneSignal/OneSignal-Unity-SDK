@@ -153,7 +153,11 @@
 }
 
 .switch-track--disabled {
-    opacity: 0.4;
+    background-color: #E0E0E0;
+}
+
+.switch-track--disabled > .switch-thumb {
+    background-color: #F5F5F5;
 }
 
 .switch-thumb {

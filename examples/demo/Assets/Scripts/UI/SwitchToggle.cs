@@ -53,7 +53,6 @@ namespace OneSignalDemo.UI
         {
             _enabled = enabled;
             _track.EnableInClassList("switch-track--disabled", !_enabled);
-            base.SetEnabled(enabled);
         }
 
         private void OnClick(ClickEvent evt)
