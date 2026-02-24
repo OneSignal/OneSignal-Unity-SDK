@@ -42,6 +42,7 @@ namespace OneSignalDemo.UI.Dialogs
             {
                 var lbl = new Label(label);
                 lbl.AddToClassList("input-label");
+                lbl.AddToClassList("text-body-small");
                 Container.Add(lbl);
             }
 
@@ -58,14 +59,16 @@ namespace OneSignalDemo.UI.Dialogs
             var btn = new Button(onClick);
             btn.text = text;
             btn.AddToClassList("dialog-confirm-button");
+            btn.AddToClassList("text-dialog-action");
             return btn;
         }
 
-        protected Button CreateCancelButton(string text = "CANCEL")
+        protected Button CreateCancelButton(string text = "Cancel")
         {
             var btn = new Button(Dismiss);
             btn.text = text;
             btn.AddToClassList("dialog-cancel-button");
+            btn.AddToClassList("text-dialog-action");
             return btn;
         }
     }

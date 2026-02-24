@@ -58,9 +58,9 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < aliases.Count; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider());
+                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = aliases[i];
-                _listContainer.Add(SectionBuilder.CreateInlineKeyValue(kvp.Key, kvp.Value, $"alias_{i}"));
+                _listContainer.Add(SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, $"alias_{i}"));
             }
         }
     }

@@ -30,6 +30,7 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label(_title);
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             _rowsContainer = new VisualElement();
@@ -38,8 +39,13 @@ namespace OneSignalDemo.UI.Dialogs
             AddRow();
 
             var addRowButton = new Button(AddRow);
-            addRowButton.text = "+ Add Row";
             addRowButton.AddToClassList("dialog-add-row-button");
+            var addIcon = new Label(MaterialIcons.Add);
+            addIcon.AddToClassList("dialog-add-row-icon");
+            addRowButton.Add(addIcon);
+            var addLabel = new Label("Add Row");
+            addLabel.AddToClassList("dialog-add-row-label");
+            addRowButton.Add(addLabel);
             container.Add(addRowButton);
 
             var actions = new VisualElement();

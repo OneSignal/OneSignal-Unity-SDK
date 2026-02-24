@@ -304,7 +304,7 @@ namespace OneSignalDemo.UI
         {
             var dialog = new PairInputDialog(
                 "Add Alias", "Label", "ID",
-                "alias_key", "alias_value", "ADD",
+                "alias_key", "alias_value", "Add",
                 (key, value) => _viewModel.AddAlias(key, value));
             dialog.Show(_root);
         }
@@ -312,7 +312,7 @@ namespace OneSignalDemo.UI
         private void ShowAddMultipleAliasesDialog()
         {
             var dialog = new MultiPairInputDialog(
-                "Add Multiple Aliases", "Label", "ID", "ADD ALL",
+                "Add Multiple Aliases", "Label", "ID", "Add all",
                 pairs => _viewModel.AddAliases(pairs));
             dialog.Show(_root);
         }
@@ -320,7 +320,7 @@ namespace OneSignalDemo.UI
         private void ShowAddEmailDialog()
         {
             var dialog = new SingleInputDialog(
-                "Add Email", "Email", "email_input", "ADD",
+                "Add Email", "Email", "email_input", "Add",
                 email => _viewModel.AddEmail(email));
             dialog.Show(_root);
         }
@@ -328,7 +328,7 @@ namespace OneSignalDemo.UI
         private void ShowAddSmsDialog()
         {
             var dialog = new SingleInputDialog(
-                "Add SMS", "SMS", "sms_input", "ADD",
+                "Add SMS", "SMS", "sms_input", "Add",
                 sms => _viewModel.AddSms(sms));
             dialog.Show(_root);
         }
@@ -337,7 +337,7 @@ namespace OneSignalDemo.UI
         {
             var dialog = new PairInputDialog(
                 "Add Tag", "Key", "Value",
-                "tag_key", "tag_value", "ADD",
+                "tag_key", "tag_value", "Add",
                 (key, value) => _viewModel.AddTag(key, value));
             dialog.Show(_root);
         }
@@ -345,7 +345,7 @@ namespace OneSignalDemo.UI
         private void ShowAddMultipleTagsDialog()
         {
             var dialog = new MultiPairInputDialog(
-                "Add Multiple Tags", "Key", "Value", "ADD ALL",
+                "Add Multiple Tags", "Key", "Value", "Add all",
                 pairs => _viewModel.AddTags(pairs));
             dialog.Show(_root);
         }
@@ -356,7 +356,7 @@ namespace OneSignalDemo.UI
             if (items.Count == 0) return;
 
             var dialog = new MultiSelectRemoveDialog(
-                "Remove Selected Tags", items,
+                "Remove Tags", items,
                 keys => _viewModel.RemoveSelectedTags(keys));
             dialog.Show(_root);
         }
@@ -365,7 +365,7 @@ namespace OneSignalDemo.UI
         {
             var dialog = new PairInputDialog(
                 "Add Trigger", "Key", "Value",
-                "trigger_key", "trigger_value", "ADD",
+                "trigger_key", "trigger_value", "Add",
                 (key, value) => _viewModel.AddTrigger(key, value));
             dialog.Show(_root);
         }
@@ -373,7 +373,7 @@ namespace OneSignalDemo.UI
         private void ShowAddMultipleTriggersDialog()
         {
             var dialog = new MultiPairInputDialog(
-                "Add Multiple Triggers", "Key", "Value", "ADD ALL",
+                "Add Multiple Triggers", "Key", "Value", "Add all",
                 pairs => _viewModel.AddTriggers(pairs));
             dialog.Show(_root);
         }
@@ -384,7 +384,7 @@ namespace OneSignalDemo.UI
             if (items.Count == 0) return;
 
             var dialog = new MultiSelectRemoveDialog(
-                "Remove Selected Triggers", items,
+                "Remove Triggers", items,
                 keys => _viewModel.RemoveSelectedTriggers(keys));
             dialog.Show(_root);
         }

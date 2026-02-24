@@ -61,6 +61,7 @@
     color: #676E7B;
     min-width: 70px;
     margin-right: 4px;
+    -unity-font-definition: resource("DroidSansMono");
 }
 
 .log-level {
@@ -68,6 +69,7 @@
     min-width: 14px;
     margin-right: 4px;
     -unity-font-style: bold;
+    -unity-font-definition: resource("DroidSansMono");
 }
 
 .log-level-d { color: #82AAFF; }
@@ -81,6 +83,7 @@
     flex-grow: 1;
     flex-shrink: 1;
     white-space: nowrap;
+    -unity-font-definition: resource("DroidSansMono");
 }
 
 .log-empty {

@@ -15,8 +15,9 @@ namespace OneSignalDemo.UI.Sections
             var header = new VisualElement();
             header.AddToClassList("section-header");
 
-            var titleLabel = new Label(title);
+            var titleLabel = new Label(title.ToUpperInvariant());
             titleLabel.AddToClassList("section-title");
+            titleLabel.AddToClassList("text-section-header");
             header.Add(titleLabel);
 
             if (onInfoTap != null)
@@ -52,12 +53,14 @@ namespace OneSignalDemo.UI.Sections
 
             var labelElement = new Label(label);
             labelElement.AddToClassList("toggle-label");
+            labelElement.AddToClassList("text-toggle-label");
             labelContainer.Add(labelElement);
 
             if (!string.IsNullOrEmpty(description))
             {
                 var desc = new Label(description);
                 desc.AddToClassList("toggle-description");
+                desc.AddToClassList("text-toggle-desc");
                 labelContainer.Add(desc);
             }
 
@@ -90,10 +93,12 @@ namespace OneSignalDemo.UI.Sections
             return btn;
         }
 
-        public static VisualElement CreateDivider()
+        public static VisualElement CreateDivider(bool tight = false)
         {
             var divider = new VisualElement();
             divider.AddToClassList("divider");
+            if (tight)
+                divider.AddToClassList("divider--tight");
             return divider;
         }
 
@@ -110,10 +115,12 @@ namespace OneSignalDemo.UI.Sections
 
             var keyLabel = new Label(key);
             keyLabel.AddToClassList("key-value-key");
+            keyLabel.AddToClassList("text-card-label");
             texts.Add(keyLabel);
 
             var valueLabel = new Label(value);
             valueLabel.AddToClassList("key-value-value");
+            valueLabel.AddToClassList("text-toggle-desc");
             texts.Add(valueLabel);
 
             item.Add(texts);
@@ -138,11 +145,13 @@ namespace OneSignalDemo.UI.Sections
 
             var keyLabel = new Label(key);
             keyLabel.AddToClassList("key-value-inline-key");
+            keyLabel.AddToClassList("text-body-medium");
             row.Add(keyLabel);
 
             var valueLabel = new Label(value);
             valueLabel.name = name != null ? $"{name}_value" : null;
             valueLabel.AddToClassList("key-value-inline-value");
+            valueLabel.AddToClassList("text-card-value");
             row.Add(valueLabel);
 
             return row;
@@ -157,6 +166,7 @@ namespace OneSignalDemo.UI.Sections
 
             var label = new Label(value);
             label.AddToClassList("key-value-key");
+            label.AddToClassList("text-card-label");
             label.AddToClassList("flex-grow");
             item.Add(label);
 
@@ -175,6 +185,7 @@ namespace OneSignalDemo.UI.Sections
         {
             var label = new Label(text);
             label.AddToClassList("empty-state");
+            label.AddToClassList("text-empty-state");
             return label;
         }
     }

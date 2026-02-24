@@ -23,10 +23,12 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label("Track Event");
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             var nameLabel = new Label("Event Name");
             nameLabel.AddToClassList("input-label");
+            nameLabel.AddToClassList("text-body-small");
             container.Add(nameLabel);
 
             _nameField = new TextField();
@@ -37,6 +39,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             var propsLabel = new Label("Properties (optional, JSON)");
             propsLabel.AddToClassList("input-label");
+            propsLabel.AddToClassList("text-body-small");
             container.Add(propsLabel);
 
             _propertiesField = new TextField();
@@ -56,7 +59,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             actions.Add(CreateCancelButton());
 
-            _confirmButton = CreateConfirmButton("TRACK", OnConfirm);
+            _confirmButton = CreateConfirmButton("Track", OnConfirm);
             _confirmButton.name = "event_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);

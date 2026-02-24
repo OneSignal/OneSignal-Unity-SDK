@@ -39,9 +39,11 @@ namespace OneSignalDemo.UI.Sections
             banner.AddToClassList("guidance-banner");
             var bannerText = new Label("Add your own App ID, then rebuild to fully test all functionality.");
             bannerText.AddToClassList("guidance-text");
+            bannerText.AddToClassList("text-warning");
             banner.Add(bannerText);
             var bannerLink = new Label("Get your keys at onesignal.com");
             bannerLink.AddToClassList("guidance-link");
+            bannerLink.AddToClassList("text-warning-link");
             bannerLink.RegisterCallback<ClickEvent>(_ =>
                 Application.OpenURL("https://onesignal.com"));
             banner.Add(bannerLink);

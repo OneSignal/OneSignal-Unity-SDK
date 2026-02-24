@@ -27,10 +27,12 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label(_title);
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             var label = new Label(_fieldLabel);
             label.AddToClassList("input-label");
+            label.AddToClassList("text-body-small");
             container.Add(label);
 
             _inputField = new TextField();

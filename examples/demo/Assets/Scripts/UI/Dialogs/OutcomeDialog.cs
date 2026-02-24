@@ -26,6 +26,7 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label("Send Outcome");
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             var radioGroup = new VisualElement();
@@ -43,30 +44,20 @@ namespace OneSignalDemo.UI.Dialogs
             radioGroup.Add(_withValueRadio);
             container.Add(radioGroup);
 
-            var divider = new VisualElement();
-            divider.AddToClassList("divider");
-            container.Add(divider);
-
-            var nameLabel = new Label("Name");
-            nameLabel.AddToClassList("input-label");
-            container.Add(nameLabel);
-
             _nameField = new TextField();
             _nameField.name = "outcome_name";
             _nameField.AddToClassList("input-field");
+            _nameField.textEdition.placeholder = "Outcome Name";
             _nameField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_nameField);
 
             _valueContainer = new VisualElement();
             _valueContainer.style.display = DisplayStyle.None;
 
-            var valueLabel = new Label("Value");
-            valueLabel.AddToClassList("input-label");
-            _valueContainer.Add(valueLabel);
-
             _valueField = new TextField();
             _valueField.name = "outcome_value";
             _valueField.AddToClassList("input-field");
+            _valueField.textEdition.placeholder = "Value";
             _valueField.RegisterValueChangedCallback(_ => ValidateInput());
             _valueContainer.Add(_valueField);
 
@@ -77,7 +68,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             actions.Add(CreateCancelButton());
 
-            _confirmButton = CreateConfirmButton("SEND", OnConfirm);
+            _confirmButton = CreateConfirmButton("Send", OnConfirm);
             _confirmButton.name = "outcome_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
@@ -91,6 +82,7 @@ namespace OneSignalDemo.UI.Dialogs
             radio.name = name;
             radio.value = selected;
             radio.AddToClassList("radio-row");
+            radio.AddToClassList("text-body-large");
             return radio;
         }
 

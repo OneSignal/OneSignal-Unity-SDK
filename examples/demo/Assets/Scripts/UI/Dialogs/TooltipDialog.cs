@@ -16,12 +16,14 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label(_data.Title ?? "Info");
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             if (!string.IsNullOrEmpty(_data.Description))
             {
                 var desc = new Label(_data.Description);
                 desc.AddToClassList("tooltip-description");
+                desc.AddToClassList("text-body-medium");
                 container.Add(desc);
             }
 
@@ -36,6 +38,7 @@ namespace OneSignalDemo.UI.Dialogs
                     {
                         var name = new Label(opt.Name);
                         name.AddToClassList("tooltip-option-name");
+                        name.AddToClassList("text-body-medium");
                         optContainer.Add(name);
                     }
 
@@ -43,6 +46,7 @@ namespace OneSignalDemo.UI.Dialogs
                     {
                         var desc = new Label(opt.Description);
                         desc.AddToClassList("tooltip-option-desc");
+                        desc.AddToClassList("text-body-small");
                         optContainer.Add(desc);
                     }
 

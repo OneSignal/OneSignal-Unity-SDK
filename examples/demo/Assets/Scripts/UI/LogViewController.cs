@@ -30,13 +30,15 @@ namespace OneSignalDemo.UI
             var headerLeft = new VisualElement();
             headerLeft.AddToClassList("log-header-left");
 
-            var title = new Label("Logs");
+            var title = new Label("LOGS");
             title.AddToClassList("log-header-title");
+            title.AddToClassList("text-label-small");
             headerLeft.Add(title);
 
             _countLabel = new Label("(0)");
             _countLabel.name = "log_view_count";
             _countLabel.AddToClassList("log-header-count");
+            _countLabel.AddToClassList("text-label-small");
             headerLeft.Add(_countLabel);
 
             header.Add(headerLeft);
@@ -103,6 +105,7 @@ namespace OneSignalDemo.UI
             _scrollContent.Clear();
             var entries = LogManager.Instance.Entries;
             _countLabel.text = $"({entries.Count})";
+            _clearButton.style.display = entries.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
 
             if (entries.Count == 0)
             {
@@ -124,15 +127,18 @@ namespace OneSignalDemo.UI
                 var ts = new Label(entry.Timestamp.ToString("HH:mm:ss"));
                 ts.name = $"log_entry_{displayIndex}_timestamp";
                 ts.AddToClassList("log-timestamp");
+                ts.AddToClassList("text-label-small");
 
                 var level = new Label(entry.LevelChar);
                 level.name = $"log_entry_{displayIndex}_level";
                 level.AddToClassList("log-level");
+                level.AddToClassList("text-label-small");
                 level.AddToClassList($"log-level-{entry.LevelChar.ToLower()}");
 
-                var msg = new Label($"[{entry.Tag}] {entry.Message}");
+                var msg = new Label($"{entry.Tag}: {entry.Message}");
                 msg.name = $"log_entry_{displayIndex}_message";
                 msg.AddToClassList("log-message");
+                msg.AddToClassList("text-label-small");
 
                 row.Add(ts);
                 row.Add(level);

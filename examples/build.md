@@ -984,6 +984,10 @@ https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/demo/styl
 Map the style reference values to USS variables at :root and create reusable
 USS classes for cards, buttons, input fields, dividers, and typography.
 
+Note: USS does not support the CSS `gap` property. Use `margin` on child
+elements for spacing between siblings (e.g. `margin-bottom: var(--card-gap)`
+on cards and buttons within a section container).
+
 Unity-specific theme considerations:
 
 - Override Unity's internal `.unity-base-text-field__input` on `.input-field`

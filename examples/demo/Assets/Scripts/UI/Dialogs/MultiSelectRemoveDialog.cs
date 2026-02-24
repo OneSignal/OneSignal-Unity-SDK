@@ -25,6 +25,7 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label(_title);
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             foreach (var item in _items)
@@ -34,11 +35,16 @@ namespace OneSignalDemo.UI.Dialogs
 
                 var toggle = new Toggle();
                 toggle.name = $"select_{item.Key}";
-                toggle.RegisterValueChangedCallback(_ => UpdateCount());
+                toggle.RegisterValueChangedCallback(evt =>
+                {
+                    toggle.EnableInClassList("checkbox--checked", evt.newValue);
+                    UpdateCount();
+                });
                 row.Add(toggle);
 
                 var label = new Label(item.Key);
                 label.AddToClassList("checkbox-label");
+                label.AddToClassList("text-card-label");
                 row.Add(label);
 
                 _toggles[item.Key] = toggle;
@@ -50,7 +56,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             actions.Add(CreateCancelButton());
 
-            _confirmButton = CreateConfirmButton("REMOVE (0)", OnConfirm);
+            _confirmButton = CreateConfirmButton("Remove (0)", OnConfirm);
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
@@ -60,7 +66,7 @@ namespace OneSignalDemo.UI.Dialogs
         private void UpdateCount()
         {
             int count = _toggles.Values.Count(t => t.value);
-            _confirmButton.text = $"REMOVE ({count})";
+            _confirmButton.text = $"Remove ({count})";
             _confirmButton.SetEnabled(count > 0);
         }
 

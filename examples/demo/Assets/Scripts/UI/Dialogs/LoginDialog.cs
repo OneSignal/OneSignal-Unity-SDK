@@ -18,12 +18,14 @@ namespace OneSignalDemo.UI.Dialogs
 
         protected override void BuildContent(VisualElement container)
         {
-            var title = new Label(_isSwitchUser ? "Switch User" : "Login User");
+            var title = new Label("Login User");
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             var label = new Label("External User Id");
             label.AddToClassList("input-label");
+            label.AddToClassList("text-body-small");
             container.Add(label);
 
             _externalIdField = new TextField();
@@ -37,7 +39,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             actions.Add(CreateCancelButton());
 
-            _confirmButton = CreateConfirmButton(_isSwitchUser ? "SWITCH" : "LOGIN", OnConfirm);
+            _confirmButton = CreateConfirmButton(_isSwitchUser ? "Switch" : "Login", OnConfirm);
             _confirmButton.name = "login_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);

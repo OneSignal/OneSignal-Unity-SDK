@@ -75,7 +75,7 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < triggers.Count; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider());
+                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = triggers[i];
                 _listContainer.Add(SectionBuilder.CreateKeyValueItem(
                     kvp.Key, kvp.Value, $"trigger_{i}",

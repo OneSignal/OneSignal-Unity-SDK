@@ -23,13 +23,11 @@
 }
 
 .log-header-title {
-    font-size: 11px;
     color: white;
     -unity-font-style: bold;
 }
 
 .log-header-count {
-    font-size: 11px;
     color: #9E9E9E;
     margin-left: 8px;
 }
@@ -57,14 +55,12 @@
 }
 
 .log-timestamp {
-    font-size: 11px;
     color: #676E7B;
     min-width: 70px;
     margin-right: 4px;
 }
 
 .log-level {
-    font-size: 11px;
     min-width: 14px;
     margin-right: 4px;
     -unity-font-style: bold;
@@ -76,7 +72,6 @@
 .log-level-e { color: #FF5370; }
 
 .log-message {
-    font-size: 11px;
     color: white;
     flex-grow: 1;
     flex-shrink: 1;
@@ -84,7 +79,6 @@
 }
 
 .log-empty {
-    font-size: 11px;
     color: #9E9E9E;
     -unity-text-align: middle-center;
     padding: 8px;

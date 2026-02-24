@@ -15,16 +15,112 @@
     --os-text-secondary: #757575;
     --os-text-hint: #9E9E9E;
     --card-gap: 8px;
-    --section-gap: 24px;
 }
 
 .screen-root {
     background-color: var(--os-bg-light);
     flex-grow: 1;
+    color: var(--os-text-primary);
+    font-size: 14px;
+    -unity-font-style: normal;
+}
+
+.text-body-large {
+    font-size: 16px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-body-medium {
+    font-size: 14px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-body-small {
+    font-size: 12px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-label-small {
+    font-size: 11px;
+    -unity-font-style: bold;
+    color: var(--os-text-primary);
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.text-section-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--os-grey-700);
+    letter-spacing: 0.5px;
+}
+
+.text-card-label {
+    font-size: 14px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-card-value {
+    font-size: 12px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.text-toggle-label {
+    font-size: 14px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-toggle-desc {
+    font-size: 12px;
+    -unity-font-style: normal;
+    color: var(--os-grey-600);
+}
+
+.text-empty-state {
+    font-size: 14px;
+    -unity-font-style: normal;
+    color: var(--os-grey-600);
+    -unity-text-align: middle-center;
+}
+
+.text-collapsible-more {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--os-red);
+}
+
+.text-warning {
+    font-size: 12px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-warning-link {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--os-red);
+}
+
+.text-dialog-title {
+    font-size: 24px;
+    -unity-font-style: normal;
+    color: var(--os-text-primary);
+}
+
+.text-dialog-action {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--os-red);
 }
 
 .scroll-content {
-    padding: 12px 16px 24px 16px;
+    padding: 0 16px 24px 16px;
 }
 
 .status-bar-spacer {
@@ -58,7 +154,6 @@
 }
 
 .section-container {
-    margin-bottom: var(--section-gap);
 }
 
 .section-header {
@@ -70,12 +165,7 @@
 }
 
 .section-title {
-    font-size: 12px;
-    -unity-font-style: bold;
-    color: var(--os-grey-700);
-    text-transform: uppercase;
     flex-grow: 1;
-    letter-spacing: 0.5px;
 }
 
 .material-icon {
@@ -105,14 +195,14 @@
     border-color: var(--os-card-border);
 }
 
-.card-no-margin {
-    margin-bottom: 0;
-}
-
 .divider {
     height: 1px;
     background-color: var(--os-divider);
-    margin: 12px 0;
+    margin: 8px 0;
+}
+
+.divider--tight {
+    margin: 0;
 }
 
 .toggle-row {
@@ -128,14 +218,9 @@
 }
 
 .toggle-label {
-    font-size: 14px;
-    color: var(--os-text-primary);
-    -unity-font-style: normal;
 }
 
 .toggle-description {
-    font-size: 12px;
-    color: var(--os-text-secondary);
     margin-top: 2px;
 }
 
@@ -185,8 +270,6 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: var(--card-gap);
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .primary-button:hover {
@@ -214,8 +297,6 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: var(--card-gap);
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .iam-button {
@@ -228,8 +309,6 @@
     -unity-font-style: bold;
     -unity-text-align: middle-left;
     margin-bottom: var(--card-gap);
-    text-transform: uppercase;
-    letter-spacing: 1px;
     flex-direction: row;
     align-items: center;
 }
@@ -237,7 +316,7 @@
 .iam-button-icon {
     font-size: 18px;
     color: white;
-    margin-right: 10px;
+    margin-right: 8px;
     width: 20px;
     -unity-font-definition: resource("MaterialIcons-Regular");
     -unity-text-align: middle-center;
@@ -247,8 +326,6 @@
     color: white;
     font-size: 14px;
     -unity-font-style: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .key-value-item {
@@ -263,14 +340,9 @@
 }
 
 .key-value-key {
-    font-size: 14px;
-    color: var(--os-text-primary);
-    -unity-font-style: normal;
 }
 
 .key-value-value {
-    font-size: 12px;
-    color: var(--os-text-secondary);
     margin-top: 2px;
 }
 
@@ -281,27 +353,19 @@
 }
 
 .key-value-inline-key {
-    font-size: 14px;
     color: var(--os-text-secondary);
     width: 120px;
 }
 
 .key-value-inline-value {
-    font-size: 14px;
-    color: var(--os-text-primary);
     flex-grow: 1;
     flex-shrink: 1;
     -unity-text-align: middle-right;
 }
 
-#app_id_value,
-#push_subscription_id_value {
-    font-size: 12px;
-}
-
 .delete-button {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     font-size: 18px;
     color: var(--os-red);
     background-color: transparent;
@@ -314,9 +378,6 @@
 }
 
 .empty-state {
-    font-size: 14px;
-    color: var(--os-grey-600);
-    -unity-text-align: middle-center;
     padding: 12px 0;
 }
 
@@ -358,28 +419,23 @@
 
 .guidance-banner {
     background-color: var(--os-warning-bg);
-    padding: 14px 16px;
 }
 
 .guidance-text {
-    font-size: 12px;
-    color: #5D4037;
     white-space: normal;
+    margin: 0;
+    padding: 0;
 }
 
 .guidance-link {
-    font-size: 12px;
-    color: var(--os-red);
-    -unity-font-style: bold;
     cursor: link;
+    margin: 0;
+    padding: 0;
 }
 
 .collapsible-more {
-    font-size: 14px;
-    color: var(--os-red);
     padding: 4px 0;
     -unity-text-align: middle-center;
-    -unity-font-style: bold;
     cursor: link;
 }
 
@@ -398,13 +454,10 @@
 }
 
 .input-field:focus {
-    border-width: 2px;
     border-color: var(--os-red);
-    padding: 13px 11px;
 }
 
 .input-label {
-    font-size: 12px;
     color: var(--os-text-secondary);
     margin-bottom: 4px;
     -unity-font-style: bold;
@@ -438,9 +491,6 @@
 }
 
 .dialog-title {
-    font-size: 24px;
-    -unity-font-style: normal;
-    color: var(--os-text-primary);
     margin-bottom: 16px;
 }
 
@@ -452,21 +502,15 @@
 
 .dialog-cancel-button {
     background-color: transparent;
-    color: var(--os-red);
     border-width: 0;
     padding: 8px 12px;
-    font-size: 14px;
-    -unity-font-style: bold;
     margin-right: 8px;
 }
 
 .dialog-confirm-button {
     background-color: transparent;
-    color: var(--os-red);
     padding: 8px 12px;
     border-width: 0;
-    font-size: 14px;
-    -unity-font-style: bold;
 }
 
 .dialog-confirm-button:disabled {
@@ -476,12 +520,12 @@
 
 .dialog-row {
     flex-direction: row;
-    margin-bottom: 8px;
 }
 
 .dialog-row .input-field {
     flex-grow: 1;
     margin-right: 8px;
+    margin-bottom: 0;
 }
 
 .dialog-row .input-field:last-child {
@@ -502,12 +546,24 @@
 }
 
 .dialog-add-row-button {
+    flex-direction: row;
     background-color: transparent;
-    color: #1565C0;
     border-width: 0;
     padding: 8px;
+    align-self: center;
+    align-items: center;
+}
+
+.dialog-add-row-icon {
+    font-size: 18px;
+    color: var(--os-red);
+    -unity-font-definition: resource("MaterialIcons-Regular");
+    margin-right: 4px;
+}
+
+.dialog-add-row-label {
     font-size: 13px;
-    -unity-text-align: middle-left;
+    color: var(--os-red);
 }
 
 .checkbox-row {
@@ -517,20 +573,60 @@
 }
 
 .checkbox-label {
-    font-size: 14px;
-    color: var(--os-text-primary);
     margin-left: 8px;
 }
 
+.checkbox-row .unity-toggle {
+    margin: 0;
+    padding: 0;
+}
+
+.checkbox-row .unity-toggle__input {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    max-width: 20px;
+    max-height: 20px;
+    border-width: 2px;
+    border-color: var(--os-grey-700);
+    border-radius: 4px;
+    background-color: white;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.checkbox-row .checkbox--checked .unity-toggle__input {
+    background-color: var(--os-red);
+    border-color: var(--os-red);
+}
+
+.checkbox-row .unity-toggle__checkmark {
+    width: 16px;
+    height: 16px;
+    -unity-background-image-tint-color: white;
+    -unity-background-scale-mode: scale-to-fit;
+    margin: 0;
+    padding: 0;
+}
+
+.checkbox-row .unity-toggle__label {
+    display: none;
+}
+
 .radio-row {
-    flex-direction: row;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
     align-items: center;
     padding: 8px 0;
 }
 
+.radio-row > .unity-radio-button__label {
+    margin-left: 8px;
+}
+
 .radio-label {
-    font-size: 16px;
-    color: var(--os-text-primary);
     margin-left: 8px;
 }
 
@@ -576,13 +672,10 @@
 }
 
 .tooltip-option-name {
-    font-size: 14px;
     -unity-font-style: bold;
-    color: var(--os-text-primary);
 }
 
 .tooltip-option-desc {
-    font-size: 13px;
     color: var(--os-text-secondary);
     margin-top: 2px;
     white-space: normal;
@@ -609,17 +702,18 @@
 }
 
 .tooltip-description {
-    font-size: 14px;
     white-space: normal;
     margin-bottom: 12px;
 }
 
 .dialog-field-group {
     flex-grow: 1;
+    flex-basis: 0;
 }
 
 .dialog-field-group-left {
     flex-grow: 1;
+    flex-basis: 0;
     margin-right: 8px;
 }
 

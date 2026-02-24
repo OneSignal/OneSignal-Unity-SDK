@@ -68,7 +68,7 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < tags.Count; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider());
+                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = tags[i];
                 _listContainer.Add(SectionBuilder.CreateKeyValueItem(
                     kvp.Key, kvp.Value, $"tag_{i}",

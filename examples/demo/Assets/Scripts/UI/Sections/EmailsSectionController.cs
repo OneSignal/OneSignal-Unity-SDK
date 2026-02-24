@@ -59,7 +59,7 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < showCount; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider());
+                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var email = emails[i];
                 _listContainer.Add(SectionBuilder.CreateSingleItem(email, $"email_{i}",
                     () => _viewModel.RemoveEmail(email)));
@@ -69,6 +69,7 @@ namespace OneSignalDemo.UI.Sections
             {
                 var more = new Label($"{emails.Count - CollapseThreshold} more");
                 more.AddToClassList("collapsible-more");
+                more.AddToClassList("text-collapsible-more");
                 more.RegisterCallback<ClickEvent>(_ =>
                 {
                     _expanded = true;

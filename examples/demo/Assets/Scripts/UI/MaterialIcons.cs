@@ -10,6 +10,8 @@ namespace OneSignalDemo.UI
         public const string ArrowBack = "\uE5C4";
         public const string ArrowUpward = "\uE5D8";
         public const string ArrowDownward = "\uE5DB";
+        public const string VerticalAlignTop = "\uE25A";
+        public const string VerticalAlignBottom = "\uE258";
         public const string CropSquare = "\uE3C6";
         public const string Fullscreen = "\uE5D0";
         public const string ExpandMore = "\uE5CF";

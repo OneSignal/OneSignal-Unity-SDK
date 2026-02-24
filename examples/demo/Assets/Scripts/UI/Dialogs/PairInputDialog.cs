@@ -33,6 +33,7 @@ namespace OneSignalDemo.UI.Dialogs
         {
             var title = new Label(_title);
             title.AddToClassList("dialog-title");
+            title.AddToClassList("text-dialog-title");
             container.Add(title);
 
             var row = new VisualElement();
@@ -42,6 +43,7 @@ namespace OneSignalDemo.UI.Dialogs
             keyContainer.AddToClassList("dialog-field-group-left");
             var keyLabel = new Label(_keyLabel);
             keyLabel.AddToClassList("input-label");
+            keyLabel.AddToClassList("text-body-small");
             keyContainer.Add(keyLabel);
             _keyField = new TextField();
             _keyField.name = _keyName;
@@ -53,6 +55,7 @@ namespace OneSignalDemo.UI.Dialogs
             valueContainer.AddToClassList("dialog-field-group");
             var valueLabel = new Label(_valueLabel);
             valueLabel.AddToClassList("input-label");
+            valueLabel.AddToClassList("text-body-small");
             valueContainer.Add(valueLabel);
             _valueField = new TextField();
             _valueField.name = _valueName;
