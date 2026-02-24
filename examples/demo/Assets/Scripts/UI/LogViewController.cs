@@ -12,6 +12,7 @@ namespace OneSignalDemo.UI
         private readonly ScrollView _scrollView;
         private readonly Label _countLabel;
         private readonly Label _emptyLabel;
+        private readonly Button _clearButton;
         private readonly Button _chevronButton;
         private bool _expanded = true;
 
@@ -43,11 +44,11 @@ namespace OneSignalDemo.UI
             var headerRight = new VisualElement();
             headerRight.AddToClassList("log-header-right");
 
-            var clearButton = new Button(ClearLogs);
-            clearButton.name = "log_view_clear_button";
-            clearButton.text = MaterialIcons.Delete;
-            clearButton.AddToClassList("log-clear-button");
-            headerRight.Add(clearButton);
+            _clearButton = new Button(ClearLogs);
+            _clearButton.name = "log_view_clear_button";
+            _clearButton.text = MaterialIcons.Delete;
+            _clearButton.AddToClassList("log-clear-button");
+            headerRight.Add(_clearButton);
 
             _chevronButton = new Button(ToggleExpand);
             _chevronButton.name = "log_view_toggle";
@@ -112,24 +113,25 @@ namespace OneSignalDemo.UI
                 return;
             }
 
-            for (int i = 0; i < entries.Count; i++)
+            for (int i = entries.Count - 1; i >= 0; i--)
             {
                 var entry = entries[i];
+                var displayIndex = entries.Count - 1 - i;
                 var row = new VisualElement();
-                row.name = $"log_entry_{i}";
+                row.name = $"log_entry_{displayIndex}";
                 row.AddToClassList("log-entry");
 
                 var ts = new Label(entry.Timestamp.ToString("HH:mm:ss"));
-                ts.name = $"log_entry_{i}_timestamp";
+                ts.name = $"log_entry_{displayIndex}_timestamp";
                 ts.AddToClassList("log-timestamp");
 
                 var level = new Label(entry.LevelChar);
-                level.name = $"log_entry_{i}_level";
+                level.name = $"log_entry_{displayIndex}_level";
                 level.AddToClassList("log-level");
                 level.AddToClassList($"log-level-{entry.LevelChar.ToLower()}");
 
                 var msg = new Label($"[{entry.Tag}] {entry.Message}");
-                msg.name = $"log_entry_{i}_message";
+                msg.name = $"log_entry_{displayIndex}_message";
                 msg.AddToClassList("log-message");
 
                 row.Add(ts);
@@ -137,11 +139,6 @@ namespace OneSignalDemo.UI
                 row.Add(msg);
                 _scrollContent.Add(row);
             }
-
-            _scrollView.schedule.Execute(() =>
-            {
-                _scrollView.scrollOffset = new Vector2(0, float.MaxValue);
-            });
         }
 
         public void Destroy()

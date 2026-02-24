@@ -2,15 +2,20 @@
     --os-red: #E54B4D;
     --os-green: #34A853;
     --os-green-light: #E6F4EA;
+    --os-grey-700: #616161;
+    --os-grey-600: #757575;
+    --os-grey-500: #9E9E9E;
     --os-bg-light: #F8F9FA;
     --os-card-bg: #FFFFFF;
+    --os-card-border: rgba(0, 0, 0, 0.1);
     --os-divider: #E8EAED;
     --os-warning-bg: #FFF8E1;
+    --os-backdrop: rgba(0, 0, 0, 0.54);
     --os-text-primary: #202124;
-    --os-text-secondary: #5F6368;
-    --os-text-hint: #9AA0A6;
+    --os-text-secondary: #757575;
+    --os-text-hint: #9E9E9E;
     --card-gap: 8px;
-    --section-gap: 12px;
+    --section-gap: 24px;
 }
 
 .screen-root {
@@ -67,7 +72,7 @@
 .section-title {
     font-size: 12px;
     -unity-font-style: bold;
-    color: #616161;
+    color: var(--os-grey-700);
     text-transform: uppercase;
     flex-grow: 1;
     letter-spacing: 0.5px;
@@ -81,7 +86,7 @@
     width: 18px;
     height: 18px;
     background-color: rgba(0, 0, 0, 0);
-    color: var(--os-text-hint);
+    color: var(--os-grey-500);
     font-size: 18px;
     -unity-font-definition: resource("MaterialIcons-Regular");
     -unity-text-align: middle-center;
@@ -96,14 +101,8 @@
     border-radius: 12px;
     padding: 12px;
     margin-bottom: var(--card-gap);
-    border-top-width: 1px;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 2px;
-    border-top-color: rgba(0, 0, 0, 0.08);
-    border-left-color: rgba(0, 0, 0, 0.08);
-    border-right-color: rgba(0, 0, 0, 0.08);
-    border-bottom-color: rgba(0, 0, 0, 0.15);
+    border-width: 2px;
+    border-color: var(--os-card-border);
 }
 
 .card-no-margin {
@@ -131,7 +130,7 @@
 .toggle-label {
     font-size: 14px;
     color: var(--os-text-primary);
-    -unity-font-style: bold;
+    -unity-font-style: normal;
 }
 
 .toggle-description {
@@ -220,7 +219,7 @@
 }
 
 .iam-button {
-    background-color: #E9444E;
+    background-color: var(--os-red);
     color: white;
     border-radius: 8px;
     padding: 14px 16px;
@@ -255,7 +254,7 @@
 .key-value-item {
     flex-direction: row;
     align-items: center;
-    padding: 8px 0;
+    padding: 4px;
 }
 
 .key-value-texts {
@@ -266,7 +265,7 @@
 .key-value-key {
     font-size: 14px;
     color: var(--os-text-primary);
-    -unity-font-style: bold;
+    -unity-font-style: normal;
 }
 
 .key-value-value {
@@ -304,7 +303,7 @@
     width: 24px;
     height: 24px;
     font-size: 18px;
-    color: var(--os-text-hint);
+    color: var(--os-red);
     background-color: transparent;
     border-width: 0;
     -unity-font-definition: resource("MaterialIcons-Regular");
@@ -316,9 +315,9 @@
 
 .empty-state {
     font-size: 14px;
-    color: var(--os-text-hint);
+    color: var(--os-grey-600);
     -unity-text-align: middle-center;
-    padding: 16px;
+    padding: 12px 0;
 }
 
 .readonly-field {
@@ -354,43 +353,40 @@
 }
 
 .status-value-green {
-    color: #2E7D32;
+    color: #34A853;
 }
 
 .guidance-banner {
     background-color: var(--os-warning-bg);
-    border-radius: 12px;
     padding: 14px 16px;
-    margin-bottom: var(--card-gap);
-    border-width: 1px;
-    border-color: #FFE082;
 }
 
 .guidance-text {
-    font-size: 13px;
+    font-size: 12px;
     color: #5D4037;
     white-space: normal;
 }
 
 .guidance-link {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--os-red);
-    margin-top: 4px;
+    -unity-font-style: bold;
     cursor: link;
 }
 
 .collapsible-more {
-    font-size: 13px;
-    color: #1565C0;
-    padding: 8px 0;
+    font-size: 14px;
+    color: var(--os-red);
+    padding: 4px 0;
     -unity-text-align: middle-center;
+    -unity-font-style: bold;
     cursor: link;
 }
 
 .input-field {
     border-radius: 8px;
     border-width: 1px;
-    border-color: var(--os-divider);
+    border-color: var(--os-grey-700);
     font-size: 14px;
     margin-bottom: 8px;
 }
@@ -402,7 +398,9 @@
 }
 
 .input-field:focus {
+    border-width: 2px;
     border-color: var(--os-red);
+    padding: 13px 11px;
 }
 
 .input-label {
@@ -425,14 +423,14 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--os-backdrop);
     justify-content: center;
     align-items: center;
 }
 
 .dialog-container {
     background-color: var(--os-card-bg);
-    border-radius: 16px;
+    border-radius: 28px;
     padding: 24px;
     margin: 24px 16px;
     width: 100%;
@@ -440,8 +438,8 @@
 }
 
 .dialog-title {
-    font-size: 18px;
-    -unity-font-style: bold;
+    font-size: 24px;
+    -unity-font-style: normal;
     color: var(--os-text-primary);
     margin-bottom: 16px;
 }
@@ -454,29 +452,26 @@
 
 .dialog-cancel-button {
     background-color: transparent;
-    color: var(--os-text-secondary);
+    color: var(--os-red);
     border-width: 0;
-    padding: 10px 16px;
+    padding: 8px 12px;
     font-size: 14px;
     -unity-font-style: bold;
     margin-right: 8px;
-    text-transform: uppercase;
 }
 
 .dialog-confirm-button {
-    background-color: var(--os-red);
-    color: white;
-    border-radius: 8px;
-    padding: 10px 20px;
+    background-color: transparent;
+    color: var(--os-red);
+    padding: 8px 12px;
     border-width: 0;
     font-size: 14px;
     -unity-font-style: bold;
-    text-transform: uppercase;
 }
 
 .dialog-confirm-button:disabled {
-    background-color: #BDBDBD;
-    color: #757575;
+    background-color: transparent;
+    color: var(--os-grey-500);
 }
 
 .dialog-row {
@@ -534,7 +529,7 @@
 }
 
 .radio-label {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--os-text-primary);
     margin-left: 8px;
 }
@@ -545,7 +540,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.26);
+    background-color: var(--os-backdrop);
     justify-content: center;
     align-items: center;
 }

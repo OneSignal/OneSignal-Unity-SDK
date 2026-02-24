@@ -11,17 +11,10 @@ namespace OneSignalDemo.UI.Sections
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
         private Label _appIdLabel;
-        private Label _statusValue;
-        private Label _externalIdValue;
         private SwitchToggle _consentToggle;
         private SwitchToggle _privacyToggle;
         private VisualElement _privacyRow;
         private VisualElement _privacyDivider;
-        private Button _loginButton;
-        private Button _logoutButton;
-
-        public Action OnLoginTap;
-        public Action OnLogoutTap;
 
         public AppSectionController(AppViewModel viewModel)
         {
@@ -42,6 +35,7 @@ namespace OneSignalDemo.UI.Sections
             section.Add(appIdCard);
 
             var banner = new VisualElement();
+            banner.AddToClassList("card");
             banner.AddToClassList("guidance-banner");
             var bannerText = new Label("Add your own App ID, then rebuild to fully test all functionality.");
             bannerText.AddToClassList("guidance-text");
@@ -78,33 +72,6 @@ namespace OneSignalDemo.UI.Sections
             consentCard.Add(_privacyRow);
             section.Add(consentCard);
 
-            var statusCard = SectionBuilder.CreateCard("user_status_card");
-            var statusRow = SectionBuilder.CreateInlineKeyValue("Status",
-                _viewModel.IsLoggedIn ? "Logged In" : "Anonymous", "user_status");
-            _statusValue = statusRow.Q<Label>("user_status_value");
-            if (_viewModel.IsLoggedIn)
-                _statusValue.AddToClassList("status-value-green");
-            statusCard.Add(statusRow);
-
-            statusCard.Add(SectionBuilder.CreateDivider());
-
-            var extIdRow = SectionBuilder.CreateInlineKeyValue("External ID",
-                _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013", "external_id");
-            _externalIdValue = extIdRow.Q<Label>("external_id_value");
-            statusCard.Add(extIdRow);
-            section.Add(statusCard);
-
-            _loginButton = SectionBuilder.CreatePrimaryButton(
-                _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER",
-                "login_button",
-                () => OnLoginTap?.Invoke());
-            section.Add(_loginButton);
-
-            _logoutButton = SectionBuilder.CreateDestructiveButton("LOGOUT USER", "logout_button",
-                () => OnLogoutTap?.Invoke());
-            _logoutButton.style.display = _viewModel.IsLoggedIn ? DisplayStyle.Flex : DisplayStyle.None;
-            section.Add(_logoutButton);
-
             return section;
         }
 
@@ -115,14 +82,6 @@ namespace OneSignalDemo.UI.Sections
             _privacyToggle.SetValueWithoutNotify(_viewModel.PrivacyConsentGiven);
             _privacyDivider.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
             _privacyRow.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
-
-            _statusValue.text = _viewModel.IsLoggedIn ? "Logged In" : "Anonymous";
-            _statusValue.EnableInClassList("status-value-green", _viewModel.IsLoggedIn);
-
-            _externalIdValue.text = _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013";
-
-            _loginButton.text = _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER";
-            _logoutButton.style.display = _viewModel.IsLoggedIn ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void OnConsentRequiredChanged(bool value) => _viewModel.SetConsentRequired(value);

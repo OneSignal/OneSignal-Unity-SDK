@@ -25,6 +25,7 @@ namespace OneSignalDemo.UI
         private ToastView _toastView;
 
         private AppSectionController _appSection;
+        private UserSectionController _userSection;
         private PushSectionController _pushSection;
         private SendPushSectionController _sendPushSection;
         private InAppSectionController _inAppSection;
@@ -138,7 +139,7 @@ namespace OneSignalDemo.UI
                 logo.style.backgroundImage = new StyleBackground(logoTexture);
             appBar.Add(logo);
 
-            var appBarTitle = new Label("Sample App");
+            var appBarTitle = new Label("Unity");
             appBarTitle.AddToClassList("app-bar-title");
             appBar.Add(appBarTitle);
 
@@ -176,9 +177,12 @@ namespace OneSignalDemo.UI
         private void BuildSections()
         {
             _appSection = new AppSectionController(_viewModel);
-            _appSection.OnLoginTap = ShowLoginDialog;
-            _appSection.OnLogoutTap = () => _viewModel.LogoutUser();
             _contentRoot.Add(_appSection.Root);
+
+            _userSection = new UserSectionController(_viewModel);
+            _userSection.OnLoginTap = ShowLoginDialog;
+            _userSection.OnLogoutTap = () => _viewModel.LogoutUser();
+            _contentRoot.Add(_userSection.Root);
 
             _pushSection = new PushSectionController(_viewModel);
             _pushSection.OnInfoTap = () => ShowTooltip("push");
@@ -256,6 +260,7 @@ namespace OneSignalDemo.UI
         private void RefreshAll()
         {
             _appSection?.Refresh();
+            _userSection?.Refresh();
             _pushSection?.Refresh();
             _inAppSection?.Refresh();
             _aliasesSection?.Refresh();
