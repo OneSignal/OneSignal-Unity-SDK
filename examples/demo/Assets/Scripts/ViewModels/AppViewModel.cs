@@ -82,7 +82,7 @@ namespace OneSignalDemo.ViewModels
             _appId = _prefs.AppId;
             _consentRequired = _prefs.ConsentRequired;
             _privacyConsentGiven = _prefs.PrivacyConsent;
-            _inAppMessagesPaused = _repository.IsInAppMessagesPaused();
+            _inAppMessagesPaused = _prefs.IamPaused;
             _locationShared = _repository.IsLocationShared();
             _externalUserId = _prefs.ExternalUserId;
             _pushSubscriptionId = _repository.GetPushSubscriptionId();

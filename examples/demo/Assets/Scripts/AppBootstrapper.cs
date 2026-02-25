@@ -1,10 +1,10 @@
+using OneSignalDemo.Repositories;
+using OneSignalDemo.Services;
+using OneSignalDemo.ViewModels;
 using OneSignalSDK;
 using OneSignalSDK.Debug.Models;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.Notifications;
-using OneSignalDemo.Repositories;
-using OneSignalDemo.Services;
-using OneSignalDemo.ViewModels;
 using UnityEngine;
 
 namespace OneSignalDemo
@@ -14,7 +14,8 @@ namespace OneSignalDemo
         private const string OneSignalAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
         private const string Tag = "AppBootstrapper";
 
-        [SerializeField] private AppViewModel _viewModel;
+        [SerializeField]
+        private AppViewModel _viewModel;
 
         private PreferencesService _prefs;
         private OneSignalApiService _apiService;
@@ -74,7 +75,8 @@ namespace OneSignalDemo
 
         private void OnDestroy()
         {
-            if (OneSignal.Default == null) return;
+            if (OneSignal.Default == null)
+                return;
 
             OneSignal.InAppMessages.WillDisplay -= OnIamWillDisplay;
             OneSignal.InAppMessages.DidDisplay -= OnIamDidDisplay;
@@ -103,7 +105,10 @@ namespace OneSignalDemo
         private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
             LogManager.Instance.Info(Tag, $"Notification clicked: {e.Result.ActionId}");
 
-        private void OnNotificationForegroundWillDisplay(object sender, NotificationWillDisplayEventArgs e)
+        private void OnNotificationForegroundWillDisplay(
+            object sender,
+            NotificationWillDisplayEventArgs e
+        )
         {
             LogManager.Instance.Info(Tag, "Notification received in foreground");
             e.Notification.Display();
