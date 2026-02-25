@@ -67,11 +67,22 @@ public static class BuildScript
     }
 
     /// <summary>
-    /// Builds an Xcode project for the iOS Simulator (ARM64).
-    /// The OneSignal SDK post-processor automatically adds push capabilities,
-    /// the NSE target, and CocoaPods entries during the build.
+    /// Builds an Xcode project for the iOS Simulator.
     /// </summary>
     public static void BuildiOSSimulator()
+    {
+        BuildiOS(iOSSdkVersion.SimulatorSDK);
+    }
+
+    /// <summary>
+    /// Builds an Xcode project for a physical iOS device.
+    /// </summary>
+    public static void BuildiOSDevice()
+    {
+        BuildiOS(iOSSdkVersion.DeviceSDK);
+    }
+
+    private static void BuildiOS(iOSSdkVersion sdkVersion)
     {
         Directory.CreateDirectory(IOSOutputDir);
 
@@ -79,7 +90,7 @@ public static class BuildScript
             NamedBuildTarget.iOS,
             ScriptingImplementation.IL2CPP
         );
-        PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+        PlayerSettings.iOS.sdkVersion = sdkVersion;
 
         Debug.Log(
             $"[BuildScript] iOS sdk={PlayerSettings.iOS.sdkVersion} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.iOS)}"
