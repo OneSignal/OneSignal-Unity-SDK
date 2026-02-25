@@ -127,6 +127,8 @@ namespace OneSignalSDK.iOS
 
             DisableBitcode();
 
+            AddLocationUsageDescription();
+
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
         }
@@ -354,6 +356,19 @@ namespace OneSignalSDK.iOS
             }
 
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void AddLocationUsageDescription()
+        {
+            var plistPath = Path.Combine(_outputPath, "Info.plist");
+            var plist = new PlistDocument();
+            plist.ReadFromFile(plistPath);
+
+            const string key = "NSLocationWhenInUseUsageDescription";
+            if (plist.root[key] == null)
+                plist.root.SetString(key, "Your location is used to send relevant content.");
+
+            plist.WriteToFile(plistPath);
         }
 
         private void DisableBitcode()
