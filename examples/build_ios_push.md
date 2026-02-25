@@ -2,8 +2,6 @@
 
 Configure the demo Unity iOS project for OneSignal push notifications.
 
-> For Live Activities setup, see [build_ios_la.md](build_ios_la.md).
-
 ---
 
 ## What the SDK handles automatically
@@ -80,12 +78,12 @@ class NotificationService: UNNotificationServiceExtension {
 
 ### Build properties set on the NSE target
 
-| Property | Value |
-|---|---|
-| `TARGETED_DEVICE_FAMILY` | `1,2` |
+| Property                     | Value  |
+| ---------------------------- | ------ |
+| `TARGETED_DEVICE_FAMILY`     | `1,2`  |
 | `IPHONEOS_DEPLOYMENT_TARGET` | `10.0` |
-| `SWIFT_VERSION` | `5.0` |
-| `ENABLE_BITCODE` | `NO` |
+| `SWIFT_VERSION`              | `5.0`  |
+| `ENABLE_BITCODE`             | `NO`   |
 
 ---
 
