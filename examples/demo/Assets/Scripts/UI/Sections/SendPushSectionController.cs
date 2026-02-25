@@ -23,17 +23,35 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Send Push Notification", "send_push_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Send Push Notification",
+                "send_push_section",
+                () => OnInfoTap?.Invoke()
+            );
 
-            section.Add(SectionBuilder.CreatePrimaryButton("SIMPLE", "send_push_simple",
-                () => _viewModel.SendNotification(NotificationType.Simple)));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "SIMPLE",
+                    "send_push_simple",
+                    () => _viewModel.SendNotification(NotificationType.Simple)
+                )
+            );
 
-            section.Add(SectionBuilder.CreatePrimaryButton("WITH IMAGE", "send_push_image",
-                () => _viewModel.SendNotification(NotificationType.WithImage)));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "WITH IMAGE",
+                    "send_push_image",
+                    () => _viewModel.SendNotification(NotificationType.WithImage)
+                )
+            );
 
-            section.Add(SectionBuilder.CreatePrimaryButton("CUSTOM", "send_push_custom",
-                () => OnCustomTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "CUSTOM",
+                    "send_push_custom",
+                    () => OnCustomTap?.Invoke()
+                )
+            );
 
             return section;
         }

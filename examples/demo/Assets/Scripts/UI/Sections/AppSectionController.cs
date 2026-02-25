@@ -29,7 +29,11 @@ namespace OneSignalDemo.UI.Sections
             var section = SectionBuilder.CreateSection("App", "app_section");
 
             var appIdCard = SectionBuilder.CreateCard("app_id_card");
-            var appIdRow = SectionBuilder.CreateInlineKeyValue("App ID", _viewModel.AppId, "app_id");
+            var appIdRow = SectionBuilder.CreateInlineKeyValue(
+                "App ID",
+                _viewModel.AppId,
+                "app_id"
+            );
             _appIdLabel = appIdRow.Q<Label>("app_id_value");
             appIdCard.Add(appIdRow);
             section.Add(appIdCard);
@@ -37,7 +41,9 @@ namespace OneSignalDemo.UI.Sections
             var banner = new VisualElement();
             banner.AddToClassList("card");
             banner.AddToClassList("guidance-banner");
-            var bannerText = new Label("Add your own App ID, then rebuild to fully test all functionality.");
+            var bannerText = new Label(
+                "Add your own App ID, then rebuild to fully test all functionality."
+            );
             bannerText.AddToClassList("guidance-text");
             bannerText.AddToClassList("text-warning");
             banner.Add(bannerText);
@@ -45,7 +51,8 @@ namespace OneSignalDemo.UI.Sections
             bannerLink.AddToClassList("guidance-link");
             bannerLink.AddToClassList("text-warning-link");
             bannerLink.RegisterCallback<ClickEvent>(_ =>
-                Application.OpenURL("https://onesignal.com"));
+                Application.OpenURL("https://onesignal.com")
+            );
             banner.Add(bannerLink);
             section.Add(banner);
 
@@ -55,12 +62,15 @@ namespace OneSignalDemo.UI.Sections
                 "Require consent before SDK processes data",
                 "consent_required_toggle",
                 _viewModel.ConsentRequired,
-                OnConsentRequiredChanged);
+                OnConsentRequiredChanged
+            );
             _consentToggle = consentRow.Q<SwitchToggle>();
             consentCard.Add(consentRow);
 
             _privacyDivider = SectionBuilder.CreateDivider();
-            _privacyDivider.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
+            _privacyDivider.style.display = _viewModel.ConsentRequired
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
             consentCard.Add(_privacyDivider);
 
             _privacyRow = SectionBuilder.CreateToggleRow(
@@ -68,9 +78,12 @@ namespace OneSignalDemo.UI.Sections
                 "Consent given for data collection",
                 "privacy_consent_toggle",
                 _viewModel.PrivacyConsentGiven,
-                OnPrivacyConsentChanged);
+                OnPrivacyConsentChanged
+            );
             _privacyToggle = _privacyRow.Q<SwitchToggle>();
-            _privacyRow.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
+            _privacyRow.style.display = _viewModel.ConsentRequired
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
             consentCard.Add(_privacyRow);
             section.Add(consentCard);
 
@@ -82,11 +95,16 @@ namespace OneSignalDemo.UI.Sections
             _appIdLabel.text = _viewModel.AppId;
             _consentToggle.SetValueWithoutNotify(_viewModel.ConsentRequired);
             _privacyToggle.SetValueWithoutNotify(_viewModel.PrivacyConsentGiven);
-            _privacyDivider.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
-            _privacyRow.style.display = _viewModel.ConsentRequired ? DisplayStyle.Flex : DisplayStyle.None;
+            _privacyDivider.style.display = _viewModel.ConsentRequired
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
+            _privacyRow.style.display = _viewModel.ConsentRequired
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
         }
 
         private void OnConsentRequiredChanged(bool value) => _viewModel.SetConsentRequired(value);
+
         private void OnPrivacyConsentChanged(bool value) => _viewModel.SetPrivacyConsent(value);
     }
 }

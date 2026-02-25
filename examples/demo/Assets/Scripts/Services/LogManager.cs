@@ -3,7 +3,13 @@ using System.Collections.Generic;
 
 namespace OneSignalDemo.Services
 {
-    public enum LogEntryLevel { Debug, Info, Warn, Error }
+    public enum LogEntryLevel
+    {
+        Debug,
+        Info,
+        Warn,
+        Error,
+    }
 
     public class LogEntry
     {
@@ -20,14 +26,15 @@ namespace OneSignalDemo.Services
             Message = message;
         }
 
-        public string LevelChar => Level switch
-        {
-            LogEntryLevel.Debug => "D",
-            LogEntryLevel.Info => "I",
-            LogEntryLevel.Warn => "W",
-            LogEntryLevel.Error => "E",
-            _ => "?"
-        };
+        public string LevelChar =>
+            Level switch
+            {
+                LogEntryLevel.Debug => "D",
+                LogEntryLevel.Info => "I",
+                LogEntryLevel.Warn => "W",
+                LogEntryLevel.Error => "E",
+                _ => "?",
+            };
     }
 
     public class LogManager
@@ -43,8 +50,11 @@ namespace OneSignalDemo.Services
         private LogManager() { }
 
         public void Debug(string tag, string message) => Add(LogEntryLevel.Debug, tag, message);
+
         public void Info(string tag, string message) => Add(LogEntryLevel.Info, tag, message);
+
         public void Warn(string tag, string message) => Add(LogEntryLevel.Warn, tag, message);
+
         public void Error(string tag, string message) => Add(LogEntryLevel.Error, tag, message);
 
         public void Clear()

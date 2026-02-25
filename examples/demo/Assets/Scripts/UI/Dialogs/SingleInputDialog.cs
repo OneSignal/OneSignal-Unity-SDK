@@ -13,8 +13,13 @@ namespace OneSignalDemo.UI.Dialogs
         private TextField _inputField;
         private Button _confirmButton;
 
-        public SingleInputDialog(string title, string fieldLabel, string fieldName,
-            string confirmText, Action<string> onConfirm)
+        public SingleInputDialog(
+            string title,
+            string fieldLabel,
+            string fieldName,
+            string confirmText,
+            Action<string> onConfirm
+        )
         {
             _title = title;
             _fieldLabel = fieldLabel;

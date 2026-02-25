@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OneSignalDemo.Models;
+using OneSignalDemo.Repositories;
+using OneSignalDemo.Services;
 using OneSignalSDK;
 using OneSignalSDK.Notifications;
 using OneSignalSDK.User;
 using OneSignalSDK.User.Models;
-using OneSignalDemo.Models;
-using OneSignalDemo.Repositories;
-using OneSignalDemo.Services;
 using UnityEngine;
 
 namespace OneSignalDemo.ViewModels
@@ -106,7 +106,8 @@ namespace OneSignalDemo.ViewModels
 
         public void LoginUser(string externalUserId)
         {
-            if (string.IsNullOrEmpty(externalUserId)) return;
+            if (string.IsNullOrEmpty(externalUserId))
+                return;
 
             SetLoading(true);
             _externalUserId = externalUserId;
@@ -414,7 +415,10 @@ namespace OneSignalDemo.ViewModels
             {
                 bool granted = await _repository.RequestPermissionAsync(true);
                 _hasPermission = granted;
-                LogManager.Instance.Info(Tag, $"Push permission: {(granted ? "granted" : "denied")}");
+                LogManager.Instance.Info(
+                    Tag,
+                    $"Push permission: {(granted ? "granted" : "denied")}"
+                );
                 NotifyStateChanged();
             }
             catch (Exception ex)
@@ -450,10 +454,12 @@ namespace OneSignalDemo.ViewModels
                 var userData = await _repository.FetchUser(onesignalId);
                 if (userData != null)
                 {
-                    _aliasesList = userData.Aliases.Select(kvp =>
-                        new KeyValuePair<string, string>(kvp.Key, kvp.Value)).ToList();
-                    _tagsList = userData.Tags.Select(kvp =>
-                        new KeyValuePair<string, string>(kvp.Key, kvp.Value)).ToList();
+                    _aliasesList = userData
+                        .Aliases.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value))
+                        .ToList();
+                    _tagsList = userData
+                        .Tags.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value))
+                        .ToList();
                     _emailsList = new List<string>(userData.Emails);
                     _smsNumbersList = new List<string>(userData.SmsNumbers);
 
@@ -495,9 +501,14 @@ namespace OneSignalDemo.ViewModels
         }
 
         private void NotifyStateChanged() => OnStateChanged?.Invoke();
+
         private void ShowToast(string message) => OnToastMessage?.Invoke(message);
 
-        private static void UpsertInList(List<KeyValuePair<string, string>> list, string key, string value)
+        private static void UpsertInList(
+            List<KeyValuePair<string, string>> list,
+            string key,
+            string value
+        )
         {
             var index = list.FindIndex(kvp => kvp.Key == key);
             if (index >= 0)

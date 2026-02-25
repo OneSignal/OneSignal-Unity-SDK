@@ -29,8 +29,11 @@ namespace OneSignalDemo.UI.Sections
             var section = SectionBuilder.CreateSection("User", "user_section");
 
             var statusCard = SectionBuilder.CreateCard("user_status_card");
-            var statusRow = SectionBuilder.CreateInlineKeyValue("Status",
-                _viewModel.IsLoggedIn ? "Logged In" : "Anonymous", "user_status");
+            var statusRow = SectionBuilder.CreateInlineKeyValue(
+                "Status",
+                _viewModel.IsLoggedIn ? "Logged In" : "Anonymous",
+                "user_status"
+            );
             _statusValue = statusRow.Q<Label>("user_status_value");
             if (_viewModel.IsLoggedIn)
                 _statusValue.AddToClassList("status-value-green");
@@ -38,8 +41,11 @@ namespace OneSignalDemo.UI.Sections
 
             statusCard.Add(SectionBuilder.CreateDivider());
 
-            var extIdRow = SectionBuilder.CreateInlineKeyValue("External ID",
-                _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013", "external_id");
+            var extIdRow = SectionBuilder.CreateInlineKeyValue(
+                "External ID",
+                _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013",
+                "external_id"
+            );
             _externalIdValue = extIdRow.Q<Label>("external_id_value");
             statusCard.Add(extIdRow);
             section.Add(statusCard);
@@ -47,12 +53,18 @@ namespace OneSignalDemo.UI.Sections
             _loginButton = SectionBuilder.CreatePrimaryButton(
                 _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER",
                 "login_button",
-                () => OnLoginTap?.Invoke());
+                () => OnLoginTap?.Invoke()
+            );
             section.Add(_loginButton);
 
-            _logoutButton = SectionBuilder.CreateDestructiveButton("LOGOUT USER", "logout_button",
-                () => OnLogoutTap?.Invoke());
-            _logoutButton.style.display = _viewModel.IsLoggedIn ? DisplayStyle.Flex : DisplayStyle.None;
+            _logoutButton = SectionBuilder.CreateDestructiveButton(
+                "LOGOUT USER",
+                "logout_button",
+                () => OnLogoutTap?.Invoke()
+            );
+            _logoutButton.style.display = _viewModel.IsLoggedIn
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
             section.Add(_logoutButton);
 
             return section;
@@ -66,7 +78,9 @@ namespace OneSignalDemo.UI.Sections
             _externalIdValue.text = _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013";
 
             _loginButton.text = _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER";
-            _logoutButton.style.display = _viewModel.IsLoggedIn ? DisplayStyle.Flex : DisplayStyle.None;
+            _logoutButton.style.display = _viewModel.IsLoggedIn
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
         }
     }
 }

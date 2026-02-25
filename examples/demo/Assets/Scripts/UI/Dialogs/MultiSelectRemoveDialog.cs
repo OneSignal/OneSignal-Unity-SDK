@@ -13,8 +13,11 @@ namespace OneSignalDemo.UI.Dialogs
         private readonly Dictionary<string, Toggle> _toggles = new();
         private Button _confirmButton;
 
-        public MultiSelectRemoveDialog(string title, List<KeyValuePair<string, string>> items,
-            Action<List<string>> onConfirm)
+        public MultiSelectRemoveDialog(
+            string title,
+            List<KeyValuePair<string, string>> items,
+            Action<List<string>> onConfirm
+        )
         {
             _title = title;
             _items = items;
@@ -72,10 +75,7 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void OnConfirm()
         {
-            var selected = _toggles
-                .Where(kvp => kvp.Value.value)
-                .Select(kvp => kvp.Key)
-                .ToList();
+            var selected = _toggles.Where(kvp => kvp.Value.value).Select(kvp => kvp.Key).ToList();
 
             if (selected.Count > 0)
             {

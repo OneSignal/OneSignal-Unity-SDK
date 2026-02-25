@@ -16,9 +16,15 @@ namespace OneSignalDemo.UI.Dialogs
         private TextField _valueField;
         private Button _confirmButton;
 
-        public PairInputDialog(string title, string keyLabel, string valueLabel,
-            string keyName, string valueName, string confirmText,
-            Action<string, string> onConfirm)
+        public PairInputDialog(
+            string title,
+            string keyLabel,
+            string valueLabel,
+            string keyName,
+            string valueName,
+            string confirmText,
+            Action<string, string> onConfirm
+        )
         {
             _title = title;
             _keyLabel = keyLabel;
@@ -81,8 +87,9 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void ValidateInput()
         {
-            bool valid = !string.IsNullOrEmpty(_keyField?.value) &&
-                         !string.IsNullOrEmpty(_valueField?.value);
+            bool valid =
+                !string.IsNullOrEmpty(_keyField?.value)
+                && !string.IsNullOrEmpty(_valueField?.value);
             _confirmButton?.SetEnabled(valid);
         }
 

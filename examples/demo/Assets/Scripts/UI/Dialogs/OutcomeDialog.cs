@@ -3,7 +3,12 @@ using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
 {
-    public enum OutcomeType { Normal, Unique, WithValue }
+    public enum OutcomeType
+    {
+        Normal,
+        Unique,
+        WithValue,
+    }
 
     public class OutcomeDialog : DialogBase
     {
@@ -35,9 +40,21 @@ namespace OneSignalDemo.UI.Dialogs
             _uniqueRadio = CreateRadio("Unique Outcome", "outcome_unique", false);
             _withValueRadio = CreateRadio("Outcome with Value", "outcome_with_value", false);
 
-            _normalRadio.RegisterValueChangedCallback(e => { if (e.newValue) SelectType(OutcomeType.Normal); });
-            _uniqueRadio.RegisterValueChangedCallback(e => { if (e.newValue) SelectType(OutcomeType.Unique); });
-            _withValueRadio.RegisterValueChangedCallback(e => { if (e.newValue) SelectType(OutcomeType.WithValue); });
+            _normalRadio.RegisterValueChangedCallback(e =>
+            {
+                if (e.newValue)
+                    SelectType(OutcomeType.Normal);
+            });
+            _uniqueRadio.RegisterValueChangedCallback(e =>
+            {
+                if (e.newValue)
+                    SelectType(OutcomeType.Unique);
+            });
+            _withValueRadio.RegisterValueChangedCallback(e =>
+            {
+                if (e.newValue)
+                    SelectType(OutcomeType.WithValue);
+            });
 
             radioGroup.Add(_normalRadio);
             radioGroup.Add(_uniqueRadio);
@@ -92,7 +109,8 @@ namespace OneSignalDemo.UI.Dialogs
             _normalRadio.SetValueWithoutNotify(type == OutcomeType.Normal);
             _uniqueRadio.SetValueWithoutNotify(type == OutcomeType.Unique);
             _withValueRadio.SetValueWithoutNotify(type == OutcomeType.WithValue);
-            _valueContainer.style.display = type == OutcomeType.WithValue ? DisplayStyle.Flex : DisplayStyle.None;
+            _valueContainer.style.display =
+                type == OutcomeType.WithValue ? DisplayStyle.Flex : DisplayStyle.None;
             ValidateInput();
         }
 
@@ -107,7 +125,8 @@ namespace OneSignalDemo.UI.Dialogs
         private void OnConfirm()
         {
             var name = _nameField?.value;
-            if (string.IsNullOrEmpty(name)) return;
+            if (string.IsNullOrEmpty(name))
+                return;
 
             float value = 0;
             if (_selectedType == OutcomeType.WithValue)

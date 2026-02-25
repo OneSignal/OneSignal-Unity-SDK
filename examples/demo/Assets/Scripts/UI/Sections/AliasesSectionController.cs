@@ -25,8 +25,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Aliases", "aliases_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Aliases",
+                "aliases_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("aliases_card");
             _listContainer = new VisualElement();
@@ -34,10 +37,20 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD", "add_alias_button",
-                () => OnAddTap?.Invoke()));
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD MULTIPLE", "add_multiple_aliases_button",
-                () => OnAddMultipleTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD",
+                    "add_alias_button",
+                    () => OnAddTap?.Invoke()
+                )
+            );
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD MULTIPLE",
+                    "add_multiple_aliases_button",
+                    () => OnAddMultipleTap?.Invoke()
+                )
+            );
 
             RefreshList();
             return section;
@@ -58,9 +71,12 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < aliases.Count; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
+                if (i > 0)
+                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = aliases[i];
-                _listContainer.Add(SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, $"alias_{i}"));
+                _listContainer.Add(
+                    SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, $"alias_{i}")
+                );
             }
         }
     }

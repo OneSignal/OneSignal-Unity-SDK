@@ -6,7 +6,8 @@ namespace OneSignalDemo.UI
 {
     public class SecondaryScreenController : MonoBehaviour
     {
-        [SerializeField] private UIDocument _uiDocument;
+        [SerializeField]
+        private UIDocument _uiDocument;
 
         private void OnEnable()
         {
@@ -14,7 +15,8 @@ namespace OneSignalDemo.UI
             root.Clear();
 
             var themeSheet = Resources.Load<StyleSheet>("Theme");
-            if (themeSheet != null) root.styleSheets.Add(themeSheet);
+            if (themeSheet != null)
+                root.styleSheets.Add(themeSheet);
 
             var screenRoot = new VisualElement();
             screenRoot.AddToClassList("screen-root");

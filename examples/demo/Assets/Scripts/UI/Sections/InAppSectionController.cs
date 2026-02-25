@@ -23,8 +23,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("In-App Messaging", "iam_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "In-App Messaging",
+                "iam_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("iam_card");
             var toggleRow = SectionBuilder.CreateToggleRow(
@@ -32,7 +35,8 @@ namespace OneSignalDemo.UI.Sections
                 "Toggle in-app message display",
                 "iam_paused_toggle",
                 _viewModel.InAppMessagesPaused,
-                OnPauseChanged);
+                OnPauseChanged
+            );
             _pauseToggle = toggleRow.Q<SwitchToggle>();
             card.Add(toggleRow);
             section.Add(card);

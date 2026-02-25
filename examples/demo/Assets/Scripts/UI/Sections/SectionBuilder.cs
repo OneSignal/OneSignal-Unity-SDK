@@ -6,7 +6,11 @@ namespace OneSignalDemo.UI.Sections
 {
     public static class SectionBuilder
     {
-        public static VisualElement CreateSection(string title, string name, Action onInfoTap = null)
+        public static VisualElement CreateSection(
+            string title,
+            string name,
+            Action onInfoTap = null
+        )
         {
             var section = new VisualElement();
             section.name = name;
@@ -42,8 +46,13 @@ namespace OneSignalDemo.UI.Sections
             return card;
         }
 
-        public static VisualElement CreateToggleRow(string label, string description,
-            string name, bool initialValue, Action<bool> onChanged)
+        public static VisualElement CreateToggleRow(
+            string label,
+            string description,
+            string name,
+            bool initialValue,
+            Action<bool> onChanged
+        )
         {
             var row = new VisualElement();
             row.AddToClassList("toggle-row");
@@ -102,8 +111,12 @@ namespace OneSignalDemo.UI.Sections
             return divider;
         }
 
-        public static VisualElement CreateKeyValueItem(string key, string value,
-            string name = null, Action onDelete = null)
+        public static VisualElement CreateKeyValueItem(
+            string key,
+            string value,
+            string name = null,
+            Action onDelete = null
+        )
         {
             var item = new VisualElement();
             item.AddToClassList("key-value-item");
@@ -136,7 +149,11 @@ namespace OneSignalDemo.UI.Sections
             return item;
         }
 
-        public static VisualElement CreateInlineKeyValue(string key, string value, string name = null)
+        public static VisualElement CreateInlineKeyValue(
+            string key,
+            string value,
+            string name = null
+        )
         {
             var row = new VisualElement();
             row.AddToClassList("key-value-inline");
@@ -157,7 +174,11 @@ namespace OneSignalDemo.UI.Sections
             return row;
         }
 
-        public static VisualElement CreateSingleItem(string value, string name = null, Action onDelete = null)
+        public static VisualElement CreateSingleItem(
+            string value,
+            string name = null,
+            Action onDelete = null
+        )
         {
             var item = new VisualElement();
             item.AddToClassList("key-value-item");

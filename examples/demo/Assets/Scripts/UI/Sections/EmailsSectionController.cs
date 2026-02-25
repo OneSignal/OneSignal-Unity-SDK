@@ -25,8 +25,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Emails", "emails_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Emails",
+                "emails_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("emails_card");
             _listContainer = new VisualElement();
@@ -34,8 +37,13 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD EMAIL", "add_email_button",
-                () => OnAddTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD EMAIL",
+                    "add_email_button",
+                    () => OnAddTap?.Invoke()
+                )
+            );
 
             RefreshList();
             return section;
@@ -54,15 +62,21 @@ namespace OneSignalDemo.UI.Sections
                 return;
             }
 
-            int showCount = _expanded || emails.Count <= CollapseThreshold
-                ? emails.Count : CollapseThreshold;
+            int showCount =
+                _expanded || emails.Count <= CollapseThreshold ? emails.Count : CollapseThreshold;
 
             for (int i = 0; i < showCount; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
+                if (i > 0)
+                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var email = emails[i];
-                _listContainer.Add(SectionBuilder.CreateSingleItem(email, $"email_{i}",
-                    () => _viewModel.RemoveEmail(email)));
+                _listContainer.Add(
+                    SectionBuilder.CreateSingleItem(
+                        email,
+                        $"email_{i}",
+                        () => _viewModel.RemoveEmail(email)
+                    )
+                );
             }
 
             if (!_expanded && emails.Count > CollapseThreshold)

@@ -22,11 +22,19 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Outcome Events", "outcomes_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Outcome Events",
+                "outcomes_section",
+                () => OnInfoTap?.Invoke()
+            );
 
-            section.Add(SectionBuilder.CreatePrimaryButton("SEND OUTCOME", "send_outcome_button",
-                () => OnSendOutcomeTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "SEND OUTCOME",
+                    "send_outcome_button",
+                    () => OnSendOutcomeTap?.Invoke()
+                )
+            );
 
             return section;
         }

@@ -73,7 +73,9 @@ public static class SceneSetup
 
     private static PanelSettings GetOrCreatePanelSettings()
     {
-        var existing = AssetDatabase.LoadAssetAtPath<PanelSettings>("Assets/UI/PanelSettings.asset");
+        var existing = AssetDatabase.LoadAssetAtPath<PanelSettings>(
+            "Assets/UI/PanelSettings.asset"
+        );
         if (existing != null)
         {
             existing.scaleMode = PanelScaleMode.ScaleWithScreenSize;

@@ -92,7 +92,8 @@ namespace OneSignalDemo.UI.Dialogs
         private void OnConfirm()
         {
             var name = _nameField?.value;
-            if (string.IsNullOrEmpty(name)) return;
+            if (string.IsNullOrEmpty(name))
+                return;
 
             Dictionary<string, object> props = null;
             var propsText = _propertiesField?.value;
@@ -102,7 +103,10 @@ namespace OneSignalDemo.UI.Dialogs
                 {
                     props = JsonConvert.DeserializeObject<Dictionary<string, object>>(propsText);
                 }
-                catch { return; }
+                catch
+                {
+                    return;
+                }
             }
 
             _onConfirm?.Invoke(name, props);

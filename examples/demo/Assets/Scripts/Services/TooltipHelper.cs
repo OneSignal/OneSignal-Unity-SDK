@@ -34,7 +34,8 @@ namespace OneSignalDemo.Services
 
         public async Task InitAsync()
         {
-            if (_initialized) return;
+            if (_initialized)
+                return;
 
             try
             {
@@ -71,13 +72,14 @@ namespace OneSignalDemo.Services
             foreach (var prop in root.Properties())
             {
                 var obj = prop.Value as JObject;
-                if (obj == null) continue;
+                if (obj == null)
+                    continue;
 
                 var tooltip = new TooltipData
                 {
                     Title = obj["title"]?.ToString(),
                     Description = obj["description"]?.ToString(),
-                    Options = new List<TooltipOption>()
+                    Options = new List<TooltipOption>(),
                 };
 
                 var options = obj["options"] as JArray;
@@ -85,11 +87,13 @@ namespace OneSignalDemo.Services
                 {
                     foreach (var opt in options)
                     {
-                        tooltip.Options.Add(new TooltipOption
-                        {
-                            Name = opt["name"]?.ToString(),
-                            Description = opt["description"]?.ToString()
-                        });
+                        tooltip.Options.Add(
+                            new TooltipOption
+                            {
+                                Name = opt["name"]?.ToString(),
+                                Description = opt["description"]?.ToString(),
+                            }
+                        );
                     }
                 }
 

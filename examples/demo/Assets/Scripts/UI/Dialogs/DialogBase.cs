@@ -17,7 +17,8 @@ namespace OneSignalDemo.UI.Dialogs
             Overlay.AddToClassList("dialog-overlay");
             Overlay.RegisterCallback<ClickEvent>(e =>
             {
-                if (e.target == Overlay) Dismiss();
+                if (e.target == Overlay)
+                    Dismiss();
             });
 
             Container = new VisualElement();

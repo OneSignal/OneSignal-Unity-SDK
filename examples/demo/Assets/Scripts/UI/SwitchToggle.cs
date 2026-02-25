@@ -44,7 +44,8 @@ namespace OneSignalDemo.UI
 
         public void SetValueAndNotify(bool newValue)
         {
-            if (_value == newValue) return;
+            if (_value == newValue)
+                return;
             SetValueWithoutNotify(newValue);
             ValueChanged?.Invoke(_value);
         }
@@ -57,7 +58,8 @@ namespace OneSignalDemo.UI
 
         private void OnClick(ClickEvent evt)
         {
-            if (!_enabled) return;
+            if (!_enabled)
+                return;
             SetValueAndNotify(!_value);
             evt.StopPropagation();
         }

@@ -59,8 +59,9 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void ValidateInput()
         {
-            bool valid = !string.IsNullOrEmpty(_titleField?.value) &&
-                         !string.IsNullOrEmpty(_bodyField?.value);
+            bool valid =
+                !string.IsNullOrEmpty(_titleField?.value)
+                && !string.IsNullOrEmpty(_bodyField?.value);
             _confirmButton?.SetEnabled(valid);
         }
 

@@ -23,18 +23,54 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Send In-App Message", "send_iam_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Send In-App Message",
+                "send_iam_section",
+                () => OnInfoTap?.Invoke()
+            );
 
-            section.Add(CreateIamButton("TOP BANNER", MaterialIcons.VerticalAlignTop, "send_iam_top", InAppMessageType.TopBanner));
-            section.Add(CreateIamButton("BOTTOM BANNER", MaterialIcons.VerticalAlignBottom, "send_iam_bottom", InAppMessageType.BottomBanner));
-            section.Add(CreateIamButton("CENTER MODAL", MaterialIcons.CropSquare, "send_iam_center", InAppMessageType.CenterModal));
-            section.Add(CreateIamButton("FULL SCREEN", MaterialIcons.Fullscreen, "send_iam_full", InAppMessageType.FullScreen));
+            section.Add(
+                CreateIamButton(
+                    "TOP BANNER",
+                    MaterialIcons.VerticalAlignTop,
+                    "send_iam_top",
+                    InAppMessageType.TopBanner
+                )
+            );
+            section.Add(
+                CreateIamButton(
+                    "BOTTOM BANNER",
+                    MaterialIcons.VerticalAlignBottom,
+                    "send_iam_bottom",
+                    InAppMessageType.BottomBanner
+                )
+            );
+            section.Add(
+                CreateIamButton(
+                    "CENTER MODAL",
+                    MaterialIcons.CropSquare,
+                    "send_iam_center",
+                    InAppMessageType.CenterModal
+                )
+            );
+            section.Add(
+                CreateIamButton(
+                    "FULL SCREEN",
+                    MaterialIcons.Fullscreen,
+                    "send_iam_full",
+                    InAppMessageType.FullScreen
+                )
+            );
 
             return section;
         }
 
-        private VisualElement CreateIamButton(string text, string icon, string name, InAppMessageType type)
+        private VisualElement CreateIamButton(
+            string text,
+            string icon,
+            string name,
+            InAppMessageType type
+        )
         {
             var btn = new Button(() => _viewModel.SendInAppMessage(type));
             btn.name = name;

@@ -13,8 +13,11 @@ namespace OneSignalDemo.UI
 {
     public class HomeScreenController : MonoBehaviour
     {
-        [SerializeField] private UIDocument _uiDocument;
-        [SerializeField] private AppViewModel _viewModel;
+        [SerializeField]
+        private UIDocument _uiDocument;
+
+        [SerializeField]
+        private AppViewModel _viewModel;
 
         private VisualElement _root;
         private VisualElement _contentRoot;
@@ -52,10 +55,12 @@ namespace OneSignalDemo.UI
             _root.Clear();
 
             var themeSheet = Resources.Load<StyleSheet>("Theme");
-            if (themeSheet != null) _root.styleSheets.Add(themeSheet);
+            if (themeSheet != null)
+                _root.styleSheets.Add(themeSheet);
 
             var logViewSheet = Resources.Load<StyleSheet>("LogView");
-            if (logViewSheet != null) _root.styleSheets.Add(logViewSheet);
+            if (logViewSheet != null)
+                _root.styleSheets.Add(logViewSheet);
 
             BuildScreen();
             WireEvents();
@@ -84,13 +89,16 @@ namespace OneSignalDemo.UI
             {
                 var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
                 var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-                activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-                {
-                    var window = activity.Call<AndroidJavaObject>("getWindow");
-                    window.Call("addFlags", unchecked((int)0x80000000));
-                    window.Call("clearFlags", 0x04000000);
-                    window.Call("setStatusBarColor", unchecked((int)0xFFE54B4D));
-                }));
+                activity.Call(
+                    "runOnUiThread",
+                    new AndroidJavaRunnable(() =>
+                    {
+                        var window = activity.Call<AndroidJavaObject>("getWindow");
+                        window.Call("addFlags", unchecked((int)0x80000000));
+                        window.Call("clearFlags", 0x04000000);
+                        window.Call("setStatusBarColor", unchecked((int)0xFFE54B4D));
+                    })
+                );
             }
             catch (System.Exception) { }
 #endif
@@ -98,7 +106,8 @@ namespace OneSignalDemo.UI
 
         private void ApplySafeArea()
         {
-            if (_root == null) return;
+            if (_root == null)
+                return;
 
             float rootHeight = _root.resolvedStyle.height;
             if (float.IsNaN(rootHeight) || rootHeight <= 0 || Screen.height <= 0)
@@ -246,8 +255,10 @@ namespace OneSignalDemo.UI
             _contentRoot.Add(_locationSection.Root);
 
             var nextButton = SectionBuilder.CreatePrimaryButton(
-                "NEXT ACTIVITY", "next_activity_button",
-                () => SceneManager.LoadScene("Secondary"));
+                "NEXT ACTIVITY",
+                "next_activity_button",
+                () => SceneManager.LoadScene("Secondary")
+            );
             _contentRoot.Add(nextButton);
         }
 
@@ -271,17 +282,18 @@ namespace OneSignalDemo.UI
             _locationSection?.Refresh();
 
             var showLoading = _viewModel.IsLoading;
-            _loadingOverlay.style.display = showLoading
-                ? DisplayStyle.Flex : DisplayStyle.None;
+            _loadingOverlay.style.display = showLoading ? DisplayStyle.Flex : DisplayStyle.None;
 
             if (showLoading && _spinnerAnim == null)
             {
                 float angle = 0f;
-                _spinnerAnim = _spinner.schedule.Execute(() =>
-                {
-                    angle = (angle + 12f) % 360f;
-                    _spinner.style.rotate = new Rotate(Angle.Degrees(angle));
-                }).Every(16);
+                _spinnerAnim = _spinner
+                    .schedule.Execute(() =>
+                    {
+                        angle = (angle + 12f) % 360f;
+                        _spinner.style.rotate = new Rotate(Angle.Degrees(angle));
+                    })
+                    .Every(16);
             }
             else if (!showLoading && _spinnerAnim != null)
             {
@@ -296,130 +308,174 @@ namespace OneSignalDemo.UI
         {
             var dialog = new LoginDialog(
                 externalId => _viewModel.LoginUser(externalId),
-                _viewModel.IsLoggedIn);
+                _viewModel.IsLoggedIn
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddAliasDialog()
         {
             var dialog = new PairInputDialog(
-                "Add Alias", "Label", "ID",
-                "alias_key", "alias_value", "Add",
-                (key, value) => _viewModel.AddAlias(key, value));
+                "Add Alias",
+                "Label",
+                "ID",
+                "alias_key",
+                "alias_value",
+                "Add",
+                (key, value) => _viewModel.AddAlias(key, value)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddMultipleAliasesDialog()
         {
             var dialog = new MultiPairInputDialog(
-                "Add Multiple Aliases", "Label", "ID", "Add all",
-                pairs => _viewModel.AddAliases(pairs));
+                "Add Multiple Aliases",
+                "Label",
+                "ID",
+                "Add all",
+                pairs => _viewModel.AddAliases(pairs)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddEmailDialog()
         {
             var dialog = new SingleInputDialog(
-                "Add Email", "Email", "email_input", "Add",
-                email => _viewModel.AddEmail(email));
+                "Add Email",
+                "Email",
+                "email_input",
+                "Add",
+                email => _viewModel.AddEmail(email)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddSmsDialog()
         {
             var dialog = new SingleInputDialog(
-                "Add SMS", "SMS", "sms_input", "Add",
-                sms => _viewModel.AddSms(sms));
+                "Add SMS",
+                "SMS",
+                "sms_input",
+                "Add",
+                sms => _viewModel.AddSms(sms)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddTagDialog()
         {
             var dialog = new PairInputDialog(
-                "Add Tag", "Key", "Value",
-                "tag_key", "tag_value", "Add",
-                (key, value) => _viewModel.AddTag(key, value));
+                "Add Tag",
+                "Key",
+                "Value",
+                "tag_key",
+                "tag_value",
+                "Add",
+                (key, value) => _viewModel.AddTag(key, value)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddMultipleTagsDialog()
         {
             var dialog = new MultiPairInputDialog(
-                "Add Multiple Tags", "Key", "Value", "Add all",
-                pairs => _viewModel.AddTags(pairs));
+                "Add Multiple Tags",
+                "Key",
+                "Value",
+                "Add all",
+                pairs => _viewModel.AddTags(pairs)
+            );
             dialog.Show(_root);
         }
 
         private void ShowRemoveSelectedTagsDialog()
         {
             var items = _viewModel.Tags.ToList();
-            if (items.Count == 0) return;
+            if (items.Count == 0)
+                return;
 
             var dialog = new MultiSelectRemoveDialog(
-                "Remove Tags", items,
-                keys => _viewModel.RemoveSelectedTags(keys));
+                "Remove Tags",
+                items,
+                keys => _viewModel.RemoveSelectedTags(keys)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddTriggerDialog()
         {
             var dialog = new PairInputDialog(
-                "Add Trigger", "Key", "Value",
-                "trigger_key", "trigger_value", "Add",
-                (key, value) => _viewModel.AddTrigger(key, value));
+                "Add Trigger",
+                "Key",
+                "Value",
+                "trigger_key",
+                "trigger_value",
+                "Add",
+                (key, value) => _viewModel.AddTrigger(key, value)
+            );
             dialog.Show(_root);
         }
 
         private void ShowAddMultipleTriggersDialog()
         {
             var dialog = new MultiPairInputDialog(
-                "Add Multiple Triggers", "Key", "Value", "Add all",
-                pairs => _viewModel.AddTriggers(pairs));
+                "Add Multiple Triggers",
+                "Key",
+                "Value",
+                "Add all",
+                pairs => _viewModel.AddTriggers(pairs)
+            );
             dialog.Show(_root);
         }
 
         private void ShowRemoveSelectedTriggersDialog()
         {
             var items = _viewModel.Triggers.ToList();
-            if (items.Count == 0) return;
+            if (items.Count == 0)
+                return;
 
             var dialog = new MultiSelectRemoveDialog(
-                "Remove Triggers", items,
-                keys => _viewModel.RemoveSelectedTriggers(keys));
+                "Remove Triggers",
+                items,
+                keys => _viewModel.RemoveSelectedTriggers(keys)
+            );
             dialog.Show(_root);
         }
 
         private void ShowOutcomeDialog()
         {
-            var dialog = new OutcomeDialog((type, name, value) =>
-            {
-                switch (type)
+            var dialog = new OutcomeDialog(
+                (type, name, value) =>
                 {
-                    case OutcomeType.Normal:
-                        _viewModel.SendOutcome(name);
-                        break;
-                    case OutcomeType.Unique:
-                        _viewModel.SendUniqueOutcome(name);
-                        break;
-                    case OutcomeType.WithValue:
-                        _viewModel.SendOutcomeWithValue(name, value);
-                        break;
+                    switch (type)
+                    {
+                        case OutcomeType.Normal:
+                            _viewModel.SendOutcome(name);
+                            break;
+                        case OutcomeType.Unique:
+                            _viewModel.SendUniqueOutcome(name);
+                            break;
+                        case OutcomeType.WithValue:
+                            _viewModel.SendOutcomeWithValue(name, value);
+                            break;
+                    }
                 }
-            });
+            );
             dialog.Show(_root);
         }
 
         private void ShowTrackEventDialog()
         {
-            var dialog = new TrackEventDialog(
-                (name, props) => _viewModel.TrackEvent(name, props));
+            var dialog = new TrackEventDialog((name, props) => _viewModel.TrackEvent(name, props));
             dialog.Show(_root);
         }
 
         private void ShowCustomNotificationDialog()
         {
             var dialog = new CustomNotificationDialog(
-                (title, body) => _viewModel.SendCustomNotification(title, body));
+                (title, body) => _viewModel.SendCustomNotification(title, body)
+            );
             dialog.Show(_root);
         }
 

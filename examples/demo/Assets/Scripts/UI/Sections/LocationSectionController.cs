@@ -23,8 +23,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Location", "location_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Location",
+                "location_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("location_card");
             var toggleRow = SectionBuilder.CreateToggleRow(
@@ -32,14 +35,19 @@ namespace OneSignalDemo.UI.Sections
                 "Share device location with OneSignal",
                 "location_shared_toggle",
                 _viewModel.LocationShared,
-                OnLocationChanged);
+                OnLocationChanged
+            );
             _locationToggle = toggleRow.Q<SwitchToggle>();
             card.Add(toggleRow);
             section.Add(card);
 
-            section.Add(SectionBuilder.CreatePrimaryButton(
-                "PROMPT LOCATION", "prompt_location_button",
-                () => _viewModel.PromptLocation()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "PROMPT LOCATION",
+                    "prompt_location_button",
+                    () => _viewModel.PromptLocation()
+                )
+            );
 
             return section;
         }

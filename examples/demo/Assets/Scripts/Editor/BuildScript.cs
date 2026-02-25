@@ -75,10 +75,7 @@ public static class BuildScript
     {
         Directory.CreateDirectory(IOSOutputDir);
 
-        PlayerSettings.SetScriptingBackend(
-            NamedBuildTarget.iOS,
-            ScriptingImplementation.IL2CPP
-        );
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
         PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
 
         Debug.Log(
@@ -89,10 +86,7 @@ public static class BuildScript
             NamedBuildTarget.iOS,
             Il2CppCodeGeneration.OptimizeSize
         );
-        PlayerSettings.SetManagedStrippingLevel(
-            NamedBuildTarget.iOS,
-            ManagedStrippingLevel.High
-        );
+        PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.iOS, ManagedStrippingLevel.High);
         PlayerSettings.stripEngineCode = true;
 
         PlayerSettings.SetIl2CppCompilerConfiguration(

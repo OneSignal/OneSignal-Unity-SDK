@@ -16,8 +16,13 @@ namespace OneSignalDemo.UI.Dialogs
         private VisualElement _rowsContainer;
         private Button _confirmButton;
 
-        public MultiPairInputDialog(string title, string keyLabel, string valueLabel,
-            string confirmText, Action<Dictionary<string, string>> onConfirm)
+        public MultiPairInputDialog(
+            string title,
+            string keyLabel,
+            string valueLabel,
+            string confirmText,
+            Action<Dictionary<string, string>> onConfirm
+        )
         {
             _title = title;
             _keyLabel = keyLabel;

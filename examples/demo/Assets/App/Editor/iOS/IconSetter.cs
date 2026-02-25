@@ -44,7 +44,8 @@ namespace App.Editor.iOS
                 File.Copy(src, dest, true);
             }
 
-            var contentsJson = @"{
+            var contentsJson =
+                @"{
   ""images"" : [
     { ""filename"" : ""icon_120.png"", ""idiom"" : ""iphone"", ""scale"" : ""2x"", ""size"" : ""60x60"" },
     { ""filename"" : ""icon_180.png"", ""idiom"" : ""iphone"", ""scale"" : ""3x"", ""size"" : ""60x60"" },

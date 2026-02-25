@@ -22,11 +22,19 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Track Event", "track_event_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Track Event",
+                "track_event_section",
+                () => OnInfoTap?.Invoke()
+            );
 
-            section.Add(SectionBuilder.CreatePrimaryButton("TRACK EVENT", "track_event_button",
-                () => OnTrackEventTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "TRACK EVENT",
+                    "track_event_button",
+                    () => OnTrackEventTap?.Invoke()
+                )
+            );
 
             return section;
         }

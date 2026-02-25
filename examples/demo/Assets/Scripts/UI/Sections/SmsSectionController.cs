@@ -25,8 +25,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("SMS", "sms_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "SMS",
+                "sms_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("sms_card");
             _listContainer = new VisualElement();
@@ -34,8 +37,13 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD SMS", "add_sms_button",
-                () => OnAddTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD SMS",
+                    "add_sms_button",
+                    () => OnAddTap?.Invoke()
+                )
+            );
 
             RefreshList();
             return section;
@@ -54,15 +62,21 @@ namespace OneSignalDemo.UI.Sections
                 return;
             }
 
-            int showCount = _expanded || numbers.Count <= CollapseThreshold
-                ? numbers.Count : CollapseThreshold;
+            int showCount =
+                _expanded || numbers.Count <= CollapseThreshold ? numbers.Count : CollapseThreshold;
 
             for (int i = 0; i < showCount; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
+                if (i > 0)
+                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var sms = numbers[i];
-                _listContainer.Add(SectionBuilder.CreateSingleItem(sms, $"sms_{i}",
-                    () => _viewModel.RemoveSms(sms)));
+                _listContainer.Add(
+                    SectionBuilder.CreateSingleItem(
+                        sms,
+                        $"sms_{i}",
+                        () => _viewModel.RemoveSms(sms)
+                    )
+                );
             }
 
             if (!_expanded && numbers.Count > CollapseThreshold)

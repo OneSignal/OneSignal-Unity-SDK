@@ -15,6 +15,7 @@ namespace OneSignalDemo.Services
             "https://media.onesignal.com/automated_push_templates/ratings_template.png";
 
         public void SetAppId(string appId) => _appId = appId;
+
         public string GetAppId() => _appId;
 
         public async Task<bool> SendNotification(NotificationType type, string subscriptionId)
@@ -22,7 +23,8 @@ namespace OneSignalDemo.Services
             if (string.IsNullOrEmpty(subscriptionId) || string.IsNullOrEmpty(_appId))
                 return false;
 
-            string title, body;
+            string title,
+                body;
             switch (type)
             {
                 case NotificationType.Simple:
@@ -42,7 +44,7 @@ namespace OneSignalDemo.Services
                 ["app_id"] = _appId,
                 ["include_subscription_ids"] = new JArray(subscriptionId),
                 ["headings"] = new JObject { ["en"] = title },
-                ["contents"] = new JObject { ["en"] = body }
+                ["contents"] = new JObject { ["en"] = body },
             };
 
             if (type == NotificationType.WithImage)
@@ -54,7 +56,11 @@ namespace OneSignalDemo.Services
             return await PostNotification(payload.ToString());
         }
 
-        public async Task<bool> SendCustomNotification(string title, string body, string subscriptionId)
+        public async Task<bool> SendCustomNotification(
+            string title,
+            string body,
+            string subscriptionId
+        )
         {
             if (string.IsNullOrEmpty(subscriptionId) || string.IsNullOrEmpty(_appId))
                 return false;
@@ -64,7 +70,7 @@ namespace OneSignalDemo.Services
                 ["app_id"] = _appId,
                 ["include_subscription_ids"] = new JArray(subscriptionId),
                 ["headings"] = new JObject { ["en"] = title },
-                ["contents"] = new JObject { ["en"] = body }
+                ["contents"] = new JObject { ["en"] = body },
             };
 
             return await PostNotification(payload.ToString());
@@ -75,7 +81,8 @@ namespace OneSignalDemo.Services
             if (string.IsNullOrEmpty(onesignalId) || string.IsNullOrEmpty(_appId))
                 return null;
 
-            var url = $"https://api.onesignal.com/apps/{_appId}/users/by/onesignal_id/{onesignalId}";
+            var url =
+                $"https://api.onesignal.com/apps/{_appId}/users/by/onesignal_id/{onesignalId}";
             var request = UnityWebRequest.Get(url);
             request.SetRequestHeader("Accept", "application/json");
 

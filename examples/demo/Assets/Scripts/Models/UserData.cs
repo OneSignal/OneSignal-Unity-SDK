@@ -19,7 +19,8 @@ namespace OneSignalDemo.Models
             Dictionary<string, string> tags,
             List<string> emails,
             List<string> smsNumbers,
-            string externalId = null)
+            string externalId = null
+        )
         {
             Aliases = aliases ?? new Dictionary<string, string>();
             Tags = tags ?? new Dictionary<string, string>();
@@ -28,9 +29,12 @@ namespace OneSignalDemo.Models
             ExternalId = externalId;
         }
 
-        private static readonly HashSet<string> FilteredAliasKeys = new(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> FilteredAliasKeys = new(
+            StringComparer.OrdinalIgnoreCase
+        )
         {
-            "external_id", "onesignal_id"
+            "external_id",
+            "onesignal_id",
         };
 
         public static UserData FromJson(string json)
@@ -69,7 +73,8 @@ namespace OneSignalDemo.Models
                 {
                     var type = sub["type"]?.ToString();
                     var token = sub["token"]?.ToString();
-                    if (string.IsNullOrEmpty(token)) continue;
+                    if (string.IsNullOrEmpty(token))
+                        continue;
 
                     if (string.Equals(type, "Email", StringComparison.OrdinalIgnoreCase))
                         emails.Add(token);

@@ -28,8 +28,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Triggers", "triggers_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Triggers",
+                "triggers_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("triggers_card");
             _listContainer = new VisualElement();
@@ -37,19 +40,33 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD", "add_trigger_button",
-                () => OnAddTap?.Invoke()));
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD MULTIPLE", "add_multiple_triggers_button",
-                () => OnAddMultipleTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD",
+                    "add_trigger_button",
+                    () => OnAddTap?.Invoke()
+                )
+            );
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD MULTIPLE",
+                    "add_multiple_triggers_button",
+                    () => OnAddMultipleTap?.Invoke()
+                )
+            );
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
-                "REMOVE SELECTED", "remove_selected_triggers_button",
-                () => OnRemoveSelectedTap?.Invoke());
+                "REMOVE SELECTED",
+                "remove_selected_triggers_button",
+                () => OnRemoveSelectedTap?.Invoke()
+            );
             section.Add(_removeSelectedButton);
 
             _clearAllButton = SectionBuilder.CreateDestructiveButton(
-                "CLEAR ALL", "clear_all_triggers_button",
-                () => _viewModel.ClearAllTriggers());
+                "CLEAR ALL",
+                "clear_all_triggers_button",
+                () => _viewModel.ClearAllTriggers()
+            );
             section.Add(_clearAllButton);
 
             RefreshList();
@@ -64,7 +81,9 @@ namespace OneSignalDemo.UI.Sections
             var triggers = _viewModel.Triggers;
 
             bool hasTriggers = triggers.Count > 0;
-            _removeSelectedButton.style.display = hasTriggers ? DisplayStyle.Flex : DisplayStyle.None;
+            _removeSelectedButton.style.display = hasTriggers
+                ? DisplayStyle.Flex
+                : DisplayStyle.None;
             _clearAllButton.style.display = hasTriggers ? DisplayStyle.Flex : DisplayStyle.None;
 
             if (!hasTriggers)
@@ -75,11 +94,17 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < triggers.Count; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
+                if (i > 0)
+                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = triggers[i];
-                _listContainer.Add(SectionBuilder.CreateKeyValueItem(
-                    kvp.Key, kvp.Value, $"trigger_{i}",
-                    () => _viewModel.RemoveTrigger(kvp.Key)));
+                _listContainer.Add(
+                    SectionBuilder.CreateKeyValueItem(
+                        kvp.Key,
+                        kvp.Value,
+                        $"trigger_{i}",
+                        () => _viewModel.RemoveTrigger(kvp.Key)
+                    )
+                );
             }
         }
     }

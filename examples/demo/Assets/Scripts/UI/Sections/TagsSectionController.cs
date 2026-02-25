@@ -27,8 +27,11 @@ namespace OneSignalDemo.UI.Sections
 
         private VisualElement BuildSection()
         {
-            var section = SectionBuilder.CreateSection("Tags", "tags_section",
-                () => OnInfoTap?.Invoke());
+            var section = SectionBuilder.CreateSection(
+                "Tags",
+                "tags_section",
+                () => OnInfoTap?.Invoke()
+            );
 
             var card = SectionBuilder.CreateCard("tags_card");
             _listContainer = new VisualElement();
@@ -36,14 +39,26 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD", "add_tag_button",
-                () => OnAddTap?.Invoke()));
-            section.Add(SectionBuilder.CreatePrimaryButton("ADD MULTIPLE", "add_multiple_tags_button",
-                () => OnAddMultipleTap?.Invoke()));
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD",
+                    "add_tag_button",
+                    () => OnAddTap?.Invoke()
+                )
+            );
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "ADD MULTIPLE",
+                    "add_multiple_tags_button",
+                    () => OnAddMultipleTap?.Invoke()
+                )
+            );
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
-                "REMOVE SELECTED", "remove_selected_tags_button",
-                () => OnRemoveSelectedTap?.Invoke());
+                "REMOVE SELECTED",
+                "remove_selected_tags_button",
+                () => OnRemoveSelectedTap?.Invoke()
+            );
             section.Add(_removeSelectedButton);
 
             RefreshList();
@@ -68,11 +83,17 @@ namespace OneSignalDemo.UI.Sections
 
             for (int i = 0; i < tags.Count; i++)
             {
-                if (i > 0) _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
+                if (i > 0)
+                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = tags[i];
-                _listContainer.Add(SectionBuilder.CreateKeyValueItem(
-                    kvp.Key, kvp.Value, $"tag_{i}",
-                    () => _viewModel.RemoveTag(kvp.Key)));
+                _listContainer.Add(
+                    SectionBuilder.CreateKeyValueItem(
+                        kvp.Key,
+                        kvp.Value,
+                        $"tag_{i}",
+                        () => _viewModel.RemoveTag(kvp.Key)
+                    )
+                );
             }
         }
     }
