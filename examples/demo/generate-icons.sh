@@ -1,7 +1,9 @@
 #!/bin/sh
-# Downloads the OneSignal padded logo and generates Android launcher icons
-# at all mipmap densities, stored in an androidlib that Unity merges into
-# the Gradle build to replace the default icon.
+# Downloads the OneSignal padded logo and generates platform app icons.
+# Android: launcher icons at all mipmap densities in an androidlib that
+# Unity merges into the Gradle build, replacing the default icon.
+# iOS: icons at all required sizes into Assets/AppIcons/iOS/, assigned
+# to PlayerSettings automatically by Assets/App/Editor/iOS/IconSetter.cs.
 #
 # Requires: curl, sips (macOS), python3
 set -eu
@@ -93,6 +95,82 @@ cat > "$LIB_DIR/AndroidManifest.xml" << 'MANIFEST'
 </manifest>
 MANIFEST
 
+IOS_ICON_DIR="$SCRIPT_DIR/Assets/AppIcons/iOS"
+mkdir -p "$IOS_ICON_DIR"
+
+echo "Generating iOS icons..."
+for size in 20 29 40 58 60 76 80 87 120 152 167 180 1024; do
+  sips -z "$size" "$size" "$TMP_ICON" --out "$IOS_ICON_DIR/icon_${size}.png" >/dev/null 2>&1
+done
+
+echo "Flattening iOS icons onto white background..."
+python3 -c "
+import struct, zlib, os, sys
+
+def flatten(path):
+    with open(path, 'rb') as f:
+        f.read(8)
+        chunks = []
+        while True:
+            hdr = f.read(8)
+            if len(hdr) < 8:
+                break
+            length, ctype = struct.unpack('>I4s', hdr)
+            data = f.read(length)
+            f.read(4)
+            chunks.append((ctype, data))
+
+    ihdr = [d for t, d in chunks if t == b'IHDR'][0]
+    w, h, bd, ct = struct.unpack('>IIBB', ihdr[:10])
+    if bd != 8 or ct != 6:
+        return
+
+    raw = zlib.decompress(b''.join(d for t, d in chunks if t == b'IDAT'))
+    bpp = 4
+    stride = w * bpp
+    prev = bytearray(stride)
+    out = bytearray()
+
+    pos = 0
+    for y in range(h):
+        fb = raw[pos]; pos += 1
+        row = bytearray(raw[pos:pos + stride]); pos += stride
+        for x in range(stride):
+            a = row[x - bpp] if x >= bpp else 0
+            b = prev[x]
+            c = prev[x - bpp] if x >= bpp else 0
+            if fb == 1: row[x] = (row[x] + a) & 0xFF
+            elif fb == 2: row[x] = (row[x] + b) & 0xFF
+            elif fb == 3: row[x] = (row[x] + (a + b) // 2) & 0xFF
+            elif fb == 4:
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                row[x] = (row[x] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 0xFF
+        out.append(0)
+        for x in range(w):
+            r, g, bl, al = row[x*4], row[x*4+1], row[x*4+2], row[x*4+3]
+            af = al / 255.0
+            out.extend([int(r * af + 255 * (1 - af)), int(g * af + 255 * (1 - af)), int(bl * af + 255 * (1 - af))])
+        prev = row
+
+    new_ihdr = struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)
+    idat = zlib.compress(bytes(out), 9)
+    def chunk(t, d):
+        c = t + d
+        return struct.pack('>I', len(d)) + c + struct.pack('>I', zlib.crc32(c) & 0xFFFFFFFF)
+    with open(path, 'wb') as f:
+        f.write(b'\x89PNG\r\n\x1a\n')
+        f.write(chunk(b'IHDR', new_ihdr))
+        f.write(chunk(b'IDAT', idat))
+        f.write(chunk(b'IEND', b''))
+
+d = sys.argv[1]
+for name in os.listdir(d):
+    if name.startswith('icon_') and name.endswith('.png'):
+        flatten(os.path.join(d, name))
+" "$IOS_ICON_DIR"
+
 rm -f "$TMP_ICON"
 
-echo "Done — icons written to Assets/Plugins/Android/AppIcon.androidlib/"
+echo "Done — Android icons written to Assets/Plugins/Android/AppIcon.androidlib/"
+echo "Done — iOS icons written to Assets/AppIcons/iOS/"

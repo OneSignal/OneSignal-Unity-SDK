@@ -132,12 +132,18 @@ Android status bar:
   clearFlags removes the translucent override, setStatusBarColor sets the color
 - The app viewport sits below the system status bar; no spacer needed on Android
 
-Run generate-icons.sh to download the padded app icon and produce Android
-launcher icons at all mipmap densities. The script creates an androidlib at
-Assets/Plugins/Android/AppIcon.androidlib/ that Unity merges into the Gradle
-build, replacing the default icon. Source icon:
+Run generate-icons.sh to download the padded app icon and produce platform icons.
+Source icon:
 https://raw.githubusercontent.com/OneSignal/sdk-shared/refs/heads/main/assets/onesignal_logo_icon_padded.png
-For iOS, set the icon manually in Project Settings > Player.
+
+Android: the script creates an androidlib at
+Assets/Plugins/Android/AppIcon.androidlib/ that Unity merges into the Gradle
+build, replacing the default icon.
+
+iOS: the script generates icons at all required sizes into Assets/AppIcons/iOS/,
+flattened onto a white background. A build post-processor
+(Assets/App/Editor/iOS/IconSetter.cs) copies them into the Xcode project's
+AppIcon.appiconset with a complete Contents.json at build time.
 
 Reference the OneSignal Unity SDK from the parent repo using a local path dependency
 in Packages/manifest.json:

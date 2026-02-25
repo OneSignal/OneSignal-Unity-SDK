@@ -62,7 +62,7 @@ namespace OneSignalDemo.UI
 
             _container.Add(header);
 
-            _scrollView = new ScrollView(ScrollViewMode.Horizontal);
+            _scrollView = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
             _scrollView.name = "log_view_list";
             _scrollView.AddToClassList("log-scroll");
 

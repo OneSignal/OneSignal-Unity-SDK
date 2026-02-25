@@ -221,7 +221,7 @@ namespace OneSignalSDK.iOS
 
             // Makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
-            _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
+            _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "13.0");
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
             _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(
