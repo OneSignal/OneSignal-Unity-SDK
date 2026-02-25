@@ -1,0 +1,104 @@
+.log-container {
+    background-color: #1A1B1E;
+    width: 100%;
+    border-bottom-width: 1px;
+    border-bottom-color: #333;
+}
+
+.log-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+}
+
+.log-header-left {
+    flex-direction: row;
+    align-items: center;
+}
+
+.log-header-right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.log-header-title {
+    font-size: 11px;
+    color: white;
+    -unity-font-style: bold;
+}
+
+.log-header-count {
+    font-size: 11px;
+    color: #9E9E9E;
+    margin-left: 8px;
+}
+
+.log-clear-button {
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    border-width: 0;
+    color: #9E9E9E;
+    font-size: 18px;
+    -unity-font-definition: resource("MaterialIcons-Regular");
+    -unity-text-align: middle-center;
+    padding: 0;
+}
+
+.log-scroll {
+    height: 100px;
+}
+
+.log-entry {
+    flex-direction: row;
+    padding: 1px 12px;
+    align-items: flex-start;
+}
+
+.log-timestamp {
+    font-size: 11px;
+    color: #676E7B;
+    min-width: 70px;
+    margin-right: 4px;
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.log-level {
+    font-size: 11px;
+    min-width: 14px;
+    margin-right: 4px;
+    -unity-font-style: bold;
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.log-level-d { color: #82AAFF; }
+.log-level-i { color: #C3E88D; }
+.log-level-w { color: #FFCB6B; }
+.log-level-e { color: #FF5370; }
+
+.log-message {
+    font-size: 11px;
+    color: white;
+    flex-grow: 1;
+    flex-shrink: 1;
+    white-space: nowrap;
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.log-empty {
+    font-size: 11px;
+    color: #9E9E9E;
+    -unity-text-align: middle-center;
+    padding: 8px;
+}
+
+.log-scroll Scroller {
+    width: 0;
+    height: 0;
+    min-width: 0;
+    min-height: 0;
+    max-width: 0;
+    max-height: 0;
+    overflow: hidden;
+}

@@ -127,6 +127,8 @@ namespace OneSignalSDK.iOS
 
             DisableBitcode();
 
+            AddLocationUsageDescription();
+
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
         }
@@ -219,11 +221,10 @@ namespace OneSignalSDK.iOS
 
             ExtensionAddSourceFiles(extensionGuid);
 
-            // Makes it so that the extension target is Universal (not just iPhone) and has an iOS 10 deployment target
+            // Makes it so that the extension target is Universal (not just iPhone)
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
-            _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "10.0");
+            _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "11.0");
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
-            _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
             _project.SetBuildProperty(
                 extensionGuid,
                 "DEVELOPMENT_TEAM",
@@ -355,6 +356,19 @@ namespace OneSignalSDK.iOS
             }
 
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void AddLocationUsageDescription()
+        {
+            var plistPath = Path.Combine(_outputPath, "Info.plist");
+            var plist = new PlistDocument();
+            plist.ReadFromFile(plistPath);
+
+            const string key = "NSLocationWhenInUseUsageDescription";
+            if (plist.root[key] == null)
+                plist.root.SetString(key, "Your location is used to send relevant content.");
+
+            plist.WriteToFile(plistPath);
         }
 
         private void DisableBitcode()
