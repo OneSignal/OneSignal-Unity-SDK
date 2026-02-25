@@ -223,7 +223,12 @@ namespace OneSignalSDK.iOS
             _project.SetBuildProperty(extensionGuid, "TARGETED_DEVICE_FAMILY", "1,2");
             _project.SetBuildProperty(extensionGuid, "IPHONEOS_DEPLOYMENT_TARGET", "13.0");
             _project.SetBuildProperty(extensionGuid, "SWIFT_VERSION", "5.0");
-            _project.SetBuildProperty(extensionGuid, "ARCHS", "arm64");
+
+            var sdkRoot = PlayerSettings.iOS.sdkVersion == iOSSdkVersion.SimulatorSDK
+                ? "iphonesimulator"
+                : "iphoneos";
+            _project.SetBuildProperty(extensionGuid, "SDKROOT", sdkRoot);
+
             _project.SetBuildProperty(
                 extensionGuid,
                 "DEVELOPMENT_TEAM",
