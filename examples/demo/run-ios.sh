@@ -8,7 +8,7 @@ set -eu
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
 XCODE_DIR="$SCRIPT_DIR/Build/iOS"
-LOG="$SCRIPT_DIR/Build/build.log"
+LOG="$SCRIPT_DIR/Build/build-ios.log"
 SCHEME="Unity-iPhone"
 DERIVED="$SCRIPT_DIR/Build/iOS-DerivedData"
 APP_BUNDLE_ID="com.onesignal.example"

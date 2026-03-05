@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
 ADB="/Applications/Unity/Hub/Editor/6000.3.6f1/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb"
 OUTPUT="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
-LOG="$SCRIPT_DIR/Build/build.log"
+LOG="$SCRIPT_DIR/Build/build-android.log"
 INSTALL=true
 SKIP_BUILD=false
 
