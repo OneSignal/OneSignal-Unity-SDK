@@ -2,6 +2,10 @@
 
 First try to use a more recent Unity version for testing on the emulators.
 
+## Publishing to the Asset Store
+
+To upload or update the package on the Unity Asset Store, install the [Asset Store Tools](https://assetstore.unity.com/packages/tools/utilities/asset-store-publishing-tools-115) from **Window > Package Manager** within the Unity Editor.
+
 ![Unity Version](docs/unity-version.png)
 
 ## Command Line
