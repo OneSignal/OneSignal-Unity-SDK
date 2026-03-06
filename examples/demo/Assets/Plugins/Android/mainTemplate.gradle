@@ -8,13 +8,13 @@ apply from: '../shared/common.gradle'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.onesignal:OneSignal:5.6.1' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
+    implementation 'com.onesignal:OneSignal:5.6.2' // Packages/com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml:6
 // Android Resolver Dependencies End
 **DEPS**}
 
 // Android Resolver Exclusions Start
 android {
-  packagingOptions {
+  packaging {
       exclude ('/lib/armeabi/*' + '*')
       exclude ('/lib/armeabi-v7a/*' + '*')
       exclude ('/lib/mips/*' + '*')
