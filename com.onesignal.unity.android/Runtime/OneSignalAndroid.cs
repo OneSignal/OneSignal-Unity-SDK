@@ -186,12 +186,15 @@ namespace OneSignalSDK.Android
         /// </summary>
         private static void _enableHardwareAcceleration(AndroidJavaObject activity)
         {
-            activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-            {
-                const int FLAG_HARDWARE_ACCELERATED = 0x01000000;
-                using var window = activity.Call<AndroidJavaObject>("getWindow");
-                window.Call("setFlags", FLAG_HARDWARE_ACCELERATED, FLAG_HARDWARE_ACCELERATED);
-            }));
+            activity.Call(
+                "runOnUiThread",
+                new AndroidJavaRunnable(() =>
+                {
+                    const int FLAG_HARDWARE_ACCELERATED = 0x01000000;
+                    using var window = activity.Call<AndroidJavaObject>("getWindow");
+                    window.Call("setFlags", FLAG_HARDWARE_ACCELERATED, FLAG_HARDWARE_ACCELERATED);
+                })
+            );
         }
 
         public override void Login(string externalId, string jwtBearerToken = null)
