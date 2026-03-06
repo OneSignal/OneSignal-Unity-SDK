@@ -533,10 +533,6 @@
     margin-bottom: 0;
 }
 
-.dialog-row .input-field:last-child {
-    margin-right: 0;
-}
-
 .dialog-row-delete {
     width: 32px;
     height: 32px;
@@ -633,7 +629,7 @@
     flex-shrink: 0 !important;
     width: auto !important;
     min-width: 0 !important;
-    text-align: left !important;
+    -unity-text-align: middle-left !important;
     margin-left: 8px;
     margin-right: 0 !important;
 }
