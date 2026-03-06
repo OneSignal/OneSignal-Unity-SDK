@@ -133,6 +133,8 @@ namespace OneSignalSDK.Android
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
+            _enableHardwareAcceleration(activity);
+
             _sdkWrapperClass.CallStatic("setSdkType", "unity");
             _sdkWrapperClass.CallStatic("setSdkVersion", VersionHeader);
 
@@ -172,6 +174,24 @@ namespace OneSignalSDK.Android
             }
 
             _completedInit(appId);
+        }
+
+        /// <summary>
+        /// Unity sets android:hardwareAccelerated="false" on its Activity which
+        /// prevents WebView transparent backgrounds from rendering. The native SDK
+        /// displays in-app messages via a PopupWindow whose window inherits this
+        /// setting, causing the IAM to render with an opaque white background.
+        /// Enabling the flag at the window level restores transparency without
+        /// affecting Unity's own GL/Vulkan rendering surface.
+        /// </summary>
+        private static void _enableHardwareAcceleration(AndroidJavaObject activity)
+        {
+            activity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+                const int FLAG_HARDWARE_ACCELERATED = 0x01000000;
+                using var window = activity.Call<AndroidJavaObject>("getWindow");
+                window.Call("setFlags", FLAG_HARDWARE_ACCELERATED, FLAG_HARDWARE_ACCELERATED);
+            }));
         }
 
         public override void Login(string externalId, string jwtBearerToken = null)
