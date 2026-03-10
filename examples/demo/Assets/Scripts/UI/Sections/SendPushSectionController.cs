@@ -53,6 +53,14 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
+            section.Add(
+                SectionBuilder.CreateDestructiveButton(
+                    "CLEAR ALL",
+                    "clear_all_notifications",
+                    () => _viewModel.ClearAllNotifications()
+                )
+            );
+
             return section;
         }
     }

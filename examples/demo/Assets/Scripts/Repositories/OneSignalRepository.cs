@@ -70,6 +70,8 @@ namespace OneSignalDemo.Repositories
 
         public void OptOutPush() => OneSignal.User.PushSubscription.OptOut();
 
+        public void ClearAllNotifications() => OneSignal.Notifications.ClearAllNotifications();
+
         public bool HasPermission() => OneSignal.Notifications.Permission;
 
         public Task<bool> RequestPermissionAsync(bool fallbackToSettings) =>

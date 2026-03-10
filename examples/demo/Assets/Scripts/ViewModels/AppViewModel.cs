@@ -338,6 +338,13 @@ namespace OneSignalDemo.ViewModels
             }
         }
 
+        public void ClearAllNotifications()
+        {
+            _repository.ClearAllNotifications();
+            LogManager.Instance.Info(Tag, "All notifications cleared");
+            ShowToast("All notifications cleared");
+        }
+
         public async void SendCustomNotification(string title, string body)
         {
             try
