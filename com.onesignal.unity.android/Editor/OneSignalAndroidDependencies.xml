@@ -3,6 +3,6 @@
     <repositories>
       <repository>https://repo.maven.apache.org/maven2</repository>
     </repositories>
-    <androidPackage spec="com.onesignal:OneSignal:5.6.2" />
+    <androidPackage spec="com.onesignal:OneSignal:5.7.1" />
   </androidPackages>
 </dependencies>
