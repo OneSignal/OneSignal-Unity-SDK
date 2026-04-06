@@ -5,7 +5,7 @@ import SwiftUI
 import OneSignalLiveActivities
 
 @available(iOS 16.2, *)
-struct ExampleWidgetLiveActivity: Widget {
+struct OneSignalWidgetLiveActivity: Widget {
 
     private func statusIcon(for status: String) -> String {
         switch status {

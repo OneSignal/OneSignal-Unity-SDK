@@ -38,19 +38,19 @@ using System.Linq;
 namespace App.Editor.iOS
 {
     /// <summary>
-    /// Adds the ExampleWidgetExtension to the iOS project frameworks to the iOS project and enables the main target
+    /// Adds the OneSignalWidgetExtension to the iOS project and enables the main target
     /// for Live Activities.
     /// </summary>
     public class BuildPostProcessor : IPostprocessBuildWithReport
     {
-        private static readonly string WdigetExtensionTargetRelativePath = "ExampleWidget";
-        private static readonly string WidgetExtensionTargetName = "ExampleWidgetExtension";
-        private static readonly string WidgetExtensionPath = Path.Combine("iOS", "ExampleWidget");
+        private static readonly string WdigetExtensionTargetRelativePath = "OneSignalWidget";
+        private static readonly string WidgetExtensionTargetName = "OneSignalWidgetExtension";
+        private static readonly string WidgetExtensionPath = Path.Combine("iOS", "OneSignalWidget");
         private static readonly string[] WidgetExtensionFiles = new string[]
         {
             "Assets.xcassets",
-            "ExampleWidgetBundle.swift",
-            "ExampleWidgetLiveActivity.swift",
+            "OneSignalWidgetBundle.swift",
+            "OneSignalWidgetLiveActivity.swift",
         };
 
         /// <summary>
