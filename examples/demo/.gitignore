@@ -64,6 +64,9 @@ crashlytics-build.properties
 # User-specific Unity Editor settings
 /[Uu]serSettings/
 
+# Environment files
+.env
+
 # Gradle template backup files
 *.backup
 *.backup.meta

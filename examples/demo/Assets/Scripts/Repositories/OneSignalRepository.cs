@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OneSignalDemo.Models;
 using OneSignalDemo.Services;
 using OneSignalSDK;
@@ -112,5 +113,19 @@ namespace OneSignalDemo.Repositories
 
         public async Task<UserData> FetchUser(string onesignalId) =>
             await _apiService.FetchUser(onesignalId);
+
+        public bool HasApiKey() => _apiService.HasApiKey();
+
+        public void StartDefaultLiveActivity(
+            string activityId,
+            IDictionary<string, object> attributes,
+            IDictionary<string, object> content
+        ) => OneSignal.LiveActivities.StartDefault(activityId, attributes, content);
+
+        public async Task<bool> UpdateLiveActivity(
+            string activityId,
+            string eventType,
+            JObject eventUpdates = null
+        ) => await _apiService.UpdateLiveActivity(activityId, eventType, eventUpdates);
     }
 }

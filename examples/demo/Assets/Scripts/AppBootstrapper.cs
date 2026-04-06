@@ -4,6 +4,7 @@ using OneSignalDemo.ViewModels;
 using OneSignalSDK;
 using OneSignalSDK.Debug.Models;
 using OneSignalSDK.InAppMessages;
+using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Notifications;
 using UnityEngine;
 
@@ -40,11 +41,22 @@ namespace OneSignalDemo
             }
 
             _apiService.SetAppId(appId);
+            _apiService.LoadApiKey();
 
             OneSignal.Debug.LogLevel = LogLevel.Verbose;
             OneSignal.ConsentRequired = _prefs.ConsentRequired;
             OneSignal.ConsentGiven = _prefs.PrivacyConsent;
             OneSignal.Initialize(appId);
+
+#if UNITY_IOS
+            OneSignal.LiveActivities.SetupDefault(
+                new LiveActivitySetupOptions
+                {
+                    EnablePushToStart = true,
+                    EnablePushToUpdate = true,
+                }
+            );
+#endif
 
             OneSignal.InAppMessages.Paused = _prefs.IamPaused;
             OneSignal.Location.IsShared = _prefs.LocationShared;

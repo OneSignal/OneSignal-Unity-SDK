@@ -41,6 +41,7 @@ namespace OneSignalDemo.UI
         private TriggersSectionController _triggersSection;
         private TrackEventSectionController _trackEventSection;
         private LocationSectionController _locationSection;
+        private LiveActivitiesSectionController _liveActivitiesSection;
 
         private void OnEnable()
         {
@@ -254,6 +255,12 @@ namespace OneSignalDemo.UI
             _locationSection.OnInfoTap = () => ShowTooltip("location");
             _contentRoot.Add(_locationSection.Root);
 
+#if UNITY_IOS
+            _liveActivitiesSection = new LiveActivitiesSectionController(_viewModel);
+            _liveActivitiesSection.OnInfoTap = () => ShowTooltip("liveActivities");
+            _contentRoot.Add(_liveActivitiesSection.Root);
+#endif
+
             var nextButton = SectionBuilder.CreatePrimaryButton(
                 "NEXT ACTIVITY",
                 "next_activity_button",
@@ -280,6 +287,7 @@ namespace OneSignalDemo.UI
             _tagsSection?.Refresh();
             _triggersSection?.Refresh();
             _locationSection?.Refresh();
+            _liveActivitiesSection?.Refresh();
 
             var showLoading = _viewModel.IsLoading;
             _loadingOverlay.style.display = showLoading ? DisplayStyle.Flex : DisplayStyle.None;
