@@ -262,8 +262,8 @@ namespace OneSignalDemo.UI
 #endif
 
             var nextButton = SectionBuilder.CreatePrimaryButton(
-                "NEXT ACTIVITY",
-                "next_activity_button",
+                "NEXT SCREEN",
+                "next_screen_button",
                 () => SceneManager.LoadScene("Secondary")
             );
             _contentRoot.Add(nextButton);
