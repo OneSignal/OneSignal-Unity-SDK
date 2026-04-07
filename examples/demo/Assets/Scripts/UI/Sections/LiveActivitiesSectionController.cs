@@ -40,6 +40,7 @@ namespace OneSignalDemo.UI.Sections
                 "live_activity_id_input"
             );
             _activityIdField = activityIdRow.Q<TextField>();
+            _activityIdField.RegisterValueChangedCallback(_ => RefreshButtonStates());
             inputCard.Add(activityIdRow);
 
             inputCard.Add(SectionBuilder.CreateDivider(true));
@@ -89,7 +90,7 @@ namespace OneSignalDemo.UI.Sections
             bool hasActivityId = !string.IsNullOrEmpty(_activityIdField?.value);
             bool hasApiKey = _viewModel.HasApiKey;
 
-            _startButton?.SetEnabled(hasActivityId);
+            _startButton?.SetEnabled(hasActivityId && !_viewModel.IsLiveActivityUpdating);
 
             bool canUpdate = hasActivityId && hasApiKey && !_viewModel.IsLiveActivityUpdating;
             _updateButton?.SetEnabled(canUpdate);

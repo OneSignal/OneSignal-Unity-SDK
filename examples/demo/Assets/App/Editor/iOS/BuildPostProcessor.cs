@@ -43,7 +43,7 @@ namespace App.Editor.iOS
     /// </summary>
     public class BuildPostProcessor : IPostprocessBuildWithReport
     {
-        private static readonly string WdigetExtensionTargetRelativePath = "OneSignalWidget";
+        private static readonly string WidgetExtensionTargetRelativePath = "OneSignalWidget";
         private static readonly string WidgetExtensionTargetName = "OneSignalWidgetExtension";
         private static readonly string WidgetExtensionPath = Path.Combine("iOS", "OneSignalWidget");
         private static readonly string[] WidgetExtensionFiles = new string[]
@@ -114,7 +114,7 @@ namespace App.Editor.iOS
             if (!string.IsNullOrEmpty(extensionGuid))
                 return;
 
-            var widgetDestPath = Path.Combine(outputPath, WdigetExtensionTargetRelativePath);
+            var widgetDestPath = Path.Combine(outputPath, WidgetExtensionTargetRelativePath);
 
             Directory.CreateDirectory(widgetDestPath);
             CopyFileOrDirectory(
@@ -126,14 +126,14 @@ namespace App.Editor.iOS
                 project.GetUnityMainTargetGuid(),
                 WidgetExtensionTargetName,
                 $"{PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS)}.{WidgetExtensionTargetName}",
-                $"{WdigetExtensionTargetRelativePath}/Info.plist"
+                $"{WidgetExtensionTargetRelativePath}/Info.plist"
             );
 
             var buildPhaseID = project.AddSourcesBuildPhase(extensionGuid);
 
             foreach (var file in WidgetExtensionFiles)
             {
-                var destPathRelative = Path.Combine(WdigetExtensionTargetRelativePath, file);
+                var destPathRelative = Path.Combine(WidgetExtensionTargetRelativePath, file);
                 var sourceFileGuid = project.AddFile(destPathRelative, destPathRelative);
                 project.AddFileToBuildSection(extensionGuid, buildPhaseID, sourceFileGuid);
                 CopyFileOrDirectory(

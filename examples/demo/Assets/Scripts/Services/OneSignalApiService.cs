@@ -43,6 +43,9 @@ namespace OneSignalDemo.Services
                 var eqIndex = trimmed.IndexOf('=');
                 var key = trimmed.Substring(0, eqIndex).Trim();
                 var value = trimmed.Substring(eqIndex + 1).Trim().Trim('"', '\'');
+                int commentIdx = value.IndexOf('#');
+                if (commentIdx >= 0)
+                    value = value.Substring(0, commentIdx).Trim();
 
                 if (key == "ONESIGNAL_API_KEY")
                     _apiKey = value;
