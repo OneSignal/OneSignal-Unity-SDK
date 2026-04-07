@@ -37,6 +37,7 @@ namespace OneSignalSDK.LiveActivities
             return Task.FromResult(false);
         }
 
+        [System.Obsolete("Currently unsupported, avoid using this method.")]
         public Task<bool> ExitAsync(string activityId)
         {
             return Task.FromResult(false);
