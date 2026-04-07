@@ -266,6 +266,7 @@ namespace OneSignalDemo.UI
                 "next_screen_button",
                 () => SceneManager.LoadScene("Secondary")
             );
+            nextButton.style.marginTop = 24;
             _contentRoot.Add(nextButton);
         }
 
