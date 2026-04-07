@@ -66,6 +66,8 @@ crashlytics-build.properties
 
 # Environment files
 .env
+Assets/StreamingAssets/.env
+Assets/StreamingAssets/.env.meta
 
 # Gradle template backup files
 *.backup

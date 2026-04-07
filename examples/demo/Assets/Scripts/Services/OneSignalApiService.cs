@@ -26,6 +26,11 @@ namespace OneSignalDemo.Services
         public void LoadApiKey()
         {
             var envPath = Path.Combine(Application.dataPath, "..", ".env");
+#if !UNITY_EDITOR
+            var streamingPath = Path.Combine(Application.streamingAssetsPath, ".env");
+            if (File.Exists(streamingPath))
+                envPath = streamingPath;
+#endif
             if (!File.Exists(envPath))
                 return;
 

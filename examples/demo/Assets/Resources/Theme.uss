@@ -765,6 +765,14 @@ Scroller {
     max-height: 0;
 }
 
+.inline-input-field > .unity-text-field__input {
+    background-color: transparent;
+    border-width: 0;
+    -unity-text-align: upper-right;
+    color: var(--os-text-primary);
+    font-size: 14px;
+}
+
 .unity-base-slider {
     display: none;
 }
