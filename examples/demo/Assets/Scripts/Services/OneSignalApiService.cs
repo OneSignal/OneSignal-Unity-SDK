@@ -42,10 +42,11 @@ namespace OneSignalDemo.Services
 
                 var eqIndex = trimmed.IndexOf('=');
                 var key = trimmed.Substring(0, eqIndex).Trim();
-                var value = trimmed.Substring(eqIndex + 1).Trim().Trim('"', '\'');
+                var value = trimmed.Substring(eqIndex + 1).Trim();
                 int commentIdx = value.IndexOf('#');
                 if (commentIdx >= 0)
                     value = value.Substring(0, commentIdx).Trim();
+                value = value.Trim('"', '\'');
 
                 if (key == "ONESIGNAL_API_KEY")
                     _apiKey = value;
@@ -154,8 +155,9 @@ namespace OneSignalDemo.Services
             if (string.IsNullOrEmpty(activityId) || string.IsNullOrEmpty(_appId) || !HasApiKey())
                 return false;
 
+            var encodedId = Uri.EscapeDataString(activityId);
             var url =
-                $"https://api.onesignal.com/apps/{_appId}/live_activities/{activityId}/notifications";
+                $"https://api.onesignal.com/apps/{_appId}/live_activities/{encodedId}/notifications";
 
             var payload = new JObject
             {

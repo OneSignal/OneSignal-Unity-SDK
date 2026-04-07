@@ -24,7 +24,12 @@ namespace OneSignalDemo.Editor
                         + "Copy .env.example to .env and add your key."
                 );
                 if (File.Exists(dest))
+                {
                     File.Delete(dest);
+                    var metaPath = dest + ".meta";
+                    if (File.Exists(metaPath))
+                        File.Delete(metaPath);
+                }
                 return;
             }
 

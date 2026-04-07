@@ -472,7 +472,12 @@ namespace OneSignalDemo.ViewModels
             {
                 var eventUpdates = new JObject
                 {
-                    ["data"] = new JObject { ["message"] = "Ended" },
+                    ["data"] = new JObject
+                    {
+                        ["status"] = "delivered",
+                        ["message"] = "Ended",
+                        ["estimatedTime"] = "",
+                    },
                 };
 
                 bool success = await _repository.UpdateLiveActivity(activityId, "end", eventUpdates);
