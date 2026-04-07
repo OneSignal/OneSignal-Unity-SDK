@@ -96,7 +96,7 @@ namespace OneSignalDemo.UI.Sections
             if (_updateButton != null)
                 _updateButton.text = $"UPDATE \u2192 {_viewModel.NextStatusLabel}";
 
-            _endButton?.SetEnabled(hasActivityId && hasApiKey);
+            _endButton?.SetEnabled(hasActivityId && hasApiKey && !_viewModel.IsLiveActivityUpdating);
         }
 
         private void OnStartTap()

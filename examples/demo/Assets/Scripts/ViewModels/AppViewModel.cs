@@ -462,8 +462,11 @@ namespace OneSignalDemo.ViewModels
 
         public async void EndLiveActivity(string activityId)
         {
-            if (string.IsNullOrEmpty(activityId))
+            if (string.IsNullOrEmpty(activityId) || _isLiveActivityUpdating)
                 return;
+
+            _isLiveActivityUpdating = true;
+            NotifyStateChanged();
 
             try
             {
@@ -491,6 +494,7 @@ namespace OneSignalDemo.ViewModels
                 ShowToast("Failed to end Live Activity");
             }
 
+            _isLiveActivityUpdating = false;
             NotifyStateChanged();
         }
 
