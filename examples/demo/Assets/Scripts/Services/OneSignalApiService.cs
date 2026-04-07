@@ -42,7 +42,7 @@ namespace OneSignalDemo.Services
 
                 var eqIndex = trimmed.IndexOf('=');
                 var key = trimmed.Substring(0, eqIndex).Trim();
-                var value = trimmed.Substring(eqIndex + 1).Trim();
+                var value = trimmed.Substring(eqIndex + 1).Trim().Trim('"', '\'');
 
                 if (key == "ONESIGNAL_API_KEY")
                     _apiKey = value;

@@ -102,7 +102,7 @@ namespace OneSignalDemo.UI.Sections
         private void OnStartTap()
         {
             var activityId = _activityIdField?.value;
-            var orderNumber = _orderNumberField?.value ?? "ORD-1234";
+            var orderNumber = string.IsNullOrEmpty(_orderNumberField?.value) ? "ORD-1234" : _orderNumberField.value;
             _viewModel.StartLiveActivity(activityId, orderNumber);
         }
 
