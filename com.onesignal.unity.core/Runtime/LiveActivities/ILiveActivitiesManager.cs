@@ -45,6 +45,7 @@ namespace OneSignalSDK.LiveActivities
         /// </summary>
         /// <remarks>iOS Only</remarks>
         /// <returns>Awaitable boolean of whether the operation succeeded or failed</returns>
+        [System.Obsolete("Currently unsupported, avoid using this method.")]
         Task<bool> ExitAsync(string activityId);
 
         /// <summary>

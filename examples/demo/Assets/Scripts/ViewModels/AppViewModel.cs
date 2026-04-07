@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OneSignalDemo.Models;
 using OneSignalDemo.Repositories;
 using OneSignalDemo.Services;
@@ -36,6 +37,19 @@ namespace OneSignalDemo.ViewModels
         private List<KeyValuePair<string, string>> _tagsList = new();
         private List<KeyValuePair<string, string>> _triggersList = new();
 
+        private int _liveActivityStatusIndex;
+        private bool _isLiveActivityUpdating;
+
+        private static readonly string[] LiveActivityStatuses = { "preparing", "on_the_way", "delivered" };
+        private static readonly string[] LiveActivityMessages =
+        {
+            "Your order is being prepared",
+            "Driver is heading your way",
+            "Order delivered!",
+        };
+        private static readonly string[] LiveActivityETAs = { "15 min", "10 min", "" };
+        private static readonly string[] LiveActivityStatusLabels = { "PREPARING", "ON THE WAY", "DELIVERED" };
+
         public string AppId => _appId;
         public bool ConsentRequired => _consentRequired;
         public bool PrivacyConsentGiven => _privacyConsentGiven;
@@ -53,6 +67,19 @@ namespace OneSignalDemo.ViewModels
         public IReadOnlyList<string> SmsNumbers => _smsNumbersList;
         public IReadOnlyList<KeyValuePair<string, string>> Tags => _tagsList;
         public IReadOnlyList<KeyValuePair<string, string>> Triggers => _triggersList;
+
+        public int LiveActivityStatusIndex => _liveActivityStatusIndex;
+        public bool IsLiveActivityUpdating => _isLiveActivityUpdating;
+        public bool HasApiKey => _repository?.HasApiKey() ?? false;
+
+        public string NextStatusLabel
+        {
+            get
+            {
+                int nextIndex = (_liveActivityStatusIndex + 1) % LiveActivityStatuses.Length;
+                return LiveActivityStatusLabels[nextIndex];
+            }
+        }
 
         public event Action OnStateChanged;
         public event Action<string> OnToastMessage;
@@ -366,6 +393,114 @@ namespace OneSignalDemo.ViewModels
                 LogManager.Instance.Error(Tag, $"Custom notification error: {ex.Message}");
                 ShowToast("Failed to send notification");
             }
+        }
+
+        public void StartLiveActivity(string activityId, string orderNumber)
+        {
+            if (string.IsNullOrEmpty(activityId))
+                return;
+
+            var attributes = new Dictionary<string, object> { { "orderNumber", orderNumber } };
+            var content = new Dictionary<string, object>
+            {
+                { "status", LiveActivityStatuses[0] },
+                { "message", LiveActivityMessages[0] },
+                { "estimatedTime", LiveActivityETAs[0] },
+            };
+
+            _repository.StartDefaultLiveActivity(activityId, attributes, content);
+            _liveActivityStatusIndex = 0;
+
+            LogManager.Instance.Info(Tag, $"Started Live Activity: {activityId}");
+            ShowToast($"Started Live Activity: {activityId}");
+            NotifyStateChanged();
+        }
+
+        public async void UpdateLiveActivity(string activityId)
+        {
+            if (string.IsNullOrEmpty(activityId) || _isLiveActivityUpdating)
+                return;
+
+            _isLiveActivityUpdating = true;
+            NotifyStateChanged();
+
+            try
+            {
+                int nextIndex = (_liveActivityStatusIndex + 1) % LiveActivityStatuses.Length;
+                var eventUpdates = new JObject
+                {
+                    ["data"] = new JObject
+                    {
+                        ["status"] = LiveActivityStatuses[nextIndex],
+                        ["message"] = LiveActivityMessages[nextIndex],
+                        ["estimatedTime"] = LiveActivityETAs[nextIndex],
+                    },
+                };
+
+                bool success = await _repository.UpdateLiveActivity(activityId, "update", eventUpdates);
+                if (success)
+                {
+                    _liveActivityStatusIndex = nextIndex;
+                    LogManager.Instance.Info(Tag, $"Updated Live Activity: {activityId}");
+                    ShowToast($"Updated Live Activity: {activityId}");
+                }
+                else
+                {
+                    LogManager.Instance.Error(Tag, "Failed to update Live Activity");
+                    ShowToast("Failed to update Live Activity");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Instance.Error(Tag, $"Live Activity update error: {ex.Message}");
+                ShowToast("Failed to update Live Activity");
+            }
+
+            _isLiveActivityUpdating = false;
+            NotifyStateChanged();
+        }
+
+        public async void EndLiveActivity(string activityId)
+        {
+            if (string.IsNullOrEmpty(activityId) || _isLiveActivityUpdating)
+                return;
+
+            _isLiveActivityUpdating = true;
+            NotifyStateChanged();
+
+            try
+            {
+                var eventUpdates = new JObject
+                {
+                    ["data"] = new JObject
+                    {
+                        ["status"] = "delivered",
+                        ["message"] = "Ended",
+                        ["estimatedTime"] = "",
+                    },
+                };
+
+                bool success = await _repository.UpdateLiveActivity(activityId, "end", eventUpdates);
+                if (success)
+                {
+                    _liveActivityStatusIndex = 0;
+                    LogManager.Instance.Info(Tag, $"Ended Live Activity: {activityId}");
+                    ShowToast($"Ended Live Activity: {activityId}");
+                }
+                else
+                {
+                    LogManager.Instance.Error(Tag, "Failed to end Live Activity");
+                    ShowToast("Failed to end Live Activity");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Instance.Error(Tag, $"Live Activity end error: {ex.Message}");
+                ShowToast("Failed to end Live Activity");
+            }
+
+            _isLiveActivityUpdating = false;
+            NotifyStateChanged();
         }
 
         public void SetConsentRequired(bool required)

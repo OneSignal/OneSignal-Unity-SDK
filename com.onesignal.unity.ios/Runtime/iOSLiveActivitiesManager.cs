@@ -75,6 +75,7 @@ namespace OneSignalSDK.iOS.LiveActivities
             return await proxy;
         }
 
+        [System.Obsolete("Currently unsupported, avoid using this method.")]
         public async Task<bool> ExitAsync(string activityId)
         {
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();

@@ -38,19 +38,19 @@ using System.Linq;
 namespace App.Editor.iOS
 {
     /// <summary>
-    /// Adds the ExampleWidgetExtension to the iOS project frameworks to the iOS project and enables the main target
+    /// Adds the OneSignalWidgetExtension to the iOS project and enables the main target
     /// for Live Activities.
     /// </summary>
     public class BuildPostProcessor : IPostprocessBuildWithReport
     {
-        private static readonly string WdigetExtensionTargetRelativePath = "ExampleWidget";
-        private static readonly string WidgetExtensionTargetName = "ExampleWidgetExtension";
-        private static readonly string WidgetExtensionPath = Path.Combine("iOS", "ExampleWidget");
+        private static readonly string WidgetExtensionTargetRelativePath = "OneSignalWidget";
+        private static readonly string WidgetExtensionTargetName = "OneSignalWidgetExtension";
+        private static readonly string WidgetExtensionPath = Path.Combine("iOS", "OneSignalWidget");
         private static readonly string[] WidgetExtensionFiles = new string[]
         {
             "Assets.xcassets",
-            "ExampleWidgetBundle.swift",
-            "ExampleWidgetLiveActivity.swift",
+            "OneSignalWidgetBundle.swift",
+            "OneSignalWidgetLiveActivity.swift",
         };
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace App.Editor.iOS
             if (!string.IsNullOrEmpty(extensionGuid))
                 return;
 
-            var widgetDestPath = Path.Combine(outputPath, WdigetExtensionTargetRelativePath);
+            var widgetDestPath = Path.Combine(outputPath, WidgetExtensionTargetRelativePath);
 
             Directory.CreateDirectory(widgetDestPath);
             CopyFileOrDirectory(
@@ -126,14 +126,14 @@ namespace App.Editor.iOS
                 project.GetUnityMainTargetGuid(),
                 WidgetExtensionTargetName,
                 $"{PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS)}.{WidgetExtensionTargetName}",
-                $"{WdigetExtensionTargetRelativePath}/Info.plist"
+                $"{WidgetExtensionTargetRelativePath}/Info.plist"
             );
 
             var buildPhaseID = project.AddSourcesBuildPhase(extensionGuid);
 
             foreach (var file in WidgetExtensionFiles)
             {
-                var destPathRelative = Path.Combine(WdigetExtensionTargetRelativePath, file);
+                var destPathRelative = Path.Combine(WidgetExtensionTargetRelativePath, file);
                 var sourceFileGuid = project.AddFile(destPathRelative, destPathRelative);
                 project.AddFileToBuildSection(extensionGuid, buildPhaseID, sourceFileGuid);
                 CopyFileOrDirectory(

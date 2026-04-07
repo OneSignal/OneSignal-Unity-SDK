@@ -40,6 +40,7 @@ namespace OneSignalSDK.Android.LiveActivities
             return Task.FromResult(false);
         }
 
+        [System.Obsolete("Currently unsupported, avoid using this method.")]
         public Task<bool> ExitAsync(string activityId)
         {
             SDKDebug.Warn("This feature is only available for iOS.");

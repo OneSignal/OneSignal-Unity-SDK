@@ -30,7 +30,7 @@ namespace OneSignalDemo.UI
             backButton.AddToClassList("back-button");
             appBar.Add(backButton);
 
-            var title = new Label("Secondary Activity");
+            var title = new Label("Secondary Screen");
             title.AddToClassList("app-bar-title");
             appBar.Add(title);
 
@@ -39,7 +39,7 @@ namespace OneSignalDemo.UI
             var content = new VisualElement();
             content.AddToClassList("centered-content");
 
-            var heading = new Label("Secondary Activity");
+            var heading = new Label("Secondary Screen");
             heading.name = "secondary_heading";
             heading.AddToClassList("page-heading");
             content.Add(heading);
