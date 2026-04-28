@@ -55,8 +55,8 @@ namespace OneSignalDemo.UI.Sections
             );
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
-                "REMOVE SELECTED",
-                "remove_selected_tags_button",
+                "REMOVE TAGS",
+                "remove_tags_button",
                 () => OnRemoveSelectedTap?.Invoke()
             );
             section.Add(_removeSelectedButton);

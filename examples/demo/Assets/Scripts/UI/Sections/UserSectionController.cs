@@ -44,22 +44,22 @@ namespace OneSignalDemo.UI.Sections
             var extIdRow = SectionBuilder.CreateInlineKeyValue(
                 "External ID",
                 _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013",
-                "external_id"
+                "user_external_id"
             );
-            _externalIdValue = extIdRow.Q<Label>("external_id_value");
+            _externalIdValue = extIdRow.Q<Label>("user_external_id_value");
             statusCard.Add(extIdRow);
             section.Add(statusCard);
 
             _loginButton = SectionBuilder.CreatePrimaryButton(
                 _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER",
-                "login_button",
+                "login_user_button",
                 () => OnLoginTap?.Invoke()
             );
             section.Add(_loginButton);
 
             _logoutButton = SectionBuilder.CreateDestructiveButton(
                 "LOGOUT USER",
-                "logout_button",
+                "logout_user_button",
                 () => OnLogoutTap?.Invoke()
             );
             _logoutButton.style.display = _viewModel.IsLoggedIn

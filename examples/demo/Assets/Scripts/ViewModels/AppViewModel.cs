@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OneSignalDemo.Models;
-using OneSignalDemo.Repositories;
 using OneSignalDemo.Services;
 using OneSignalSDK;
 using OneSignalSDK.Notifications;
@@ -16,8 +15,8 @@ namespace OneSignalDemo.ViewModels
 {
     public class AppViewModel : MonoBehaviour
     {
-        private OneSignalRepository _repository;
         private PreferencesService _prefs;
+        private OneSignalApiService _apiService;
         private const string Tag = "AppViewModel";
 
         private string _appId;
@@ -70,7 +69,8 @@ namespace OneSignalDemo.ViewModels
 
         public int LiveActivityStatusIndex => _liveActivityStatusIndex;
         public bool IsLiveActivityUpdating => _isLiveActivityUpdating;
-        public bool HasApiKey => _repository?.HasApiKey() ?? false;
+        public bool HasApiKey => _apiService?.HasApiKey() ?? false;
+        public static bool IsE2EMode => DotEnv.IsE2EMode;
 
         public string NextStatusLabel
         {
@@ -84,15 +84,18 @@ namespace OneSignalDemo.ViewModels
         public event Action OnStateChanged;
         public event Action<string> OnToastMessage;
 
-        public void Init(OneSignalRepository repository, PreferencesService prefs)
+        public void Init(PreferencesService prefs, OneSignalApiService apiService)
         {
-            _repository = repository;
             _prefs = prefs;
+            _apiService = apiService;
 
             OneSignal.User.PushSubscription.Changed += OnPushSubscriptionChanged;
             OneSignal.Notifications.PermissionChanged += OnPermissionChanged;
             OneSignal.User.Changed += OnUserChanged;
         }
+
+        private static string MaskValue(string value) =>
+            string.IsNullOrEmpty(value) ? value : new string('\u2022', value.Length);
 
         private void OnDestroy()
         {
@@ -106,22 +109,25 @@ namespace OneSignalDemo.ViewModels
 
         public void LoadInitialState()
         {
-            _appId = _prefs.AppId;
+            var rawAppId = _apiService?.GetAppId() ?? "";
+            _appId = IsE2EMode ? MaskValue(rawAppId) : rawAppId;
             _consentRequired = _prefs.ConsentRequired;
             _privacyConsentGiven = _prefs.PrivacyConsent;
-            _inAppMessagesPaused = _prefs.IamPaused;
-            _locationShared = _repository.IsLocationShared();
+            _inAppMessagesPaused = OneSignal.InAppMessages.Paused;
+            _locationShared = OneSignal.Location.IsShared;
             _externalUserId = _prefs.ExternalUserId;
-            _pushSubscriptionId = _repository.GetPushSubscriptionId();
-            _pushOptedIn = _repository.IsPushOptedIn();
-            _hasPermission = _repository.HasPermission();
+
+            var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
+            _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
+            _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
+            _hasPermission = OneSignal.Notifications.Permission;
 
             NotifyStateChanged();
         }
 
         public async Task LoadInitialDataAsync()
         {
-            var onesignalId = _repository.GetOnesignalId();
+            var onesignalId = OneSignal.User.OneSignalId;
             if (!string.IsNullOrEmpty(onesignalId))
             {
                 SetLoading(true);
@@ -141,7 +147,7 @@ namespace OneSignalDemo.ViewModels
             _prefs.ExternalUserId = externalUserId;
 
             ClearUserData();
-            _repository.LoginUser(externalUserId);
+            OneSignal.Login(externalUserId);
 
             LogManager.Instance.Info(Tag, $"Logged in as: {externalUserId}");
             ShowToast($"Logged in as: {externalUserId}");
@@ -151,7 +157,7 @@ namespace OneSignalDemo.ViewModels
         public void LogoutUser()
         {
             SetLoading(true);
-            _repository.LogoutUser();
+            OneSignal.Logout();
 
             _externalUserId = "";
             _prefs.ExternalUserId = "";
@@ -165,7 +171,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddAlias(string label, string id)
         {
-            _repository.AddAlias(label, id);
+            OneSignal.User.AddAlias(label, id);
             _aliasesList.Add(new KeyValuePair<string, string>(label, id));
             LogManager.Instance.Info(Tag, $"Alias added: {label}");
             ShowToast($"Alias added: {label}");
@@ -174,7 +180,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddAliases(Dictionary<string, string> aliases)
         {
-            _repository.AddAliases(aliases);
+            OneSignal.User.AddAliases(aliases);
             foreach (var kvp in aliases)
                 _aliasesList.Add(new KeyValuePair<string, string>(kvp.Key, kvp.Value));
             LogManager.Instance.Info(Tag, $"{aliases.Count} alias(es) added");
@@ -184,7 +190,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddEmail(string email)
         {
-            _repository.AddEmail(email);
+            OneSignal.User.AddEmail(email);
             if (!_emailsList.Contains(email))
                 _emailsList.Add(email);
             LogManager.Instance.Info(Tag, $"Email added: {email}");
@@ -194,7 +200,7 @@ namespace OneSignalDemo.ViewModels
 
         public void RemoveEmail(string email)
         {
-            _repository.RemoveEmail(email);
+            OneSignal.User.RemoveEmail(email);
             _emailsList.Remove(email);
             LogManager.Instance.Info(Tag, $"Email removed: {email}");
             ShowToast($"Email removed: {email}");
@@ -203,7 +209,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddSms(string smsNumber)
         {
-            _repository.AddSms(smsNumber);
+            OneSignal.User.AddSms(smsNumber);
             if (!_smsNumbersList.Contains(smsNumber))
                 _smsNumbersList.Add(smsNumber);
             LogManager.Instance.Info(Tag, $"SMS added: {smsNumber}");
@@ -213,7 +219,7 @@ namespace OneSignalDemo.ViewModels
 
         public void RemoveSms(string smsNumber)
         {
-            _repository.RemoveSms(smsNumber);
+            OneSignal.User.RemoveSms(smsNumber);
             _smsNumbersList.Remove(smsNumber);
             LogManager.Instance.Info(Tag, $"SMS removed: {smsNumber}");
             ShowToast($"SMS removed: {smsNumber}");
@@ -222,7 +228,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddTag(string key, string value)
         {
-            _repository.AddTag(key, value);
+            OneSignal.User.AddTag(key, value);
             UpsertInList(_tagsList, key, value);
             LogManager.Instance.Info(Tag, $"Tag added: {key}={value}");
             ShowToast($"Tag added: {key}");
@@ -231,7 +237,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddTags(Dictionary<string, string> tags)
         {
-            _repository.AddTags(tags);
+            OneSignal.User.AddTags(tags);
             foreach (var kvp in tags)
                 UpsertInList(_tagsList, kvp.Key, kvp.Value);
             LogManager.Instance.Info(Tag, $"{tags.Count} tag(s) added");
@@ -241,7 +247,7 @@ namespace OneSignalDemo.ViewModels
 
         public void RemoveTag(string key)
         {
-            _repository.RemoveTag(key);
+            OneSignal.User.RemoveTag(key);
             _tagsList.RemoveAll(kvp => kvp.Key == key);
             LogManager.Instance.Info(Tag, $"Tag removed: {key}");
             ShowToast($"Tag removed: {key}");
@@ -250,7 +256,7 @@ namespace OneSignalDemo.ViewModels
 
         public void RemoveSelectedTags(List<string> keys)
         {
-            _repository.RemoveTags(keys);
+            OneSignal.User.RemoveTags(keys.ToArray());
             _tagsList.RemoveAll(kvp => keys.Contains(kvp.Key));
             LogManager.Instance.Info(Tag, $"{keys.Count} tag(s) removed");
             ShowToast($"{keys.Count} tag(s) removed");
@@ -259,7 +265,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddTrigger(string key, string value)
         {
-            _repository.AddTrigger(key, value);
+            OneSignal.InAppMessages.AddTrigger(key, value);
             UpsertInList(_triggersList, key, value);
             LogManager.Instance.Info(Tag, $"Trigger added: {key}={value}");
             ShowToast($"Trigger added: {key}");
@@ -268,7 +274,7 @@ namespace OneSignalDemo.ViewModels
 
         public void AddTriggers(Dictionary<string, string> triggers)
         {
-            _repository.AddTriggers(triggers);
+            OneSignal.InAppMessages.AddTriggers(triggers);
             foreach (var kvp in triggers)
                 UpsertInList(_triggersList, kvp.Key, kvp.Value);
             LogManager.Instance.Info(Tag, $"{triggers.Count} trigger(s) added");
@@ -278,7 +284,7 @@ namespace OneSignalDemo.ViewModels
 
         public void RemoveTrigger(string key)
         {
-            _repository.RemoveTrigger(key);
+            OneSignal.InAppMessages.RemoveTrigger(key);
             _triggersList.RemoveAll(kvp => kvp.Key == key);
             LogManager.Instance.Info(Tag, $"Trigger removed: {key}");
             ShowToast($"Trigger removed: {key}");
@@ -287,7 +293,7 @@ namespace OneSignalDemo.ViewModels
 
         public void RemoveSelectedTriggers(List<string> keys)
         {
-            _repository.RemoveTriggers(keys);
+            OneSignal.InAppMessages.RemoveTriggers(keys.ToArray());
             _triggersList.RemoveAll(kvp => keys.Contains(kvp.Key));
             LogManager.Instance.Info(Tag, $"{keys.Count} trigger(s) removed");
             ShowToast($"{keys.Count} trigger(s) removed");
@@ -296,7 +302,7 @@ namespace OneSignalDemo.ViewModels
 
         public void ClearAllTriggers()
         {
-            _repository.ClearTriggers();
+            OneSignal.InAppMessages.ClearTriggers();
             _triggersList.Clear();
             LogManager.Instance.Info(Tag, "All triggers cleared");
             ShowToast("All triggers cleared");
@@ -306,7 +312,7 @@ namespace OneSignalDemo.ViewModels
         public void SendInAppMessage(InAppMessageType type)
         {
             var triggerValue = type.TriggerValue();
-            _repository.AddTrigger("iam_type", triggerValue);
+            OneSignal.InAppMessages.AddTrigger("iam_type", triggerValue);
             UpsertInList(_triggersList, "iam_type", triggerValue);
             LogManager.Instance.Info(Tag, $"Sent In-App Message: {type.DisplayName()}");
             ShowToast($"Sent In-App Message: {type.DisplayName()}");
@@ -315,28 +321,28 @@ namespace OneSignalDemo.ViewModels
 
         public void SendOutcome(string name)
         {
-            _repository.SendOutcome(name);
+            OneSignal.Session.AddOutcome(name);
             LogManager.Instance.Info(Tag, $"Outcome sent: {name}");
             ShowToast($"Outcome sent: {name}");
         }
 
         public void SendUniqueOutcome(string name)
         {
-            _repository.SendUniqueOutcome(name);
+            OneSignal.Session.AddUniqueOutcome(name);
             LogManager.Instance.Info(Tag, $"Unique outcome sent: {name}");
             ShowToast($"Unique outcome sent: {name}");
         }
 
         public void SendOutcomeWithValue(string name, float value)
         {
-            _repository.SendOutcomeWithValue(name, value);
+            OneSignal.Session.AddOutcomeWithValue(name, value);
             LogManager.Instance.Info(Tag, $"Outcome sent: {name} = {value}");
             ShowToast($"Outcome sent: {name}");
         }
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null)
         {
-            _repository.TrackEvent(name, properties);
+            OneSignal.User.TrackEvent(name, properties);
             LogManager.Instance.Info(Tag, $"Event tracked: {name}");
             ShowToast($"Event tracked: {name}");
         }
@@ -345,7 +351,8 @@ namespace OneSignalDemo.ViewModels
         {
             try
             {
-                bool success = await _repository.SendNotification(type);
+                var pushId = OneSignal.User.PushSubscription.Id;
+                bool success = await _apiService.SendNotification(type, pushId);
                 var label = type.ToString();
                 if (success)
                 {
@@ -367,7 +374,7 @@ namespace OneSignalDemo.ViewModels
 
         public void ClearAllNotifications()
         {
-            _repository.ClearAllNotifications();
+            OneSignal.Notifications.ClearAllNotifications();
             LogManager.Instance.Info(Tag, "All notifications cleared");
             ShowToast("All notifications cleared");
         }
@@ -376,7 +383,8 @@ namespace OneSignalDemo.ViewModels
         {
             try
             {
-                bool success = await _repository.SendCustomNotification(title, body);
+                var pushId = OneSignal.User.PushSubscription.Id;
+                bool success = await _apiService.SendCustomNotification(title, body, pushId);
                 if (success)
                 {
                     LogManager.Instance.Info(Tag, $"Custom notification sent: {title}");
@@ -408,7 +416,7 @@ namespace OneSignalDemo.ViewModels
                 { "estimatedTime", LiveActivityETAs[0] },
             };
 
-            _repository.StartDefaultLiveActivity(activityId, attributes, content);
+            OneSignal.LiveActivities.StartDefault(activityId, attributes, content);
             _liveActivityStatusIndex = 0;
 
             LogManager.Instance.Info(Tag, $"Started Live Activity: {activityId}");
@@ -437,7 +445,7 @@ namespace OneSignalDemo.ViewModels
                     },
                 };
 
-                bool success = await _repository.UpdateLiveActivity(activityId, "update", eventUpdates);
+                bool success = await _apiService.UpdateLiveActivity(activityId, "update", eventUpdates);
                 if (success)
                 {
                     _liveActivityStatusIndex = nextIndex;
@@ -480,7 +488,7 @@ namespace OneSignalDemo.ViewModels
                     },
                 };
 
-                bool success = await _repository.UpdateLiveActivity(activityId, "end", eventUpdates);
+                bool success = await _apiService.UpdateLiveActivity(activityId, "end", eventUpdates);
                 if (success)
                 {
                     _liveActivityStatusIndex = 0;
@@ -507,7 +515,7 @@ namespace OneSignalDemo.ViewModels
         {
             _consentRequired = required;
             _prefs.ConsentRequired = required;
-            _repository.SetConsentRequired(required);
+            OneSignal.ConsentRequired = required;
             if (!required)
             {
                 _privacyConsentGiven = false;
@@ -521,7 +529,7 @@ namespace OneSignalDemo.ViewModels
         {
             _privacyConsentGiven = granted;
             _prefs.PrivacyConsent = granted;
-            _repository.SetConsentGiven(granted);
+            OneSignal.ConsentGiven = granted;
             LogManager.Instance.Info(Tag, $"Privacy consent: {granted}");
             NotifyStateChanged();
         }
@@ -530,7 +538,7 @@ namespace OneSignalDemo.ViewModels
         {
             _inAppMessagesPaused = paused;
             _prefs.IamPaused = paused;
-            _repository.SetInAppMessagesPaused(paused);
+            OneSignal.InAppMessages.Paused = paused;
             LogManager.Instance.Info(Tag, $"IAM paused: {paused}");
             NotifyStateChanged();
         }
@@ -539,7 +547,7 @@ namespace OneSignalDemo.ViewModels
         {
             _locationShared = shared;
             _prefs.LocationShared = shared;
-            _repository.SetLocationShared(shared);
+            OneSignal.Location.IsShared = shared;
             LogManager.Instance.Info(Tag, $"Location sharing: {(shared ? "enabled" : "disabled")}");
             ShowToast($"Location sharing {(shared ? "enabled" : "disabled")}");
             NotifyStateChanged();
@@ -547,7 +555,7 @@ namespace OneSignalDemo.ViewModels
 
         public void PromptLocation()
         {
-            _repository.RequestLocationPermission();
+            OneSignal.Location.RequestPermission();
             LogManager.Instance.Info(Tag, "Location permission requested");
         }
 
@@ -555,7 +563,7 @@ namespace OneSignalDemo.ViewModels
         {
             try
             {
-                bool granted = await _repository.RequestPermissionAsync(true);
+                bool granted = await OneSignal.Notifications.RequestPermissionAsync(true);
                 _hasPermission = granted;
                 LogManager.Instance.Info(
                     Tag,
@@ -572,9 +580,9 @@ namespace OneSignalDemo.ViewModels
         public void SetPushEnabled(bool enabled)
         {
             if (enabled)
-                _repository.OptInPush();
+                OneSignal.User.PushSubscription.OptIn();
             else
-                _repository.OptOutPush();
+                OneSignal.User.PushSubscription.OptOut();
 
             _pushOptedIn = enabled;
             LogManager.Instance.Info(Tag, $"Push {(enabled ? "enabled" : "disabled")}");
@@ -586,14 +594,14 @@ namespace OneSignalDemo.ViewModels
         {
             try
             {
-                var onesignalId = _repository.GetOnesignalId();
+                var onesignalId = OneSignal.User.OneSignalId;
                 if (string.IsNullOrEmpty(onesignalId))
                 {
                     SetLoading(false);
                     return;
                 }
 
-                var userData = await _repository.FetchUser(onesignalId);
+                var userData = await _apiService.FetchUser(onesignalId);
                 if (userData != null)
                 {
                     _aliasesList = userData
@@ -614,9 +622,10 @@ namespace OneSignalDemo.ViewModels
                     LogManager.Instance.Info(Tag, "User data fetched from API");
                 }
 
-                _pushSubscriptionId = _repository.GetPushSubscriptionId();
-                _pushOptedIn = _repository.IsPushOptedIn();
-                _hasPermission = _repository.HasPermission();
+                var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
+                _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
+                _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
+                _hasPermission = OneSignal.Notifications.Permission;
             }
             catch (Exception ex)
             {
@@ -661,9 +670,10 @@ namespace OneSignalDemo.ViewModels
 
         private void OnPushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e)
         {
-            _pushSubscriptionId = _repository.GetPushSubscriptionId();
-            _pushOptedIn = _repository.IsPushOptedIn();
-            LogManager.Instance.Info(Tag, $"Push subscription changed: {_pushSubscriptionId}");
+            var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
+            _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
+            _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
+            LogManager.Instance.Info(Tag, $"Push subscription changed: {rawPushId}");
             NotifyStateChanged();
         }
 

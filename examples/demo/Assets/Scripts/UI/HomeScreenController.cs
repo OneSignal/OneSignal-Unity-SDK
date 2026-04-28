@@ -39,7 +39,7 @@ namespace OneSignalDemo.UI
         private TagsSectionController _tagsSection;
         private OutcomesSectionController _outcomesSection;
         private TriggersSectionController _triggersSection;
-        private TrackEventSectionController _trackEventSection;
+        private CustomEventsSectionController _customEventsSection;
         private LocationSectionController _locationSection;
         private LiveActivitiesSectionController _liveActivitiesSection;
 
@@ -246,10 +246,10 @@ namespace OneSignalDemo.UI
             _triggersSection.OnRemoveSelectedTap = ShowRemoveSelectedTriggersDialog;
             _contentRoot.Add(_triggersSection.Root);
 
-            _trackEventSection = new TrackEventSectionController(_viewModel);
-            _trackEventSection.OnInfoTap = () => ShowTooltip("trackEvent");
-            _trackEventSection.OnTrackEventTap = ShowTrackEventDialog;
-            _contentRoot.Add(_trackEventSection.Root);
+            _customEventsSection = new CustomEventsSectionController(_viewModel);
+            _customEventsSection.OnInfoTap = () => ShowTooltip("customEvents");
+            _customEventsSection.OnTrackEventTap = ShowTrackEventDialog;
+            _contentRoot.Add(_customEventsSection.Root);
 
             _locationSection = new LocationSectionController(_viewModel);
             _locationSection.OnInfoTap = () => ShowTooltip("location");

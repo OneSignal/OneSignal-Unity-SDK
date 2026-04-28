@@ -33,7 +33,7 @@ namespace OneSignalDemo.UI.Sections
             var toggleRow = SectionBuilder.CreateToggleRow(
                 "Pause In-App Messages",
                 "Toggle in-app message display",
-                "iam_paused_toggle",
+                "pause_iam_toggle",
                 _viewModel.InAppMessagesPaused,
                 OnPauseChanged
             );

@@ -29,7 +29,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(label);
 
             _externalIdField = new TextField();
-            _externalIdField.name = "login_external_id";
+            _externalIdField.name = "login_user_id_input";
             _externalIdField.AddToClassList("input-field");
             _externalIdField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_externalIdField);
