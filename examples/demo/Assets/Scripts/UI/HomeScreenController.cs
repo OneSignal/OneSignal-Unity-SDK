@@ -57,6 +57,13 @@ namespace OneSignalDemo.UI
 
             BuildScreen();
             WireEvents();
+
+#if UNITY_IOS || UNITY_ANDROID
+            // E2E only: publish the VisualElement tree to platform a11y so
+            // Appium (XCUITest / UiAutomator2) can locate elements by name.
+            // No-op outside E2E_MODE.
+            OneSignalDemo.Services.AccessibilityBridge.EnableForE2E(_root);
+#endif
         }
 
         private void OnDisable()
