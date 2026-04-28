@@ -58,7 +58,11 @@ namespace OneSignalDemo.UI.Sections
 
             if (numbers.Count == 0)
             {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No SMS Added"));
+                _listContainer.Add(
+                    _viewModel.IsLoading
+                        ? SectionBuilder.CreateLoadingState("sms_loading")
+                        : SectionBuilder.CreateEmptyState("No SMS Added")
+                );
                 return;
             }
 

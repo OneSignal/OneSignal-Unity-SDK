@@ -74,7 +74,11 @@ namespace OneSignalDemo.UI.Sections
 
             if (tags.Count == 0)
             {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Tags Added"));
+                _listContainer.Add(
+                    _viewModel.IsLoading
+                        ? SectionBuilder.CreateLoadingState("tags_loading")
+                        : SectionBuilder.CreateEmptyState("No Tags Added")
+                );
                 _removeSelectedButton.style.display = DisplayStyle.None;
                 return;
             }

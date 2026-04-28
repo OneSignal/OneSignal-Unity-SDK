@@ -209,5 +209,14 @@ namespace OneSignalDemo.UI.Sections
             label.AddToClassList("text-empty-state");
             return label;
         }
+
+        public static Label CreateLoadingState(string automationId)
+        {
+            var label = new Label("Loading…");
+            label.name = automationId;
+            label.AddToClassList("empty-state");
+            label.AddToClassList("text-empty-state");
+            return label;
+        }
     }
 }

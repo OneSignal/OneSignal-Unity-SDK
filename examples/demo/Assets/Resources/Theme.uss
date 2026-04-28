@@ -652,26 +652,6 @@
     background-color: var(--os-primary);
 }
 
-.loading-overlay {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: var(--os-backdrop);
-    justify-content: center;
-    align-items: center;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    border-width: 4px;
-    border-color: var(--os-divider);
-    border-top-color: var(--os-primary);
-}
-
 .toast-container {
     position: absolute;
     bottom: 32px;
