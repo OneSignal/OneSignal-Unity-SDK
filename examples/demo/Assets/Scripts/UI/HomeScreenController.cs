@@ -24,7 +24,6 @@ namespace OneSignalDemo.UI
         private VisualElement _loadingOverlay;
         private VisualElement _spinner;
         private IVisualElementScheduledItem _spinnerAnim;
-        private LogViewController _logView;
         private ToastView _toastView;
 
         private AppSectionController _appSection;
@@ -59,10 +58,6 @@ namespace OneSignalDemo.UI
             if (themeSheet != null)
                 _root.styleSheets.Add(themeSheet);
 
-            var logViewSheet = Resources.Load<StyleSheet>("LogView");
-            if (logViewSheet != null)
-                _root.styleSheets.Add(logViewSheet);
-
             BuildScreen();
             WireEvents();
         }
@@ -74,7 +69,6 @@ namespace OneSignalDemo.UI
                 _viewModel.OnStateChanged -= RefreshAll;
                 _viewModel.OnToastMessage -= ShowToast;
             }
-            _logView?.Destroy();
         }
 
         private void Update()
@@ -154,8 +148,6 @@ namespace OneSignalDemo.UI
             appBar.Add(appBarTitle);
 
             screenRoot.Add(appBar);
-
-            _logView = new LogViewController(screenRoot);
 
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
             scrollView.AddToClassList("flex-grow");

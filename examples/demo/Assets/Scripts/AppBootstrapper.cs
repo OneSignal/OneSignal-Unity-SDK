@@ -69,7 +69,7 @@ namespace OneSignalDemo
                 _viewModel.PromptPush();
 
             _ = TooltipHelper.Instance.InitAsync();
-            LogManager.Instance.Info(Tag, "App initialized");
+            Debug.Log($"[{Tag}] App initialized");
         }
 
         private void RegisterSdkListeners()
@@ -98,29 +98,29 @@ namespace OneSignalDemo
         }
 
         private void OnIamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM will display: {e.Message.MessageId}");
+            Debug.Log($"[{Tag}] IAM will display: {e.Message.MessageId}");
 
         private void OnIamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM did display: {e.Message.MessageId}");
+            Debug.Log($"[{Tag}] IAM did display: {e.Message.MessageId}");
 
         private void OnIamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM will dismiss: {e.Message.MessageId}");
+            Debug.Log($"[{Tag}] IAM will dismiss: {e.Message.MessageId}");
 
         private void OnIamDidDismiss(object sender, InAppMessageDidDismissEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM did dismiss: {e.Message.MessageId}");
+            Debug.Log($"[{Tag}] IAM did dismiss: {e.Message.MessageId}");
 
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM clicked: {e.Result.ActionId}");
+            Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
 
         private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"Notification clicked: {e.Result.ActionId}");
+            Debug.Log($"[{Tag}] Notification clicked: {e.Result.ActionId}");
 
         private void OnNotificationForegroundWillDisplay(
             object sender,
             NotificationWillDisplayEventArgs e
         )
         {
-            LogManager.Instance.Info(Tag, "Notification received in foreground");
+            Debug.Log($"[{Tag}] Notification received in foreground");
             e.Notification.Display();
         }
     }
