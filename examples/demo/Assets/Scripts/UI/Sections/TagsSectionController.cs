@@ -76,8 +76,8 @@ namespace OneSignalDemo.UI.Sections
             {
                 _listContainer.Add(
                     _viewModel.IsLoading
-                        ? SectionBuilder.CreateLoadingState("tags_loading")
-                        : SectionBuilder.CreateEmptyState("No Tags Added")
+                        ? SectionBuilder.CreateLoadingState("tags")
+                        : SectionBuilder.CreateEmptyState("No Tags Added", "tags")
                 );
                 _removeSelectedButton.style.display = DisplayStyle.None;
                 return;
@@ -94,7 +94,8 @@ namespace OneSignalDemo.UI.Sections
                     SectionBuilder.CreateKeyValueItem(
                         kvp.Key,
                         kvp.Value,
-                        $"tag_{i}",
+                        "tags",
+                        kvp.Key,
                         () => _viewModel.RemoveTag(kvp.Key)
                     )
                 );

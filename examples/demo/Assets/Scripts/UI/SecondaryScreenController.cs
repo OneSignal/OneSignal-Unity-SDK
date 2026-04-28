@@ -40,7 +40,7 @@ namespace OneSignalDemo.UI
             content.AddToClassList("centered-content");
 
             var heading = new Label("Secondary Screen");
-            heading.name = "secondary_heading";
+            heading.name = "secondary_activity_label";
             heading.AddToClassList("page-heading");
             content.Add(heading);
 

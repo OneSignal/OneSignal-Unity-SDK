@@ -88,7 +88,7 @@ namespace OneSignalDemo.UI.Sections
 
             if (!hasTriggers)
             {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Triggers Added"));
+                _listContainer.Add(SectionBuilder.CreateEmptyState("No Triggers Added", "triggers"));
                 return;
             }
 
@@ -101,7 +101,8 @@ namespace OneSignalDemo.UI.Sections
                     SectionBuilder.CreateKeyValueItem(
                         kvp.Key,
                         kvp.Value,
-                        $"trigger_{i}",
+                        "triggers",
+                        kvp.Key,
                         () => _viewModel.RemoveTrigger(kvp.Key)
                     )
                 );

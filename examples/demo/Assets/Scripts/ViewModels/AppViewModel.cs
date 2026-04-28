@@ -30,6 +30,9 @@ namespace OneSignalDemo.ViewModels
         private bool _hasPermission;
         private bool _isLoading;
 
+        // Drops stale FetchUserDataFromApi responses (mirrors requestSequenceRef in RN useOneSignal).
+        private int _requestSequence;
+
         private List<KeyValuePair<string, string>> _aliasesList = new();
         private List<string> _emailsList = new();
         private List<string> _smsNumbersList = new();
@@ -559,6 +562,12 @@ namespace OneSignalDemo.ViewModels
             Debug.Log($"[{Tag}] Location permission requested");
         }
 
+        public void CheckLocationShared()
+        {
+            var shared = OneSignal.Location.IsShared;
+            ShowToast($"Location shared: {shared.ToString().ToLowerInvariant()}");
+        }
+
         public async void PromptPush()
         {
             try
@@ -589,45 +598,50 @@ namespace OneSignalDemo.ViewModels
 
         public async Task FetchUserDataFromApi()
         {
+            var requestId = ++_requestSequence;
+            SetLoading(true);
+
             try
             {
                 var onesignalId = OneSignal.User.OneSignalId;
                 if (string.IsNullOrEmpty(onesignalId))
-                {
-                    SetLoading(false);
                     return;
-                }
 
                 var userData = await _apiService.FetchUser(onesignalId);
-                if (userData != null)
+                if (userData == null)
+                    return;
+
+                if (_requestSequence != requestId)
+                    return;
+
+                MergePairs(_aliasesList, userData.Aliases);
+                MergePairs(_tagsList, userData.Tags);
+                MergeUnique(_emailsList, userData.Emails);
+                MergeUnique(_smsNumbersList, userData.SmsNumbers);
+
+                if (!string.IsNullOrEmpty(userData.ExternalId))
                 {
-                    MergePairs(_aliasesList, userData.Aliases);
-                    MergePairs(_tagsList, userData.Tags);
-                    MergeUnique(_emailsList, userData.Emails);
-                    MergeUnique(_smsNumbersList, userData.SmsNumbers);
-
-                    if (!string.IsNullOrEmpty(userData.ExternalId))
-                    {
-                        _externalUserId = userData.ExternalId;
-                        _prefs.ExternalUserId = userData.ExternalId;
-                    }
-
-                    Debug.Log($"[{Tag}] User data fetched from API");
+                    _externalUserId = userData.ExternalId;
+                    _prefs.ExternalUserId = userData.ExternalId;
                 }
 
                 var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
                 _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
                 _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
                 _hasPermission = OneSignal.Notifications.Permission;
+
+                Debug.Log($"[{Tag}] User data fetched from API");
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{Tag}] Fetch user error: {ex.Message}");
             }
-
-            await Task.Yield();
-            SetLoading(false);
-            NotifyStateChanged();
+            finally
+            {
+                if (_requestSequence == requestId)
+                    SetLoading(false);
+                NotifyStateChanged();
+            }
         }
 
         private void ClearUserData()

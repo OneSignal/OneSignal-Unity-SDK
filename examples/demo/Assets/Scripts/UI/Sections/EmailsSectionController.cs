@@ -60,8 +60,8 @@ namespace OneSignalDemo.UI.Sections
             {
                 _listContainer.Add(
                     _viewModel.IsLoading
-                        ? SectionBuilder.CreateLoadingState("emails_loading")
-                        : SectionBuilder.CreateEmptyState("No Emails Added")
+                        ? SectionBuilder.CreateLoadingState("emails")
+                        : SectionBuilder.CreateEmptyState("No Emails Added", "emails")
                 );
                 return;
             }
@@ -77,7 +77,7 @@ namespace OneSignalDemo.UI.Sections
                 _listContainer.Add(
                     SectionBuilder.CreateSingleItem(
                         email,
-                        $"email_{i}",
+                        "emails",
                         () => _viewModel.RemoveEmail(email)
                     )
                 );

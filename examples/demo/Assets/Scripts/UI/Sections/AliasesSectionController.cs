@@ -67,8 +67,8 @@ namespace OneSignalDemo.UI.Sections
             {
                 _listContainer.Add(
                     _viewModel.IsLoading
-                        ? SectionBuilder.CreateLoadingState("aliases_loading")
-                        : SectionBuilder.CreateEmptyState("No Aliases Added")
+                        ? SectionBuilder.CreateLoadingState("aliases")
+                        : SectionBuilder.CreateEmptyState("No Aliases Added", "aliases")
                 );
                 return;
             }
@@ -79,7 +79,7 @@ namespace OneSignalDemo.UI.Sections
                     _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
                 var kvp = aliases[i];
                 _listContainer.Add(
-                    SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, $"alias_{i}")
+                    SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, "aliases", kvp.Key)
                 );
             }
         }

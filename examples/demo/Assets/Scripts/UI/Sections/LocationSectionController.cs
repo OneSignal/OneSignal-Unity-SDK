@@ -49,6 +49,14 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
+            section.Add(
+                SectionBuilder.CreatePrimaryButton(
+                    "CHECK LOCATION SHARED",
+                    "check_location_button",
+                    () => _viewModel.CheckLocationShared()
+                )
+            );
+
             return section;
         }
 
