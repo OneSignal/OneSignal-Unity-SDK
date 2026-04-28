@@ -60,8 +60,8 @@ namespace OneSignalDemo.UI.Sections
             {
                 _listContainer.Add(
                     _viewModel.IsLoading
-                        ? SectionBuilder.CreateLoadingState("sms_loading")
-                        : SectionBuilder.CreateEmptyState("No SMS Added")
+                        ? SectionBuilder.CreateLoadingState("sms")
+                        : SectionBuilder.CreateEmptyState("No SMS Added", "sms")
                 );
                 return;
             }
@@ -77,7 +77,7 @@ namespace OneSignalDemo.UI.Sections
                 _listContainer.Add(
                     SectionBuilder.CreateSingleItem(
                         sms,
-                        $"sms_{i}",
+                        "sms",
                         () => _viewModel.RemoveSms(sms)
                     )
                 );

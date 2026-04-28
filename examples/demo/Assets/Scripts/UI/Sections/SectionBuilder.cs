@@ -27,7 +27,7 @@ namespace OneSignalDemo.UI.Sections
             if (onInfoTap != null)
             {
                 var infoBtn = new Button(onInfoTap);
-                infoBtn.name = $"{name}_info";
+                infoBtn.name = $"{SectionKeyFromName(name)}_info_icon";
                 infoBtn.text = MaterialIcons.Info;
                 infoBtn.AddToClassList("info-button");
                 header.Add(infoBtn);
@@ -114,24 +114,27 @@ namespace OneSignalDemo.UI.Sections
         public static VisualElement CreateKeyValueItem(
             string key,
             string value,
-            string name = null,
+            string sectionKey = null,
+            string itemKey = null,
             Action onDelete = null
         )
         {
             var item = new VisualElement();
             item.AddToClassList("key-value-item");
-            if (!string.IsNullOrEmpty(name))
-                item.name = name;
 
             var texts = new VisualElement();
             texts.AddToClassList("key-value-texts");
 
             var keyLabel = new Label(key);
+            if (sectionKey != null && itemKey != null)
+                keyLabel.name = $"{sectionKey}_pair_key_{itemKey}";
             keyLabel.AddToClassList("key-value-key");
             keyLabel.AddToClassList("text-card-label");
             texts.Add(keyLabel);
 
             var valueLabel = new Label(value);
+            if (sectionKey != null && itemKey != null)
+                valueLabel.name = $"{sectionKey}_pair_value_{itemKey}";
             valueLabel.AddToClassList("key-value-value");
             valueLabel.AddToClassList("text-toggle-desc");
             texts.Add(valueLabel);
@@ -141,6 +144,8 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
+                if (sectionKey != null && itemKey != null)
+                    deleteBtn.name = $"{sectionKey}_remove_{itemKey}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
                 item.Add(deleteBtn);
@@ -176,16 +181,16 @@ namespace OneSignalDemo.UI.Sections
 
         public static VisualElement CreateSingleItem(
             string value,
-            string name = null,
+            string sectionKey = null,
             Action onDelete = null
         )
         {
             var item = new VisualElement();
             item.AddToClassList("key-value-item");
-            if (!string.IsNullOrEmpty(name))
-                item.name = name;
 
             var label = new Label(value);
+            if (sectionKey != null)
+                label.name = $"{sectionKey}_value_{value}";
             label.AddToClassList("key-value-key");
             label.AddToClassList("text-card-label");
             label.AddToClassList("flex-grow");
@@ -194,6 +199,8 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
+                if (sectionKey != null)
+                    deleteBtn.name = $"{sectionKey}_remove_{value}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
                 item.Add(deleteBtn);
@@ -202,21 +209,28 @@ namespace OneSignalDemo.UI.Sections
             return item;
         }
 
-        public static Label CreateEmptyState(string text)
+        public static Label CreateEmptyState(string text, string sectionKey = null)
         {
             var label = new Label(text);
+            if (sectionKey != null)
+                label.name = $"{sectionKey}_empty";
             label.AddToClassList("empty-state");
             label.AddToClassList("text-empty-state");
             return label;
         }
 
-        public static Label CreateLoadingState(string automationId)
+        public static Label CreateLoadingState(string sectionKey)
         {
             var label = new Label("Loading…");
-            label.name = automationId;
+            label.name = $"{sectionKey}_loading";
             label.AddToClassList("empty-state");
             label.AddToClassList("text-empty-state");
             return label;
         }
+
+        private static string SectionKeyFromName(string name) =>
+            name != null && name.EndsWith("_section")
+                ? name.Substring(0, name.Length - "_section".Length)
+                : name;
     }
 }
