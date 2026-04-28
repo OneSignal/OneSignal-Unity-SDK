@@ -15,6 +15,7 @@ namespace OneSignalDemo.UI.Dialogs
         protected override void BuildContent(VisualElement container)
         {
             var title = new Label(_data.Title ?? "Info");
+            title.name = "tooltip_title";
             title.AddToClassList("dialog-title");
             title.AddToClassList("text-dialog-title");
             container.Add(title);
@@ -22,6 +23,7 @@ namespace OneSignalDemo.UI.Dialogs
             if (!string.IsNullOrEmpty(_data.Description))
             {
                 var desc = new Label(_data.Description);
+                desc.name = "tooltip_description";
                 desc.AddToClassList("tooltip-description");
                 desc.AddToClassList("text-body-medium");
                 container.Add(desc);
@@ -56,7 +58,9 @@ namespace OneSignalDemo.UI.Dialogs
 
             var actions = new VisualElement();
             actions.AddToClassList("dialog-actions");
-            actions.Add(CreateCancelButton("OK"));
+            var okButton = CreateCancelButton("OK");
+            okButton.name = "tooltip_ok_button";
+            actions.Add(okButton);
             container.Add(actions);
         }
     }

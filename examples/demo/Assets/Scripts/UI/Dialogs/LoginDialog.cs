@@ -40,7 +40,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_isSwitchUser ? "Switch" : "Login", OnConfirm);
-            _confirmButton.name = "login_confirm_button";
+            _confirmButton.name = "singleinput_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
