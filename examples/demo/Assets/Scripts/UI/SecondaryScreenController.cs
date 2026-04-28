@@ -46,6 +46,10 @@ namespace OneSignalDemo.UI
 
             screenRoot.Add(content);
             root.Add(screenRoot);
+
+#if UNITY_IOS || UNITY_ANDROID
+            OneSignalDemo.Services.AccessibilityBridge.EnableForE2E(root);
+#endif
         }
     }
 }
