@@ -48,7 +48,7 @@ namespace OneSignalDemo.UI.Sections
             var orderNumberRow = CreateInlineInputRow(
                 "Order #",
                 "ORD-1234",
-                "live_activity_order_input"
+                "live_activity_order_number_input"
             );
             _orderNumberField = orderNumberRow.Q<TextField>();
             inputCard.Add(orderNumberRow);

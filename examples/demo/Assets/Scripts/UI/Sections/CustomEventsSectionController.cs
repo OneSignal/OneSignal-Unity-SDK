@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Sections
 {
-    public class TrackEventSectionController
+    public class CustomEventsSectionController
     {
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
@@ -12,7 +12,7 @@ namespace OneSignalDemo.UI.Sections
         public Action OnInfoTap;
         public Action OnTrackEventTap;
 
-        public TrackEventSectionController(AppViewModel viewModel)
+        public CustomEventsSectionController(AppViewModel viewModel)
         {
             _viewModel = viewModel;
             _root = BuildSection();
@@ -23,8 +23,8 @@ namespace OneSignalDemo.UI.Sections
         private VisualElement BuildSection()
         {
             var section = SectionBuilder.CreateSection(
-                "Track Event",
-                "track_event_section",
+                "Custom Events",
+                "custom_events_section",
                 () => OnInfoTap?.Invoke()
             );
 

@@ -1,4 +1,3 @@
-using OneSignalDemo.Repositories;
 using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
 using OneSignalSDK;
@@ -12,7 +11,8 @@ namespace OneSignalDemo
 {
     public class AppBootstrapper : MonoBehaviour
     {
-        private const string OneSignalAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
+        private const string DefaultAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
+        private const string PlaceholderAppId = "your-onesignal-app-id";
         private const string Tag = "AppBootstrapper";
 
         [SerializeField]
@@ -20,7 +20,6 @@ namespace OneSignalDemo
 
         private PreferencesService _prefs;
         private OneSignalApiService _apiService;
-        private OneSignalRepository _repository;
 
         private void Awake()
         {
@@ -29,19 +28,18 @@ namespace OneSignalDemo
 
         private async void Start()
         {
+            DotEnv.Load();
+
             _prefs = new PreferencesService();
             _apiService = new OneSignalApiService();
-            _repository = new OneSignalRepository(_apiService);
 
-            var appId = _prefs.AppId;
-            if (string.IsNullOrEmpty(appId))
-            {
-                appId = OneSignalAppId;
-                _prefs.AppId = appId;
-            }
+            var envAppId = DotEnv.Get("ONESIGNAL_APP_ID");
+            var appId =
+                string.IsNullOrWhiteSpace(envAppId) || envAppId == PlaceholderAppId
+                    ? DefaultAppId
+                    : envAppId;
 
             _apiService.SetAppId(appId);
-            _apiService.LoadApiKey();
 
             OneSignal.Debug.LogLevel = LogLevel.Verbose;
             OneSignal.ConsentRequired = _prefs.ConsentRequired;
@@ -63,7 +61,7 @@ namespace OneSignalDemo
 
             RegisterSdkListeners();
 
-            _viewModel.Init(_repository, _prefs);
+            _viewModel.Init(_prefs, _apiService);
             _viewModel.LoadInitialState();
             await _viewModel.LoadInitialDataAsync();
 

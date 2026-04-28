@@ -32,7 +32,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(nameLabel);
 
             _nameField = new TextField();
-            _nameField.name = "event_name";
+            _nameField.name = "event_name_input";
             _nameField.AddToClassList("input-field");
             _nameField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_nameField);
@@ -43,7 +43,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(propsLabel);
 
             _propertiesField = new TextField();
-            _propertiesField.name = "event_properties";
+            _propertiesField.name = "event_properties_input";
             _propertiesField.AddToClassList("input-field");
             _propertiesField.textEdition.placeholder = "{\"key\": \"value\"}";
             _propertiesField.RegisterValueChangedCallback(_ => ValidateInput());
@@ -60,7 +60,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton("Track", OnConfirm);
-            _confirmButton.name = "event_confirm_button";
+            _confirmButton.name = "event_track_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 

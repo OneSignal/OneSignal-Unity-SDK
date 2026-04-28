@@ -56,15 +56,15 @@ namespace OneSignalDemo.UI.Sections
             );
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
-                "REMOVE SELECTED",
-                "remove_selected_triggers_button",
+                "REMOVE TRIGGERS",
+                "remove_triggers_button",
                 () => OnRemoveSelectedTap?.Invoke()
             );
             section.Add(_removeSelectedButton);
 
             _clearAllButton = SectionBuilder.CreateDestructiveButton(
-                "CLEAR ALL",
-                "clear_all_triggers_button",
+                "CLEAR ALL TRIGGERS",
+                "clear_triggers_button",
                 () => _viewModel.ClearAllTriggers()
             );
             section.Add(_clearAllButton);

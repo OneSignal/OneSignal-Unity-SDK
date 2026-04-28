@@ -1,10 +1,8 @@
 using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OneSignalDemo.Models;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace OneSignalDemo.Services
@@ -12,7 +10,6 @@ namespace OneSignalDemo.Services
     public class OneSignalApiService
     {
         private string _appId;
-        private string _apiKey;
 
         private const string NotificationImageUrl =
             "https://media.onesignal.com/automated_push_templates/ratings_template.png";
@@ -23,38 +20,13 @@ namespace OneSignalDemo.Services
 
         public string GetAppId() => _appId;
 
-        public void LoadApiKey()
+        public bool HasApiKey()
         {
-            var envPath = Path.Combine(Application.dataPath, "..", ".env");
-#if !UNITY_EDITOR
-            var streamingPath = Path.Combine(Application.streamingAssetsPath, ".env");
-            if (File.Exists(streamingPath))
-                envPath = streamingPath;
-#endif
-            if (!File.Exists(envPath))
-                return;
-
-            foreach (var line in File.ReadAllLines(envPath))
-            {
-                var trimmed = line.Trim();
-                if (trimmed.StartsWith("#") || !trimmed.Contains("="))
-                    continue;
-
-                var eqIndex = trimmed.IndexOf('=');
-                var key = trimmed.Substring(0, eqIndex).Trim();
-                var value = trimmed.Substring(eqIndex + 1).Trim();
-                int commentIdx = value.IndexOf('#');
-                if (commentIdx >= 0)
-                    value = value.Substring(0, commentIdx).Trim();
-                value = value.Trim('"', '\'');
-
-                if (key == "ONESIGNAL_API_KEY")
-                    _apiKey = value;
-            }
+            var key = DotEnv.Get("ONESIGNAL_API_KEY");
+            return !string.IsNullOrWhiteSpace(key) && key != PlaceholderApiKey;
         }
 
-        public bool HasApiKey() =>
-            !string.IsNullOrEmpty(_apiKey) && _apiKey != PlaceholderApiKey;
+        private static string GetApiKey() => DotEnv.Get("ONESIGNAL_API_KEY");
 
         public async Task<bool> SendNotification(NotificationType type, string subscriptionId)
         {
@@ -63,6 +35,8 @@ namespace OneSignalDemo.Services
 
             string title,
                 body;
+            JObject extra = null;
+
             switch (type)
             {
                 case NotificationType.Simple:
@@ -72,23 +46,31 @@ namespace OneSignalDemo.Services
                 case NotificationType.WithImage:
                     title = "Image Notification";
                     body = "This notification includes an image";
+                    extra = new JObject
+                    {
+                        ["big_picture"] = NotificationImageUrl,
+                        ["ios_attachments"] = new JObject { ["image"] = NotificationImageUrl },
+                        ["mutable_content"] = true,
+                    };
+                    break;
+                case NotificationType.WithSound:
+                    title = "Sound Notification";
+                    body = "This notification plays a custom sound";
+                    extra = new JObject
+                    {
+                        ["ios_sound"] = "vine_boom.wav",
+                        ["android_channel_id"] = "b3b015d9-c050-4042-8548-dcc34aa44aa4",
+                    };
                     break;
                 default:
                     return false;
             }
 
-            var payload = new JObject
+            var payload = BuildBasePayload(title, body, subscriptionId);
+            if (extra != null)
             {
-                ["app_id"] = _appId,
-                ["include_subscription_ids"] = new JArray(subscriptionId),
-                ["headings"] = new JObject { ["en"] = title },
-                ["contents"] = new JObject { ["en"] = body },
-            };
-
-            if (type == NotificationType.WithImage)
-            {
-                payload["big_picture"] = NotificationImageUrl;
-                payload["ios_attachments"] = new JObject { ["image"] = NotificationImageUrl };
+                foreach (var prop in extra.Properties())
+                    payload[prop.Name] = prop.Value;
             }
 
             return await PostNotification(payload.ToString());
@@ -103,14 +85,7 @@ namespace OneSignalDemo.Services
             if (string.IsNullOrEmpty(subscriptionId) || string.IsNullOrEmpty(_appId))
                 return false;
 
-            var payload = new JObject
-            {
-                ["app_id"] = _appId,
-                ["include_subscription_ids"] = new JArray(subscriptionId),
-                ["headings"] = new JObject { ["en"] = title },
-                ["contents"] = new JObject { ["en"] = body },
-            };
-
+            var payload = BuildBasePayload(title, body, subscriptionId);
             return await PostNotification(payload.ToString());
         }
 
@@ -170,18 +145,13 @@ namespace OneSignalDemo.Services
                 payload["event_updates"] = eventUpdates;
 
             if (eventType == "end")
-            {
-                var unixTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                payload["dismissal_date"] = unixTimestamp;
-            }
+                payload["dismissal_date"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var jsonPayload = payload.ToString();
             var request = new UnityWebRequest(url, "POST");
-            var bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(payload.ToString()));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Authorization", $"Key {_apiKey}");
+            request.SetRequestHeader("Authorization", $"Key {GetApiKey()}");
 
             var tcs = new TaskCompletionSource<bool>();
             var operation = request.SendWebRequest();
@@ -193,11 +163,19 @@ namespace OneSignalDemo.Services
             return success;
         }
 
+        private JObject BuildBasePayload(string title, string body, string subscriptionId) =>
+            new()
+            {
+                ["app_id"] = _appId,
+                ["include_subscription_ids"] = new JArray(subscriptionId),
+                ["headings"] = new JObject { ["en"] = title },
+                ["contents"] = new JObject { ["en"] = body },
+            };
+
         private async Task<bool> PostNotification(string jsonPayload)
         {
             var request = new UnityWebRequest("https://onesignal.com/api/v1/notifications", "POST");
-            var bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("Accept", "application/vnd.onesignal.v1+json");
