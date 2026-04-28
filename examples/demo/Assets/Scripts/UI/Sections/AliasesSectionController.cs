@@ -65,7 +65,11 @@ namespace OneSignalDemo.UI.Sections
 
             if (aliases.Count == 0)
             {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Aliases Added"));
+                _listContainer.Add(
+                    _viewModel.IsLoading
+                        ? SectionBuilder.CreateLoadingState("aliases_loading")
+                        : SectionBuilder.CreateEmptyState("No Aliases Added")
+                );
                 return;
             }
 

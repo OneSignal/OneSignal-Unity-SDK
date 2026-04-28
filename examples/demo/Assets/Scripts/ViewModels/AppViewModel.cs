@@ -601,14 +601,10 @@ namespace OneSignalDemo.ViewModels
                 var userData = await _apiService.FetchUser(onesignalId);
                 if (userData != null)
                 {
-                    _aliasesList = userData
-                        .Aliases.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value))
-                        .ToList();
-                    _tagsList = userData
-                        .Tags.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value))
-                        .ToList();
-                    _emailsList = new List<string>(userData.Emails);
-                    _smsNumbersList = new List<string>(userData.SmsNumbers);
+                    MergePairs(_aliasesList, userData.Aliases);
+                    MergePairs(_tagsList, userData.Tags);
+                    MergeUnique(_emailsList, userData.Emails);
+                    MergeUnique(_smsNumbersList, userData.SmsNumbers);
 
                     if (!string.IsNullOrEmpty(userData.ExternalId))
                     {
@@ -663,6 +659,35 @@ namespace OneSignalDemo.ViewModels
                 list[index] = new KeyValuePair<string, string>(key, value);
             else
                 list.Add(new KeyValuePair<string, string>(key, value));
+        }
+
+        private static void MergePairs(
+            List<KeyValuePair<string, string>> target,
+            IDictionary<string, string> source
+        )
+        {
+            foreach (var kv in source)
+            {
+                var idx = target.FindIndex(p => p.Key == kv.Key);
+                if (idx >= 0)
+                {
+                    if (!string.Equals(target[idx].Value, kv.Value, StringComparison.Ordinal))
+                        target[idx] = new KeyValuePair<string, string>(kv.Key, kv.Value);
+                }
+                else
+                {
+                    target.Add(new KeyValuePair<string, string>(kv.Key, kv.Value));
+                }
+            }
+        }
+
+        private static void MergeUnique(List<string> target, IEnumerable<string> source)
+        {
+            foreach (var item in source)
+            {
+                if (!target.Contains(item))
+                    target.Add(item);
+            }
         }
 
         private void OnPushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e)

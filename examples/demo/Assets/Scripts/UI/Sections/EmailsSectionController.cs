@@ -58,7 +58,11 @@ namespace OneSignalDemo.UI.Sections
 
             if (emails.Count == 0)
             {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Emails Added"));
+                _listContainer.Add(
+                    _viewModel.IsLoading
+                        ? SectionBuilder.CreateLoadingState("emails_loading")
+                        : SectionBuilder.CreateEmptyState("No Emails Added")
+                );
                 return;
             }
 
