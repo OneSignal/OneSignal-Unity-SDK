@@ -44,6 +44,7 @@ namespace OneSignalDemo.UI.Dialogs
             AddRow();
 
             var addRowButton = new Button(AddRow);
+            addRowButton.name = "multipair_add_row_button";
             addRowButton.AddToClassList("dialog-add-row-button");
             var addIcon = new Label(MaterialIcons.Add);
             addIcon.AddToClassList("dialog-add-row-icon");
@@ -59,6 +60,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_confirmText, OnConfirm);
+            _confirmButton.name = "multipair_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
@@ -78,14 +80,14 @@ namespace OneSignalDemo.UI.Dialogs
             row.AddToClassList("dialog-row");
 
             var keyField = new TextField();
-            keyField.name = $"multi_key_{_rows.Count}";
+            keyField.name = $"multipair_key_{_rows.Count}";
             keyField.AddToClassList("input-field");
             keyField.AddToClassList("dialog-field-group-left");
             keyField.textEdition.placeholder = _keyLabel;
             keyField.RegisterValueChangedCallback(_ => ValidateAll());
 
             var valueField = new TextField();
-            valueField.name = $"multi_value_{_rows.Count}";
+            valueField.name = $"multipair_value_{_rows.Count}";
             valueField.AddToClassList("input-field");
             valueField.AddToClassList("dialog-field-group");
             valueField.textEdition.placeholder = _valueLabel;

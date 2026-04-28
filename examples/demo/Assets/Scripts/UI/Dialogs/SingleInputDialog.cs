@@ -52,6 +52,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_confirmText, OnConfirm);
+            _confirmButton.name = "singleinput_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 

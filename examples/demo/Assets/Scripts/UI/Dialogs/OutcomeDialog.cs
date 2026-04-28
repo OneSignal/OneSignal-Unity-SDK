@@ -36,9 +36,9 @@ namespace OneSignalDemo.UI.Dialogs
 
             var radioGroup = new VisualElement();
 
-            _normalRadio = CreateRadio("Normal Outcome", "outcome_normal", true);
-            _uniqueRadio = CreateRadio("Unique Outcome", "outcome_unique", false);
-            _withValueRadio = CreateRadio("Outcome with Value", "outcome_with_value", false);
+            _normalRadio = CreateRadio("Normal Outcome", "outcome_type_normal_radio", true);
+            _uniqueRadio = CreateRadio("Unique Outcome", "outcome_type_unique_radio", false);
+            _withValueRadio = CreateRadio("Outcome with Value", "outcome_type_value_radio", false);
 
             _normalRadio.RegisterValueChangedCallback(e =>
             {
@@ -62,7 +62,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(radioGroup);
 
             _nameField = new TextField();
-            _nameField.name = "outcome_name";
+            _nameField.name = "outcome_name_input";
             _nameField.AddToClassList("input-field");
             _nameField.textEdition.placeholder = "Outcome Name";
             _nameField.RegisterValueChangedCallback(_ => ValidateInput());
@@ -72,7 +72,7 @@ namespace OneSignalDemo.UI.Dialogs
             _valueContainer.style.display = DisplayStyle.None;
 
             _valueField = new TextField();
-            _valueField.name = "outcome_value";
+            _valueField.name = "outcome_value_input";
             _valueField.AddToClassList("input-field");
             _valueField.textEdition.placeholder = "Value";
             _valueField.RegisterValueChangedCallback(_ => ValidateInput());
@@ -86,7 +86,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton("Send", OnConfirm);
-            _confirmButton.name = "outcome_confirm_button";
+            _confirmButton.name = "outcome_send_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 

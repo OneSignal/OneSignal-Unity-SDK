@@ -150,6 +150,7 @@ namespace OneSignalDemo.UI
             screenRoot.Add(appBar);
 
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
+            scrollView.name = "main_scroll_view";
             scrollView.AddToClassList("flex-grow");
 
             _contentRoot = new VisualElement();
@@ -320,8 +321,8 @@ namespace OneSignalDemo.UI
                 "Add Alias",
                 "Label",
                 "ID",
-                "alias_key",
-                "alias_value",
+                "alias_label_input",
+                "alias_id_input",
                 "Add",
                 (key, value) => _viewModel.AddAlias(key, value)
             );
@@ -370,8 +371,8 @@ namespace OneSignalDemo.UI
                 "Add Tag",
                 "Key",
                 "Value",
-                "tag_key",
-                "tag_value",
+                "tag_key_input",
+                "tag_value_input",
                 "Add",
                 (key, value) => _viewModel.AddTag(key, value)
             );
@@ -410,8 +411,8 @@ namespace OneSignalDemo.UI
                 "Add Trigger",
                 "Key",
                 "Value",
-                "trigger_key",
-                "trigger_value",
+                "trigger_key_input",
+                "trigger_value_input",
                 "Add",
                 (key, value) => _viewModel.AddTrigger(key, value)
             );

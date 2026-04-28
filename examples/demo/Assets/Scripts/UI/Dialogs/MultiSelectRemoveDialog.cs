@@ -37,7 +37,7 @@ namespace OneSignalDemo.UI.Dialogs
                 row.AddToClassList("checkbox-row");
 
                 var toggle = new Toggle();
-                toggle.name = $"select_{item.Key}";
+                toggle.name = $"remove_checkbox_{item.Key}";
                 toggle.RegisterValueChangedCallback(evt =>
                 {
                     toggle.EnableInClassList("checkbox--checked", evt.newValue);
@@ -60,6 +60,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton("Remove (0)", OnConfirm);
+            _confirmButton.name = "multiselect_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
