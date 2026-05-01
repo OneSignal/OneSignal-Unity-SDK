@@ -1,10 +1,22 @@
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
 {
     public abstract class DialogBase
     {
+#if UNITY_IOS && !UNITY_EDITOR
+        // Native bridge in Assets/Plugins/iOS/OneSignalDemoKeyboard.mm.
+        // Calls [keyWindow endEditing:YES] to dismiss the iOS keyboard view
+        // immediately. UIToolkit's TextField.Blur() and TouchScreenKeyboard.
+        // Open("").active = false don't reliably tear down the UIKit keyboard
+        // when a UIToolkit-owned modal dismisses, leaving it floating over the
+        // app and blocking taps on controls behind it.
+        [DllImport("__Internal")]
+        private static extern void OneSignalDemoEndEditing();
+#endif
+
         protected VisualElement Overlay { get; private set; }
         protected VisualElement Container { get; private set; }
         private VisualElement _parent;
@@ -32,13 +44,22 @@ namespace OneSignalDemo.UI.Dialogs
 
         public void Dismiss()
         {
-            // Blur the focused input first so iOS dismisses TouchScreenKeyboard.
-            // Removing a focused TextField from the hierarchy doesn't fire the
-            // focus-out path on its own, leaving the keyboard floating over
-            // the screen content and intercepting subsequent taps on controls
+            // Blur is harmless and keeps UIToolkit's focus state consistent,
+            // but does NOT close the iOS keyboard on its own (verified at
+            // runtime — UIToolkit owns the TouchScreenKeyboard internally and
+            // its focus-out path doesn't propagate to the UIKit first
+            // responder).
+            var textField = Container?.Q<TextField>();
+            textField?.Blur();
+
+#if UNITY_IOS && !UNITY_EDITOR
+            // Force UIKit to resign first responder so the keyboard view tears
+            // down immediately. Without this the keyboard stays floating over
+            // the app after the modal closes and blocks taps on controls
             // behind it (e.g. the logout button after login).
-            var focused = Container?.focusController?.focusedElement as VisualElement;
-            focused?.Blur();
+            OneSignalDemoEndEditing();
+#endif
+
             Overlay?.RemoveFromHierarchy();
         }
 
