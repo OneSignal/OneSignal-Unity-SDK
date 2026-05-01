@@ -55,8 +55,13 @@ namespace OneSignalDemo.Services
             }
         }
 
-        public static string Get(string key) =>
-            _values.TryGetValue(key, out var value) ? value : "";
+        public static string Get(string key)
+        {
+            // Lazy-load so callers that race AppBootstrapper.Start (e.g. UI
+            // controllers' OnEnable) still see env values on first access.
+            Load();
+            return _values.TryGetValue(key, out var value) ? value : "";
+        }
 
         public static bool IsE2EMode =>
             string.Equals(Get("E2E_MODE"), "true", StringComparison.OrdinalIgnoreCase);

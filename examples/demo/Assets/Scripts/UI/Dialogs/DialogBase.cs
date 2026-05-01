@@ -32,6 +32,13 @@ namespace OneSignalDemo.UI.Dialogs
 
         public void Dismiss()
         {
+            // Blur the focused input first so iOS dismisses TouchScreenKeyboard.
+            // Removing a focused TextField from the hierarchy doesn't fire the
+            // focus-out path on its own, leaving the keyboard floating over
+            // the screen content and intercepting subsequent taps on controls
+            // behind it (e.g. the logout button after login).
+            var focused = Container?.focusController?.focusedElement as VisualElement;
+            focused?.Blur();
             Overlay?.RemoveFromHierarchy();
         }
 
