@@ -133,10 +133,7 @@ namespace OneSignalDemo.ViewModels
             var onesignalId = OneSignal.User.OneSignalId;
             if (!string.IsNullOrEmpty(onesignalId))
             {
-                SetLoading(true);
                 await FetchUserDataFromApi();
-                await Task.Yield();
-                SetLoading(false);
             }
         }
 
@@ -145,28 +142,37 @@ namespace OneSignalDemo.ViewModels
             if (string.IsNullOrEmpty(externalUserId))
                 return;
 
-            SetLoading(true);
-            _externalUserId = externalUserId;
-            _prefs.ExternalUserId = externalUserId;
-
             ClearUserData();
-            OneSignal.Login(externalUserId);
+            SetLoading(true);
 
-            Debug.Log($"[{Tag}] Logged in as: {externalUserId}");
-            ShowToast($"Logged in as: {externalUserId}");
+            try
+            {
+                OneSignal.Login(externalUserId);
+                _prefs.ExternalUserId = externalUserId;
+                _externalUserId = externalUserId;
+
+                Debug.Log($"[{Tag}] Logged in as: {externalUserId}");
+                ShowToast($"Logged in as: {externalUserId}");
+                // The user 'change' listener runs FetchUserDataFromApi once the new
+                // onesignalId is assigned; that call clears isLoading in its finally.
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[{Tag}] Login error: {ex.Message}");
+                SetLoading(false);
+            }
+
             NotifyStateChanged();
         }
 
         public void LogoutUser()
         {
-            SetLoading(true);
             OneSignal.Logout();
 
             _externalUserId = "";
             _prefs.ExternalUserId = "";
             ClearUserData();
 
-            SetLoading(false);
             Debug.Log($"[{Tag}] Logged out");
             ShowToast("Logged out");
             NotifyStateChanged();
