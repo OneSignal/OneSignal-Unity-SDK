@@ -19,6 +19,9 @@ namespace OneSignalDemo.Services
     {
         // Throttle frame refreshes so scroll/resize don't spam the OS.
         private const float FrameRefreshIntervalSeconds = 0.25f;
+        // Throttle structural-change polls. Faster than frame refresh because
+        // dialog open/close should reach the test framework quickly.
+        private const float StructurePollIntervalSeconds = 0.1f;
 
         private static AccessibilityBridge _instance;
 
@@ -27,6 +30,18 @@ namespace OneSignalDemo.Services
         private readonly Dictionary<VisualElement, AccessibilityNode> _map = new();
         private bool _resyncScheduled;
         private float _frameRefreshTimer;
+        private float _structurePollTimer;
+        private int _lastNamedDescendantCount = -1;
+        // Empirically, Unity's iOS accessibility plugin treats the Rect we
+        // hand to AccessibilityNode.frameGetter as if it were already in
+        // physical screen pixels, then divides by the device scale to get
+        // UIKit points. UI Toolkit, however, reports VisualElement.worldBound
+        // in panel-local coordinates (reference resolution scaled to fit), so
+        // unscaled frames render ~1/scale of where the UI is actually drawn.
+        // This factor brings panel coords into the same space the plugin
+        // expects; recomputed on every BuildHierarchy in case the panel size
+        // changes (rotation, safe-area shift, multi-display).
+        private float _panelToScreenScale = 1f;
 
         /// <summary>
         /// Idempotent entry point. Safe to call multiple times; only the first
@@ -34,8 +49,16 @@ namespace OneSignalDemo.Services
         /// </summary>
         public static void EnableForE2E(VisualElement root)
         {
-            if (!DotEnv.IsE2EMode || root == null)
+            if (root == null)
+            {
+                Debug.Log("[A11yBridge] EnableForE2E: root is null, skipping");
                 return;
+            }
+            if (!DotEnv.IsE2EMode)
+            {
+                Debug.Log("[A11yBridge] EnableForE2E: E2E_MODE not set, skipping");
+                return;
+            }
 
             if (_instance == null)
             {
@@ -49,12 +72,8 @@ namespace OneSignalDemo.Services
 
         private void Initialize(VisualElement root)
         {
-            // Detach any prior root's listener (scene reload, dialog re-parent, etc.).
-            if (_root != null && _root != root)
-                _root.UnregisterCallback<ChildHierarchyChangedEvent>(OnChildHierarchyChanged);
-
             _root = root;
-            _root.RegisterCallback<ChildHierarchyChangedEvent>(OnChildHierarchyChanged);
+            _lastNamedDescendantCount = -1; // force first poll to rebuild
 
             // Without this override, AssistiveSupport.activeHierarchy is auto-cleared
             // whenever the OS reports VoiceOver/TalkBack as off. XCUITest reads the
@@ -69,8 +88,6 @@ namespace OneSignalDemo.Services
 
         private void OnDestroy()
         {
-            if (_root != null)
-                _root.UnregisterCallback<ChildHierarchyChangedEvent>(OnChildHierarchyChanged);
             AssistiveSupport.screenReaderStatusChanged -= OnScreenReaderStatusChanged;
             AssistiveSupport.activeHierarchy = null;
             AssistiveSupport.screenReaderStatusOverride =
@@ -81,18 +98,69 @@ namespace OneSignalDemo.Services
 
         private void Update()
         {
-            // Live frames: scroll position changes don't fire ChildHierarchyChanged
-            // but elements move on screen. Refresh frames + notify the OS so cached
-            // hit-testing in XCUITest stays accurate.
-            _frameRefreshTimer += Time.unscaledDeltaTime;
-            if (_frameRefreshTimer < FrameRefreshIntervalSeconds || _hierarchy == null)
+            if (_hierarchy == null || _root == null)
                 return;
-            _frameRefreshTimer = 0f;
-            _hierarchy.RefreshNodeFrames();
-            AssistiveSupport.notificationDispatcher?.SendLayoutChanged();
+
+            // Cheap structural-change check: count named descendants and
+            // rebuild on diff. Catches dialog open/close, scene swap, section
+            // refresh — every test-relevant mutation creates or removes named
+            // VisualElements. Avoids hot event hooks during layout.
+            _structurePollTimer += Time.unscaledDeltaTime;
+            if (_structurePollTimer >= StructurePollIntervalSeconds)
+            {
+                _structurePollTimer = 0f;
+                int count = CountNamedDescendants(_root);
+                if (count != _lastNamedDescendantCount)
+                {
+                    _lastNamedDescendantCount = count;
+                    ScheduleResync();
+                }
+            }
+
+            // Live frames + values: scroll/animation moves elements and
+            // toggles/labels mutate text without altering tree structure.
+            // RefreshNodeFrames covers geometry; AccessibilityNode.value is
+            // a plain field with no per-node "value changed" notification
+            // (the dispatcher only exposes Layout/Screen/Page/Announcement),
+            // so writes don't push to the platform unless we re-publish the
+            // whole hierarchy. We compare against last-known values per tick
+            // and rebuild only when something actually changed — avoids the
+            // every-frame churn the Unity perf docs warn against.
+            _frameRefreshTimer += Time.unscaledDeltaTime;
+            if (_frameRefreshTimer >= FrameRefreshIntervalSeconds)
+            {
+                _frameRefreshTimer = 0f;
+                bool dirty = false;
+                foreach (var kvp in _map)
+                {
+                    var el = kvp.Key;
+                    var node = kvp.Value;
+                    var newValue = ExtractValue(el);
+                    var newActive = IsVisible(el);
+                    if (node.value != newValue || node.isActive != newActive)
+                    {
+                        node.value = newValue;
+                        node.isActive = newActive;
+                        dirty = true;
+                    }
+                }
+                _hierarchy.RefreshNodeFrames();
+                if (dirty)
+                    ScheduleResync();
+                else
+                    AssistiveSupport.notificationDispatcher?.SendLayoutChanged();
+            }
         }
 
-        private void OnChildHierarchyChanged(ChildHierarchyChangedEvent evt) => ScheduleResync();
+        private static int CountNamedDescendants(VisualElement el)
+        {
+            if (el == null)
+                return 0;
+            int count = string.IsNullOrEmpty(el.name) ? 0 : 1;
+            for (int i = 0; i < el.childCount; i++)
+                count += CountNamedDescendants(el[i]);
+            return count;
+        }
 
         private void OnScreenReaderStatusChanged(bool _)
         {
@@ -128,10 +196,31 @@ namespace OneSignalDemo.Services
             _hierarchy.Clear();
             _map.Clear();
 
+            // Recompute the panel→screen scale before walking the tree so each
+            // node's frameGetter sees the correct ratio.
+            var rootBound = _root.worldBound;
+            _panelToScreenScale =
+                rootBound.width > 0 ? Screen.width / rootBound.width : 1f;
+
             WalkAndAdd(_root, parent: null);
 
             AssistiveSupport.activeHierarchy = _hierarchy;
             AssistiveSupport.notificationDispatcher?.SendScreenChanged();
+
+            Debug.Log(
+                $"[A11yBridge] Built hierarchy with {_map.Count} named nodes. "
+                    + $"Active={AssistiveSupport.activeHierarchy != null}, "
+                    + $"ScreenReader={AssistiveSupport.isScreenReaderEnabled}"
+            );
+            // Log a sample so we can confirm specific test ids reached the OS.
+            var sample = new System.Text.StringBuilder("[A11yBridge] Names: ");
+            int i = 0;
+            foreach (var kvp in _map)
+            {
+                if (i++ > 0) sample.Append(", ");
+                sample.Append(kvp.Key.name);
+            }
+            Debug.Log(sample.ToString());
         }
 
         private void WalkAndAdd(VisualElement el, AccessibilityNode parent)
@@ -139,24 +228,26 @@ namespace OneSignalDemo.Services
             if (el == null)
                 return;
 
-            // Only mirror named elements — the test framework looks up by name
-            // (XCUITest `~name` / UiAutomator2 `id`). Unnamed scaffolding adds
-            // noise and depth without changing test reachability.
-            var nodeForChildren = parent;
+            // Publish every named element as a direct child of the hierarchy
+            // root (parent: null) — iOS UIAccessibility requires container
+            // elements to themselves be non-elements. Nesting our nodes makes
+            // ancestors opaque hit targets that swallow visibility tests for
+            // descendants (XCUITest reports visible="false" even when the
+            // child's frame is on screen). The test framework only ever looks
+            // up by name, so containment doesn't affect reachability.
             if (!string.IsNullOrEmpty(el.name))
             {
-                var node = _hierarchy.AddNode(el.name, parent);
+                var node = _hierarchy.AddNode(el.name, parent: null);
                 var captured = el;
                 node.frameGetter = () => GetScreenRect(captured);
                 node.role = MapRole(el);
                 node.value = ExtractValue(el);
                 node.isActive = IsVisible(el);
                 _map[el] = node;
-                nodeForChildren = node;
             }
 
             for (int i = 0; i < el.childCount; i++)
-                WalkAndAdd(el[i], nodeForChildren);
+                WalkAndAdd(el[i], parent: null);
         }
 
         private static AccessibilityRole MapRole(VisualElement el) => el switch
@@ -189,7 +280,7 @@ namespace OneSignalDemo.Services
                 && s.opacity > 0f;
         }
 
-        private static Rect GetScreenRect(VisualElement el)
+        private Rect GetScreenRect(VisualElement el)
         {
             if (el?.panel == null)
                 return Rect.zero;
@@ -198,20 +289,8 @@ namespace OneSignalDemo.Services
             if (float.IsNaN(wb.x) || float.IsNaN(wb.y) || wb.width <= 0 || wb.height <= 0)
                 return Rect.zero;
 
-            // Unity returns screen coords with origin at the bottom-left
-            // (OpenGL convention). UIKit/Android UIAccessibility expect
-            // top-left. Unity's iOS/Android backends do the platform flip
-            // internally, so feed bottom-left coords as-is.
-            var topLeft = RuntimePanelUtils.PanelToScreenSpace(
-                el.panel, new Vector2(wb.xMin, wb.yMin));
-            var bottomRight = RuntimePanelUtils.PanelToScreenSpace(
-                el.panel, new Vector2(wb.xMax, wb.yMax));
-
-            float x = Mathf.Min(topLeft.x, bottomRight.x);
-            float y = Mathf.Min(topLeft.y, bottomRight.y);
-            float w = Mathf.Abs(bottomRight.x - topLeft.x);
-            float h = Mathf.Abs(bottomRight.y - topLeft.y);
-            return new Rect(x, y, w, h);
+            float s = _panelToScreenScale;
+            return new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
         }
     }
 }

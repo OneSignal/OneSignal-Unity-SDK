@@ -57,6 +57,7 @@ namespace OneSignalDemo.UI.Dialogs
             var value = _externalIdField?.value;
             if (!string.IsNullOrEmpty(value))
             {
+                _externalIdField?.Blur();
                 _onConfirm?.Invoke(value);
                 Dismiss();
             }
