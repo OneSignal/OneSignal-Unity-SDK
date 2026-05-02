@@ -487,8 +487,9 @@
     top: 0;
     bottom: 0;
     background-color: var(--os-backdrop);
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    padding-top: 80px;
 }
 
 .dialog-container {
