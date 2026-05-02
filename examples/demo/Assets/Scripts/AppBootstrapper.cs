@@ -5,6 +5,7 @@ using OneSignalSDK.Debug.Models;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Notifications;
+using OneSignalSDK.Notifications.Models;
 using UnityEngine;
 
 namespace OneSignalDemo
@@ -65,8 +66,7 @@ namespace OneSignalDemo
             _viewModel.LoadInitialState();
             await _viewModel.LoadInitialDataAsync();
 
-            if (!_viewModel.HasPermission)
-                _viewModel.PromptPush();
+            _viewModel.PromptPush();
 
             _ = TooltipHelper.Instance.InitAsync();
             Debug.Log($"[{Tag}] App initialized");
