@@ -83,7 +83,25 @@ namespace OneSignalDemo.UI.Dialogs
             OneSignalDemoEndEditing();
 #endif
 
-            Overlay?.RemoveFromHierarchy();
+            // Release any pointer capture the dismissed Overlay still holds
+            // before removing it. Without this UIToolkit can keep delivering
+            // the in-flight pointer sequence to the captured target after
+            // RemoveFromHierarchy, which swallows the next synthetic tap.
+            var overlay = Overlay;
+            if (overlay != null)
+            {
+                var panel = overlay.panel;
+                if (panel != null)
+                {
+                    for (int id = 0; id < PointerId.maxPointers; id++)
+                    {
+                        if (panel.GetCapturingElement(id) == overlay)
+                            overlay.ReleasePointer(id);
+                    }
+                }
+                overlay.RemoveFromHierarchy();
+            }
+            Overlay = null;
         }
 
         protected abstract void BuildContent(VisualElement container);

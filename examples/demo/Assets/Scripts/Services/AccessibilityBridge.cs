@@ -17,16 +17,18 @@ namespace OneSignalDemo.Services
     /// </summary>
     public class AccessibilityBridge : MonoBehaviour
     {
-        // Throttle frame refreshes so scroll/resize don't spam the OS. 50ms
-        // (20 Hz) is short enough that mid-scroll-animation taps land on the
-        // correct element (Appium tap latency is ~80-150ms, so the frame the
-        // test framework reads is at most one tick stale), and long enough
-        // not to overwhelm the platform plugin. At the original 250ms,
-        // frames lagged the live UI badly enough that taps for
-        // send_push_info_icon landed on send_simple_button.
+        // Backstop frame refresh tick. The hot path is GeometryChangedEvent
+        // (registered in BuildHierarchy) which dispatches a same-frame
+        // refresh whenever anything in the tree resizes, scrolls, or
+        // re-layouts. The timer only catches drift from sources that don't
+        // raise GeometryChangedEvent — animation curves, opacity tweens, and
+        // value mutations on TextField/Toggle/Label.
         private const float FrameRefreshIntervalSeconds = 0.05f;
-        // Throttle structural-change polls. Faster than frame refresh because
-        // dialog open/close should reach the test framework quickly.
+        // Backstop structural poll. The hot path is DetachFromPanelEvent
+        // (per node, see WalkAndAdd) which schedules an immediate resync the
+        // moment a tracked element leaves the tree. The timer catches
+        // additions, since a freshly-created VisualElement has nothing for
+        // us to subscribe to until BuildHierarchy walks it.
         private const float StructurePollIntervalSeconds = 0.1f;
 
         private static AccessibilityBridge _instance;
@@ -35,9 +37,19 @@ namespace OneSignalDemo.Services
         private AccessibilityHierarchy _hierarchy;
         private readonly Dictionary<VisualElement, AccessibilityNode> _map = new();
         private bool _resyncScheduled;
+        private bool _frameRefreshScheduled;
         private float _frameRefreshTimer;
         private float _structurePollTimer;
         private int _lastNamedDescendantCount = -1;
+        private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
+        private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
+
+        public AccessibilityBridge()
+        {
+            _onGeometryChanged = _ => ScheduleFrameRefresh();
+            _onDetachFromPanel = _ => ScheduleResync();
+        }
+
         // Empirically, Unity's iOS accessibility plugin treats the Rect we
         // hand to AccessibilityNode.frameGetter as if it were already in
         // physical screen pixels, then divides by the device scale to get
@@ -98,8 +110,33 @@ namespace OneSignalDemo.Services
             AssistiveSupport.activeHierarchy = null;
             AssistiveSupport.screenReaderStatusOverride =
                 AssistiveSupport.ScreenReaderStatusOverride.OSDriven;
+            UnregisterTreeCallbacks();
             if (_instance == this)
                 _instance = null;
+        }
+
+        private void UnregisterTreeCallbacks()
+        {
+            if (_root != null)
+                _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
+            foreach (var el in _map.Keys)
+                el.UnregisterCallback(_onDetachFromPanel);
+        }
+
+        private void ScheduleFrameRefresh()
+        {
+            if (_frameRefreshScheduled || !isActiveAndEnabled)
+                return;
+            _frameRefreshScheduled = true;
+            StartCoroutine(RefreshFramesEndOfFrame());
+        }
+
+        private IEnumerator RefreshFramesEndOfFrame()
+        {
+            yield return new WaitForEndOfFrame();
+            _frameRefreshScheduled = false;
+            if (_hierarchy != null)
+                _hierarchy.RefreshNodeFrames();
         }
 
         private void Update()
@@ -198,6 +235,8 @@ namespace OneSignalDemo.Services
             if (_root == null)
                 return;
 
+            UnregisterTreeCallbacks();
+
             _hierarchy ??= new AccessibilityHierarchy();
             _hierarchy.Clear();
             _map.Clear();
@@ -208,16 +247,59 @@ namespace OneSignalDemo.Services
             _panelToScreenScale =
                 rootBound.width > 0 ? Screen.width / rootBound.width : 1f;
 
-            WalkAndAdd(_root, parent: null);
+            // TrickleDown so we receive geometry events bubbling up from
+            // every descendant without having to register per-element. One
+            // callback drives a coalesced end-of-frame RefreshNodeFrames so
+            // a tap fired immediately after a scroll sees fresh frames
+            // instead of a 50ms-stale snapshot.
+            _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
+
+            WalkAndAdd(_root);
 
             AssistiveSupport.activeHierarchy = _hierarchy;
             AssistiveSupport.notificationDispatcher?.SendScreenChanged();
+            _hierarchy.RefreshNodeFrames();
 
             Debug.Log(
                 $"[A11yBridge] Built hierarchy with {_map.Count} named nodes. "
                     + $"Active={AssistiveSupport.activeHierarchy != null}, "
                     + $"ScreenReader={AssistiveSupport.isScreenReaderEnabled}"
             );
+
+            // #region agent log
+#if UNITY_IOS || UNITY_ANDROID
+            var safe = Screen.safeArea;
+            string panelToScreenSampleJson = "null";
+            VisualElement targetEl = null;
+            foreach (var kvp in _map)
+            {
+                if (kvp.Key.name == "add_multiple_triggers_button")
+                {
+                    targetEl = kvp.Key;
+                    break;
+                }
+            }
+            if (targetEl != null)
+            {
+                var wb = targetEl.worldBound;
+                var screenRect = GetScreenRect(targetEl);
+                panelToScreenSampleJson =
+                    "{\"name\":\"add_multiple_triggers_button\","
+                    + $"\"worldBound\":{{\"x\":{wb.x:F2},\"y\":{wb.y:F2},\"w\":{wb.width:F2},\"h\":{wb.height:F2}}},"
+                    + $"\"screenRect\":{{\"x\":{screenRect.x:F2},\"y\":{screenRect.y:F2},\"w\":{screenRect.width:F2},\"h\":{screenRect.height:F2}}}}}";
+            }
+            E2EDebugLog.Send(
+                "AccessibilityBridge.cs:BuildHierarchy",
+                "rebuilt",
+                "{\"namedCount\":" + _map.Count + ","
+                    + $"\"screenPx\":{{\"w\":{Screen.width},\"h\":{Screen.height}}},"
+                    + $"\"safeArea\":{{\"x\":{safe.x:F2},\"y\":{safe.y:F2},\"w\":{safe.width:F2},\"h\":{safe.height:F2}}},"
+                    + $"\"rootWorldBound\":{{\"x\":{_root.worldBound.x:F2},\"y\":{_root.worldBound.y:F2},\"w\":{_root.worldBound.width:F2},\"h\":{_root.worldBound.height:F2}}},"
+                    + $"\"panelToScreenScale\":{_panelToScreenScale:F4},"
+                    + $"\"sample\":{panelToScreenSampleJson}}}"
+            );
+#endif
+            // #endregion
             // Log a sample so we can confirm specific test ids reached the OS.
             var sample = new System.Text.StringBuilder("[A11yBridge] Names: ");
             int i = 0;
@@ -229,7 +311,7 @@ namespace OneSignalDemo.Services
             Debug.Log(sample.ToString());
         }
 
-        private void WalkAndAdd(VisualElement el, AccessibilityNode parent)
+        private void WalkAndAdd(VisualElement el)
         {
             if (el == null)
                 return;
@@ -243,17 +325,32 @@ namespace OneSignalDemo.Services
             // up by name, so containment doesn't affect reachability.
             if (!string.IsNullOrEmpty(el.name))
             {
-                var node = _hierarchy.AddNode(el.name, parent: null);
-                var captured = el;
-                node.frameGetter = () => GetScreenRect(captured);
-                node.role = MapRole(el);
-                node.value = ExtractValue(el);
-                node.isActive = IsVisible(el);
-                _map[el] = node;
+                if (_map.ContainsKey(el))
+                {
+                    Debug.LogWarning(
+                        $"[A11yBridge] Duplicate element registered for name '{el.name}'; skipping"
+                    );
+                }
+                else
+                {
+                    var node = _hierarchy.AddNode(el.name, parent: null);
+                    var captured = el;
+                    node.frameGetter = () => GetScreenRect(captured);
+                    node.role = MapRole(el);
+                    node.value = ExtractValue(el);
+                    node.isActive = IsVisible(el);
+                    _map[el] = node;
+                    // Detach fires the moment a tracked element leaves the
+                    // panel — Dismiss(), section refresh, scene swap. Drives
+                    // an immediate ScheduleResync so XCUITest can't read a
+                    // node whose owner is already gone (the source of the
+                    // "stale element" warnings during dialog teardown).
+                    el.RegisterCallback(_onDetachFromPanel);
+                }
             }
 
             for (int i = 0; i < el.childCount; i++)
-                WalkAndAdd(el[i], parent: null);
+                WalkAndAdd(el[i]);
         }
 
         private static AccessibilityRole MapRole(VisualElement el) => el switch
@@ -302,7 +399,38 @@ namespace OneSignalDemo.Services
                 return Rect.zero;
 
             float s = _panelToScreenScale;
-            return new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
+            var rect = new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
+
+            // #region agent log
+#if UNITY_IOS || UNITY_ANDROID
+            if (el.name == "add_multiple_triggers_button" && Time.frameCount % 60 == 0)
+            {
+                // Walk ancestors to find the nearest scroll/clipping container
+                // and report its rect, so we can see whether the button sits
+                // inside or outside the ScrollView's visible viewport.
+                VisualElement clipper = el.hierarchy.parent;
+                while (clipper != null && !(clipper is ScrollView))
+                    clipper = clipper.hierarchy.parent;
+                string clipperJson = "null";
+                if (clipper is ScrollView sv)
+                {
+                    var cwb = sv.contentViewport.worldBound;
+                    clipperJson =
+                        $"{{\"contentViewport\":{{\"x\":{cwb.x:F2},\"y\":{cwb.y:F2},\"w\":{cwb.width:F2},\"h\":{cwb.height:F2}}}}}";
+                }
+                E2EDebugLog.Send(
+                    "AccessibilityBridge.cs:GetScreenRect",
+                    "trigger frame snapshot",
+                    "{\"name\":\"add_multiple_triggers_button\","
+                        + $"\"worldBound\":{{\"x\":{wb.x:F2},\"y\":{wb.y:F2},\"w\":{wb.width:F2},\"h\":{wb.height:F2}}},"
+                        + $"\"screenRect\":{{\"x\":{rect.x:F2},\"y\":{rect.y:F2},\"w\":{rect.width:F2},\"h\":{rect.height:F2}}},"
+                        + $"\"scrollAncestor\":{clipperJson}}}"
+                );
+            }
+#endif
+            // #endregion
+
+            return rect;
         }
     }
 }
