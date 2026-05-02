@@ -41,14 +41,14 @@ namespace OneSignalDemo.UI.Sections
 
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD",
+                    "ADD TAG",
                     "add_tag_button",
                     () => OnAddTap?.Invoke()
                 )
             );
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE",
+                    "ADD MULTIPLE TAGS",
                     "add_multiple_tags_button",
                     () => OnAddMultipleTap?.Invoke()
                 )
