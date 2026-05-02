@@ -115,11 +115,7 @@ namespace OneSignalDemo.UI
             var safe = Screen.safeArea;
             float scale = rootHeight / Screen.height;
             float top = (Screen.height - safe.yMax) * scale;
-            float bottom = safe.y * scale;
 
-            var screenRoot = _root.Q("screen_root");
-            if (screenRoot != null)
-                screenRoot.style.paddingBottom = bottom;
             var statusSpacer = _root.Q("status_bar_spacer");
             if (statusSpacer != null)
                 statusSpacer.style.height = top;
