@@ -43,6 +43,10 @@ namespace OneSignalDemo.Services
         private int _lastNamedDescendantCount = -1;
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
+        // Set true after the one-shot ScrollView taming hooks (WheelEvent
+        // block + clamp settings) are installed; BuildHierarchy can fire many
+        // times per session and we only want one subscription.
+        private bool _scrollViewHooksInstalled;
 
         public AccessibilityBridge()
         {
@@ -173,22 +177,34 @@ namespace OneSignalDemo.Services
             if (_frameRefreshTimer >= FrameRefreshIntervalSeconds)
             {
                 _frameRefreshTimer = 0f;
-                bool dirty = false;
+                bool valueDirty = false;
                 foreach (var kvp in _map)
                 {
                     var el = kvp.Key;
                     var node = kvp.Value;
                     var newValue = ExtractValue(el);
                     var newActive = IsVisible(el);
-                    if (node.value != newValue || node.isActive != newActive)
+                    bool valueChanged = node.value != newValue;
+                    bool activeChanged = node.isActive != newActive;
+                    if (valueChanged || activeChanged)
                     {
+                        // In-place mutation. The visibility flip is enough for
+                        // XCUITest because GetScreenRect already returns
+                        // (0,0,0,0) for clipped elements, which iOS reports as
+                        // hittable=false. We MUST NOT call ScheduleResync on
+                        // active-only flips: every scroll moves elements into
+                        // and out of the ScrollView viewport, and a republish
+                        // (SendScreenChanged) issued mid-tap makes iOS drop
+                        // the pending touch — that was the root cause of the
+                        // "no PointerDown, button moved 120pt" failure.
                         node.value = newValue;
                         node.isActive = newActive;
-                        dirty = true;
+                        if (valueChanged)
+                            valueDirty = true;
                     }
                 }
                 _hierarchy.RefreshNodeFrames();
-                if (dirty)
+                if (valueDirty)
                     ScheduleResync();
                 else
                     AssistiveSupport.notificationDispatcher?.SendLayoutChanged();
@@ -254,6 +270,21 @@ namespace OneSignalDemo.Services
             // instead of a 50ms-stale snapshot.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
 
+            // One-shot ScrollView taming: BuildHierarchy can run dozens of
+            // times per session (every dialog open/close, every section
+            // refresh), but the main ScrollView only needs these hooks once.
+            // The flag is reset only by OnDestroy — a fresh bridge instance
+            // re-applies them.
+            if (!_scrollViewHooksInstalled)
+            {
+                var mainSv = _root.Q<ScrollView>("main_scroll_view");
+                if (mainSv != null)
+                {
+                    InstallScrollViewE2EHooks(mainSv);
+                    _scrollViewHooksInstalled = true;
+                }
+            }
+
             WalkAndAdd(_root);
 
             AssistiveSupport.activeHierarchy = _hierarchy;
@@ -266,41 +297,6 @@ namespace OneSignalDemo.Services
                     + $"ScreenReader={AssistiveSupport.isScreenReaderEnabled}"
             );
 
-            // #region agent log
-#if UNITY_IOS || UNITY_ANDROID
-            var safe = Screen.safeArea;
-            string panelToScreenSampleJson = "null";
-            VisualElement targetEl = null;
-            foreach (var kvp in _map)
-            {
-                if (kvp.Key.name == "add_multiple_triggers_button")
-                {
-                    targetEl = kvp.Key;
-                    break;
-                }
-            }
-            if (targetEl != null)
-            {
-                var wb = targetEl.worldBound;
-                var screenRect = GetScreenRect(targetEl);
-                panelToScreenSampleJson =
-                    "{\"name\":\"add_multiple_triggers_button\","
-                    + $"\"worldBound\":{{\"x\":{wb.x:F2},\"y\":{wb.y:F2},\"w\":{wb.width:F2},\"h\":{wb.height:F2}}},"
-                    + $"\"screenRect\":{{\"x\":{screenRect.x:F2},\"y\":{screenRect.y:F2},\"w\":{screenRect.width:F2},\"h\":{screenRect.height:F2}}}}}";
-            }
-            E2EDebugLog.Send(
-                "AccessibilityBridge.cs:BuildHierarchy",
-                "rebuilt",
-                "{\"namedCount\":" + _map.Count + ","
-                    + $"\"screenPx\":{{\"w\":{Screen.width},\"h\":{Screen.height}}},"
-                    + $"\"safeArea\":{{\"x\":{safe.x:F2},\"y\":{safe.y:F2},\"w\":{safe.width:F2},\"h\":{safe.height:F2}}},"
-                    + $"\"rootWorldBound\":{{\"x\":{_root.worldBound.x:F2},\"y\":{_root.worldBound.y:F2},\"w\":{_root.worldBound.width:F2},\"h\":{_root.worldBound.height:F2}}},"
-                    + $"\"panelToScreenScale\":{_panelToScreenScale:F4},"
-                    + $"\"sample\":{panelToScreenSampleJson}}}"
-            );
-#endif
-            // #endregion
-            // Log a sample so we can confirm specific test ids reached the OS.
             var sample = new System.Text.StringBuilder("[A11yBridge] Names: ");
             int i = 0;
             foreach (var kvp in _map)
@@ -309,6 +305,38 @@ namespace OneSignalDemo.Services
                 sample.Append(kvp.Key.name);
             }
             Debug.Log(sample.ToString());
+        }
+
+        /// <summary>
+        /// Tames the main ScrollView so XCUITest taps land deterministically
+        /// on iOS. Two distinct sources can shift content during a queued tap
+        /// and make the click land on the wrong element:
+        ///   1. iOS XCUITest performs an implicit "scroll-to-visible" before
+        ///      dispatching the tap. The scroll arrives in UI Toolkit as a
+        ///      synthetic WheelEvent injected by DefaultEventSystem
+        ///      (SendPositionBasedEvent ← InputForUIProcessor.ProcessPointerEvent).
+        ///      The ScrollView consumes it and scrolls scrollOffset by ~120pt
+        ///      mid-tap, leaving the queued click on empty space.
+        ///   2. After a swipe gesture, ScrollView schedules
+        ///      `PostPointerUpAnimation` (elasticity bounce + inertia) via
+        ///      TimerEventScheduler. That tick fires AFTER the swipe ends and
+        ///      can run DURING the next queued tap, scrolling the content a
+        ///      few points so the click lands on `unity-content-container`.
+        /// Block both: stop WheelEvent at the ScrollView, and clamp the touch
+        /// scroll behaviour so there is no post-pointer-up animation. Manual
+        /// swipe gestures still work because they go through the
+        /// PointerDown/Move/Up path; the content just stops the moment the
+        /// finger lifts.
+        /// </summary>
+        private static void InstallScrollViewE2EHooks(ScrollView mainSv)
+        {
+            mainSv.RegisterCallback<WheelEvent>(
+                e => e.StopImmediatePropagation(),
+                TrickleDown.TrickleDown
+            );
+            mainSv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
+            mainSv.scrollDecelerationRate = 0f;
+            mainSv.elasticity = 0f;
         }
 
         private void WalkAndAdd(VisualElement el)
@@ -358,7 +386,15 @@ namespace OneSignalDemo.Services
             Button => AccessibilityRole.Button,
             Toggle => AccessibilityRole.Toggle,
             OneSignalDemo.UI.SwitchToggle => AccessibilityRole.Toggle,
-            ScrollView => AccessibilityRole.ScrollView,
+            // ScrollView intentionally NOT exposed as AccessibilityRole.ScrollView.
+            // XCUITest's `XCUIElement.tap()` performs an implicit
+            // `scrollToVisible` on the nearest accessibility ancestor that
+            // claims a scrollable role, which under our setup invoked Unity's
+            // ScrollView mid-tap, shifted the entire content by ~120pt, and
+            // made the queued touch land on empty space (root cause of the
+            // "no PointerDown, button moved 120pt" failure on the multiple
+            // trigger test). Test code drives scrolling via raw swipes, so
+            // dropping the role is a no-op for navigation.
             Slider => AccessibilityRole.Slider,
             TextField => AccessibilityRole.SearchField,
             Label => AccessibilityRole.StaticText,
@@ -383,10 +419,50 @@ namespace OneSignalDemo.Services
         private static bool IsVisible(VisualElement el)
         {
             var s = el.resolvedStyle;
-            return el.enabledInHierarchy
-                && s.display != DisplayStyle.None
-                && s.visibility != Visibility.Hidden
-                && s.opacity > 0f;
+            if (!el.enabledInHierarchy
+                || s.display == DisplayStyle.None
+                || s.visibility == Visibility.Hidden
+                || s.opacity <= 0f)
+                return false;
+
+            // An element whose worldBound has been clipped away by an ancestor
+            // ScrollView/clip container is visually invisible. Other SDKs get
+            // this for free because they render through native UIScrollView /
+            // android.widget.ScrollView whose accessibilityFrame already
+            // excludes clipped children. UI Toolkit reports children's panel
+            // coordinates regardless of clip, so we have to intersect here.
+            var visible = ComputeVisibleWorldBound(el);
+            return visible.width > 0f && visible.height > 0f;
+        }
+
+        /// <summary>
+        /// Intersects an element's worldBound with every ancestor that clips
+        /// (ScrollView's contentViewport, or any element with overflow !=
+        /// Visible). Returns Rect.zero when the element is fully clipped.
+        /// </summary>
+        private static Rect ComputeVisibleWorldBound(VisualElement el)
+        {
+            var r = el.worldBound;
+            if (float.IsNaN(r.x) || float.IsNaN(r.y) || r.width <= 0f || r.height <= 0f)
+                return Rect.zero;
+
+            var p = el.hierarchy.parent;
+            while (p != null)
+            {
+                if (p is ScrollView sv)
+                {
+                    var clip = sv.contentViewport.worldBound;
+                    float x = Mathf.Max(r.x, clip.x);
+                    float y = Mathf.Max(r.y, clip.y);
+                    float right = Mathf.Min(r.x + r.width, clip.x + clip.width);
+                    float bottom = Mathf.Min(r.y + r.height, clip.y + clip.height);
+                    if (right <= x || bottom <= y)
+                        return Rect.zero;
+                    r = new Rect(x, y, right - x, bottom - y);
+                }
+                p = p.hierarchy.parent;
+            }
+            return r;
         }
 
         private Rect GetScreenRect(VisualElement el)
@@ -394,43 +470,12 @@ namespace OneSignalDemo.Services
             if (el?.panel == null)
                 return Rect.zero;
 
-            var wb = el.worldBound;
-            if (float.IsNaN(wb.x) || float.IsNaN(wb.y) || wb.width <= 0 || wb.height <= 0)
+            var wb = ComputeVisibleWorldBound(el);
+            if (wb.width <= 0f || wb.height <= 0f)
                 return Rect.zero;
 
             float s = _panelToScreenScale;
-            var rect = new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
-
-            // #region agent log
-#if UNITY_IOS || UNITY_ANDROID
-            if (el.name == "add_multiple_triggers_button" && Time.frameCount % 60 == 0)
-            {
-                // Walk ancestors to find the nearest scroll/clipping container
-                // and report its rect, so we can see whether the button sits
-                // inside or outside the ScrollView's visible viewport.
-                VisualElement clipper = el.hierarchy.parent;
-                while (clipper != null && !(clipper is ScrollView))
-                    clipper = clipper.hierarchy.parent;
-                string clipperJson = "null";
-                if (clipper is ScrollView sv)
-                {
-                    var cwb = sv.contentViewport.worldBound;
-                    clipperJson =
-                        $"{{\"contentViewport\":{{\"x\":{cwb.x:F2},\"y\":{cwb.y:F2},\"w\":{cwb.width:F2},\"h\":{cwb.height:F2}}}}}";
-                }
-                E2EDebugLog.Send(
-                    "AccessibilityBridge.cs:GetScreenRect",
-                    "trigger frame snapshot",
-                    "{\"name\":\"add_multiple_triggers_button\","
-                        + $"\"worldBound\":{{\"x\":{wb.x:F2},\"y\":{wb.y:F2},\"w\":{wb.width:F2},\"h\":{wb.height:F2}}},"
-                        + $"\"screenRect\":{{\"x\":{rect.x:F2},\"y\":{rect.y:F2},\"w\":{rect.width:F2},\"h\":{rect.height:F2}}},"
-                        + $"\"scrollAncestor\":{clipperJson}}}"
-                );
-            }
-#endif
-            // #endregion
-
-            return rect;
+            return new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
         }
     }
 }
