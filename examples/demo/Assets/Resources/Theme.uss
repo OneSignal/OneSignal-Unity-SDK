@@ -178,8 +178,13 @@
 }
 
 .info-button {
-    width: 18px;
-    height: 18px;
+    /* 44px touch target meets the iOS HIG minimum. The Material icon
+       glyph is still rendered at 18px (font-size), centered via text-align,
+       so the button looks unchanged but absorbs small Appium tap-coord
+       drift after ScrollView momentum / accessibility-frame settle. The
+       transparent background keeps it visually identical. */
+    width: 44px;
+    height: 44px;
     background-color: rgba(0, 0, 0, 0);
     color: var(--os-grey-500);
     font-size: 18px;

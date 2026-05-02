@@ -17,8 +17,14 @@ namespace OneSignalDemo.Services
     /// </summary>
     public class AccessibilityBridge : MonoBehaviour
     {
-        // Throttle frame refreshes so scroll/resize don't spam the OS.
-        private const float FrameRefreshIntervalSeconds = 0.25f;
+        // Throttle frame refreshes so scroll/resize don't spam the OS. 50ms
+        // (20 Hz) is short enough that mid-scroll-animation taps land on the
+        // correct element (Appium tap latency is ~80-150ms, so the frame the
+        // test framework reads is at most one tick stale), and long enough
+        // not to overwhelm the platform plugin. At the original 250ms,
+        // frames lagged the live UI badly enough that taps for
+        // send_push_info_icon landed on send_simple_button.
+        private const float FrameRefreshIntervalSeconds = 0.05f;
         // Throttle structural-change polls. Faster than frame refresh because
         // dialog open/close should reach the test framework quickly.
         private const float StructurePollIntervalSeconds = 0.1f;
