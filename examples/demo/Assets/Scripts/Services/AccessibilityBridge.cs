@@ -260,6 +260,7 @@ namespace OneSignalDemo.Services
         {
             Button => AccessibilityRole.Button,
             Toggle => AccessibilityRole.Toggle,
+            OneSignalDemo.UI.SwitchToggle => AccessibilityRole.Toggle,
             ScrollView => AccessibilityRole.ScrollView,
             Slider => AccessibilityRole.Slider,
             TextField => AccessibilityRole.SearchField,
@@ -272,6 +273,11 @@ namespace OneSignalDemo.Services
         {
             TextField tf => tf.value ?? string.Empty,
             Toggle t => t.value ? "1" : "0",
+            // The demo uses a custom SwitchToggle (VisualElement) that does
+            // not inherit from UnityEngine.UIElements.Toggle, so the platform
+            // a11y value would be empty without this case. The selectors
+            // helper reads `value`/`checked` and expects "1"/"0" on iOS.
+            OneSignalDemo.UI.SwitchToggle st => st.Value ? "1" : "0",
             Label l => l.text ?? string.Empty,
             Button b => b.text ?? string.Empty,
             _ => string.Empty,
