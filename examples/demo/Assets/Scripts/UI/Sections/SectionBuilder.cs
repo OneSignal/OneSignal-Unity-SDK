@@ -6,6 +6,15 @@ namespace OneSignalDemo.UI.Sections
 {
     public static class SectionBuilder
     {
+        // Maps info-icon element name (e.g. "send_push_info_icon") to its
+        // onInfoTap action. DialogBase reads this from a panel-root
+        // PointerDown handler to dispatch info-icon taps. UIToolkit's normal
+        // AtTarget dispatch was observed to drop PointerDown on the Label
+        // after iOS Appium injected a mobile:scroll gesture in the same test,
+        // so a root-level dispatch path is used to keep E2E taps reliable.
+        public static readonly System.Collections.Generic.Dictionary<string, Action> InfoTapByName =
+            new System.Collections.Generic.Dictionary<string, Action>();
+
         public static VisualElement CreateSection(
             string title,
             string name,
@@ -26,10 +35,15 @@ namespace OneSignalDemo.UI.Sections
 
             if (onInfoTap != null)
             {
-                var infoBtn = new Button(onInfoTap);
+                // Plain Label (no Button/Clickable manipulator) so PointerDown
+                // dispatch is not affected by manipulator-level pointer
+                // capture. The actual tap handler is wired at the panel root
+                // via InfoTapByName; see DialogBase.HookInfoIconFallback.
+                var infoBtn = new Label(MaterialIcons.Info);
                 infoBtn.name = $"{SectionKeyFromName(name)}_info_icon";
-                infoBtn.text = MaterialIcons.Info;
                 infoBtn.AddToClassList("info-button");
+                infoBtn.pickingMode = PickingMode.Position;
+                InfoTapByName[infoBtn.name] = onInfoTap;
                 header.Add(infoBtn);
             }
 
