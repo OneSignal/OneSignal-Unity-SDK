@@ -39,14 +39,14 @@ namespace OneSignalDemo.UI.Sections
 
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD",
+                    "ADD ALIAS",
                     "add_alias_button",
                     () => OnAddTap?.Invoke()
                 )
             );
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE",
+                    "ADD MULTIPLE ALIASES",
                     "add_multiple_aliases_button",
                     () => OnAddMultipleTap?.Invoke()
                 )

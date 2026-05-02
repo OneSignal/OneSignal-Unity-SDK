@@ -42,14 +42,14 @@ namespace OneSignalDemo.UI.Sections
 
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD",
+                    "ADD TRIGGER",
                     "add_trigger_button",
                     () => OnAddTap?.Invoke()
                 )
             );
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE",
+                    "ADD MULTIPLE TRIGGERS",
                     "add_multiple_triggers_button",
                     () => OnAddMultipleTap?.Invoke()
                 )
