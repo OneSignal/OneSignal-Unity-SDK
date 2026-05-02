@@ -346,7 +346,7 @@ namespace OneSignalDemo.ViewModels
         {
             OneSignal.Session.AddOutcomeWithValue(name, value);
             Debug.Log($"[{Tag}] Outcome sent: {name} = {value}");
-            ShowToast($"Outcome sent: {name}");
+            ShowToast($"Outcome sent: {name} = {value}");
         }
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null)

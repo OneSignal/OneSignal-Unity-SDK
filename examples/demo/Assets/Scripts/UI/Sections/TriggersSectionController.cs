@@ -88,7 +88,7 @@ namespace OneSignalDemo.UI.Sections
 
             if (!hasTriggers)
             {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Triggers Added", "triggers"));
+                _listContainer.Add(SectionBuilder.CreateEmptyState("No triggers added", "triggers"));
                 return;
             }
 

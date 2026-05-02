@@ -23,6 +23,9 @@ namespace OneSignalDemo.UI
             _container.AddToClassList("toast-container");
 
             var label = new Label(message);
+            // Surface the message text to iOS accessibility so Appium's
+            // `label/name/value == "..."` predicate can locate the toast.
+            label.name = message;
             label.AddToClassList("toast-label");
             _container.Add(label);
 
