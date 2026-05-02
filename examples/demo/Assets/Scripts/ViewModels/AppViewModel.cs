@@ -116,7 +116,7 @@ namespace OneSignalDemo.ViewModels
             _appId = IsE2EMode ? MaskValue(rawAppId) : rawAppId;
             _consentRequired = _prefs.ConsentRequired;
             _privacyConsentGiven = _prefs.PrivacyConsent;
-            _inAppMessagesPaused = OneSignal.InAppMessages.Paused;
+            _inAppMessagesPaused = _prefs.IamPaused;
             _locationShared = OneSignal.Location.IsShared;
             _externalUserId = _prefs.ExternalUserId;
 
