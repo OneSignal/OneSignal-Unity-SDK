@@ -45,6 +45,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             var addRowButton = new Button(AddRow);
             addRowButton.name = "multipair_add_row_button";
+            RegisterNamedTap(addRowButton.name, AddRow);
             addRowButton.AddToClassList("dialog-add-row-button");
             var addIcon = new Label(MaterialIcons.Add);
             addIcon.AddToClassList("dialog-add-row-icon");

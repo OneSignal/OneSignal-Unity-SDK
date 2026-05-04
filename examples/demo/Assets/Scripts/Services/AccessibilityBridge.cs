@@ -1,6 +1,9 @@
 #if UNITY_IOS || UNITY_ANDROID
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using OneSignalDemo.UI.Dialogs;
+using OneSignalDemo.UI.Sections;
 using UnityEngine;
 using UnityEngine.Accessibility;
 using UnityEngine.UIElements;
@@ -24,6 +27,7 @@ namespace OneSignalDemo.Services
         // raise GeometryChangedEvent — animation curves, opacity tweens, and
         // value mutations on TextField/Toggle/Label.
         private const float FrameRefreshIntervalSeconds = 0.05f;
+        private const int NamedTapFallbackDelayMs = 50;
         // Backstop structural poll. The hot path is DetachFromPanelEvent
         // (per node, see WalkAndAdd) which schedules an immediate resync the
         // moment a tracked element leaves the tree. The timer catches
@@ -43,15 +47,30 @@ namespace OneSignalDemo.Services
         private int _lastNamedDescendantCount = -1;
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
+        private readonly EventCallback<PointerDownEvent> _onNamedTapPointerDown;
         // Set true after the one-shot ScrollView taming hooks (WheelEvent
         // block + clamp settings) are installed; BuildHierarchy can fire many
         // times per session and we only want one subscription.
         private bool _scrollViewHooksInstalled;
+        // E2E only: cached ScrollView ref + stale-capture watchdog. A self-
+        // destroying child (e.g. triggers_remove) can leave ScrollView's
+        // pending-capture latch set because the matching PointerUp is dropped
+        // when its target detaches mid-touch. The next unrelated pointer event
+        // is then interpreted as a continuation of the prior drag, scrolling
+        // the content out from under the test's tap. We reset the latch via
+        // reflection if no pointer activity is observed for a short window.
+        private ScrollView _mainSv;
+        private double _lastTouchActivityMs = -1.0;
+        private const double StalePointerCaptureWindowMs = 200.0;
+        private static System.Reflection.FieldInfo _svPointerCaptureScheduledField;
+        private static System.Reflection.FieldInfo _svPressedField;
+        private static bool _svReflectionResolved;
 
         public AccessibilityBridge()
         {
             _onGeometryChanged = _ => ScheduleFrameRefresh();
             _onDetachFromPanel = _ => ScheduleResync();
+            _onNamedTapPointerDown = OnNamedTapPointerDown;
         }
 
         // Empirically, Unity's iOS accessibility plugin treats the Rect we
@@ -122,7 +141,10 @@ namespace OneSignalDemo.Services
         private void UnregisterTreeCallbacks()
         {
             if (_root != null)
+            {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
+                _root.UnregisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
+            }
             foreach (var el in _map.Keys)
                 el.UnregisterCallback(_onDetachFromPanel);
         }
@@ -153,6 +175,17 @@ namespace OneSignalDemo.Services
             // refresh — every test-relevant mutation creates or removes named
             // VisualElements. Avoids hot event hooks during layout.
             _structurePollTimer += Time.unscaledDeltaTime;
+            // Stale-pointer-capture watchdog: see field comment for context.
+            if (_lastTouchActivityMs > 0.0)
+            {
+                double now = Time.realtimeSinceStartupAsDouble * 1000.0;
+                if (now - _lastTouchActivityMs > StalePointerCaptureWindowMs)
+                {
+                    ResetScrollViewPanState(_mainSv);
+                    _lastTouchActivityMs = -1.0;
+                }
+            }
+
             if (_structurePollTimer >= StructurePollIntervalSeconds)
             {
                 _structurePollTimer = 0f;
@@ -269,6 +302,7 @@ namespace OneSignalDemo.Services
             // a tap fired immediately after a scroll sees fresh frames
             // instead of a 50ms-stale snapshot.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
+            _root.RegisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
 
             // One-shot ScrollView taming: BuildHierarchy can run dozens of
             // times per session (every dialog open/close, every section
@@ -280,6 +314,7 @@ namespace OneSignalDemo.Services
                 var mainSv = _root.Q<ScrollView>("main_scroll_view");
                 if (mainSv != null)
                 {
+                    _mainSv = mainSv;
                     InstallScrollViewE2EHooks(mainSv);
                     _scrollViewHooksInstalled = true;
                 }
@@ -296,16 +331,44 @@ namespace OneSignalDemo.Services
                     + $"Active={AssistiveSupport.activeHierarchy != null}, "
                     + $"ScreenReader={AssistiveSupport.isScreenReaderEnabled}"
             );
-
-            var sample = new System.Text.StringBuilder("[A11yBridge] Names: ");
-            int i = 0;
-            foreach (var kvp in _map)
-            {
-                if (i++ > 0) sample.Append(", ");
-                sample.Append(kvp.Key.name);
-            }
-            Debug.Log(sample.ToString());
         }
+
+        private void OnNamedTapPointerDown(PointerDownEvent e)
+        {
+            var target = FindNamedTapTarget(e.target as VisualElement, out var action);
+            if (target == null || action == null)
+                return;
+
+            e.StopImmediatePropagation();
+            e.PreventDefault();
+
+            target.schedule.Execute(() =>
+            {
+                if (target.panel == null || !target.enabledInHierarchy || !IsVisible(target))
+                    return;
+                action();
+                ScheduleResync();
+            }).StartingIn(NamedTapFallbackDelayMs);
+        }
+
+        private VisualElement FindNamedTapTarget(VisualElement target, out Action action)
+        {
+            action = null;
+            for (var current = target; current != null; current = current.hierarchy.parent)
+            {
+                if (!current.enabledInHierarchy || !IsVisible(current))
+                    continue;
+                if (TryGetNamedTapAction(current.name, out action))
+                    return current;
+                if (current == _root)
+                    break;
+            }
+            return null;
+        }
+
+        private static bool TryGetNamedTapAction(string name, out Action action) =>
+            SectionBuilder.TryGetNamedTapAction(name, out action)
+            || DialogBase.TryGetNamedTapAction(name, out action);
 
         /// <summary>
         /// Tames the main ScrollView so XCUITest taps land deterministically
@@ -328,15 +391,73 @@ namespace OneSignalDemo.Services
         /// PointerDown/Move/Up path; the content just stops the moment the
         /// finger lifts.
         /// </summary>
-        private static void InstallScrollViewE2EHooks(ScrollView mainSv)
+        private void InstallScrollViewE2EHooks(ScrollView mainSv)
         {
             mainSv.RegisterCallback<WheelEvent>(
                 e => e.StopImmediatePropagation(),
                 TrickleDown.TrickleDown
             );
+            // Touch-activity watchdog: any real Down/Move/Up resets the timer.
+            // The Update tick clears ScrollView's stuck pan-capture latch if no
+            // touch event arrives within StalePointerCaptureWindowMs after a
+            // Down — that's the only way the latch can outlive a self-
+            // destroying child whose PointerUp is dropped by the dispatcher.
+            mainSv.RegisterCallback<PointerDownEvent>(
+                e =>
+                {
+                    _lastTouchActivityMs = Time.realtimeSinceStartupAsDouble * 1000.0;
+                },
+                TrickleDown.TrickleDown
+            );
+            mainSv.RegisterCallback<PointerMoveEvent>(
+                e =>
+                {
+                    _lastTouchActivityMs = Time.realtimeSinceStartupAsDouble * 1000.0;
+                },
+                TrickleDown.TrickleDown
+            );
+            mainSv.RegisterCallback<PointerUpEvent>(
+                e =>
+                {
+                    _lastTouchActivityMs = -1.0;
+                },
+                TrickleDown.TrickleDown
+            );
             mainSv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
             mainSv.scrollDecelerationRate = 0f;
             mainSv.elasticity = 0f;
+        }
+
+        // Reflection-based reset for ScrollView's stuck pan-capture latches.
+        // We deliberately only clear m_PointerCaptureScheduled and m_Pressed —
+        // those represent "a touch is currently captured / pending capture",
+        // which is the state we need to release when a child detaches mid-
+        // touch and PointerUp never arrives. m_TouchPointerMoveAllowed is per-
+        // gesture state owned by PointerDown/PointerUp; clearing it here
+        // disables touch scrolling for the *next* swipe, since iOS XCUITest
+        // sometimes drops PointerUp on the ScrollView and the watchdog ends
+        // up running mid-swipe with that flag set true. Leave it alone so the
+        // next swipe's PointerDown can manage it normally.
+        // Field names match Unity 2022+ UI Toolkit; resolve once and cache.
+        private static void ResetScrollViewPanState(ScrollView sv)
+        {
+            if (sv == null) return;
+            if (!_svReflectionResolved)
+            {
+                var t = typeof(ScrollView);
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                _svPointerCaptureScheduledField = t.GetField("m_PointerCaptureScheduled", flags);
+                _svPressedField = t.GetField("m_Pressed", flags);
+                _svReflectionResolved = true;
+            }
+            try
+            {
+                _svPointerCaptureScheduledField?.SetValue(sv, false);
+                _svPressedField?.SetValue(sv, false);
+            }
+            catch
+            {
+            }
         }
 
         private void WalkAndAdd(VisualElement el)

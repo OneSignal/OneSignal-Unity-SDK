@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine.UIElements;
 
@@ -16,6 +17,28 @@ namespace OneSignalDemo.UI.Dialogs
         // from the panel root sidesteps whatever state breaks normal
         // dispatch and keeps E2E taps reliable.
         private static bool _infoFallbackHooked;
+        private static readonly Dictionary<string, Action> TapByName =
+            new Dictionary<string, Action>();
+
+        public static bool TryGetNamedTapAction(string name, out Action action)
+        {
+            action = null;
+            if (string.IsNullOrEmpty(name))
+                return false;
+            return TapByName.TryGetValue(name, out action);
+        }
+
+        protected static void RegisterNamedTap(string name, Action action)
+        {
+            if (!string.IsNullOrEmpty(name) && action != null)
+                TapByName[name] = action;
+        }
+
+        private static void RegisterNamedTap(Button button, Action action)
+        {
+            button.RegisterCallback<AttachToPanelEvent>(_ => RegisterNamedTap(button.name, action));
+        }
+
         private static void HookInfoIconFallback(VisualElement parent)
         {
             if (_infoFallbackHooked) return;
@@ -130,15 +153,18 @@ namespace OneSignalDemo.UI.Dialogs
             btn.text = text;
             btn.AddToClassList("dialog-confirm-button");
             btn.AddToClassList("text-dialog-action");
+            RegisterNamedTap(btn, onClick);
             return btn;
         }
 
         protected Button CreateCancelButton(string text = "Cancel")
         {
-            var btn = new Button(Dismiss);
+            Action dismiss = Dismiss;
+            var btn = new Button(dismiss);
             btn.text = text;
             btn.AddToClassList("dialog-cancel-button");
             btn.AddToClassList("text-dialog-action");
+            RegisterNamedTap(btn, dismiss);
             return btn;
         }
     }
