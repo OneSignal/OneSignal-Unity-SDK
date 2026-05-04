@@ -21,12 +21,16 @@ namespace OneSignalDemo.UI
 
             _container = new VisualElement();
             _container.AddToClassList("toast-container");
+            // The container and label must be Ignore so UI Toolkit picking
+            // does not see them — the bottom-of-screen toast overlaps the
+            // action buttons most tests tap right after the toast appears,
+            // and without Ignore the empty horizontal slack of the centered
+            // container swallowed the next tap.
+            _container.pickingMode = PickingMode.Ignore;
 
             var label = new Label(message);
-            // Surface the message text to iOS accessibility so Appium's
-            // `label/name/value == "..."` predicate can locate the toast.
-            label.name = message;
             label.AddToClassList("toast-label");
+            label.pickingMode = PickingMode.Ignore;
             _container.Add(label);
 
             _root.Add(_container);
