@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OneSignalDemo.Services;
 using OneSignalDemo.UI;
 using UnityEngine.UIElements;
 
@@ -15,18 +16,6 @@ namespace OneSignalDemo.UI.Sections
         // so a root-level dispatch path is used to keep E2E taps reliable.
         public static readonly Dictionary<string, Action> InfoTapByName =
             new Dictionary<string, Action>();
-        private static readonly Dictionary<string, Action> TapByName =
-            new Dictionary<string, Action>();
-
-        public static bool TryGetNamedTapAction(string name, out Action action)
-        {
-            action = null;
-            if (string.IsNullOrEmpty(name))
-                return false;
-            if (!string.IsNullOrEmpty(name) && TapByName.TryGetValue(name, out action))
-                return true;
-            return InfoTapByName.TryGetValue(name, out action);
-        }
 
         public static VisualElement CreateSection(
             string title,
@@ -35,13 +24,13 @@ namespace OneSignalDemo.UI.Sections
         )
         {
             var section = new VisualElement();
-            section.name = name;
             section.AddToClassList("section-container");
 
             var header = new VisualElement();
             header.AddToClassList("section-header");
 
             var titleLabel = new Label(title.ToUpperInvariant());
+            titleLabel.name = name;
             titleLabel.AddToClassList("section-title");
             titleLabel.AddToClassList("text-section-header");
             header.Add(titleLabel);
@@ -57,6 +46,11 @@ namespace OneSignalDemo.UI.Sections
                 infoBtn.AddToClassList("info-button");
                 infoBtn.pickingMode = PickingMode.Position;
                 InfoTapByName[infoBtn.name] = onInfoTap;
+                AccessibilityBridge.RegisterE2ETapFallback(
+                    infoBtn,
+                    () => infoBtn.panel?.visualTree.Q("tooltip_title") == null,
+                    onInfoTap
+                );
                 header.Add(infoBtn);
             }
 
@@ -117,7 +111,6 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("primary-button");
-            RegisterNamedTap(name, onClick);
             return btn;
         }
 
@@ -127,7 +120,6 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("destructive-button");
-            RegisterNamedTap(name, onClick);
             return btn;
         }
 
@@ -174,12 +166,10 @@ namespace OneSignalDemo.UI.Sections
             {
                 var deleteBtn = new Button(onDelete);
                 if (sectionKey != null && itemKey != null)
-                {
                     deleteBtn.name = $"{sectionKey}_remove_{itemKey}";
-                    RegisterNamedTap(deleteBtn.name, onDelete);
-                }
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
+            AccessibilityBridge.RegisterE2ETapFallback(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 
@@ -232,12 +222,10 @@ namespace OneSignalDemo.UI.Sections
             {
                 var deleteBtn = new Button(onDelete);
                 if (sectionKey != null)
-                {
                     deleteBtn.name = $"{sectionKey}_remove_{value}";
-                    RegisterNamedTap(deleteBtn.name, onDelete);
-                }
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
+            AccessibilityBridge.RegisterE2ETapFallback(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 
@@ -267,11 +255,5 @@ namespace OneSignalDemo.UI.Sections
             name != null && name.EndsWith("_section")
                 ? name.Substring(0, name.Length - "_section".Length)
                 : name;
-
-        private static void RegisterNamedTap(string name, Action action)
-        {
-            if (!string.IsNullOrEmpty(name) && action != null)
-                TapByName[name] = action;
-        }
     }
 }

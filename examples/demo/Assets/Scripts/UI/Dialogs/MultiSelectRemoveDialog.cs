@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OneSignalDemo.Services;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
@@ -11,7 +13,9 @@ namespace OneSignalDemo.UI.Dialogs
         private readonly List<KeyValuePair<string, string>> _items;
         private readonly Action<List<string>> _onConfirm;
         private readonly Dictionary<string, Toggle> _toggles = new();
+        private readonly Dictionary<string, double> _lastToggleChangeMs = new();
         private Button _confirmButton;
+        private const double ToggleDedupeMs = 500.0;
 
         public MultiSelectRemoveDialog(
             string title,
@@ -40,6 +44,8 @@ namespace OneSignalDemo.UI.Dialogs
                 toggle.name = $"remove_checkbox_{item.Key}";
                 toggle.RegisterValueChangedCallback(evt =>
                 {
+                    _lastToggleChangeMs[item.Key] =
+                        Time.realtimeSinceStartupAsDouble * 1000.0;
                     toggle.EnableInClassList("checkbox--checked", evt.newValue);
                     UpdateCount();
                 });
@@ -51,6 +57,16 @@ namespace OneSignalDemo.UI.Dialogs
                 row.Add(label);
 
                 _toggles[item.Key] = toggle;
+                AccessibilityBridge.RegisterE2ETapFallback(
+                    row,
+                    () => toggle.enabledInHierarchy,
+                    () => ToggleSelection(item.Key, toggle)
+                );
+                AccessibilityBridge.RegisterE2ETapFallback(
+                    toggle,
+                    () => toggle.enabledInHierarchy,
+                    () => ToggleSelection(item.Key, toggle)
+                );
                 container.Add(row);
             }
 
@@ -72,6 +88,18 @@ namespace OneSignalDemo.UI.Dialogs
             int count = _toggles.Values.Count(t => t.value);
             _confirmButton.text = $"Remove ({count})";
             _confirmButton.SetEnabled(count > 0);
+        }
+
+        private void ToggleSelection(string key, Toggle toggle)
+        {
+            double now = Time.realtimeSinceStartupAsDouble * 1000.0;
+            if (_lastToggleChangeMs.TryGetValue(key, out var last) && now - last < ToggleDedupeMs)
+                return;
+
+            _lastToggleChangeMs[key] = now;
+            toggle.value = !toggle.value;
+            toggle.EnableInClassList("checkbox--checked", toggle.value);
+            UpdateCount();
         }
 
         private void OnConfirm()
