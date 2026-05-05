@@ -2,8 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using OneSignalDemo.UI.Dialogs;
-using OneSignalDemo.UI.Sections;
 using UnityEngine;
 using UnityEngine.Accessibility;
 using UnityEngine.UIElements;
@@ -27,7 +25,12 @@ namespace OneSignalDemo.Services
         // raise GeometryChangedEvent — animation curves, opacity tweens, and
         // value mutations on TextField/Toggle/Label.
         private const float FrameRefreshIntervalSeconds = 0.05f;
-        private const int NamedTapFallbackDelayMs = 50;
+        private const float TapMarkerSize = 28f;
+        private const int MaxTapMarkers = 40;
+        private const float E2ETapMoveTolerance = 12f;
+        private const int E2ETapDelayMs = 120;
+        private const float ScrollOffsetEpsilon = 0.5f;
+        private const double ScrollSettleLayoutChangeDelayMs = 150.0;
         // Backstop structural poll. The hot path is DetachFromPanelEvent
         // (per node, see WalkAndAdd) which schedules an immediate resync the
         // moment a tracked element leaves the tree. The timer catches
@@ -36,6 +39,7 @@ namespace OneSignalDemo.Services
         private const float StructurePollIntervalSeconds = 0.1f;
 
         private static AccessibilityBridge _instance;
+        private static readonly List<E2ETapTarget> E2ETapTargets = new();
 
         private VisualElement _root;
         private AccessibilityHierarchy _hierarchy;
@@ -45,9 +49,21 @@ namespace OneSignalDemo.Services
         private float _frameRefreshTimer;
         private float _structurePollTimer;
         private int _lastNamedDescendantCount = -1;
+        private int _tapMarkerCount;
+        private VisualElement _tapMarkerOverlay;
+        private Vector2 _lastScrollOffset;
+        private double _lastScrollChangeMs = -1.0;
+        private bool _scrollLayoutChangePending;
+        private bool _pendingE2ETap;
+        private int _pendingE2ETapPointerId;
+        private float _pendingE2ETapMoveTolerance;
+        private Vector2 _pendingE2ETapStart;
+        private Action _pendingE2ETapAction;
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
         private readonly EventCallback<PointerDownEvent> _onNamedTapPointerDown;
+        private readonly EventCallback<PointerMoveEvent> _onE2ETapPointerMove;
+        private readonly EventCallback<PointerCancelEvent> _onE2ETapPointerCancel;
         // Set true after the one-shot ScrollView taming hooks (WheelEvent
         // block + clamp settings) are installed; BuildHierarchy can fire many
         // times per session and we only want one subscription.
@@ -71,6 +87,8 @@ namespace OneSignalDemo.Services
             _onGeometryChanged = _ => ScheduleFrameRefresh();
             _onDetachFromPanel = _ => ScheduleResync();
             _onNamedTapPointerDown = OnNamedTapPointerDown;
+            _onE2ETapPointerMove = OnE2ETapPointerMove;
+            _onE2ETapPointerCancel = _ => _pendingE2ETap = false;
         }
 
         // Empirically, Unity's iOS accessibility plugin treats the Rect we
@@ -91,15 +109,9 @@ namespace OneSignalDemo.Services
         public static void EnableForE2E(VisualElement root)
         {
             if (root == null)
-            {
-                Debug.Log("[A11yBridge] EnableForE2E: root is null, skipping");
                 return;
-            }
             if (!DotEnv.IsE2EMode)
-            {
-                Debug.Log("[A11yBridge] EnableForE2E: E2E_MODE not set, skipping");
                 return;
-            }
 
             if (_instance == null)
             {
@@ -109,6 +121,38 @@ namespace OneSignalDemo.Services
             }
 
             _instance.Initialize(root);
+        }
+
+        public static void RegisterE2ETapFallback(
+            VisualElement target,
+            Func<bool> isEnabled,
+            Action action
+        ) => RegisterE2ETapFallback(target, isEnabled, action, E2ETapMoveTolerance);
+
+        public static void RegisterE2ETapFallback(
+            VisualElement target,
+            Func<bool> isEnabled,
+            Action action,
+            float moveTolerance
+        )
+        {
+            if (target == null || action == null)
+                return;
+
+            E2ETapTargets.RemoveAll(t => t.Target == target);
+            E2ETapTargets.Add(
+                new E2ETapTarget(target, isEnabled ?? (() => true), action, moveTolerance)
+            );
+        }
+
+        public static void RequestResync()
+        {
+            _instance?.ScheduleResync();
+        }
+
+        public static void RequestImmediateResync()
+        {
+            _instance?.BuildHierarchy();
         }
 
         private void Initialize(VisualElement root)
@@ -144,6 +188,8 @@ namespace OneSignalDemo.Services
             {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
                 _root.UnregisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
+                _root.UnregisterCallback(_onE2ETapPointerMove, TrickleDown.TrickleDown);
+                _root.UnregisterCallback(_onE2ETapPointerCancel, TrickleDown.TrickleDown);
             }
             foreach (var el in _map.Keys)
                 el.UnregisterCallback(_onDetachFromPanel);
@@ -185,6 +231,7 @@ namespace OneSignalDemo.Services
                     _lastTouchActivityMs = -1.0;
                 }
             }
+            RefreshScrollAccessibilityState();
 
             if (_structurePollTimer >= StructurePollIntervalSeconds)
             {
@@ -210,37 +257,26 @@ namespace OneSignalDemo.Services
             if (_frameRefreshTimer >= FrameRefreshIntervalSeconds)
             {
                 _frameRefreshTimer = 0f;
-                bool valueDirty = false;
-                foreach (var kvp in _map)
-                {
-                    var el = kvp.Key;
-                    var node = kvp.Value;
-                    var newValue = ExtractValue(el);
-                    var newActive = IsVisible(el);
-                    bool valueChanged = node.value != newValue;
-                    bool activeChanged = node.isActive != newActive;
-                    if (valueChanged || activeChanged)
-                    {
-                        // In-place mutation. The visibility flip is enough for
-                        // XCUITest because GetScreenRect already returns
-                        // (0,0,0,0) for clipped elements, which iOS reports as
-                        // hittable=false. We MUST NOT call ScheduleResync on
-                        // active-only flips: every scroll moves elements into
-                        // and out of the ScrollView viewport, and a republish
-                        // (SendScreenChanged) issued mid-tap makes iOS drop
-                        // the pending touch — that was the root cause of the
-                        // "no PointerDown, button moved 120pt" failure.
-                        node.value = newValue;
-                        node.isActive = newActive;
-                        if (valueChanged)
-                            valueDirty = true;
-                    }
-                }
+                RefreshNodeValuesAndActive();
                 _hierarchy.RefreshNodeFrames();
-                if (valueDirty)
-                    ScheduleResync();
-                else
-                    AssistiveSupport.notificationDispatcher?.SendLayoutChanged();
+            }
+        }
+
+        private void RefreshNodeValuesAndActive()
+        {
+            foreach (var kvp in _map)
+            {
+                var el = kvp.Key;
+                var node = kvp.Value;
+                var newValue = ExtractValue(el);
+                var newActive = IsVisible(el);
+                bool valueChanged = node.value != newValue;
+                bool activeChanged = node.isActive != newActive;
+                if (!valueChanged && !activeChanged)
+                    continue;
+
+                node.value = newValue;
+                node.isActive = newActive;
             }
         }
 
@@ -284,6 +320,7 @@ namespace OneSignalDemo.Services
             if (_root == null)
                 return;
 
+            EnsureTapMarkerOverlay();
             UnregisterTreeCallbacks();
 
             _hierarchy ??= new AccessibilityHierarchy();
@@ -303,6 +340,8 @@ namespace OneSignalDemo.Services
             // instead of a 50ms-stale snapshot.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
             _root.RegisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
+            _root.RegisterCallback(_onE2ETapPointerMove, TrickleDown.TrickleDown);
+            _root.RegisterCallback(_onE2ETapPointerCancel, TrickleDown.TrickleDown);
 
             // One-shot ScrollView taming: BuildHierarchy can run dozens of
             // times per session (every dialog open/close, every section
@@ -315,60 +354,168 @@ namespace OneSignalDemo.Services
                 if (mainSv != null)
                 {
                     _mainSv = mainSv;
+                    _lastScrollOffset = mainSv.scrollOffset;
+                    _lastScrollChangeMs = -1.0;
+                    _scrollLayoutChangePending = false;
                     InstallScrollViewE2EHooks(mainSv);
                     _scrollViewHooksInstalled = true;
                 }
             }
 
             WalkAndAdd(_root);
+            _lastNamedDescendantCount = CountNamedDescendants(_root);
 
             AssistiveSupport.activeHierarchy = _hierarchy;
             AssistiveSupport.notificationDispatcher?.SendScreenChanged();
             _hierarchy.RefreshNodeFrames();
-
-            Debug.Log(
-                $"[A11yBridge] Built hierarchy with {_map.Count} named nodes. "
-                    + $"Active={AssistiveSupport.activeHierarchy != null}, "
-                    + $"ScreenReader={AssistiveSupport.isScreenReaderEnabled}"
-            );
         }
 
         private void OnNamedTapPointerDown(PointerDownEvent e)
         {
-            var target = FindNamedTapTarget(e.target as VisualElement, out var action);
-            if (target == null || action == null)
+            var position = new Vector2(e.position.x, e.position.y);
+            AddTapMarker(position);
+
+            if (!TryGetE2ETapTarget(position, out var target))
                 return;
 
-            e.StopImmediatePropagation();
-            e.PreventDefault();
-
-            target.schedule.Execute(() =>
+            if (target.MoveTolerance < 0f)
             {
-                if (target.panel == null || !target.enabledInHierarchy || !IsVisible(target))
-                    return;
-                action();
-                ScheduleResync();
-            }).StartingIn(NamedTapFallbackDelayMs);
-        }
-
-        private VisualElement FindNamedTapTarget(VisualElement target, out Action action)
-        {
-            action = null;
-            for (var current = target; current != null; current = current.hierarchy.parent)
-            {
-                if (!current.enabledInHierarchy || !IsVisible(current))
-                    continue;
-                if (TryGetNamedTapAction(current.name, out action))
-                    return current;
-                if (current == _root)
-                    break;
+                target.Action();
+                return;
             }
-            return null;
+
+            _pendingE2ETap = true;
+            _pendingE2ETapPointerId = e.pointerId;
+            _pendingE2ETapMoveTolerance = target.MoveTolerance;
+            _pendingE2ETapStart = position;
+            _pendingE2ETapAction = target.Action;
+            _root.schedule.Execute(() =>
+            {
+                if (!_pendingE2ETap)
+                    return;
+                _pendingE2ETap = false;
+                _pendingE2ETapAction?.Invoke();
+            }).StartingIn(E2ETapDelayMs);
         }
 
-        private static bool TryGetNamedTapAction(string name, out Action action) =>
-            SectionBuilder.TryGetNamedTapAction(name, out action)
-            || DialogBase.TryGetNamedTapAction(name, out action);
+        private void OnE2ETapPointerMove(PointerMoveEvent e)
+        {
+            if (!_pendingE2ETap || _pendingE2ETapPointerId != e.pointerId)
+                return;
+
+            var position = new Vector2(e.position.x, e.position.y);
+            if (Vector2.Distance(position, _pendingE2ETapStart) > _pendingE2ETapMoveTolerance)
+                _pendingE2ETap = false;
+        }
+
+        private static bool TryGetE2ETapTarget(Vector2 position, out E2ETapTarget matchedTarget)
+        {
+            matchedTarget = null;
+            for (int i = E2ETapTargets.Count - 1; i >= 0; i--)
+            {
+                var target = E2ETapTargets[i];
+                if (target.Target == null)
+                {
+                    E2ETapTargets.RemoveAt(i);
+                    continue;
+                }
+
+                if (target.Target.panel == null)
+                    continue;
+
+                if (!target.IsEnabled() || !target.Target.worldBound.Contains(position))
+                    continue;
+
+                matchedTarget = target;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void RefreshScrollAccessibilityState()
+        {
+            if (_mainSv == null || _hierarchy == null)
+                return;
+
+            var scrollOffset = _mainSv.scrollOffset;
+            if ((scrollOffset - _lastScrollOffset).sqrMagnitude > ScrollOffsetEpsilon * ScrollOffsetEpsilon)
+            {
+                _lastScrollOffset = scrollOffset;
+                _lastScrollChangeMs = Time.realtimeSinceStartupAsDouble * 1000.0;
+                _scrollLayoutChangePending = true;
+                RefreshNodeValuesAndActive();
+                _hierarchy.RefreshNodeFrames();
+                return;
+            }
+
+            if (!_scrollLayoutChangePending || _lastScrollChangeMs < 0.0)
+                return;
+
+            double now = Time.realtimeSinceStartupAsDouble * 1000.0;
+            if (now - _lastScrollChangeMs < ScrollSettleLayoutChangeDelayMs)
+                return;
+
+            _scrollLayoutChangePending = false;
+            _hierarchy.RefreshNodeFrames();
+        }
+
+        private void EnsureTapMarkerOverlay()
+        {
+            if (_tapMarkerOverlay?.panel != null)
+                return;
+
+            var mainSv = _root.Q<ScrollView>("main_scroll_view");
+            var parent = mainSv?.contentContainer ?? _root;
+
+            _tapMarkerOverlay = new VisualElement();
+            _tapMarkerOverlay.pickingMode = PickingMode.Ignore;
+            _tapMarkerOverlay.style.position = Position.Absolute;
+            _tapMarkerOverlay.style.left = 0;
+            _tapMarkerOverlay.style.top = 0;
+            _tapMarkerOverlay.style.right = 0;
+            _tapMarkerOverlay.style.bottom = 0;
+            parent.Add(_tapMarkerOverlay);
+        }
+
+        private void AddTapMarker(Vector2 position)
+        {
+            EnsureTapMarkerOverlay();
+            var localPosition = _tapMarkerOverlay.WorldToLocal(position);
+
+            var marker = new VisualElement();
+            marker.pickingMode = PickingMode.Ignore;
+            marker.style.position = Position.Absolute;
+            marker.style.width = TapMarkerSize;
+            marker.style.height = TapMarkerSize;
+            marker.style.left = localPosition.x - TapMarkerSize / 2f;
+            marker.style.top = localPosition.y - TapMarkerSize / 2f;
+            marker.style.borderTopLeftRadius = TapMarkerSize / 2f;
+            marker.style.borderTopRightRadius = TapMarkerSize / 2f;
+            marker.style.borderBottomLeftRadius = TapMarkerSize / 2f;
+            marker.style.borderBottomRightRadius = TapMarkerSize / 2f;
+            marker.style.borderTopWidth = 2;
+            marker.style.borderRightWidth = 2;
+            marker.style.borderBottomWidth = 2;
+            marker.style.borderLeftWidth = 2;
+            var markerColor = new Color(0.55f, 0f, 1f, 1f);
+            marker.style.borderTopColor = markerColor;
+            marker.style.borderRightColor = markerColor;
+            marker.style.borderBottomColor = markerColor;
+            marker.style.borderLeftColor = markerColor;
+            marker.style.backgroundColor = new Color(0.55f, 0f, 1f, 0.18f);
+
+            var label = new Label((++_tapMarkerCount).ToString());
+            label.pickingMode = PickingMode.Ignore;
+            label.style.unityTextAlign = TextAnchor.MiddleCenter;
+            label.style.color = markerColor;
+            label.style.fontSize = 10;
+            marker.Add(label);
+
+            _tapMarkerOverlay.Add(marker);
+            while (_tapMarkerOverlay.childCount > MaxTapMarkers)
+                _tapMarkerOverlay.RemoveAt(0);
+        }
 
         /// <summary>
         /// Tames the main ScrollView so XCUITest taps land deterministically
@@ -474,13 +621,7 @@ namespace OneSignalDemo.Services
             // up by name, so containment doesn't affect reachability.
             if (!string.IsNullOrEmpty(el.name))
             {
-                if (_map.ContainsKey(el))
-                {
-                    Debug.LogWarning(
-                        $"[A11yBridge] Duplicate element registered for name '{el.name}'; skipping"
-                    );
-                }
-                else
+                if (!_map.ContainsKey(el))
                 {
                     var node = _hierarchy.AddNode(el.name, parent: null);
                     var captured = el;
@@ -502,26 +643,32 @@ namespace OneSignalDemo.Services
                 WalkAndAdd(el[i]);
         }
 
-        private static AccessibilityRole MapRole(VisualElement el) => el switch
+        private static AccessibilityRole MapRole(VisualElement el)
         {
-            Button => AccessibilityRole.Button,
-            Toggle => AccessibilityRole.Toggle,
-            OneSignalDemo.UI.SwitchToggle => AccessibilityRole.Toggle,
-            // ScrollView intentionally NOT exposed as AccessibilityRole.ScrollView.
-            // XCUITest's `XCUIElement.tap()` performs an implicit
-            // `scrollToVisible` on the nearest accessibility ancestor that
-            // claims a scrollable role, which under our setup invoked Unity's
-            // ScrollView mid-tap, shifted the entire content by ~120pt, and
-            // made the queued touch land on empty space (root cause of the
-            // "no PointerDown, button moved 120pt" failure on the multiple
-            // trigger test). Test code drives scrolling via raw swipes, so
-            // dropping the role is a no-op for navigation.
-            Slider => AccessibilityRole.Slider,
-            TextField => AccessibilityRole.SearchField,
-            Label => AccessibilityRole.StaticText,
-            Image => AccessibilityRole.Image,
-            _ => AccessibilityRole.None,
-        };
+            if (IsSectionAnchor(el))
+                return AccessibilityRole.StaticText;
+
+            return el switch
+            {
+                Button => AccessibilityRole.Button,
+                Toggle => AccessibilityRole.Toggle,
+                OneSignalDemo.UI.SwitchToggle => AccessibilityRole.Toggle,
+                // ScrollView intentionally NOT exposed as AccessibilityRole.ScrollView.
+                // XCUITest's `XCUIElement.tap()` performs an implicit
+                // `scrollToVisible` on the nearest accessibility ancestor that
+                // claims a scrollable role, which under our setup invoked Unity's
+                // ScrollView mid-tap, shifted the entire content by ~120pt, and
+                // made the queued touch land on empty space (root cause of the
+                // "no PointerDown, button moved 120pt" failure on the multiple
+                // trigger test). Test code drives scrolling via raw swipes, so
+                // dropping the role is a no-op for navigation.
+                Slider => AccessibilityRole.Slider,
+                TextField => AccessibilityRole.SearchField,
+                Label => AccessibilityRole.StaticText,
+                Image => AccessibilityRole.Image,
+                _ => AccessibilityRole.None,
+            };
+        }
 
         private static string ExtractValue(VisualElement el) => el switch
         {
@@ -546,13 +693,16 @@ namespace OneSignalDemo.Services
                 || s.opacity <= 0f)
                 return false;
 
+            if (IsSectionAnchor(el))
+                return true;
+
             // An element whose worldBound has been clipped away by an ancestor
             // ScrollView/clip container is visually invisible. Other SDKs get
             // this for free because they render through native UIScrollView /
             // android.widget.ScrollView whose accessibilityFrame already
             // excludes clipped children. UI Toolkit reports children's panel
             // coordinates regardless of clip, so we have to intersect here.
-            var visible = ComputeVisibleWorldBound(el);
+            var visible = ComputeVisibleWorldBound(GetFrameElement(el));
             return visible.width > 0f && visible.height > 0f;
         }
 
@@ -586,17 +736,49 @@ namespace OneSignalDemo.Services
             return r;
         }
 
+        private static VisualElement GetFrameElement(VisualElement el)
+        {
+            if (IsSectionAnchor(el) && el.childCount > 0)
+                return el[0];
+            return el;
+        }
+
+        private static bool IsSectionAnchor(VisualElement el) =>
+            !string.IsNullOrEmpty(el?.name)
+            && el.name.EndsWith("_section", StringComparison.Ordinal);
+
         private Rect GetScreenRect(VisualElement el)
         {
             if (el?.panel == null)
                 return Rect.zero;
 
-            var wb = ComputeVisibleWorldBound(el);
+            var wb = ComputeVisibleWorldBound(GetFrameElement(el));
             if (wb.width <= 0f || wb.height <= 0f)
                 return Rect.zero;
 
             float s = _panelToScreenScale;
             return new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
+        }
+
+        private sealed class E2ETapTarget
+        {
+            public readonly VisualElement Target;
+            public readonly Func<bool> IsEnabled;
+            public readonly Action Action;
+            public readonly float MoveTolerance;
+
+            public E2ETapTarget(
+                VisualElement target,
+                Func<bool> isEnabled,
+                Action action,
+                float moveTolerance
+            )
+            {
+                Target = target;
+                IsEnabled = isEnabled;
+                Action = action;
+                MoveTolerance = moveTolerance;
+            }
         }
     }
 }

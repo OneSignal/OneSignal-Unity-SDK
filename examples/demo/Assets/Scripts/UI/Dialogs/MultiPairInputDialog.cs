@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using OneSignalDemo.Services;
 using OneSignalDemo.UI;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
@@ -15,6 +17,8 @@ namespace OneSignalDemo.UI.Dialogs
         private readonly List<(TextField key, TextField value, VisualElement row)> _rows = new();
         private VisualElement _rowsContainer;
         private Button _confirmButton;
+        private double _lastAddRowMs = -1.0;
+        private const double AddRowDedupeMs = 500.0;
 
         public MultiPairInputDialog(
             string title,
@@ -43,10 +47,14 @@ namespace OneSignalDemo.UI.Dialogs
 
             AddRow();
 
-            var addRowButton = new Button(AddRow);
+            var addRowButton = new Button(InvokeAddRow);
             addRowButton.name = "multipair_add_row_button";
-            RegisterNamedTap(addRowButton.name, AddRow);
             addRowButton.AddToClassList("dialog-add-row-button");
+            AccessibilityBridge.RegisterE2ETapFallback(
+                addRowButton,
+                () => addRowButton.enabledInHierarchy,
+                InvokeAddRow
+            );
             var addIcon = new Label(MaterialIcons.Add);
             addIcon.AddToClassList("dialog-add-row-icon");
             addRowButton.Add(addIcon);
@@ -109,6 +117,17 @@ namespace OneSignalDemo.UI.Dialogs
 
             UpdateDeleteVisibility();
             ValidateAll();
+        }
+
+        private void InvokeAddRow()
+        {
+            double now = Time.realtimeSinceStartupAsDouble * 1000.0;
+            if (_lastAddRowMs >= 0.0 && now - _lastAddRowMs < AddRowDedupeMs)
+                return;
+
+            _lastAddRowMs = now;
+            AddRow();
+            AccessibilityBridge.RequestImmediateResync();
         }
 
         private void RemoveRow((TextField key, TextField value, VisualElement row) entry)
