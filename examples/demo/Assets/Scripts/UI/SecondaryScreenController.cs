@@ -36,6 +36,10 @@ namespace OneSignalDemo.UI
 
             screenRoot.Add(appBar);
 
+            var appBarShadow = new VisualElement();
+            appBarShadow.AddToClassList("app-bar-shadow");
+            screenRoot.Add(appBarShadow);
+
             var content = new VisualElement();
             content.AddToClassList("centered-content");
 
