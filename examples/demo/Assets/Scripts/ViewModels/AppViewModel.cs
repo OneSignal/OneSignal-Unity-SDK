@@ -181,7 +181,7 @@ namespace OneSignalDemo.ViewModels
         public void AddAlias(string label, string id)
         {
             OneSignal.User.AddAlias(label, id);
-            _aliasesList.Add(new KeyValuePair<string, string>(label, id));
+            UpsertAlias(label, id);
             Debug.Log($"[{Tag}] Alias added: {label}");
             ShowToast($"Alias added: {label}");
             NotifyStateChanged();
@@ -191,10 +191,21 @@ namespace OneSignalDemo.ViewModels
         {
             OneSignal.User.AddAliases(aliases);
             foreach (var kvp in aliases)
-                _aliasesList.Add(new KeyValuePair<string, string>(kvp.Key, kvp.Value));
+                UpsertAlias(kvp.Key, kvp.Value);
             Debug.Log($"[{Tag}] {aliases.Count} alias(es) added");
             ShowToast($"{aliases.Count} alias(es) added");
             NotifyStateChanged();
+        }
+
+        // Upsert by key so the local list matches the API truth (MergePairs)
+        // and is resilient to repeat AddAlias calls.
+        private void UpsertAlias(string key, string value)
+        {
+            var idx = _aliasesList.FindIndex(p => p.Key == key);
+            if (idx >= 0)
+                _aliasesList[idx] = new KeyValuePair<string, string>(key, value);
+            else
+                _aliasesList.Add(new KeyValuePair<string, string>(key, value));
         }
 
         public void AddEmail(string email)
