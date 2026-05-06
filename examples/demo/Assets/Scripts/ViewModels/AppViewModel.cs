@@ -181,7 +181,7 @@ namespace OneSignalDemo.ViewModels
         public void AddAlias(string label, string id)
         {
             OneSignal.User.AddAlias(label, id);
-            UpsertAlias(label, id);
+            MergePairs(_aliasesList, new Dictionary<string, string> { [label] = id });
             Debug.Log($"[{Tag}] Alias added: {label}");
             ShowToast($"Alias added: {label}");
             NotifyStateChanged();
@@ -190,29 +190,16 @@ namespace OneSignalDemo.ViewModels
         public void AddAliases(Dictionary<string, string> aliases)
         {
             OneSignal.User.AddAliases(aliases);
-            foreach (var kvp in aliases)
-                UpsertAlias(kvp.Key, kvp.Value);
+            MergePairs(_aliasesList, aliases);
             Debug.Log($"[{Tag}] {aliases.Count} alias(es) added");
             ShowToast($"{aliases.Count} alias(es) added");
             NotifyStateChanged();
         }
 
-        // Upsert by key so the local list matches the API truth (MergePairs)
-        // and is resilient to repeat AddAlias calls.
-        private void UpsertAlias(string key, string value)
-        {
-            var idx = _aliasesList.FindIndex(p => p.Key == key);
-            if (idx >= 0)
-                _aliasesList[idx] = new KeyValuePair<string, string>(key, value);
-            else
-                _aliasesList.Add(new KeyValuePair<string, string>(key, value));
-        }
-
         public void AddEmail(string email)
         {
             OneSignal.User.AddEmail(email);
-            if (!_emailsList.Contains(email))
-                _emailsList.Add(email);
+            MergeUnique(_emailsList, new[] { email });
             Debug.Log($"[{Tag}] Email added: {email}");
             ShowToast($"Email added: {email}");
             NotifyStateChanged();
@@ -230,8 +217,7 @@ namespace OneSignalDemo.ViewModels
         public void AddSms(string smsNumber)
         {
             OneSignal.User.AddSms(smsNumber);
-            if (!_smsNumbersList.Contains(smsNumber))
-                _smsNumbersList.Add(smsNumber);
+            MergeUnique(_smsNumbersList, new[] { smsNumber });
             Debug.Log($"[{Tag}] SMS added: {smsNumber}");
             ShowToast($"SMS added: {smsNumber}");
             NotifyStateChanged();
@@ -249,7 +235,7 @@ namespace OneSignalDemo.ViewModels
         public void AddTag(string key, string value)
         {
             OneSignal.User.AddTag(key, value);
-            UpsertInList(_tagsList, key, value);
+            MergePairs(_tagsList, new Dictionary<string, string> { [key] = value });
             Debug.Log($"[{Tag}] Tag added: {key}={value}");
             ShowToast($"Tag added: {key}");
             NotifyStateChanged();
@@ -258,8 +244,7 @@ namespace OneSignalDemo.ViewModels
         public void AddTags(Dictionary<string, string> tags)
         {
             OneSignal.User.AddTags(tags);
-            foreach (var kvp in tags)
-                UpsertInList(_tagsList, kvp.Key, kvp.Value);
+            MergePairs(_tagsList, tags);
             Debug.Log($"[{Tag}] {tags.Count} tag(s) added");
             ShowToast($"{tags.Count} tag(s) added");
             NotifyStateChanged();
@@ -286,7 +271,7 @@ namespace OneSignalDemo.ViewModels
         public void AddTrigger(string key, string value)
         {
             OneSignal.InAppMessages.AddTrigger(key, value);
-            UpsertInList(_triggersList, key, value);
+            MergePairs(_triggersList, new Dictionary<string, string> { [key] = value });
             Debug.Log($"[{Tag}] Trigger added: {key}={value}");
             ShowToast($"Trigger added: {key}");
             NotifyStateChanged();
@@ -295,8 +280,7 @@ namespace OneSignalDemo.ViewModels
         public void AddTriggers(Dictionary<string, string> triggers)
         {
             OneSignal.InAppMessages.AddTriggers(triggers);
-            foreach (var kvp in triggers)
-                UpsertInList(_triggersList, kvp.Key, kvp.Value);
+            MergePairs(_triggersList, triggers);
             Debug.Log($"[{Tag}] {triggers.Count} trigger(s) added");
             ShowToast($"{triggers.Count} trigger(s) added");
             NotifyStateChanged();
@@ -333,7 +317,7 @@ namespace OneSignalDemo.ViewModels
         {
             var triggerValue = type.TriggerValue();
             OneSignal.InAppMessages.AddTrigger("iam_type", triggerValue);
-            UpsertInList(_triggersList, "iam_type", triggerValue);
+            MergePairs(_triggersList, new Dictionary<string, string> { ["iam_type"] = triggerValue });
             Debug.Log($"[{Tag}] Sent In-App Message: {type.DisplayName()}");
             ShowToast($"Sent In-App Message: {type.DisplayName()}");
             NotifyStateChanged();
@@ -678,19 +662,6 @@ namespace OneSignalDemo.ViewModels
         private void NotifyStateChanged() => OnStateChanged?.Invoke();
 
         private void ShowToast(string message) => OnToastMessage?.Invoke(message);
-
-        private static void UpsertInList(
-            List<KeyValuePair<string, string>> list,
-            string key,
-            string value
-        )
-        {
-            var index = list.FindIndex(kvp => kvp.Key == key);
-            if (index >= 0)
-                list[index] = new KeyValuePair<string, string>(key, value);
-            else
-                list.Add(new KeyValuePair<string, string>(key, value));
-        }
 
         private static void MergePairs(
             List<KeyValuePair<string, string>> target,
