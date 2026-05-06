@@ -15,6 +15,7 @@ namespace OneSignalDemo.UI.Dialogs
         private TextField _keyField;
         private TextField _valueField;
         private Button _confirmButton;
+        private bool _submitted;
 
         public PairInputDialog(
             string title,
@@ -96,13 +97,21 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void OnConfirm()
         {
+            // Guard against double-fire: rapid double-taps and the E2E
+            // accessibility tap fallback can both deliver a second click
+            // before Dismiss() tears the dialog down.
+            if (_submitted)
+                return;
+
             var key = _keyField?.value;
             var value = _valueField?.value;
-            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
-            {
-                _onConfirm?.Invoke(key, value);
-                Dismiss();
-            }
+            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
+                return;
+
+            _submitted = true;
+            _confirmButton?.SetEnabled(false);
+            _onConfirm?.Invoke(key, value);
+            Dismiss();
         }
     }
 }

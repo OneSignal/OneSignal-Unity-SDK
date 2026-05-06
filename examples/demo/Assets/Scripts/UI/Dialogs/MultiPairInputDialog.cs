@@ -17,6 +17,7 @@ namespace OneSignalDemo.UI.Dialogs
         private readonly List<(TextField key, TextField value, VisualElement row)> _rows = new();
         private VisualElement _rowsContainer;
         private Button _confirmButton;
+        private bool _submitted;
         private double _lastAddRowMs = -1.0;
         private const double AddRowDedupeMs = 500.0;
 
@@ -176,6 +177,9 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void OnConfirm()
         {
+            if (_submitted)
+                return;
+
             var dict = new Dictionary<string, string>();
             foreach (var (key, value, _) in _rows)
             {
@@ -183,11 +187,13 @@ namespace OneSignalDemo.UI.Dialogs
                     dict[key.value] = value.value;
             }
 
-            if (dict.Count > 0)
-            {
-                _onConfirm?.Invoke(dict);
-                Dismiss();
-            }
+            if (dict.Count == 0)
+                return;
+
+            _submitted = true;
+            _confirmButton?.SetEnabled(false);
+            _onConfirm?.Invoke(dict);
+            Dismiss();
         }
     }
 }
