@@ -158,6 +158,12 @@
     color: white;
 }
 
+.app-bar-shadow {
+    height: 4px;
+    background-color: #B33A3C;
+    flex-shrink: 0;
+}
+
 .section-container {
 }
 

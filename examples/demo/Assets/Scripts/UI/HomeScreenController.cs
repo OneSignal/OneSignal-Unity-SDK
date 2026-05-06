@@ -149,6 +149,10 @@ namespace OneSignalDemo.UI
 
             screenRoot.Add(appBar);
 
+            var appBarShadow = new VisualElement();
+            appBarShadow.AddToClassList("app-bar-shadow");
+            screenRoot.Add(appBarShadow);
+
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
             scrollView.name = "main_scroll_view";
             scrollView.AddToClassList("flex-grow");
