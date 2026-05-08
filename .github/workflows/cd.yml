@@ -12,6 +12,7 @@ on:
 permissions:
   id-token: write # Required for OIDC
   contents: write
+  pull-requests: read # Required by called github-release.yml
 
 jobs:
   publish:
