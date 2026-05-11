@@ -48,7 +48,7 @@ namespace OneSignalDemo.Services
         private bool _frameRefreshScheduled;
         private float _frameRefreshTimer;
         private float _structurePollTimer;
-        private int _lastNamedDescendantCount = -1;
+        private int _lastStructureSignature = -1;
         private int _tapMarkerCount;
         private VisualElement _tapMarkerOverlay;
         private Vector2 _lastScrollOffset;
@@ -158,7 +158,7 @@ namespace OneSignalDemo.Services
         private void Initialize(VisualElement root)
         {
             _root = root;
-            _lastNamedDescendantCount = -1; // force first poll to rebuild
+            _lastStructureSignature = -1; // force first poll to rebuild
 
             // Without this override, AssistiveSupport.activeHierarchy is auto-cleared
             // whenever the OS reports VoiceOver/TalkBack as off. XCUITest reads the
@@ -236,10 +236,10 @@ namespace OneSignalDemo.Services
             if (_structurePollTimer >= StructurePollIntervalSeconds)
             {
                 _structurePollTimer = 0f;
-                int count = CountNamedDescendants(_root);
-                if (count != _lastNamedDescendantCount)
+                int signature = ComputeStructureSignature(_root);
+                if (signature != _lastStructureSignature)
                 {
-                    _lastNamedDescendantCount = count;
+                    _lastStructureSignature = signature;
                     ScheduleResync();
                 }
             }
@@ -280,14 +280,43 @@ namespace OneSignalDemo.Services
             }
         }
 
-        private static int CountNamedDescendants(VisualElement el)
+        // Order-sensitive FNV-1a hash over named descendants. A bare count missed
+        // dialog→section transitions where the closing dialog and the freshly
+        // revealed section exposed the same number of named descendants — the
+        // bridge would skip BuildHierarchy and XCUITest would keep reading a
+        // stale tree (e.g. add_multiple_tags_button stuck at active=0, rect=0x0)
+        // until the next unrelated mutation. Hashing names catches structural
+        // identity changes even when the cardinality is unchanged.
+        private static int ComputeStructureSignature(VisualElement el)
+        {
+            unchecked
+            {
+                int hash = (int)2166136261u;
+                AccumulateNameHash(el, ref hash);
+                return hash;
+            }
+        }
+
+        private static void AccumulateNameHash(VisualElement el, ref int hash)
         {
             if (el == null)
-                return 0;
-            int count = string.IsNullOrEmpty(el.name) ? 0 : 1;
-            for (int i = 0; i < el.childCount; i++)
-                count += CountNamedDescendants(el[i]);
-            return count;
+                return;
+            unchecked
+            {
+                if (!string.IsNullOrEmpty(el.name))
+                {
+                    var name = el.name;
+                    for (int i = 0; i < name.Length; i++)
+                    {
+                        hash ^= name[i];
+                        hash *= 16777619;
+                    }
+                    hash ^= '|';
+                    hash *= 16777619;
+                }
+                for (int i = 0; i < el.childCount; i++)
+                    AccumulateNameHash(el[i], ref hash);
+            }
         }
 
         private void OnScreenReaderStatusChanged(bool _)
@@ -363,7 +392,7 @@ namespace OneSignalDemo.Services
             }
 
             WalkAndAdd(_root);
-            _lastNamedDescendantCount = CountNamedDescendants(_root);
+            _lastStructureSignature = ComputeStructureSignature(_root);
 
             AssistiveSupport.activeHierarchy = _hierarchy;
             AssistiveSupport.notificationDispatcher?.SendScreenChanged();
