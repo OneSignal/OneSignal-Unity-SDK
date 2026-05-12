@@ -117,7 +117,7 @@ namespace OneSignalDemo.ViewModels
             _consentRequired = _prefs.ConsentRequired;
             _privacyConsentGiven = _prefs.PrivacyConsent;
             _inAppMessagesPaused = _prefs.IamPaused;
-            _locationShared = OneSignal.Location.IsShared;
+            _locationShared = _prefs.LocationShared;
             _externalUserId = _prefs.ExternalUserId;
 
             var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
