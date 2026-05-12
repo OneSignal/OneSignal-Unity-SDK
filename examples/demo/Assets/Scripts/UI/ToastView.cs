@@ -1,3 +1,4 @@
+using OneSignalDemo.Services;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -29,11 +30,13 @@ namespace OneSignalDemo.UI
             _container.pickingMode = PickingMode.Ignore;
 
             var label = new Label(message);
+            label.name = "toast_message";
             label.AddToClassList("toast-label");
             label.pickingMode = PickingMode.Ignore;
             _container.Add(label);
 
             _root.Add(_container);
+            AccessibilityBridge.RequestImmediateResync();
 
             _hideSchedule = _container.schedule.Execute(Hide).StartingIn(2500);
         }
@@ -42,6 +45,7 @@ namespace OneSignalDemo.UI
         {
             _container?.RemoveFromHierarchy();
             _container = null;
+            AccessibilityBridge.RequestImmediateResync();
         }
     }
 }
