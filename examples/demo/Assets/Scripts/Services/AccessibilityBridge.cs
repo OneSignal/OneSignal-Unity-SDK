@@ -58,6 +58,7 @@ namespace OneSignalDemo.Services
         private int _pendingE2ETapPointerId;
         private float _pendingE2ETapMoveTolerance;
         private Vector2 _pendingE2ETapStart;
+        private VisualElement _pendingE2ETapTarget;
         private Action _pendingE2ETapAction;
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
@@ -90,7 +91,7 @@ namespace OneSignalDemo.Services
             _onNamedTapPointerDown = OnNamedTapPointerDown;
             _onNamedTapPointerUp = OnNamedTapPointerUp;
             _onE2ETapPointerMove = OnE2ETapPointerMove;
-            _onE2ETapPointerCancel = _ => _pendingE2ETap = false;
+            _onE2ETapPointerCancel = _ => ClearPendingE2ETap();
         }
 
         // Empirically, Unity's iOS accessibility plugin treats the Rect we
@@ -142,9 +143,17 @@ namespace OneSignalDemo.Services
                 return;
 
             E2ETapTargets.RemoveAll(t => t.Target == target);
+            target.UnregisterCallback<ClickEvent>(OnRegisteredTargetClick);
+            target.RegisterCallback<ClickEvent>(OnRegisteredTargetClick);
             E2ETapTargets.Add(
                 new E2ETapTarget(target, isEnabled ?? (() => true), action, moveTolerance)
             );
+        }
+
+        private static void OnRegisteredTargetClick(ClickEvent e)
+        {
+            if (e.currentTarget is VisualElement target)
+                _instance?.CancelPendingE2ETap(target);
         }
 
         public static void RequestResync()
@@ -421,13 +430,17 @@ namespace OneSignalDemo.Services
             _pendingE2ETapPointerId = e.pointerId;
             _pendingE2ETapMoveTolerance = target.MoveTolerance;
             _pendingE2ETapStart = position;
+            _pendingE2ETapTarget = target.Target;
             _pendingE2ETapAction = target.Action;
             _root.schedule.Execute(() =>
             {
                 if (!_pendingE2ETap)
                     return;
                 _pendingE2ETap = false;
-                _pendingE2ETapAction?.Invoke();
+                var action = _pendingE2ETapAction;
+                _pendingE2ETapAction = null;
+                _pendingE2ETapTarget = null;
+                action?.Invoke();
             }).StartingIn(E2ETapDelayMs);
         }
 
@@ -450,7 +463,22 @@ namespace OneSignalDemo.Services
 
             var position = new Vector2(e.position.x, e.position.y);
             if (Vector2.Distance(position, _pendingE2ETapStart) > _pendingE2ETapMoveTolerance)
-                _pendingE2ETap = false;
+                ClearPendingE2ETap();
+        }
+
+        private void CancelPendingE2ETap(VisualElement target)
+        {
+            if (!_pendingE2ETap || _pendingE2ETapTarget != target)
+                return;
+
+            ClearPendingE2ETap();
+        }
+
+        private void ClearPendingE2ETap()
+        {
+            _pendingE2ETap = false;
+            _pendingE2ETapAction = null;
+            _pendingE2ETapTarget = null;
         }
 
         private static bool TryGetE2ETapTarget(Vector2 position, out E2ETapTarget matchedTarget)
