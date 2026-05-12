@@ -3,6 +3,7 @@ package com.onesignal.onesignalsdk;
 import android.app.Activity;
 import android.graphics.Color;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -112,6 +113,13 @@ public final class OneSignalUnityE2EAccessibility {
     TextView view;
     if ("input".equals(role)) {
       E2EEditText input = new E2EEditText(activity, id);
+      // // Hide the blinking caret; the Unity-drawn TextField renders its own.
+      // input.setCursorVisible(false);
+      // Suppress the spell-checker's red underline span. The Unity TextField
+      // is the user-visible input; the overlay only needs to forward
+      // characters back to Unity via the TextWatcher.
+      input.setInputType(
+          InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
       input.addTextChangedListener(
           new TextWatcher() {
             @Override
