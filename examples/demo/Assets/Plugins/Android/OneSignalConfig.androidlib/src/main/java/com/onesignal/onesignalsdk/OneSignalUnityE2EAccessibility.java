@@ -7,8 +7,10 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -95,7 +97,7 @@ public final class OneSignalUnityE2EAccessibility {
 
   private static void ensureOverlay(Activity activity) {
     if (overlay != null) return;
-    overlay = new FrameLayout(activity);
+    overlay = new E2EOverlay(activity);
     overlay.setClipChildren(false);
     overlay.setClipToPadding(false);
     overlay.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -205,6 +207,48 @@ public final class OneSignalUnityE2EAccessibility {
     Entry(View view, String role) {
       this.view = view;
       this.role = role;
+    }
+  }
+
+  private static final class E2EOverlay extends FrameLayout {
+    private final int gutterWidth;
+    private final int touchSlop;
+    private boolean trackingGutterDrag;
+    private float startY;
+
+    E2EOverlay(Activity activity) {
+      super(activity);
+      // The test swipe lane is x=10. Keep this narrow so dialog checkboxes
+      // near the left edge still receive normal clicks.
+      gutterWidth = 24;
+      touchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+      if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+        trackingGutterDrag = event.getX() <= gutterWidth;
+        startY = event.getY();
+        if (trackingGutterDrag) return true;
+      }
+
+      if (!trackingGutterDrag) return super.dispatchTouchEvent(event);
+
+      if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+        float deltaY = event.getY() - startY;
+        if (Math.abs(deltaY) > touchSlop) {
+          sendToUnity("main_scroll_view", "scroll", deltaY < 0 ? "down" : "up");
+        }
+        trackingGutterDrag = false;
+        return true;
+      }
+
+      if (event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+        trackingGutterDrag = false;
+        return true;
+      }
+
+      return true;
     }
   }
 

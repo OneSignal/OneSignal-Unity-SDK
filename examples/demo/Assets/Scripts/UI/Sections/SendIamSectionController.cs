@@ -1,5 +1,6 @@
 using System;
 using OneSignalDemo.Models;
+using OneSignalDemo.Services;
 using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
@@ -72,9 +73,11 @@ namespace OneSignalDemo.UI.Sections
             InAppMessageType type
         )
         {
-            var btn = new Button(() => _viewModel.SendInAppMessage(type));
+            void SendIam() => _viewModel.SendInAppMessage(type);
+            var btn = new Button(SendIam);
             btn.name = name;
             btn.AddToClassList("iam-button");
+            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, SendIam);
 
             var iconLabel = new Label(icon);
             iconLabel.AddToClassList("iam-button-icon");

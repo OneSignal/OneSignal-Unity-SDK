@@ -572,7 +572,13 @@ namespace OneSignalDemo.Services
             }
 
             if (action == "click")
+            {
                 InvokeAndroidNativeAction(id);
+                return;
+            }
+
+            if (action == "scroll")
+                InvokeAndroidNativeScroll(value);
 #endif
         }
 
@@ -647,6 +653,27 @@ namespace OneSignalDemo.Services
             }
 
             InvokeRegisteredTap(id);
+        }
+
+        private void InvokeAndroidNativeScroll(string direction)
+        {
+            if (_mainSv == null)
+                return;
+
+            var viewportHeight = _mainSv.contentViewport?.layout.height ?? _mainSv.layout.height;
+            var contentHeight = _mainSv.contentContainer?.layout.height ?? 0f;
+            if (viewportHeight <= 0f || contentHeight <= viewportHeight)
+                return;
+
+            var current = _mainSv.scrollOffset;
+            var delta = Mathf.Max(80f, viewportHeight * 0.6f);
+            var maxY = Mathf.Max(0f, contentHeight - viewportHeight);
+            var nextY = direction == "up" ? current.y - delta : current.y + delta;
+            _mainSv.scrollOffset = new Vector2(current.x, Mathf.Clamp(nextY, 0f, maxY));
+
+            RefreshNodeValuesAndActive();
+            _hierarchy?.RefreshNodeFrames();
+            SyncAndroidNativeAccessibility();
         }
 
         private static void InvokeRegisteredTap(string id)
