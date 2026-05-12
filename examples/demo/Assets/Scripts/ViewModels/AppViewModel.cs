@@ -565,8 +565,7 @@ namespace OneSignalDemo.ViewModels
 
         public void CheckLocationShared()
         {
-            var shared = OneSignal.Location.IsShared;
-            ShowToast($"Location shared: {shared.ToString().ToLowerInvariant()}");
+            ShowToast($"Location shared: {_locationShared.ToString().ToLowerInvariant()}");
         }
 
         public async void PromptPush()
