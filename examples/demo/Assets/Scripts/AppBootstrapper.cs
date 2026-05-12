@@ -66,11 +66,40 @@ namespace OneSignalDemo
             _viewModel.LoadInitialState();
             await _viewModel.LoadInitialDataAsync();
 
-            _viewModel.PromptPush();
+            PromptPushForStartup();
 
             _ = TooltipHelper.Instance.InitAsync();
             Debug.Log($"[{Tag}] App initialized");
         }
+
+        private void PromptPushForStartup()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (DotEnv.IsE2EMode)
+            {
+                RequestAndroidPostNotificationsPermission();
+                return;
+            }
+#endif
+            _viewModel.PromptPush();
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static void RequestAndroidPostNotificationsPermission()
+        {
+            using var version = new AndroidJavaClass("android.os.Build$VERSION");
+            if (version.GetStatic<int>("SDK_INT") < 33)
+                return;
+
+            using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            activity.Call(
+                "requestPermissions",
+                new[] { "android.permission.POST_NOTIFICATIONS" },
+                1001
+            );
+        }
+#endif
 
         private void RegisterSdkListeners()
         {

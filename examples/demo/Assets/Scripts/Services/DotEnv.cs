@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace OneSignalDemo.Services
@@ -73,11 +74,37 @@ namespace OneSignalDemo.Services
             if (File.Exists(editorPath))
                 return File.ReadAllText(editorPath);
 #endif
+#if UNITY_ANDROID && !UNITY_EDITOR
+            return ReadAndroidAsset(".env");
+#else
             var streamingPath = Path.Combine(Application.streamingAssetsPath, ".env");
             if (File.Exists(streamingPath))
                 return File.ReadAllText(streamingPath);
 
             return null;
+#endif
         }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static string ReadAndroidAsset(string path)
+        {
+            using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            using var assets = activity.Call<AndroidJavaObject>("getAssets");
+            using var stream = assets.Call<AndroidJavaObject>("open", path);
+            using var inputStreamReader = new AndroidJavaObject("java.io.InputStreamReader", stream);
+            using var reader = new AndroidJavaObject(
+                "java.io.BufferedReader",
+                inputStreamReader
+            );
+            var content = new StringBuilder();
+
+            string line;
+            while ((line = reader.Call<string>("readLine")) != null)
+                content.AppendLine(line);
+
+            return content.ToString();
+        }
+#endif
     }
 }

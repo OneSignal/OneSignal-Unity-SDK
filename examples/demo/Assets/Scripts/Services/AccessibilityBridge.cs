@@ -37,9 +37,14 @@ namespace OneSignalDemo.Services
         // additions, since a freshly-created VisualElement has nothing for
         // us to subscribe to until BuildHierarchy walks it.
         private const float StructurePollIntervalSeconds = 0.1f;
+        private const string GameObjectName = "OneSignalAccessibilityBridge";
 
         private static AccessibilityBridge _instance;
         private static readonly List<E2ETapTarget> E2ETapTargets = new();
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static AndroidJavaClass _androidAccessibilityBridge;
+        private static bool _androidSyncErrorLogged;
+#endif
 
         private VisualElement _root;
         private AccessibilityHierarchy _hierarchy;
@@ -114,16 +119,24 @@ namespace OneSignalDemo.Services
             if (root == null)
                 return;
             if (!DotEnv.IsE2EMode)
+            {
+#if UNITY_ANDROID && !UNITY_EDITOR
+                Debug.LogWarning("[OneSignalDemo] E2E accessibility bridge disabled");
+#endif
                 return;
+            }
 
             if (_instance == null)
             {
-                var go = new GameObject("[AccessibilityBridge]");
+                var go = new GameObject(GameObjectName);
                 DontDestroyOnLoad(go);
                 _instance = go.AddComponent<AccessibilityBridge>();
             }
 
             _instance.Initialize(root);
+#if UNITY_ANDROID && !UNITY_EDITOR
+            Debug.Log("[OneSignalDemo] E2E accessibility bridge enabled");
+#endif
         }
 
         public static void RegisterE2ETapFallback(
@@ -220,7 +233,10 @@ namespace OneSignalDemo.Services
             yield return new WaitForEndOfFrame();
             _frameRefreshScheduled = false;
             if (_hierarchy != null)
+            {
                 _hierarchy.RefreshNodeFrames();
+                SyncAndroidNativeAccessibility();
+            }
         }
 
         private void Update()
@@ -271,6 +287,7 @@ namespace OneSignalDemo.Services
                 _frameRefreshTimer = 0f;
                 RefreshNodeValuesAndActive();
                 _hierarchy.RefreshNodeFrames();
+                SyncAndroidNativeAccessibility();
             }
         }
 
@@ -410,6 +427,7 @@ namespace OneSignalDemo.Services
             AssistiveSupport.activeHierarchy = _hierarchy;
             AssistiveSupport.notificationDispatcher?.SendScreenChanged();
             _hierarchy.RefreshNodeFrames();
+            SyncAndroidNativeAccessibility();
         }
 
         private void OnNamedTapPointerDown(PointerDownEvent e)
@@ -527,6 +545,146 @@ namespace OneSignalDemo.Services
 
             return false;
         }
+
+        public void HandleAndroidAccessibilityAction(string payload)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (string.IsNullOrEmpty(payload) || _root == null)
+                return;
+
+            var firstBreak = payload.IndexOf('\n');
+            if (firstBreak < 0)
+                return;
+            var secondBreak = payload.IndexOf('\n', firstBreak + 1);
+            if (secondBreak < 0)
+                return;
+
+            var id = payload.Substring(0, firstBreak);
+            var action = payload.Substring(firstBreak + 1, secondBreak - firstBreak - 1);
+            var value = payload.Substring(secondBreak + 1);
+
+            if (action == "setValue")
+            {
+                var field = _root.Q<TextField>(id);
+                if (field != null && field.value != value)
+                    field.value = value;
+                return;
+            }
+
+            if (action == "click")
+                InvokeAndroidNativeAction(id);
+#endif
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static AndroidJavaClass AndroidAccessibilityBridge
+        {
+            get
+            {
+                _androidAccessibilityBridge ??= new AndroidJavaClass(
+                    "com.onesignal.onesignalsdk.OneSignalUnityE2EAccessibility"
+                );
+                return _androidAccessibilityBridge;
+            }
+        }
+
+        private void SyncAndroidNativeAccessibility()
+        {
+            try
+            {
+                AndroidAccessibilityBridge.CallStatic("beginSync");
+                foreach (var kvp in _map)
+                {
+                    var el = kvp.Key;
+                    if (el == null || string.IsNullOrEmpty(el.name))
+                        continue;
+
+                    var rect = GetScreenRect(el);
+                    AndroidAccessibilityBridge.CallStatic(
+                        "syncElement",
+                        el.name,
+                        ExtractValue(el),
+                        IsVisible(el) && rect.width > 0f && rect.height > 0f,
+                        Mathf.RoundToInt(rect.x),
+                        Mathf.RoundToInt(rect.y),
+                        Mathf.RoundToInt(rect.width),
+                        Mathf.RoundToInt(rect.height),
+                        AndroidNativeRole(el),
+                        el.enabledInHierarchy
+                    );
+                }
+                AndroidAccessibilityBridge.CallStatic("endSync");
+            }
+            catch (Exception ex)
+            {
+                if (!_androidSyncErrorLogged)
+                {
+                    _androidSyncErrorLogged = true;
+                    Debug.LogWarning(
+                        $"[OneSignalDemo] Android E2E accessibility sync failed: {ex.Message}"
+                    );
+                }
+            }
+        }
+
+        private void InvokeAndroidNativeAction(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return;
+
+            var switchToggle = _root.Q<OneSignalDemo.UI.SwitchToggle>(id);
+            if (switchToggle != null)
+            {
+                switchToggle.SetValueAndNotify(!switchToggle.Value);
+                return;
+            }
+
+            var toggle = _root.Q<Toggle>(id);
+            if (toggle != null)
+            {
+                toggle.value = !toggle.value;
+                return;
+            }
+
+            InvokeRegisteredTap(id);
+        }
+
+        private static void InvokeRegisteredTap(string id)
+        {
+            for (int i = E2ETapTargets.Count - 1; i >= 0; i--)
+            {
+                var target = E2ETapTargets[i];
+                if (target.Target == null)
+                {
+                    E2ETapTargets.RemoveAt(i);
+                    continue;
+                }
+
+                if (target.Target.name != id || !target.IsEnabled())
+                    continue;
+
+                target.Action();
+                return;
+            }
+        }
+
+        private static string AndroidNativeRole(VisualElement el)
+        {
+            if (TryGetE2ETapTarget(el, out _))
+                return "button";
+
+            return el switch
+            {
+                TextField => "input",
+                Toggle => "toggle",
+                OneSignalDemo.UI.SwitchToggle => "toggle",
+                Button => "button",
+                _ => "text",
+            };
+        }
+#else
+        private void SyncAndroidNativeAccessibility() { }
+#endif
 
         private void RefreshScrollAccessibilityState()
         {
