@@ -128,6 +128,10 @@ public final class OneSignalUnityE2EAccessibility {
       view = input;
     } else if ("toggle".equals(role)) {
       E2ECheckBox toggle = new E2ECheckBox(activity, id);
+      // Hide the default square check indicator; the Unity-drawn pill switch
+      // is the visual. CheckBox class, isChecked() state, viewIdResourceName,
+      // and click handling are preserved for Appium/UiAutomator2.
+      toggle.setButtonDrawable(null);
       toggle.setOnClickListener(v -> sendToUnity(id, "click", ""));
       view = toggle;
     } else {
