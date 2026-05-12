@@ -111,6 +111,7 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("primary-button");
+            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, onClick);
             return btn;
         }
 
@@ -120,6 +121,7 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("destructive-button");
+            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, onClick);
             return btn;
         }
 

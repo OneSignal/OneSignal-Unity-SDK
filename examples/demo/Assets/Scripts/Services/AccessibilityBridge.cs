@@ -62,6 +62,7 @@ namespace OneSignalDemo.Services
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
         private readonly EventCallback<PointerDownEvent> _onNamedTapPointerDown;
+        private readonly EventCallback<PointerUpEvent> _onNamedTapPointerUp;
         private readonly EventCallback<PointerMoveEvent> _onE2ETapPointerMove;
         private readonly EventCallback<PointerCancelEvent> _onE2ETapPointerCancel;
         // Set true after the one-shot ScrollView taming hooks (WheelEvent
@@ -87,6 +88,7 @@ namespace OneSignalDemo.Services
             _onGeometryChanged = _ => ScheduleFrameRefresh();
             _onDetachFromPanel = _ => ScheduleResync();
             _onNamedTapPointerDown = OnNamedTapPointerDown;
+            _onNamedTapPointerUp = OnNamedTapPointerUp;
             _onE2ETapPointerMove = OnE2ETapPointerMove;
             _onE2ETapPointerCancel = _ => _pendingE2ETap = false;
         }
@@ -188,6 +190,7 @@ namespace OneSignalDemo.Services
             {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
                 _root.UnregisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
+                _root.UnregisterCallback(_onNamedTapPointerUp, TrickleDown.TrickleDown);
                 _root.UnregisterCallback(_onE2ETapPointerMove, TrickleDown.TrickleDown);
                 _root.UnregisterCallback(_onE2ETapPointerCancel, TrickleDown.TrickleDown);
             }
@@ -369,6 +372,7 @@ namespace OneSignalDemo.Services
             // instead of a 50ms-stale snapshot.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
             _root.RegisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
+            _root.RegisterCallback(_onNamedTapPointerUp, TrickleDown.TrickleDown);
             _root.RegisterCallback(_onE2ETapPointerMove, TrickleDown.TrickleDown);
             _root.RegisterCallback(_onE2ETapPointerCancel, TrickleDown.TrickleDown);
 
@@ -427,6 +431,18 @@ namespace OneSignalDemo.Services
             }).StartingIn(E2ETapDelayMs);
         }
 
+        private void OnNamedTapPointerUp(PointerUpEvent e)
+        {
+            if (_pendingE2ETap)
+                return;
+
+            var eventTarget = e.target as VisualElement;
+            if (eventTarget == null || !TryGetE2ETapTarget(eventTarget, out var target))
+                return;
+
+            target.Action();
+        }
+
         private void OnE2ETapPointerMove(PointerMoveEvent e)
         {
             if (!_pendingE2ETap || _pendingE2ETapPointerId != e.pointerId)
@@ -453,6 +469,28 @@ namespace OneSignalDemo.Services
                     continue;
 
                 if (!target.IsEnabled() || !target.Target.worldBound.Contains(position))
+                    continue;
+
+                matchedTarget = target;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryGetE2ETapTarget(VisualElement el, out E2ETapTarget matchedTarget)
+        {
+            matchedTarget = null;
+            for (int i = E2ETapTargets.Count - 1; i >= 0; i--)
+            {
+                var target = E2ETapTargets[i];
+                if (target.Target == null)
+                {
+                    E2ETapTargets.RemoveAt(i);
+                    continue;
+                }
+
+                if (target.Target != el || !target.IsEnabled())
                     continue;
 
                 matchedTarget = target;
@@ -570,7 +608,10 @@ namespace OneSignalDemo.Services
         private void InstallScrollViewE2EHooks(ScrollView mainSv)
         {
             mainSv.RegisterCallback<WheelEvent>(
-                e => e.StopImmediatePropagation(),
+                e =>
+                {
+                    e.StopImmediatePropagation();
+                },
                 TrickleDown.TrickleDown
             );
             // Touch-activity watchdog: any real Down/Move/Up resets the timer.
