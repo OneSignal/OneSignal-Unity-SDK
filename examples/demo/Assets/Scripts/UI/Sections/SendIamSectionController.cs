@@ -77,7 +77,7 @@ namespace OneSignalDemo.UI.Sections
             var btn = new Button(SendIam);
             btn.name = name;
             btn.AddToClassList("iam-button");
-            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, SendIam);
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, SendIam);
 
             var iconLabel = new Label(icon);
             iconLabel.AddToClassList("iam-button-icon");

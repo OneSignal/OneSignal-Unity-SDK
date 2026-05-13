@@ -137,7 +137,7 @@ namespace OneSignalDemo.UI.Dialogs
             btn.text = text;
             btn.AddToClassList("dialog-confirm-button");
             btn.AddToClassList("text-dialog-action");
-            AccessibilityBridge.RegisterE2ETapFallback(
+            AccessibilityBridge.RegisterE2ETapTarget(
                 btn,
                 () => btn.enabledInHierarchy,
                 onClick
@@ -151,7 +151,7 @@ namespace OneSignalDemo.UI.Dialogs
             btn.text = text;
             btn.AddToClassList("dialog-cancel-button");
             btn.AddToClassList("text-dialog-action");
-            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, Dismiss);
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, Dismiss);
             return btn;
         }
     }

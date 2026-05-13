@@ -51,7 +51,7 @@ namespace OneSignalDemo.UI.Dialogs
             var addRowButton = new Button(InvokeAddRow);
             addRowButton.name = "multipair_add_row_button";
             addRowButton.AddToClassList("dialog-add-row-button");
-            AccessibilityBridge.RegisterE2ETapFallback(
+            AccessibilityBridge.RegisterE2ETapTarget(
                 addRowButton,
                 () => addRowButton.enabledInHierarchy,
                 InvokeAddRow

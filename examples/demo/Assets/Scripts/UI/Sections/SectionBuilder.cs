@@ -46,7 +46,7 @@ namespace OneSignalDemo.UI.Sections
                 infoBtn.AddToClassList("info-button");
                 infoBtn.pickingMode = PickingMode.Position;
                 InfoTapByName[infoBtn.name] = onInfoTap;
-                AccessibilityBridge.RegisterE2ETapFallback(
+                AccessibilityBridge.RegisterE2ETapTarget(
                     infoBtn,
                     () => infoBtn.panel?.visualTree.Q("tooltip_title") == null,
                     onInfoTap
@@ -111,7 +111,7 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("primary-button");
-            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, onClick);
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, onClick);
             return btn;
         }
 
@@ -121,7 +121,7 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("destructive-button");
-            AccessibilityBridge.RegisterE2ETapFallback(btn, () => btn.enabledInHierarchy, onClick);
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, onClick);
             return btn;
         }
 
@@ -171,7 +171,7 @@ namespace OneSignalDemo.UI.Sections
                     deleteBtn.name = $"{sectionKey}_remove_{itemKey}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
-            AccessibilityBridge.RegisterE2ETapFallback(deleteBtn, () => true, onDelete);
+            AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 
@@ -227,7 +227,7 @@ namespace OneSignalDemo.UI.Sections
                     deleteBtn.name = $"{sectionKey}_remove_{value}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
-            AccessibilityBridge.RegisterE2ETapFallback(deleteBtn, () => true, onDelete);
+            AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 

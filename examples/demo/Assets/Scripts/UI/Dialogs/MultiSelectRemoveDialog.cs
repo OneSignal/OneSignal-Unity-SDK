@@ -57,12 +57,12 @@ namespace OneSignalDemo.UI.Dialogs
                 row.Add(label);
 
                 _toggles[item.Key] = toggle;
-                AccessibilityBridge.RegisterE2ETapFallback(
+                AccessibilityBridge.RegisterE2ETapTarget(
                     row,
                     () => toggle.enabledInHierarchy,
                     () => ToggleSelection(item.Key, toggle)
                 );
-                AccessibilityBridge.RegisterE2ETapFallback(
+                AccessibilityBridge.RegisterE2ETapTarget(
                     toggle,
                     () => toggle.enabledInHierarchy,
                     () => ToggleSelection(item.Key, toggle)

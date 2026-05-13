@@ -38,8 +38,15 @@ namespace OneSignalDemo.Services
         private const string GameObjectName = "OneSignalAccessibilityBridge";
 
         private static AccessibilityBridge _instance;
-        private static readonly List<E2ETapTarget> E2ETapTargets = new();
 #if UNITY_ANDROID && !UNITY_EDITOR
+        // Named-element click registry. UiAutomator2 only sees a flat
+        // accessibility tree, so a "click" arriving from the OS for element
+        // foo_button must be routed to the C# Action that the foo button's
+        // builder wired up. The dict is keyed by element instance and grows
+        // for the life of the app; named-element churn is bounded by the
+        // number of distinct UI builders, not test iterations.
+        private static readonly Dictionary<VisualElement, AndroidClickTarget> AndroidClickTargets
+            = new();
         private static AndroidJavaClass _androidAccessibilityBridge;
         private static bool _androidSyncErrorLogged;
 #endif
@@ -126,25 +133,26 @@ namespace OneSignalDemo.Services
         }
 
         /// <summary>
-        /// Registers a named element as a tap target so Android's native
-        /// accessibility action path (HandleAndroidAccessibilityAction →
-        /// InvokeRegisteredTap) can invoke it by element name, and so the
-        /// element is reported as role=button to UiAutomator2. iOS routes
-        /// taps through UI Toolkit's normal Clickable manipulator and does
-        /// not consult this registry — no root-level position fallback is
-        /// installed there (it leaked through modal dialog overlays).
+        /// Registers a named element as a click target for Android UiAutomator2.
+        /// The element is reported as role=button to the platform a11y service
+        /// and `HandleAndroidAccessibilityAction("click")` dispatches by name
+        /// to <paramref name="action"/>. No-op on iOS: XCUITest taps route
+        /// through UI Toolkit's normal Clickable manipulator.
         /// </summary>
-        public static void RegisterE2ETapFallback(
+        public static void RegisterE2ETapTarget(
             VisualElement target,
             Func<bool> isEnabled,
             Action action
         )
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             if (target == null || action == null)
                 return;
-
-            E2ETapTargets.RemoveAll(t => t.Target == target);
-            E2ETapTargets.Add(new E2ETapTarget(target, isEnabled ?? (() => true), action));
+            AndroidClickTargets[target] = new AndroidClickTarget(
+                isEnabled ?? (() => true),
+                action
+            );
+#endif
         }
 
         public static void RequestResync()
@@ -451,28 +459,6 @@ namespace OneSignalDemo.Services
             SyncAndroidNativeAccessibility();
         }
 
-        private static bool TryGetE2ETapTarget(VisualElement el, out E2ETapTarget matchedTarget)
-        {
-            matchedTarget = null;
-            for (int i = E2ETapTargets.Count - 1; i >= 0; i--)
-            {
-                var target = E2ETapTargets[i];
-                if (target.Target == null)
-                {
-                    E2ETapTargets.RemoveAt(i);
-                    continue;
-                }
-
-                if (target.Target != el || !target.IsEnabled())
-                    continue;
-
-                matchedTarget = target;
-                return true;
-            }
-
-            return false;
-        }
-
         public void HandleAndroidAccessibilityAction(string payload)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -583,7 +569,14 @@ namespace OneSignalDemo.Services
                 return;
             }
 
-            InvokeRegisteredTap(id);
+            foreach (var kvp in AndroidClickTargets)
+            {
+                var el = kvp.Key;
+                if (el == null || el.name != id || !kvp.Value.IsEnabled())
+                    continue;
+                kvp.Value.Action();
+                return;
+            }
         }
 
         private void InvokeAndroidNativeScroll(string direction)
@@ -607,28 +600,9 @@ namespace OneSignalDemo.Services
             SyncAndroidNativeAccessibility();
         }
 
-        private static void InvokeRegisteredTap(string id)
-        {
-            for (int i = E2ETapTargets.Count - 1; i >= 0; i--)
-            {
-                var target = E2ETapTargets[i];
-                if (target.Target == null)
-                {
-                    E2ETapTargets.RemoveAt(i);
-                    continue;
-                }
-
-                if (target.Target.name != id || !target.IsEnabled())
-                    continue;
-
-                target.Action();
-                return;
-            }
-        }
-
         private static string AndroidNativeRole(VisualElement el)
         {
-            if (TryGetE2ETapTarget(el, out _))
+            if (AndroidClickTargets.ContainsKey(el))
                 return "button";
 
             return el switch
@@ -987,19 +961,19 @@ namespace OneSignalDemo.Services
             return new Rect(wb.x * s, wb.y * s, wb.width * s, wb.height * s);
         }
 
-        private sealed class E2ETapTarget
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private sealed class AndroidClickTarget
         {
-            public readonly VisualElement Target;
             public readonly Func<bool> IsEnabled;
             public readonly Action Action;
 
-            public E2ETapTarget(VisualElement target, Func<bool> isEnabled, Action action)
+            public AndroidClickTarget(Func<bool> isEnabled, Action action)
             {
-                Target = target;
                 IsEnabled = isEnabled;
                 Action = action;
             }
         }
+#endif
     }
 }
 #endif
