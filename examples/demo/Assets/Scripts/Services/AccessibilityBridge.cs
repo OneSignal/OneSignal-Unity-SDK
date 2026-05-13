@@ -27,8 +27,6 @@ namespace OneSignalDemo.Services
         private const float FrameRefreshIntervalSeconds = 0.05f;
         private const float TapMarkerSize = 28f;
         private const int MaxTapMarkers = 40;
-        private const float E2ETapMoveTolerance = 12f;
-        private const int E2ETapDelayMs = 120;
         private const float ScrollOffsetEpsilon = 0.5f;
         private const double ScrollSettleLayoutChangeDelayMs = 150.0;
         // Backstop structural poll. The hot path is DetachFromPanelEvent
@@ -59,18 +57,9 @@ namespace OneSignalDemo.Services
         private Vector2 _lastScrollOffset;
         private double _lastScrollChangeMs = -1.0;
         private bool _scrollLayoutChangePending;
-        private bool _pendingE2ETap;
-        private int _pendingE2ETapPointerId;
-        private float _pendingE2ETapMoveTolerance;
-        private Vector2 _pendingE2ETapStart;
-        private VisualElement _pendingE2ETapTarget;
-        private Action _pendingE2ETapAction;
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
-        private readonly EventCallback<PointerDownEvent> _onNamedTapPointerDown;
-        private readonly EventCallback<PointerUpEvent> _onNamedTapPointerUp;
-        private readonly EventCallback<PointerMoveEvent> _onE2ETapPointerMove;
-        private readonly EventCallback<PointerCancelEvent> _onE2ETapPointerCancel;
+        private readonly EventCallback<PointerDownEvent> _onTapMarkerPointerDown;
         // Set true after the one-shot ScrollView taming hooks (WheelEvent
         // block + clamp settings) are installed; BuildHierarchy can fire many
         // times per session and we only want one subscription.
@@ -93,10 +82,7 @@ namespace OneSignalDemo.Services
         {
             _onGeometryChanged = _ => ScheduleFrameRefresh();
             _onDetachFromPanel = _ => ScheduleResync();
-            _onNamedTapPointerDown = OnNamedTapPointerDown;
-            _onNamedTapPointerUp = OnNamedTapPointerUp;
-            _onE2ETapPointerMove = OnE2ETapPointerMove;
-            _onE2ETapPointerCancel = _ => ClearPendingE2ETap();
+            _onTapMarkerPointerDown = e => AddTapMarker(new Vector2(e.position.x, e.position.y));
         }
 
         // Empirically, Unity's iOS accessibility plugin treats the Rect we
@@ -139,34 +125,26 @@ namespace OneSignalDemo.Services
 #endif
         }
 
+        /// <summary>
+        /// Registers a named element as a tap target so Android's native
+        /// accessibility action path (HandleAndroidAccessibilityAction →
+        /// InvokeRegisteredTap) can invoke it by element name, and so the
+        /// element is reported as role=button to UiAutomator2. iOS routes
+        /// taps through UI Toolkit's normal Clickable manipulator and does
+        /// not consult this registry — no root-level position fallback is
+        /// installed there (it leaked through modal dialog overlays).
+        /// </summary>
         public static void RegisterE2ETapFallback(
             VisualElement target,
             Func<bool> isEnabled,
             Action action
-        ) => RegisterE2ETapFallback(target, isEnabled, action, E2ETapMoveTolerance);
-
-        public static void RegisterE2ETapFallback(
-            VisualElement target,
-            Func<bool> isEnabled,
-            Action action,
-            float moveTolerance
         )
         {
             if (target == null || action == null)
                 return;
 
             E2ETapTargets.RemoveAll(t => t.Target == target);
-            target.UnregisterCallback<ClickEvent>(OnRegisteredTargetClick);
-            target.RegisterCallback<ClickEvent>(OnRegisteredTargetClick);
-            E2ETapTargets.Add(
-                new E2ETapTarget(target, isEnabled ?? (() => true), action, moveTolerance)
-            );
-        }
-
-        private static void OnRegisteredTargetClick(ClickEvent e)
-        {
-            if (e.currentTarget is VisualElement target)
-                _instance?.CancelPendingE2ETap(target);
+            E2ETapTargets.Add(new E2ETapTarget(target, isEnabled ?? (() => true), action));
         }
 
         public static void RequestResync()
@@ -211,10 +189,7 @@ namespace OneSignalDemo.Services
             if (_root != null)
             {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
-                _root.UnregisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
-                _root.UnregisterCallback(_onNamedTapPointerUp, TrickleDown.TrickleDown);
-                _root.UnregisterCallback(_onE2ETapPointerMove, TrickleDown.TrickleDown);
-                _root.UnregisterCallback(_onE2ETapPointerCancel, TrickleDown.TrickleDown);
+                _root.UnregisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
             }
             foreach (var el in _map.Keys)
                 el.UnregisterCallback(_onDetachFromPanel);
@@ -406,10 +381,11 @@ namespace OneSignalDemo.Services
             // a tap fired immediately after a scroll sees fresh frames
             // instead of a 50ms-stale snapshot.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
-            _root.RegisterCallback(_onNamedTapPointerDown, TrickleDown.TrickleDown);
-            _root.RegisterCallback(_onNamedTapPointerUp, TrickleDown.TrickleDown);
-            _root.RegisterCallback(_onE2ETapPointerMove, TrickleDown.TrickleDown);
-            _root.RegisterCallback(_onE2ETapPointerCancel, TrickleDown.TrickleDown);
+            // Debug-only: drop a visual marker at every tap location so the
+            // demo overlay matches XCUITest's reported coordinates. Does not
+            // dispatch any action; UI Toolkit's hit-test handles the real
+            // tap routing.
+            _root.RegisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
 
             // One-shot ScrollView taming: BuildHierarchy can run dozens of
             // times per session (every dialog open/close, every section
@@ -473,100 +449,6 @@ namespace OneSignalDemo.Services
                 AssistiveSupport.notificationDispatcher?.SendScreenChanged();
             _hierarchy.RefreshNodeFrames();
             SyncAndroidNativeAccessibility();
-        }
-
-        private void OnNamedTapPointerDown(PointerDownEvent e)
-        {
-            var position = new Vector2(e.position.x, e.position.y);
-            AddTapMarker(position);
-
-            if (!TryGetE2ETapTarget(position, out var target))
-                return;
-
-            if (target.MoveTolerance < 0f)
-            {
-                target.Action();
-                return;
-            }
-
-            _pendingE2ETap = true;
-            _pendingE2ETapPointerId = e.pointerId;
-            _pendingE2ETapMoveTolerance = target.MoveTolerance;
-            _pendingE2ETapStart = position;
-            _pendingE2ETapTarget = target.Target;
-            _pendingE2ETapAction = target.Action;
-            _root.schedule.Execute(() =>
-            {
-                if (!_pendingE2ETap)
-                    return;
-                _pendingE2ETap = false;
-                var action = _pendingE2ETapAction;
-                _pendingE2ETapAction = null;
-                _pendingE2ETapTarget = null;
-                action?.Invoke();
-            }).StartingIn(E2ETapDelayMs);
-        }
-
-        private void OnNamedTapPointerUp(PointerUpEvent e)
-        {
-            if (_pendingE2ETap)
-                return;
-
-            var eventTarget = e.target as VisualElement;
-            if (eventTarget == null || !TryGetE2ETapTarget(eventTarget, out var target))
-                return;
-
-            target.Action();
-        }
-
-        private void OnE2ETapPointerMove(PointerMoveEvent e)
-        {
-            if (!_pendingE2ETap || _pendingE2ETapPointerId != e.pointerId)
-                return;
-
-            var position = new Vector2(e.position.x, e.position.y);
-            if (Vector2.Distance(position, _pendingE2ETapStart) > _pendingE2ETapMoveTolerance)
-                ClearPendingE2ETap();
-        }
-
-        private void CancelPendingE2ETap(VisualElement target)
-        {
-            if (!_pendingE2ETap || _pendingE2ETapTarget != target)
-                return;
-
-            ClearPendingE2ETap();
-        }
-
-        private void ClearPendingE2ETap()
-        {
-            _pendingE2ETap = false;
-            _pendingE2ETapAction = null;
-            _pendingE2ETapTarget = null;
-        }
-
-        private static bool TryGetE2ETapTarget(Vector2 position, out E2ETapTarget matchedTarget)
-        {
-            matchedTarget = null;
-            for (int i = E2ETapTargets.Count - 1; i >= 0; i--)
-            {
-                var target = E2ETapTargets[i];
-                if (target.Target == null)
-                {
-                    E2ETapTargets.RemoveAt(i);
-                    continue;
-                }
-
-                if (target.Target.panel == null)
-                    continue;
-
-                if (!target.IsEnabled() || !target.Target.worldBound.Contains(position))
-                    continue;
-
-                matchedTarget = target;
-                return true;
-            }
-
-            return false;
         }
 
         private static bool TryGetE2ETapTarget(VisualElement el, out E2ETapTarget matchedTarget)
@@ -1110,19 +992,12 @@ namespace OneSignalDemo.Services
             public readonly VisualElement Target;
             public readonly Func<bool> IsEnabled;
             public readonly Action Action;
-            public readonly float MoveTolerance;
 
-            public E2ETapTarget(
-                VisualElement target,
-                Func<bool> isEnabled,
-                Action action,
-                float moveTolerance
-            )
+            public E2ETapTarget(VisualElement target, Func<bool> isEnabled, Action action)
             {
                 Target = target;
                 IsEnabled = isEnabled;
                 Action = action;
-                MoveTolerance = moveTolerance;
             }
         }
     }
