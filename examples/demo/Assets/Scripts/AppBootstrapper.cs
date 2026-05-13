@@ -57,10 +57,10 @@ namespace OneSignalDemo
             );
 #endif
 
+            RegisterSdkListeners();
+
             OneSignal.InAppMessages.Paused = _prefs.IamPaused;
             OneSignal.Location.IsShared = _prefs.LocationShared;
-
-            RegisterSdkListeners();
 
             _viewModel.Init(_prefs, _apiService);
             _viewModel.LoadInitialState();
