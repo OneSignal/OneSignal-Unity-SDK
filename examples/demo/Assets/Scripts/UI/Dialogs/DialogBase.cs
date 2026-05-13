@@ -7,34 +7,6 @@ namespace OneSignalDemo.UI.Dialogs
 {
     public abstract class DialogBase
     {
-        // Hooks a panel-root PointerDown handler that dispatches taps on
-        // section info icons (elements named "*_info_icon") through a
-        // name->Action lookup registered by SectionBuilder. UIToolkit's
-        // normal AtTarget dispatch was observed to drop PointerDown on the
-        // info Label after iOS Appium injected a mobile:scroll gesture in
-        // the same test (the panel root sees the event with the correct
-        // target, but the target's own callback never fires). Dispatching
-        // from the panel root sidesteps whatever state breaks normal
-        // dispatch and keeps E2E taps reliable.
-        private static bool _infoFallbackHooked;
-
-        private static void HookInfoIconFallback(VisualElement parent)
-        {
-            if (_infoFallbackHooked) return;
-            var root = parent?.panel?.visualTree;
-            if (root == null) return;
-            _infoFallbackHooked = true;
-            root.RegisterCallback<PointerDownEvent>(e =>
-            {
-                var t = e.target as VisualElement;
-                if (t?.name == null || !t.name.EndsWith("_info_icon")) return;
-                if (!OneSignalDemo.UI.Sections.SectionBuilder.InfoTapByName
-                    .TryGetValue(t.name, out var action) || action == null) return;
-                action();
-                e.StopPropagation();
-            }, TrickleDown.TrickleDown);
-        }
-
 #if UNITY_IOS && !UNITY_EDITOR
         // Native bridge in Assets/Plugins/iOS/OneSignalDemoKeyboard.mm.
         // Calls [keyWindow endEditing:YES] to dismiss the iOS keyboard view
@@ -56,7 +28,6 @@ namespace OneSignalDemo.UI.Dialogs
                 return;
 
             _parent = parent;
-            HookInfoIconFallback(parent);
 
             Overlay = new VisualElement();
             Overlay.AddToClassList("dialog-overlay");

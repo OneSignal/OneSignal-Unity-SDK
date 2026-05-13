@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using OneSignalDemo.Services;
 using OneSignalDemo.UI;
 using UnityEngine.UIElements;
@@ -8,15 +7,6 @@ namespace OneSignalDemo.UI.Sections
 {
     public static class SectionBuilder
     {
-        // Maps info-icon element name (e.g. "send_push_info_icon") to its
-        // onInfoTap action. DialogBase reads this from a panel-root
-        // PointerDown handler to dispatch info-icon taps. UIToolkit's normal
-        // AtTarget dispatch was observed to drop PointerDown on the Label
-        // after iOS Appium injected a mobile:scroll gesture in the same test,
-        // so a root-level dispatch path is used to keep E2E taps reliable.
-        public static readonly Dictionary<string, Action> InfoTapByName =
-            new Dictionary<string, Action>();
-
         public static VisualElement CreateSection(
             string title,
             string name,
@@ -37,15 +27,21 @@ namespace OneSignalDemo.UI.Sections
 
             if (onInfoTap != null)
             {
-                // Plain Label (no Button/Clickable manipulator) so PointerDown
-                // dispatch is not affected by manipulator-level pointer
-                // capture. The actual tap handler is wired at the panel root
-                // via InfoTapByName; see DialogBase.HookInfoIconFallback.
                 var infoBtn = new Label(MaterialIcons.Info);
                 infoBtn.name = $"{SectionKeyFromName(name)}_info_icon";
                 infoBtn.AddToClassList("info-button");
                 infoBtn.pickingMode = PickingMode.Position;
-                InfoTapByName[infoBtn.name] = onInfoTap;
+                // Label has no Clickable manipulator, so wire onInfoTap to
+                // ClickEvent (UI Toolkit dispatches this once PointerDown +
+                // PointerUp land on the same element). Avoids the previous
+                // dance of a static panel-root PointerDown listener fed by
+                // a name lookup, which had a chicken-and-egg with first
+                // dialog open.
+                infoBtn.RegisterCallback<ClickEvent>(_ =>
+                {
+                    if (infoBtn.panel?.visualTree.Q("tooltip_title") == null)
+                        onInfoTap();
+                });
                 AccessibilityBridge.RegisterE2ETapTarget(
                     infoBtn,
                     () => infoBtn.panel?.visualTree.Q("tooltip_title") == null,
