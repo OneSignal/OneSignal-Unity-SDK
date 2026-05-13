@@ -285,14 +285,23 @@ namespace OneSignalDemo.Services
             if (_frameRefreshTimer >= FrameRefreshIntervalSeconds)
             {
                 _frameRefreshTimer = 0f;
-                RefreshNodeValuesAndActive();
-                _hierarchy.RefreshNodeFrames();
-                SyncAndroidNativeAccessibility();
+                // Only push to the platform a11y service when something actually
+                // changed. Unconditional RefreshNodeFrames + Android sync every
+                // 50ms emits a continuous stream of TYPE_WINDOW_CONTENT_CHANGED
+                // AccessibilityEvents that prevent UiAutomator2's wait-for-idle
+                // from observing 500ms of quiet, stalling every click for the
+                // full waitForIdleTimeout (default 10s).
+                if (RefreshNodeValuesAndActive())
+                {
+                    _hierarchy.RefreshNodeFrames();
+                    SyncAndroidNativeAccessibility();
+                }
             }
         }
 
-        private void RefreshNodeValuesAndActive()
+        private bool RefreshNodeValuesAndActive()
         {
+            bool anyChanged = false;
             foreach (var kvp in _map)
             {
                 var el = kvp.Key;
@@ -306,7 +315,9 @@ namespace OneSignalDemo.Services
 
                 node.value = newValue;
                 node.isActive = newActive;
+                anyChanged = true;
             }
+            return anyChanged;
         }
 
         // Order-sensitive FNV-1a hash over named descendants. A bare count missed
