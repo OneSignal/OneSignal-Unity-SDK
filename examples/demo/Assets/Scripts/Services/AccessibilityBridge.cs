@@ -656,10 +656,14 @@ namespace OneSignalDemo.Services
                 return;
             }
 
-            var toggle = _root.Q<Toggle>(id);
-            if (toggle != null)
+            // BaseBoolField is the common base of Toggle AND RadioButton in
+            // UI Toolkit. Q<Toggle> would miss radios entirely, leaving the
+            // overlay click as a no-op (clicking the unique/with-value radio
+            // wouldn't actually select that outcome type).
+            var boolField = _root.Q<BaseBoolField>(id);
+            if (boolField != null)
             {
-                toggle.value = !toggle.value;
+                boolField.value = !boolField.value;
                 return;
             }
 
@@ -714,7 +718,7 @@ namespace OneSignalDemo.Services
             return el switch
             {
                 TextField => "input",
-                Toggle => "toggle",
+                BaseBoolField => "toggle",
                 OneSignalDemo.UI.SwitchToggle => "toggle",
                 Button => "button",
                 _ => "text",
@@ -945,7 +949,7 @@ namespace OneSignalDemo.Services
             return el switch
             {
                 Button => AccessibilityRole.Button,
-                Toggle => AccessibilityRole.Toggle,
+                BaseBoolField => AccessibilityRole.Toggle,
                 OneSignalDemo.UI.SwitchToggle => AccessibilityRole.Toggle,
                 // ScrollView intentionally NOT exposed as AccessibilityRole.ScrollView.
                 // XCUITest's `XCUIElement.tap()` performs an implicit
@@ -967,7 +971,7 @@ namespace OneSignalDemo.Services
         private static string ExtractValue(VisualElement el) => el switch
         {
             TextField tf => tf.value ?? string.Empty,
-            Toggle t => t.value ? "1" : "0",
+            BaseBoolField b => b.value ? "1" : "0",
             // The demo uses a custom SwitchToggle (VisualElement) that does
             // not inherit from UnityEngine.UIElements.Toggle, so the platform
             // a11y value would be empty without this case. The selectors
