@@ -393,8 +393,6 @@ namespace OneSignalDemo.Services
             UnregisterTreeCallbacks();
 
             _hierarchy ??= new AccessibilityHierarchy();
-            _hierarchy.Clear();
-            _map.Clear();
 
             // Recompute the panel→screen scale before walking the tree so each
             // node's frameGetter sees the correct ratio.
@@ -432,11 +430,47 @@ namespace OneSignalDemo.Services
                 }
             }
 
-            WalkAndAdd(_root);
+            // Incremental rebuild: preserve AccessibilityNode identities by
+            // name across rebuilds. _hierarchy.Clear() + re-add invalidates
+            // every WDA-cached element ref on iOS, producing a burst of
+            // "stale element - terminating request" warnings whenever a
+            // dialog opens/closes — even when most nodes are unchanged.
+            // We diff by name: reuse existing nodes (just re-bind their
+            // frameGetter to the current VisualElement instance), add new
+            // ones, remove ones whose names disappeared.
+            var existingByName = new Dictionary<string, AccessibilityNode>(_map.Count);
+            foreach (var kvp in _map)
+            {
+                var n = kvp.Value;
+                if (n != null && !string.IsNullOrEmpty(kvp.Key?.name))
+                    existingByName[kvp.Key.name] = n;
+            }
+
+            _map.Clear();
+            var seenNames = new HashSet<string>();
+            bool addedAny = false;
+            WalkAndUpsert(_root, existingByName, seenNames, ref addedAny);
+
+            bool removedAny = false;
+            foreach (var kvp in existingByName)
+            {
+                if (seenNames.Contains(kvp.Key))
+                    continue;
+                try { _hierarchy.RemoveNode(kvp.Value); }
+                catch { /* node may already be detached */ }
+                removedAny = true;
+            }
+
             _lastStructureSignature = ComputeStructureSignature(_root);
 
-            AssistiveSupport.activeHierarchy = _hierarchy;
-            AssistiveSupport.notificationDispatcher?.SendScreenChanged();
+            if (AssistiveSupport.activeHierarchy != _hierarchy)
+                AssistiveSupport.activeHierarchy = _hierarchy;
+            // SendScreenChanged tells VoiceOver/XCUITest to refresh its
+            // element snapshot, which also invalidates cached refs. Skip it
+            // when we only re-bound existing nodes — frame/value updates
+            // ride out via the normal RefreshNodeFrames path.
+            if (addedAny || removedAny)
+                AssistiveSupport.notificationDispatcher?.SendScreenChanged();
             _hierarchy.RefreshNodeFrames();
             SyncAndroidNativeAccessibility();
         }
@@ -905,7 +939,12 @@ namespace OneSignalDemo.Services
             }
         }
 
-        private void WalkAndAdd(VisualElement el)
+        private void WalkAndUpsert(
+            VisualElement el,
+            Dictionary<string, AccessibilityNode> existingByName,
+            HashSet<string> seenNames,
+            ref bool addedAny
+        )
         {
             if (el == null)
                 return;
@@ -917,11 +956,20 @@ namespace OneSignalDemo.Services
             // descendants (XCUITest reports visible="false" even when the
             // child's frame is on screen). The test framework only ever looks
             // up by name, so containment doesn't affect reachability.
-            if (!string.IsNullOrEmpty(el.name))
+            if (!string.IsNullOrEmpty(el.name) && !_map.ContainsKey(el))
             {
-                if (!_map.ContainsKey(el))
+                var name = el.name;
+                // Two distinct VisualElements with the same name (e.g.
+                // freshly-rebuilt dialog) — first one wins; only one
+                // accessibility node per name to keep ids unambiguous.
+                if (seenNames.Add(name))
                 {
-                    var node = _hierarchy.AddNode(el.name, parent: null);
+                    AccessibilityNode node;
+                    if (!existingByName.TryGetValue(name, out node))
+                    {
+                        node = _hierarchy.AddNode(name, parent: null);
+                        addedAny = true;
+                    }
                     var captured = el;
                     node.frameGetter = () => GetScreenRect(captured);
                     node.role = MapRole(el);
@@ -931,14 +979,13 @@ namespace OneSignalDemo.Services
                     // Detach fires the moment a tracked element leaves the
                     // panel — Dismiss(), section refresh, scene swap. Drives
                     // an immediate ScheduleResync so XCUITest can't read a
-                    // node whose owner is already gone (the source of the
-                    // "stale element" warnings during dialog teardown).
+                    // node whose owner is already gone.
                     el.RegisterCallback(_onDetachFromPanel);
                 }
             }
 
             for (int i = 0; i < el.childCount; i++)
-                WalkAndAdd(el[i]);
+                WalkAndUpsert(el[i], existingByName, seenNames, ref addedAny);
         }
 
         private static AccessibilityRole MapRole(VisualElement el)
