@@ -20,6 +20,11 @@ namespace OneSignalDemo.UI.Dialogs
         private bool _submitted;
         private double _lastAddRowMs = -1.0;
         private const double AddRowDedupeMs = 500.0;
+        // Monotonic — we cannot derive ids from _rows.Count because RemoveRow
+        // does not renumber survivors, so a new row would collide with an
+        // existing name and AccessibilityBridge.WalkAndUpsert (first-wins by
+        // name) would silently drop it from the a11y tree.
+        private int _nextRowIndex;
 
         public MultiPairInputDialog(
             string title,
@@ -89,15 +94,17 @@ namespace OneSignalDemo.UI.Dialogs
             var row = new VisualElement();
             row.AddToClassList("dialog-row");
 
+            var rowIndex = _nextRowIndex++;
+
             var keyField = new TextField();
-            keyField.name = $"multipair_key_{_rows.Count}";
+            keyField.name = $"multipair_key_{rowIndex}";
             keyField.AddToClassList("input-field");
             keyField.AddToClassList("dialog-field-group-left");
             keyField.textEdition.placeholder = _keyLabel;
             keyField.RegisterValueChangedCallback(_ => ValidateAll());
 
             var valueField = new TextField();
-            valueField.name = $"multipair_value_{_rows.Count}";
+            valueField.name = $"multipair_value_{rowIndex}";
             valueField.AddToClassList("input-field");
             valueField.AddToClassList("dialog-field-group");
             valueField.textEdition.placeholder = _valueLabel;
