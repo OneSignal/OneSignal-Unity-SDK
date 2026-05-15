@@ -31,6 +31,21 @@ namespace OneSignalDemo
         {
             DotEnv.Load();
 
+            // iOS cancels in-progress touches when the OS suspends the app, and
+            // Unity's Input System raises "Touch was already deallocated" on the
+            // next frame. In dev builds, that pops the engine's Development
+            // Console overlay on top of the UI and occludes subsequent test taps.
+            // Appium's live-activity spec deliberately locks the screen mid-tap,
+            // so suppress the overlay when E2E mode is on; the exception itself
+            // still logs to stdout for debugging. developerConsoleEnabled
+            // prevents future pops; developerConsoleVisible hides one that's
+            // already showing.
+            if (DotEnv.IsE2EMode)
+            {
+                Debug.developerConsoleEnabled = false;
+                Debug.developerConsoleVisible = false;
+            }
+
             _prefs = new PreferencesService();
             _apiService = new OneSignalApiService();
 
