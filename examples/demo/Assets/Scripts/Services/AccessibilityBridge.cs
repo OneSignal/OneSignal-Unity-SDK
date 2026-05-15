@@ -238,6 +238,23 @@ namespace OneSignalDemo.Services
                 _instance = null;
         }
 
+        // After returnToApp() the test runner's first query can read a stale
+        // accessibility snapshot: WDA on iOS (and to a lesser extent
+        // UiAutomator2 on Android) caches the tree, and neither
+        // BuildHierarchy's "structure changed" check nor the OS's own
+        // notifications reliably invalidate that cache when the tree is
+        // identical to before backgrounding. Rebuild and broadcast a
+        // screen-changed notification unconditionally on every foreground so
+        // the next XCUITest/UiAutomator2 query returns fresh data without the
+        // Appium side having to spin on a fixed sleep.
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus || _hierarchy == null || _root == null)
+                return;
+            BuildHierarchy();
+            AssistiveSupport.notificationDispatcher?.SendScreenChanged();
+        }
+
         private void UnregisterTreeCallbacks()
         {
             if (_root != null)
