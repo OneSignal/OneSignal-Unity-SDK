@@ -139,6 +139,7 @@ namespace OneSignalDemo.ViewModels
 
         public void LoginUser(string externalUserId)
         {
+            externalUserId = externalUserId?.Trim();
             if (string.IsNullOrEmpty(externalUserId))
                 return;
 
@@ -439,11 +440,8 @@ namespace OneSignalDemo.ViewModels
 
         public async void EndLiveActivity(string activityId)
         {
-            if (string.IsNullOrEmpty(activityId) || _isLiveActivityUpdating)
+            if (string.IsNullOrEmpty(activityId))
                 return;
-
-            _isLiveActivityUpdating = true;
-            NotifyStateChanged();
 
             try
             {
@@ -462,6 +460,7 @@ namespace OneSignalDemo.ViewModels
                 {
                     _liveActivityStatusIndex = 0;
                     Debug.Log($"[{Tag}] Ended Live Activity: {activityId}");
+                    NotifyStateChanged();
                 }
                 else
                 {
@@ -472,9 +471,6 @@ namespace OneSignalDemo.ViewModels
             {
                 Debug.LogError($"[{Tag}] Live Activity end error: {ex.Message}");
             }
-
-            _isLiveActivityUpdating = false;
-            NotifyStateChanged();
         }
 
         public void SetConsentRequired(bool required)
@@ -482,11 +478,6 @@ namespace OneSignalDemo.ViewModels
             _consentRequired = required;
             _prefs.ConsentRequired = required;
             OneSignal.ConsentRequired = required;
-            if (!required)
-            {
-                _privacyConsentGiven = false;
-                _prefs.PrivacyConsent = false;
-            }
             Debug.Log($"[{Tag}] Consent required: {required}");
             NotifyStateChanged();
         }
@@ -526,7 +517,8 @@ namespace OneSignalDemo.ViewModels
 
         public void CheckLocationShared()
         {
-            ShowToast($"Location shared: {_locationShared.ToString().ToLowerInvariant()}");
+            bool shared = OneSignal.Location.IsShared;
+            ShowToast($"Location shared: {shared.ToString().ToLowerInvariant()}");
         }
 
         public async void PromptPush()
@@ -609,6 +601,7 @@ namespace OneSignalDemo.ViewModels
             _aliasesList.Clear();
             _emailsList.Clear();
             _smsNumbersList.Clear();
+            _tagsList.Clear();
             _triggersList.Clear();
         }
 

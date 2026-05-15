@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OneSignalDemo.Services;
 using OneSignalDemo.UI;
 using UnityEngine.UIElements;
@@ -244,6 +245,47 @@ namespace OneSignalDemo.UI.Sections
             label.AddToClassList("empty-state");
             label.AddToClassList("text-empty-state");
             return label;
+        }
+
+        /// <summary>
+        /// Mirrors the Capacitor demo's PairList: rebuilds <paramref name="container"/>
+        /// with a loading state, an empty state, or a divider-separated list of
+        /// key/value rows. Section-specific button visibility is owned by callers.
+        /// </summary>
+        public static void RenderPairList(
+            VisualElement container,
+            IReadOnlyList<KeyValuePair<string, string>> items,
+            string emptyText,
+            string sectionKey,
+            bool loading = false,
+            Action<string> onRemove = null
+        )
+        {
+            container.Clear();
+
+            if (items.Count == 0)
+            {
+                container.Add(
+                    loading
+                        ? CreateLoadingState(sectionKey)
+                        : CreateEmptyState(emptyText, sectionKey)
+                );
+                return;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (i > 0)
+                    container.Add(CreateDivider(tight: true));
+                var kvp = items[i];
+                var capturedKey = kvp.Key;
+                Action delete = null;
+                if (onRemove != null)
+                    delete = () => onRemove(capturedKey);
+                container.Add(
+                    CreateKeyValueItem(capturedKey, kvp.Value, sectionKey, capturedKey, delete)
+                );
+            }
         }
 
         private static string SectionKeyFromName(string name) =>

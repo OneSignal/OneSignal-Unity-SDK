@@ -106,6 +106,14 @@
     color: var(--os-text-primary);
 }
 
+.hint-text {
+    font-size: 12px;
+    color: var(--os-text-hint);
+    -unity-text-align: middle-center;
+    margin-top: 4px;
+    white-space: normal;
+}
+
 .text-warning-link {
     font-size: 12px;
     -unity-font-style: bold;

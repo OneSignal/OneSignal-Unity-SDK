@@ -49,12 +49,12 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void ValidateInput()
         {
-            _confirmButton?.SetEnabled(!string.IsNullOrEmpty(_externalIdField?.value));
+            _confirmButton?.SetEnabled(!string.IsNullOrWhiteSpace(_externalIdField?.value));
         }
 
         private void OnConfirm()
         {
-            var value = _externalIdField?.value;
+            var value = _externalIdField?.value?.Trim();
             if (!string.IsNullOrEmpty(value))
             {
                 _externalIdField?.Blur();

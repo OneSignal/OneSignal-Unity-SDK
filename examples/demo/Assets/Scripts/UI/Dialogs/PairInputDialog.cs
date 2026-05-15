@@ -90,8 +90,8 @@ namespace OneSignalDemo.UI.Dialogs
         private void ValidateInput()
         {
             bool valid =
-                !string.IsNullOrEmpty(_keyField?.value)
-                && !string.IsNullOrEmpty(_valueField?.value);
+                !string.IsNullOrWhiteSpace(_keyField?.value)
+                && !string.IsNullOrWhiteSpace(_valueField?.value);
             _confirmButton?.SetEnabled(valid);
         }
 
@@ -103,8 +103,8 @@ namespace OneSignalDemo.UI.Dialogs
             if (_submitted)
                 return;
 
-            var key = _keyField?.value;
-            var value = _valueField?.value;
+            var key = _keyField?.value?.Trim();
+            var value = _valueField?.value?.Trim();
             if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
                 return;
 

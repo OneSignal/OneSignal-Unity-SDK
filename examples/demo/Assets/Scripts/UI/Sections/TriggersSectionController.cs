@@ -1,8 +1,5 @@
 using System;
-using System.Linq;
-using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Sections
@@ -101,36 +98,18 @@ namespace OneSignalDemo.UI.Sections
 
         private void RefreshList()
         {
-            _listContainer.Clear();
-            var triggers = _viewModel.Triggers;
+            SectionBuilder.RenderPairList(
+                _listContainer,
+                _viewModel.Triggers,
+                "No triggers added",
+                "triggers",
+                onRemove: key => _viewModel.RemoveTrigger(key)
+            );
 
-            bool hasTriggers = triggers.Count > 0;
-            _removeSelectedButton.style.display = hasTriggers
-                ? DisplayStyle.Flex
-                : DisplayStyle.None;
+            bool hasTriggers = _viewModel.Triggers.Count > 0;
+            _removeSelectedButton.style.display =
+                hasTriggers ? DisplayStyle.Flex : DisplayStyle.None;
             _clearAllButton.style.display = hasTriggers ? DisplayStyle.Flex : DisplayStyle.None;
-
-            if (!hasTriggers)
-            {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No triggers added", "triggers"));
-                return;
-            }
-
-            for (int i = 0; i < triggers.Count; i++)
-            {
-                if (i > 0)
-                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
-                var kvp = triggers[i];
-                _listContainer.Add(
-                    SectionBuilder.CreateKeyValueItem(
-                        kvp.Key,
-                        kvp.Value,
-                        "triggers",
-                        kvp.Key,
-                        () => _viewModel.RemoveTrigger(kvp.Key)
-                    )
-                );
-            }
         }
     }
 }

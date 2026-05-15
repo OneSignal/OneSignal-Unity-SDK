@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -60,28 +59,13 @@ namespace OneSignalDemo.UI.Sections
 
         private void RefreshList()
         {
-            _listContainer.Clear();
-            var aliases = _viewModel.Aliases;
-
-            if (aliases.Count == 0)
-            {
-                _listContainer.Add(
-                    _viewModel.IsLoading
-                        ? SectionBuilder.CreateLoadingState("aliases")
-                        : SectionBuilder.CreateEmptyState("No Aliases Added", "aliases")
-                );
-                return;
-            }
-
-            for (int i = 0; i < aliases.Count; i++)
-            {
-                if (i > 0)
-                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
-                var kvp = aliases[i];
-                _listContainer.Add(
-                    SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, "aliases", kvp.Key)
-                );
-            }
+            SectionBuilder.RenderPairList(
+                _listContainer,
+                _viewModel.Aliases,
+                "No Aliases Added",
+                "aliases",
+                loading: _viewModel.IsLoading
+            );
         }
     }
 }

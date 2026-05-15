@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -69,37 +68,17 @@ namespace OneSignalDemo.UI.Sections
 
         private void RefreshList()
         {
-            _listContainer.Clear();
-            var tags = _viewModel.Tags;
+            SectionBuilder.RenderPairList(
+                _listContainer,
+                _viewModel.Tags,
+                "No Tags Added",
+                "tags",
+                loading: _viewModel.IsLoading,
+                onRemove: key => _viewModel.RemoveTag(key)
+            );
 
-            if (tags.Count == 0)
-            {
-                _listContainer.Add(
-                    _viewModel.IsLoading
-                        ? SectionBuilder.CreateLoadingState("tags")
-                        : SectionBuilder.CreateEmptyState("No Tags Added", "tags")
-                );
-                _removeSelectedButton.style.display = DisplayStyle.None;
-                return;
-            }
-
-            _removeSelectedButton.style.display = DisplayStyle.Flex;
-
-            for (int i = 0; i < tags.Count; i++)
-            {
-                if (i > 0)
-                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
-                var kvp = tags[i];
-                _listContainer.Add(
-                    SectionBuilder.CreateKeyValueItem(
-                        kvp.Key,
-                        kvp.Value,
-                        "tags",
-                        kvp.Key,
-                        () => _viewModel.RemoveTag(kvp.Key)
-                    )
-                );
-            }
+            _removeSelectedButton.style.display =
+                _viewModel.Tags.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }

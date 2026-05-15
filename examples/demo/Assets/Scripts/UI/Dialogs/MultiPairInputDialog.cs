@@ -166,7 +166,7 @@ namespace OneSignalDemo.UI.Dialogs
             bool allValid = _rows.Count > 0;
             foreach (var (key, value, _) in _rows)
             {
-                if (string.IsNullOrEmpty(key.value) || string.IsNullOrEmpty(value.value))
+                if (string.IsNullOrWhiteSpace(key.value) || string.IsNullOrWhiteSpace(value.value))
                 {
                     allValid = false;
                     break;
@@ -183,8 +183,10 @@ namespace OneSignalDemo.UI.Dialogs
             var dict = new Dictionary<string, string>();
             foreach (var (key, value, _) in _rows)
             {
-                if (!string.IsNullOrEmpty(key.value) && !string.IsNullOrEmpty(value.value))
-                    dict[key.value] = value.value;
+                var trimmedKey = key.value?.Trim();
+                var trimmedValue = value.value?.Trim();
+                if (!string.IsNullOrEmpty(trimmedKey) && !string.IsNullOrEmpty(trimmedValue))
+                    dict[trimmedKey] = trimmedValue;
             }
 
             if (dict.Count == 0)
