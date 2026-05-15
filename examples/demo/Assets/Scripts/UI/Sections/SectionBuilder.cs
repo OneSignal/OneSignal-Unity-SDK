@@ -27,21 +27,18 @@ namespace OneSignalDemo.UI.Sections
 
             if (onInfoTap != null)
             {
+                // Plain Label (no Button/Clickable manipulator). On iOS, UI
+                // Toolkit's AtTarget dispatch on this Label is observed to
+                // drop the PointerDown whenever Appium injects a mobile:scroll
+                // just before the tap (every spec's `before` hook scrolls to
+                // its section first). The bridge installs a panel-root
+                // TrickleDown handler that dispatches by name — bypasses the
+                // dropped AtTarget. On Android, the same registration drives
+                // the UiAutomator2 click route.
                 var infoBtn = new Label(MaterialIcons.Info);
                 infoBtn.name = $"{SectionKeyFromName(name)}_info_icon";
                 infoBtn.AddToClassList("info-button");
                 infoBtn.pickingMode = PickingMode.Position;
-                // Label has no Clickable manipulator, so wire onInfoTap to
-                // ClickEvent (UI Toolkit dispatches this once PointerDown +
-                // PointerUp land on the same element). Avoids the previous
-                // dance of a static panel-root PointerDown listener fed by
-                // a name lookup, which had a chicken-and-egg with first
-                // dialog open.
-                infoBtn.RegisterCallback<ClickEvent>(_ =>
-                {
-                    if (infoBtn.panel?.visualTree.Q("tooltip_title") == null)
-                        onInfoTap();
-                });
                 AccessibilityBridge.RegisterE2ETapTarget(
                     infoBtn,
                     () => infoBtn.panel?.visualTree.Q("tooltip_title") == null,

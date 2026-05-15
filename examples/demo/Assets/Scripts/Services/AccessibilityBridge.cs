@@ -50,6 +50,20 @@ namespace OneSignalDemo.Services
         private static AndroidJavaClass _androidAccessibilityBridge;
         private static bool _androidSyncErrorLogged;
 #endif
+#if UNITY_IOS && !UNITY_EDITOR
+        // iOS-only name-keyed dispatch table for "*_info_icon" Labels.
+        // Plain Label has no Clickable manipulator, so XCUITest taps reach
+        // the target via UI Toolkit's hit-test but no AtTarget callback runs.
+        // Worse, after iOS Appium injects a mobile:scroll before the tap,
+        // AtTarget dispatch on the Label is observed to drop entirely — the
+        // panel root sees the PointerDown with the correct target, but the
+        // target's own callback never fires. We bypass AtTarget by dispatching
+        // from a TrickleDown handler installed once on the panel root (see
+        // BuildHierarchy), keyed by element name so modal overlays can't
+        // bleed through.
+        private static readonly Dictionary<string, IosInfoTap> _iosInfoTapByName
+            = new();
+#endif
 
         private VisualElement _root;
         private AccessibilityHierarchy _hierarchy;
@@ -71,6 +85,9 @@ namespace OneSignalDemo.Services
         // block + clamp settings) are installed; BuildHierarchy can fire many
         // times per session and we only want one subscription.
         private bool _scrollViewHooksInstalled;
+#if UNITY_IOS && !UNITY_EDITOR
+        private readonly EventCallback<PointerDownEvent> _onIosInfoIconPointerDown;
+#endif
         // E2E only: cached ScrollView ref + stale-capture watchdog. A self-
         // destroying child (e.g. triggers_remove) can leave ScrollView's
         // pending-capture latch set because the matching PointerUp is dropped
@@ -90,7 +107,26 @@ namespace OneSignalDemo.Services
             _onGeometryChanged = _ => ScheduleFrameRefresh();
             _onDetachFromPanel = _ => ScheduleResync();
             _onTapMarkerPointerDown = e => AddTapMarker(new Vector2(e.position.x, e.position.y));
+#if UNITY_IOS && !UNITY_EDITOR
+            _onIosInfoIconPointerDown = OnIosInfoIconPointerDown;
+#endif
         }
+
+#if UNITY_IOS && !UNITY_EDITOR
+        private static void OnIosInfoIconPointerDown(PointerDownEvent e)
+        {
+            if (!(e.target is VisualElement t)
+                || string.IsNullOrEmpty(t.name)
+                || !t.name.EndsWith("_info_icon"))
+                return;
+            if (!_iosInfoTapByName.TryGetValue(t.name, out var entry))
+                return;
+            if (!entry.IsEnabled())
+                return;
+            entry.Action();
+            e.StopPropagation();
+        }
+#endif
 
         // Empirically, Unity's iOS accessibility plugin treats the Rect we
         // hand to AccessibilityNode.frameGetter as if it were already in
@@ -133,11 +169,12 @@ namespace OneSignalDemo.Services
         }
 
         /// <summary>
-        /// Registers a named element as a click target for Android UiAutomator2.
-        /// The element is reported as role=button to the platform a11y service
-        /// and `HandleAndroidAccessibilityAction("click")` dispatches by name
-        /// to <paramref name="action"/>. No-op on iOS: XCUITest taps route
-        /// through UI Toolkit's normal Clickable manipulator.
+        /// Registers a named element as a click target. On Android, reports
+        /// the element as role=button to UiAutomator2 and routes incoming
+        /// "click" actions by name. On iOS, only "*_info_icon" Labels need
+        /// special handling — they have no Clickable manipulator, so their
+        /// action is dispatched via the bridge's panel-root PointerDown
+        /// handler. All other iOS taps ride UI Toolkit's standard Clickable.
         /// </summary>
         public static void RegisterE2ETapTarget(
             VisualElement target,
@@ -149,6 +186,15 @@ namespace OneSignalDemo.Services
             if (target == null || action == null)
                 return;
             AndroidClickTargets[target] = new AndroidClickTarget(
+                isEnabled ?? (() => true),
+                action
+            );
+#elif UNITY_IOS && !UNITY_EDITOR
+            if (target == null || action == null || string.IsNullOrEmpty(target.name))
+                return;
+            if (!target.name.EndsWith("_info_icon"))
+                return;
+            _iosInfoTapByName[target.name] = new IosInfoTap(
                 isEnabled ?? (() => true),
                 action
             );
@@ -198,6 +244,11 @@ namespace OneSignalDemo.Services
             {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
                 _root.UnregisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
+#if UNITY_IOS && !UNITY_EDITOR
+                var visualTree = _root.panel?.visualTree;
+                if (visualTree != null)
+                    visualTree.UnregisterCallback(_onIosInfoIconPointerDown, TrickleDown.TrickleDown);
+#endif
             }
             foreach (var el in _map.Keys)
                 el.UnregisterCallback(_onDetachFromPanel);
@@ -394,6 +445,18 @@ namespace OneSignalDemo.Services
             // dispatch any action; UI Toolkit's hit-test handles the real
             // tap routing.
             _root.RegisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
+#if UNITY_IOS && !UNITY_EDITOR
+            // Register on the panel's visualTree (the absolute topmost
+            // dispatch point), not _root. Anything in TrickleDown above _root
+            // — including ScrollView's own pan-capture handlers — could
+            // StopPropagation before the event reaches a descendant
+            // registration. AtTarget drops on the info Label (observed after
+            // iOS Appium injects mobile:scroll mid-test) would then take the
+            // tooltip tap with them. See _iosInfoTapByName field comment.
+            var visualTree = _root.panel?.visualTree;
+            if (visualTree != null)
+                visualTree.RegisterCallback(_onIosInfoIconPointerDown, TrickleDown.TrickleDown);
+#endif
 
             // One-shot ScrollView taming: BuildHierarchy can run dozens of
             // times per session (every dialog open/close, every section
@@ -631,6 +694,11 @@ namespace OneSignalDemo.Services
                 _scrollLayoutChangePending = true;
                 RefreshNodeValuesAndActive();
                 _hierarchy.RefreshNodeFrames();
+                // See settle branch below for rationale. Also ping during the
+                // scroll so a getLocation that races with the gesture's tail
+                // sees fresh data — the settle ping fires 150ms after the
+                // last change, which can land after the test's refetch.
+                AssistiveSupport.notificationDispatcher?.SendScreenChanged();
                 return;
             }
 
@@ -643,6 +711,15 @@ namespace OneSignalDemo.Services
 
             _scrollLayoutChangePending = false;
             _hierarchy.RefreshNodeFrames();
+            // RefreshNodeFrames updates Unity's a11y node positions, but WDA
+            // keeps a cached element-frame snapshot until the OS reports an
+            // a11y notification. Without this ping, scrollToEl's refetch
+            // reads pre-scroll coordinates and openModal's click() lands on
+            // the icon's old off-screen spot — the modal never opens. Firing
+            // only on settle (not on every intermediate scroll frame) keeps
+            // the notification rate sane and gives WDA one clean signal that
+            // frames are stable and re-readable.
+            AssistiveSupport.notificationDispatcher?.SendScreenChanged();
         }
 
         private void EnsureTapMarkerOverlay()
@@ -968,6 +1045,19 @@ namespace OneSignalDemo.Services
             public readonly Action Action;
 
             public AndroidClickTarget(Func<bool> isEnabled, Action action)
+            {
+                IsEnabled = isEnabled;
+                Action = action;
+            }
+        }
+#endif
+#if UNITY_IOS && !UNITY_EDITOR
+        private sealed class IosInfoTap
+        {
+            public readonly Func<bool> IsEnabled;
+            public readonly Action Action;
+
+            public IosInfoTap(Func<bool> isEnabled, Action action)
             {
                 IsEnabled = isEnabled;
                 Action = action;
