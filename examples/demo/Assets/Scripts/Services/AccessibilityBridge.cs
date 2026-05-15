@@ -243,7 +243,8 @@ namespace OneSignalDemo.Services
             if (_root != null)
             {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
-                _root.UnregisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
+                // Disabled: purple tap-marker overlay (debug visual for E2E taps).
+                // _root.UnregisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
 #if UNITY_IOS && !UNITY_EDITOR
                 var visualTree = _root.panel?.visualTree;
                 if (visualTree != null)
@@ -423,7 +424,8 @@ namespace OneSignalDemo.Services
             if (_root == null)
                 return;
 
-            EnsureTapMarkerOverlay();
+            // Disabled: purple tap-marker overlay (debug visual for E2E taps).
+            // EnsureTapMarkerOverlay();
             UnregisterTreeCallbacks();
 
             _hierarchy ??= new AccessibilityHierarchy();
@@ -440,11 +442,12 @@ namespace OneSignalDemo.Services
             // a tap fired immediately after a scroll sees fresh frames
             // instead of a 50ms-stale snapshot.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
-            // Debug-only: drop a visual marker at every tap location so the
-            // demo overlay matches XCUITest's reported coordinates. Does not
+            // Disabled: purple tap-marker overlay (debug visual for E2E taps).
+            // Drops a circular marker at every tap location so the demo
+            // overlay matches XCUITest's reported coordinates. Does not
             // dispatch any action; UI Toolkit's hit-test handles the real
             // tap routing.
-            _root.RegisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
+            // _root.RegisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
 #if UNITY_IOS && !UNITY_EDITOR
             // Register on the panel's visualTree (the absolute topmost
             // dispatch point), not _root. Anything in TrickleDown above _root
