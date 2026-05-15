@@ -183,7 +183,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.AddAlias(label, id);
             MergePairs(_aliasesList, new Dictionary<string, string> { [label] = id });
             Debug.Log($"[{Tag}] Alias added: {label}");
-            ShowToast($"Alias added: {label}");
             NotifyStateChanged();
         }
 
@@ -192,7 +191,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.AddAliases(aliases);
             MergePairs(_aliasesList, aliases);
             Debug.Log($"[{Tag}] {aliases.Count} alias(es) added");
-            ShowToast($"{aliases.Count} alias(es) added");
             NotifyStateChanged();
         }
 
@@ -201,7 +199,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.AddEmail(email);
             MergeUnique(_emailsList, new[] { email });
             Debug.Log($"[{Tag}] Email added: {email}");
-            ShowToast($"Email added: {email}");
             NotifyStateChanged();
         }
 
@@ -210,7 +207,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.RemoveEmail(email);
             _emailsList.Remove(email);
             Debug.Log($"[{Tag}] Email removed: {email}");
-            ShowToast($"Email removed: {email}");
             NotifyStateChanged();
         }
 
@@ -219,7 +215,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.AddSms(smsNumber);
             MergeUnique(_smsNumbersList, new[] { smsNumber });
             Debug.Log($"[{Tag}] SMS added: {smsNumber}");
-            ShowToast($"SMS added: {smsNumber}");
             NotifyStateChanged();
         }
 
@@ -228,7 +223,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.RemoveSms(smsNumber);
             _smsNumbersList.Remove(smsNumber);
             Debug.Log($"[{Tag}] SMS removed: {smsNumber}");
-            ShowToast($"SMS removed: {smsNumber}");
             NotifyStateChanged();
         }
 
@@ -237,7 +231,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.AddTag(key, value);
             MergePairs(_tagsList, new Dictionary<string, string> { [key] = value });
             Debug.Log($"[{Tag}] Tag added: {key}={value}");
-            ShowToast($"Tag added: {key}");
             NotifyStateChanged();
         }
 
@@ -246,7 +239,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.AddTags(tags);
             MergePairs(_tagsList, tags);
             Debug.Log($"[{Tag}] {tags.Count} tag(s) added");
-            ShowToast($"{tags.Count} tag(s) added");
             NotifyStateChanged();
         }
 
@@ -255,7 +247,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.RemoveTag(key);
             _tagsList.RemoveAll(kvp => kvp.Key == key);
             Debug.Log($"[{Tag}] Tag removed: {key}");
-            ShowToast($"Tag removed: {key}");
             NotifyStateChanged();
         }
 
@@ -264,7 +255,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.User.RemoveTags(keys.ToArray());
             _tagsList.RemoveAll(kvp => keys.Contains(kvp.Key));
             Debug.Log($"[{Tag}] {keys.Count} tag(s) removed");
-            ShowToast($"{keys.Count} tag(s) removed");
             NotifyStateChanged();
         }
 
@@ -273,7 +263,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.InAppMessages.AddTrigger(key, value);
             MergePairs(_triggersList, new Dictionary<string, string> { [key] = value });
             Debug.Log($"[{Tag}] Trigger added: {key}={value}");
-            ShowToast($"Trigger added: {key}");
             NotifyStateChanged();
         }
 
@@ -282,7 +271,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.InAppMessages.AddTriggers(triggers);
             MergePairs(_triggersList, triggers);
             Debug.Log($"[{Tag}] {triggers.Count} trigger(s) added");
-            ShowToast($"{triggers.Count} trigger(s) added");
             NotifyStateChanged();
         }
 
@@ -291,7 +279,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.InAppMessages.RemoveTrigger(key);
             _triggersList.RemoveAll(kvp => kvp.Key == key);
             Debug.Log($"[{Tag}] Trigger removed: {key}");
-            ShowToast($"Trigger removed: {key}");
             NotifyStateChanged();
         }
 
@@ -300,7 +287,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.InAppMessages.RemoveTriggers(keys.ToArray());
             _triggersList.RemoveAll(kvp => keys.Contains(kvp.Key));
             Debug.Log($"[{Tag}] {keys.Count} trigger(s) removed");
-            ShowToast($"{keys.Count} trigger(s) removed");
             NotifyStateChanged();
         }
 
@@ -309,7 +295,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.InAppMessages.ClearTriggers();
             _triggersList.Clear();
             Debug.Log($"[{Tag}] All triggers cleared");
-            ShowToast("All triggers cleared");
             NotifyStateChanged();
         }
 
@@ -319,7 +304,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.InAppMessages.AddTrigger("iam_type", triggerValue);
             MergePairs(_triggersList, new Dictionary<string, string> { ["iam_type"] = triggerValue });
             Debug.Log($"[{Tag}] Sent In-App Message: {type.DisplayName()}");
-            ShowToast($"Sent In-App Message: {type.DisplayName()}");
             NotifyStateChanged();
         }
 
@@ -359,20 +343,13 @@ namespace OneSignalDemo.ViewModels
                 bool success = await _apiService.SendNotification(type, pushId);
                 var label = type.ToString();
                 if (success)
-                {
                     Debug.Log($"[{Tag}] Notification sent: {label}");
-                    ShowToast($"Notification sent: {label}");
-                }
                 else
-                {
                     Debug.LogError($"[{Tag}] Failed to send notification: {label}");
-                    ShowToast("Failed to send notification");
-                }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{Tag}] Notification error: {ex.Message}");
-                ShowToast("Failed to send notification");
             }
         }
 
@@ -380,7 +357,6 @@ namespace OneSignalDemo.ViewModels
         {
             OneSignal.Notifications.ClearAllNotifications();
             Debug.Log($"[{Tag}] All notifications cleared");
-            ShowToast("All notifications cleared");
         }
 
         public async void SendCustomNotification(string title, string body)
@@ -390,20 +366,13 @@ namespace OneSignalDemo.ViewModels
                 var pushId = OneSignal.User.PushSubscription.Id;
                 bool success = await _apiService.SendCustomNotification(title, body, pushId);
                 if (success)
-                {
                     Debug.Log($"[{Tag}] Custom notification sent: {title}");
-                    ShowToast($"Notification sent: Custom");
-                }
                 else
-                {
                     Debug.LogError($"[{Tag}] Failed to send custom notification");
-                    ShowToast("Failed to send notification");
-                }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{Tag}] Custom notification error: {ex.Message}");
-                ShowToast("Failed to send notification");
             }
         }
 
@@ -424,7 +393,6 @@ namespace OneSignalDemo.ViewModels
             _liveActivityStatusIndex = 0;
 
             Debug.Log($"[{Tag}] Started Live Activity: {activityId}");
-            ShowToast($"Started Live Activity: {activityId}");
             NotifyStateChanged();
         }
 
@@ -454,18 +422,15 @@ namespace OneSignalDemo.ViewModels
                 {
                     _liveActivityStatusIndex = nextIndex;
                     Debug.Log($"[{Tag}] Updated Live Activity: {activityId}");
-                    ShowToast($"Updated Live Activity: {activityId}");
                 }
                 else
                 {
                     Debug.LogError($"[{Tag}] Failed to update Live Activity");
-                    ShowToast("Failed to update Live Activity");
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{Tag}] Live Activity update error: {ex.Message}");
-                ShowToast("Failed to update Live Activity");
             }
 
             _isLiveActivityUpdating = false;
@@ -497,18 +462,15 @@ namespace OneSignalDemo.ViewModels
                 {
                     _liveActivityStatusIndex = 0;
                     Debug.Log($"[{Tag}] Ended Live Activity: {activityId}");
-                    ShowToast($"Ended Live Activity: {activityId}");
                 }
                 else
                 {
                     Debug.LogError($"[{Tag}] Failed to end Live Activity");
-                    ShowToast("Failed to end Live Activity");
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[{Tag}] Live Activity end error: {ex.Message}");
-                ShowToast("Failed to end Live Activity");
             }
 
             _isLiveActivityUpdating = false;
@@ -553,7 +515,6 @@ namespace OneSignalDemo.ViewModels
             _prefs.LocationShared = shared;
             OneSignal.Location.IsShared = shared;
             Debug.Log($"[{Tag}] Location sharing: {(shared ? "enabled" : "disabled")}");
-            ShowToast($"Location sharing {(shared ? "enabled" : "disabled")}");
             NotifyStateChanged();
         }
 
@@ -592,7 +553,6 @@ namespace OneSignalDemo.ViewModels
 
             _pushOptedIn = enabled;
             Debug.Log($"[{Tag}] Push {(enabled ? "enabled" : "disabled")}");
-            ShowToast($"Push {(enabled ? "enabled" : "disabled")}");
             NotifyStateChanged();
         }
 
