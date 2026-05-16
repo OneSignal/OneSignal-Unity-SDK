@@ -40,10 +40,17 @@ namespace OneSignalDemo.UI.Sections
                 infoBtn.name = $"{SectionKeyFromName(name)}_info_icon";
                 infoBtn.AddToClassList("info-button");
                 infoBtn.pickingMode = PickingMode.Position;
+                bool CanOpenTooltip() => infoBtn.panel?.visualTree.Q("tooltip_title") == null;
+                void OpenTooltip()
+                {
+                    if (CanOpenTooltip())
+                        onInfoTap();
+                }
+                infoBtn.RegisterCallback<ClickEvent>(_ => OpenTooltip());
                 AccessibilityBridge.RegisterE2ETapTarget(
                     infoBtn,
-                    () => infoBtn.panel?.visualTree.Q("tooltip_title") == null,
-                    onInfoTap
+                    CanOpenTooltip,
+                    OpenTooltip
                 );
                 header.Add(infoBtn);
             }
@@ -165,7 +172,7 @@ namespace OneSignalDemo.UI.Sections
                     deleteBtn.name = $"{sectionKey}_remove_{itemKey}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
-            AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
+                AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 
@@ -221,7 +228,7 @@ namespace OneSignalDemo.UI.Sections
                     deleteBtn.name = $"{sectionKey}_remove_{value}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
-            AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
+                AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 

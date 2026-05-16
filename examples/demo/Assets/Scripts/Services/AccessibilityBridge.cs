@@ -222,6 +222,14 @@ namespace OneSignalDemo.Services
 
         private void Initialize(VisualElement root)
         {
+            if (_root != root)
+            {
+                UnregisterTreeCallbacks();
+                _mainSv = null;
+                _lastTouchActivityMs = -1.0;
+                _scrollViewHooksInstalled = false;
+            }
+
             _root = root;
             _lastStructureSignature = -1; // force first poll to rebuild
 
@@ -487,11 +495,9 @@ namespace OneSignalDemo.Services
                 visualTree.RegisterCallback(_onIosInfoIconPointerDown, TrickleDown.TrickleDown);
 #endif
 
-            // One-shot ScrollView taming: BuildHierarchy can run dozens of
-            // times per session (every dialog open/close, every section
-            // refresh), but the main ScrollView only needs these hooks once.
-            // The flag is reset only by OnDestroy — a fresh bridge instance
-            // re-applies them.
+            // One-shot per root ScrollView taming: BuildHierarchy can run
+            // dozens of times per scene (every dialog open/close, every
+            // section refresh), but a scene/root swap needs fresh hooks.
             if (!_scrollViewHooksInstalled)
             {
                 var mainSv = _root.Q<ScrollView>("main_scroll_view");
