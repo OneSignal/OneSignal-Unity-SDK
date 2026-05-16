@@ -24,10 +24,18 @@ namespace OneSignalDemo.UI
             var appBar = new VisualElement();
             appBar.AddToClassList("app-bar");
 
-            var backButton = new Button(() => SceneManager.LoadScene("Main"));
+            void GoBack() => SceneManager.LoadScene("Main");
+            var backButton = new Button(GoBack);
             backButton.name = "back_button";
             backButton.text = MaterialIcons.ArrowBack;
             backButton.AddToClassList("back-button");
+#if UNITY_ANDROID && !UNITY_EDITOR
+            OneSignalDemo.Services.AccessibilityBridge.RegisterE2ETapTarget(
+                backButton,
+                () => backButton.enabledInHierarchy,
+                GoBack
+            );
+#endif
             appBar.Add(backButton);
 
             var title = new Label("Secondary Screen");

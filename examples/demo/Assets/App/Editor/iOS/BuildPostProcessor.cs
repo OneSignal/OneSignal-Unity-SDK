@@ -203,7 +203,7 @@ namespace App.Editor.iOS
 
             var dependenciesFile = File.ReadAllText(dependenciesFilePath);
             var dependenciesRegex = new Regex(
-                "(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)"
+                "(?<=<iosPod name=\"OneSignalXCFramework\" version=\")[^\"]+(?=\" addToAllTargets=\"true\" />)"
             );
 
             if (!dependenciesRegex.IsMatch(dependenciesFile))
