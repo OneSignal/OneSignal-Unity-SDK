@@ -189,6 +189,7 @@ namespace OneSignalDemo.Services
                 isEnabled ?? (() => true),
                 action
             );
+            target.RegisterCallback<DetachFromPanelEvent>(OnAndroidClickTargetDetached);
 #elif UNITY_IOS && !UNITY_EDITOR
             if (target == null || action == null || string.IsNullOrEmpty(target.name))
                 return;
@@ -200,6 +201,14 @@ namespace OneSignalDemo.Services
             );
 #endif
         }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static void OnAndroidClickTargetDetached(DetachFromPanelEvent e)
+        {
+            if (e.target is VisualElement target)
+                AndroidClickTargets.Remove(target);
+        }
+#endif
 
         public static void RequestResync()
         {
@@ -652,14 +661,41 @@ namespace OneSignalDemo.Services
                 return;
             }
 
+            Action actionToInvoke = null;
+            List<VisualElement> detachedTargets = null;
             foreach (var kvp in AndroidClickTargets)
             {
                 var el = kvp.Key;
-                if (el == null || el.name != id || !kvp.Value.IsEnabled())
+                if (el == null || el.panel == null || !IsDescendantOfRoot(el))
+                {
+                    if (el != null)
+                    {
+                        detachedTargets ??= new List<VisualElement>();
+                        detachedTargets.Add(el);
+                    }
                     continue;
-                kvp.Value.Action();
-                return;
+                }
+                if (el.name != id || !IsVisible(el) || !kvp.Value.IsEnabled())
+                    continue;
+                actionToInvoke = kvp.Value.Action;
+                break;
             }
+            if (detachedTargets != null)
+            {
+                foreach (var target in detachedTargets)
+                    AndroidClickTargets.Remove(target);
+            }
+            actionToInvoke?.Invoke();
+        }
+
+        private bool IsDescendantOfRoot(VisualElement el)
+        {
+            for (var current = el; current != null; current = current.hierarchy.parent)
+            {
+                if (current == _root)
+                    return true;
+            }
+            return false;
         }
 
         private void InvokeAndroidNativeScroll(string direction)

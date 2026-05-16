@@ -58,6 +58,9 @@ namespace OneSignalDemo
             _apiService.SetAppId(appId);
 
             OneSignal.Debug.LogLevel = LogLevel.Verbose;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            SetAndroidWebViewDebugging(false);
+#endif
             OneSignal.ConsentRequired = _prefs.ConsentRequired;
             OneSignal.ConsentGiven = _prefs.PrivacyConsent;
             OneSignal.Initialize(appId);
@@ -114,6 +117,42 @@ namespace OneSignalDemo
                 1001
             );
         }
+
+        private static void SetAndroidWebViewDebugging(bool enabled)
+        {
+            if (!DotEnv.IsE2EMode)
+                return;
+
+            try
+            {
+                using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                if (activity == null)
+                    return;
+
+                activity.Call(
+                    "runOnUiThread",
+                    new AndroidJavaRunnable(() =>
+                    {
+                        try
+                        {
+                            using var webView = new AndroidJavaClass("android.webkit.WebView");
+                            webView.CallStatic("setWebContentsDebuggingEnabled", enabled);
+                        }
+                        catch (AndroidJavaException ex)
+                        {
+                            Debug.LogWarning(
+                                $"[{Tag}] Could not set WebView debugging: {ex.Message}"
+                            );
+                        }
+                    })
+                );
+            }
+            catch (AndroidJavaException ex)
+            {
+                Debug.LogWarning($"[{Tag}] Could not set WebView debugging: {ex.Message}");
+            }
+        }
 #endif
 
         private void RegisterSdkListeners()
@@ -141,8 +180,13 @@ namespace OneSignalDemo
             OneSignal.Notifications.ForegroundWillDisplay -= OnNotificationForegroundWillDisplay;
         }
 
-        private void OnIamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e) =>
+        private void OnIamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            SetAndroidWebViewDebugging(true);
+#endif
             Debug.Log($"[{Tag}] IAM will display: {e.Message.MessageId}");
+        }
 
         private void OnIamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) =>
             Debug.Log($"[{Tag}] IAM did display: {e.Message.MessageId}");
@@ -150,8 +194,13 @@ namespace OneSignalDemo
         private void OnIamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) =>
             Debug.Log($"[{Tag}] IAM will dismiss: {e.Message.MessageId}");
 
-        private void OnIamDidDismiss(object sender, InAppMessageDidDismissEventArgs e) =>
+        private void OnIamDidDismiss(object sender, InAppMessageDidDismissEventArgs e)
+        {
             Debug.Log($"[{Tag}] IAM did dismiss: {e.Message.MessageId}");
+#if UNITY_ANDROID && !UNITY_EDITOR
+            SetAndroidWebViewDebugging(false);
+#endif
+        }
 
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
             Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
