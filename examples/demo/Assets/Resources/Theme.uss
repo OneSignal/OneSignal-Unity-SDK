@@ -149,6 +149,10 @@
     border-bottom-width: 0;
 }
 
+.app-bar-left {
+    justify-content: flex-start;
+}
+
 .app-bar-logo {
     width: 99px;
     height: 22px;
