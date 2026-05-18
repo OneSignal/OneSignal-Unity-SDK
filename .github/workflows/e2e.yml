@@ -137,12 +137,7 @@ jobs:
 
       - name: Pod install
         working-directory: examples/demo/Build/iOS
-        run: |
-          if [ -f Podfile ]; then
-            pod install --repo-update
-          else
-            echo "No Podfile in Unity-exported Xcode project; skipping pod install"
-          fi
+        run: pod install --repo-update
 
       - name: Set up iOS codesigning
         uses: OneSignal/sdk-shared/.github/actions/setup-ios-demo-codesigning@main
