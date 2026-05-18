@@ -1,0 +1,234 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - rel/**
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to test"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android:
+    if: >-
+      github.event_name == 'push' ||
+      github.event.inputs.platform == 'android' ||
+      github.event.inputs.platform == 'both'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Create demo .env
+        uses: ./.github/actions/create-demo-env
+        with:
+          onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
+          onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
+
+      - name: Resolve OneSignal Android SDK version
+        id: android-sdk-version
+        run: |
+          VERSION=$(grep -oE 'com\.onesignal:OneSignal:[^"]+' com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | head -n1 | cut -d: -f3)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not parse OneSignal Android SDK version from OneSignalAndroidDependencies.xml"
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for OneSignal Android SDK on Maven Central
+        uses: OneSignal/sdk-shared/.github/actions/wait-for-maven-artifact@main
+        with:
+          version: ${{ steps.android-sdk-version.outputs.version }}
+
+      - name: Cache Unity Library
+        uses: actions/cache@v5
+        with:
+          path: examples/demo/Library
+          key: unity-library-android-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: unity-library-android-
+
+      - name: Build APK
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: examples/demo
+          unityVersion: auto
+          targetPlatform: Android
+          buildMethod: BuildScript.BuildAndroidEmulator
+          allowDirtyBuild: true
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: demo-apk
+          path: examples/demo/Build/Android/onesignal-demo.apk
+          retention-days: 1
+          compression-level: 0
+
+  build-ios:
+    if: >-
+      github.event_name == 'push' ||
+      github.event.inputs.platform == 'ios' ||
+      github.event.inputs.platform == 'both'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Create demo .env
+        uses: ./.github/actions/create-demo-env
+        with:
+          onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
+          onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
+
+      - name: Cache Unity Library
+        uses: actions/cache@v5
+        with:
+          path: examples/demo/Library
+          key: unity-library-ios-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: unity-library-ios-
+
+      - name: Cache Xcode DerivedData
+        # Hash inputs to the Unity iOS export (files that exist at checkout
+        # time) rather than the exported Xcode project / Podfile, which
+        # don't exist until later steps run. Mirrors the Android Unity
+        # Library cache key shape above.
+        uses: actions/cache@v5
+        with:
+          path: examples/demo/Build/iOS-DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt', 'examples/demo/ProjectSettings/ProjectSettings.asset', 'com.onesignal.unity.ios/Editor/**', 'com.onesignal.unity.core/Editor/**', 'examples/demo/iOS/ExportOptions.plist') }}
+          restore-keys: deriveddata-${{ runner.os }}-
+
+      - name: Export Xcode project from Unity
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: examples/demo
+          unityVersion: auto
+          targetPlatform: iOS
+          buildMethod: BuildScript.BuildiOSDevice
+          allowDirtyBuild: true
+          cacheUnityInstallationOnMac: true
+
+      - name: Pod install
+        working-directory: examples/demo/Build/iOS
+        run: pod install --repo-update
+
+      - name: Set up iOS codesigning
+        uses: OneSignal/sdk-shared/.github/actions/setup-ios-demo-codesigning@main
+        with:
+          p12-base64: ${{ secrets.APPIUM_IOS_DEV_CERT_P12_BASE64 }}
+          p12-password: ${{ secrets.APPIUM_IOS_DEV_CERT_PASSWORD }}
+          asc-key-id: ${{ secrets.APPIUM_APP_STORE_CONNECT_KEY_ID }}
+          asc-issuer-id: ${{ secrets.APPIUM_APP_STORE_CONNECT_ISSUER_ID }}
+          asc-private-key: ${{ secrets.APPIUM_APP_STORE_CONNECT_PRIVATE_KEY }}
+
+      - name: Build signed IPA
+        working-directory: examples/demo/Build/iOS
+        # Unity always names the generated Xcode project Unity-iPhone, even
+        # though the demo's product name is "OneSignal Demo". After
+        # `pod install` an Unity-iPhone.xcworkspace exists and must be used;
+        # without CocoaPods we fall back to the .xcodeproj. The
+        # SigningPostProcessor already pinned DEVELOPMENT_TEAM and the NSE /
+        # Live Activity bundle IDs to match ExportOptions.plist.
+        run: |
+          if [ -d Unity-iPhone.xcworkspace ]; then
+            CONTAINER_ARGS=(-workspace Unity-iPhone.xcworkspace)
+          else
+            CONTAINER_ARGS=(-project Unity-iPhone.xcodeproj)
+          fi
+          xcodebuild archive \
+            "${CONTAINER_ARGS[@]}" \
+            -scheme Unity-iPhone \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/App.xcarchive \
+            -derivedDataPath ../iOS-DerivedData \
+            -quiet \
+            -hideShellScriptEnvironment \
+            CODE_SIGN_STYLE=Manual \
+            COMPILER_INDEX_STORE_ENABLE=NO
+          xcodebuild -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportOptionsPlist "$GITHUB_WORKSPACE/examples/demo/iOS/ExportOptions.plist" \
+            -exportPath build/ipa \
+            -quiet
+
+      - name: Locate and stage IPA
+        id: ipa
+        working-directory: examples/demo
+        run: |
+          IPA=$(ls Build/iOS/build/ipa/*.ipa | head -n1)
+          if [ -z "$IPA" ]; then
+            echo "::error::No IPA produced by xcodebuild -exportArchive"
+            exit 1
+          fi
+          cp "$IPA" demo.ipa
+          echo "path=examples/demo/demo.ipa" >> "$GITHUB_OUTPUT"
+
+      - name: Verify aps-environment in IPA
+        working-directory: examples/demo
+        run: |
+          unzip -oq demo.ipa -d /tmp/ipa
+          APP=$(ls -d /tmp/ipa/Payload/*.app | head -n1)
+          codesign -d --entitlements - "$APP" 2>&1 | tee /tmp/entitlements.txt
+          if ! grep -q 'aps-environment' /tmp/entitlements.txt; then
+            echo "::error::Built IPA is missing aps-environment entitlement; push subscription will not work"
+            exit 1
+          fi
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v7
+        with:
+          name: demo-ipa
+          path: ${{ steps.ipa.outputs.path }}
+          retention-days: 1
+          compression-level: 0
+
+  e2e-android:
+    needs: build-android
+    uses: OneSignal/sdk-shared/.github/workflows/appium-e2e.yml@main
+    secrets: inherit
+    with:
+      platform: android
+      app-artifact: demo-apk
+      app-filename: onesignal-demo.apk
+      sdk-type: unity
+      build-name: unity-android-${{ github.ref_name }}-${{ github.run_number }}
+
+  e2e-ios:
+    needs: build-ios
+    uses: OneSignal/sdk-shared/.github/workflows/appium-e2e.yml@main
+    secrets: inherit
+    with:
+      platform: ios
+      app-artifact: demo-ipa
+      app-filename: demo.ipa
+      sdk-type: unity
+      build-name: unity-ios-${{ github.ref_name }}-${{ github.run_number }}
