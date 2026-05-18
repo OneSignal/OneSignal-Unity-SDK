@@ -509,13 +509,15 @@ namespace OneSignalSDK
                 {
                     builder.Append((bool)value ? "true" : "false");
                 }
-                else if ((asList = value as IList) != null)
-                {
-                    SerializeArray(asList);
-                }
+                // Check IDictionary before IList: some dict-like types (e.g. Newtonsoft's
+                // JObject) also implement IList, and would otherwise be serialized as arrays.
                 else if ((asDict = value as IDictionary) != null)
                 {
                     SerializeObject(asDict);
+                }
+                else if ((asList = value as IList) != null)
+                {
+                    SerializeArray(asList);
                 }
                 else if (value is char)
                 {

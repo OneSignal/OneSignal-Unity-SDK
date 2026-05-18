@@ -6,7 +6,20 @@
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
+
+# Auto-detect newest Unity 6000.x install under the Hub, unless UNITY_PATH is set.
+find_unity() {
+  if [ -n "${UNITY_PATH:-}" ]; then
+    echo "$UNITY_PATH"
+    return
+  fi
+  for d in $(ls -1 /Applications/Unity/Hub/Editor 2>/dev/null | sort -rV); do
+    BIN="/Applications/Unity/Hub/Editor/$d/Unity.app/Contents/MacOS/Unity"
+    [ -x "$BIN" ] && echo "$BIN" && return
+  done
+}
+UNITY="$(find_unity)"
+
 XCODE_DIR="$SCRIPT_DIR/Build/iOS"
 LOG="$SCRIPT_DIR/Build/build-ios.log"
 SCHEME="Unity-iPhone"

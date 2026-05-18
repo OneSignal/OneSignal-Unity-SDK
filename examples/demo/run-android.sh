@@ -6,8 +6,39 @@
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-UNITY="${UNITY_PATH:-/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity}"
-ADB="/Applications/Unity/Hub/Editor/6000.3.6f1/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb"
+
+# Auto-detect newest Unity 6000.x install under the Hub, unless UNITY_PATH is set.
+find_unity() {
+  if [ -n "${UNITY_PATH:-}" ]; then
+    echo "$UNITY_PATH"
+    return
+  fi
+  for d in $(ls -1 /Applications/Unity/Hub/Editor 2>/dev/null | sort -rV); do
+    BIN="/Applications/Unity/Hub/Editor/$d/Unity.app/Contents/MacOS/Unity"
+    [ -x "$BIN" ] && echo "$BIN" && return
+  done
+}
+UNITY="$(find_unity)"
+
+# Resolve adb in this order: $ADB, $ANDROID_HOME/platform-tools, ~/Library/Android/sdk,
+# `which adb`, then Unity's bundled Android SDK.
+find_adb() {
+  if [ -n "${ADB:-}" ] && [ -x "$ADB" ]; then echo "$ADB"; return; fi
+  for CANDIDATE in \
+    "${ANDROID_HOME:-}/platform-tools/adb" \
+    "${ANDROID_SDK_ROOT:-}/platform-tools/adb" \
+    "$HOME/Library/Android/sdk/platform-tools/adb"; do
+    [ -x "$CANDIDATE" ] && echo "$CANDIDATE" && return
+  done
+  if command -v adb >/dev/null 2>&1; then command -v adb; return; fi
+  if [ -n "$UNITY" ]; then
+    UNITY_DIR=$(dirname "$(dirname "$(dirname "$(dirname "$UNITY")")")")
+    CANDIDATE="$UNITY_DIR/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb"
+    [ -x "$CANDIDATE" ] && echo "$CANDIDATE" && return
+  fi
+}
+ADB="$(find_adb)"
+
 OUTPUT="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
 LOG="$SCRIPT_DIR/Build/build-android.log"
 INSTALL=true
@@ -21,6 +52,7 @@ for arg in "$@"; do
 done
 
 pick_emulator() {
+  [ -z "$ADB" ] && echo "adb not found. Set ADB or ANDROID_HOME to your Android SDK." && exit 1
   LIST=$("$ADB" devices | awk '/emulator-[0-9]+[[:space:]]+device/{print $1}')
   COUNT=$(printf '%s\n' "$LIST" | grep -c . || true)
 
