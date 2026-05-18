@@ -82,24 +82,13 @@ namespace OneSignalDemo
 
             _viewModel.Init(_prefs, _apiService);
             _viewModel.LoadInitialState();
-            await _viewModel.LoadInitialDataAsync();
 
-            PromptPushForStartup();
+            _viewModel.PromptPush();
+
+            await _viewModel.LoadInitialDataAsync();
 
             _ = TooltipHelper.Instance.InitAsync();
             Debug.Log($"[{Tag}] App initialized");
-        }
-
-        private void PromptPushForStartup()
-        {
-            // Route both runtime and E2E flows through the SDK on every
-            // platform. The earlier Android E2E path called raw
-            // `activity.requestPermissions(POST_NOTIFICATIONS)`, which shows
-            // the OS dialog but never tells the OneSignal SDK about the
-            // grant. The SDK then enqueues two competing update-subscription
-            // ops (one SUBSCRIBED, one NO_PERMISSION) and which one wins is a
-            // race — pushes silently never deliver when NO_PERMISSION wins.
-            _viewModel.PromptPush();
         }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
