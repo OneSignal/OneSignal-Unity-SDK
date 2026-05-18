@@ -110,6 +110,49 @@ public static class BuildScript
         HandleReport(report, IOSOutputDir);
     }
 
+    /// <summary>
+    /// Builds an Xcode project targeting physical iOS devices, used by CI to
+    /// produce a signed IPA for BrowserStack. The OneSignal SDK and demo
+    /// post-processors add push capabilities, the NSE / Live Activity widget
+    /// targets, and pin DEVELOPMENT_TEAM + aps-environment=development so the
+    /// archive step can sign with the Appium provisioning profiles in
+    /// ExportOptions.plist.
+    /// </summary>
+    public static void BuildiOSDevice()
+    {
+        Directory.CreateDirectory(IOSOutputDir);
+
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
+        PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+
+        Debug.Log(
+            $"[BuildScript] iOS sdk={PlayerSettings.iOS.sdkVersion} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.iOS)}"
+        );
+
+        PlayerSettings.SetIl2CppCodeGeneration(
+            NamedBuildTarget.iOS,
+            Il2CppCodeGeneration.OptimizeSize
+        );
+        PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.iOS, ManagedStrippingLevel.High);
+        PlayerSettings.stripEngineCode = true;
+
+        PlayerSettings.SetIl2CppCompilerConfiguration(
+            NamedBuildTarget.iOS,
+            Il2CppCompilerConfiguration.Release
+        );
+
+        var options = new BuildPlayerOptions
+        {
+            scenes = GetScenes(),
+            locationPathName = IOSOutputDir,
+            target = BuildTarget.iOS,
+            options = BuildOptions.None,
+        };
+
+        var report = BuildPipeline.BuildPlayer(options);
+        HandleReport(report, IOSOutputDir);
+    }
+
     private static string[] GetScenes()
     {
         var scenes = EditorBuildSettings.scenes;
