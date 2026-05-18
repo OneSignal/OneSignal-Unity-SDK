@@ -7,6 +7,10 @@ inputs:
   onesignal-api-key:
     description: "OneSignal REST API key for the demo app"
     required: true
+  onesignal-android-channel-id:
+    description: "Android Notification Channel ID used by the WITH SOUND test notification"
+    required: false
+    default: "7ec2ece9-c538-4656-9516-1316f48a005c"
   e2e-mode:
     description: "Whether to enable E2E_MODE in the demo app"
     required: false
@@ -20,10 +24,12 @@ runs:
       env:
         APP_ID: ${{ inputs.onesignal-app-id }}
         API_KEY: ${{ inputs.onesignal-api-key }}
+        ANDROID_CHANNEL_ID: ${{ inputs.onesignal-android-channel-id }}
         E2E_MODE: ${{ inputs.e2e-mode }}
       run: |
         {
           echo "ONESIGNAL_APP_ID=$APP_ID"
           echo "ONESIGNAL_API_KEY=$API_KEY"
+          echo "ONESIGNAL_ANDROID_CHANNEL_ID=$ANDROID_CHANNEL_ID"
           echo "E2E_MODE=$E2E_MODE"
         } > .env
