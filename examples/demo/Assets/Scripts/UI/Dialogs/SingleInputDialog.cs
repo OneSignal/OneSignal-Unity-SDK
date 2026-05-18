@@ -52,6 +52,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_confirmText, OnConfirm);
+            _confirmButton.name = "singleinput_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
@@ -60,12 +61,12 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void ValidateInput()
         {
-            _confirmButton?.SetEnabled(!string.IsNullOrEmpty(_inputField?.value));
+            _confirmButton?.SetEnabled(!string.IsNullOrWhiteSpace(_inputField?.value));
         }
 
         private void OnConfirm()
         {
-            var value = _inputField?.value;
+            var value = _inputField?.value?.Trim();
             if (!string.IsNullOrEmpty(value))
             {
                 _onConfirm?.Invoke(value);

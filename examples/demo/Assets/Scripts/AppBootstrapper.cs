@@ -1,4 +1,3 @@
-using OneSignalDemo.Repositories;
 using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
 using OneSignalSDK;
@@ -6,13 +5,15 @@ using OneSignalSDK.Debug.Models;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.LiveActivities;
 using OneSignalSDK.Notifications;
+using OneSignalSDK.Notifications.Models;
 using UnityEngine;
 
 namespace OneSignalDemo
 {
     public class AppBootstrapper : MonoBehaviour
     {
-        private const string OneSignalAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
+        private const string DefaultAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
+        private const string PlaceholderAppId = "your-onesignal-app-id";
         private const string Tag = "AppBootstrapper";
 
         [SerializeField]
@@ -20,7 +21,6 @@ namespace OneSignalDemo
 
         private PreferencesService _prefs;
         private OneSignalApiService _apiService;
-        private OneSignalRepository _repository;
 
         private void Awake()
         {
@@ -29,21 +29,38 @@ namespace OneSignalDemo
 
         private async void Start()
         {
-            _prefs = new PreferencesService();
-            _apiService = new OneSignalApiService();
-            _repository = new OneSignalRepository(_apiService);
+            DotEnv.Load();
 
-            var appId = _prefs.AppId;
-            if (string.IsNullOrEmpty(appId))
+            // iOS cancels in-progress touches when the OS suspends the app, and
+            // Unity's Input System raises "Touch was already deallocated" on the
+            // next frame. In dev builds, that pops the engine's Development
+            // Console overlay on top of the UI and occludes subsequent test taps.
+            // Appium's live-activity spec deliberately locks the screen mid-tap,
+            // so suppress the overlay when E2E mode is on; the exception itself
+            // still logs to stdout for debugging. developerConsoleEnabled
+            // prevents future pops; developerConsoleVisible hides one that's
+            // already showing.
+            if (DotEnv.IsE2EMode)
             {
-                appId = OneSignalAppId;
-                _prefs.AppId = appId;
+                Debug.developerConsoleEnabled = false;
+                Debug.developerConsoleVisible = false;
             }
 
+            _prefs = new PreferencesService();
+            _apiService = new OneSignalApiService();
+
+            var envAppId = DotEnv.Get("ONESIGNAL_APP_ID");
+            var appId =
+                string.IsNullOrWhiteSpace(envAppId) || envAppId == PlaceholderAppId
+                    ? DefaultAppId
+                    : envAppId;
+
             _apiService.SetAppId(appId);
-            _apiService.LoadApiKey();
 
             OneSignal.Debug.LogLevel = LogLevel.Verbose;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            SetAndroidWebViewDebugging(false);
+#endif
             OneSignal.ConsentRequired = _prefs.ConsentRequired;
             OneSignal.ConsentGiven = _prefs.PrivacyConsent;
             OneSignal.Initialize(appId);
@@ -58,21 +75,59 @@ namespace OneSignalDemo
             );
 #endif
 
+            RegisterSdkListeners();
+
             OneSignal.InAppMessages.Paused = _prefs.IamPaused;
             OneSignal.Location.IsShared = _prefs.LocationShared;
 
-            RegisterSdkListeners();
-
-            _viewModel.Init(_repository, _prefs);
+            _viewModel.Init(_prefs, _apiService);
             _viewModel.LoadInitialState();
+
+            _viewModel.PromptPush();
+
             await _viewModel.LoadInitialDataAsync();
 
-            if (!_viewModel.HasPermission)
-                _viewModel.PromptPush();
-
             _ = TooltipHelper.Instance.InitAsync();
-            LogManager.Instance.Info(Tag, "App initialized");
+            Debug.Log($"[{Tag}] App initialized");
         }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static void SetAndroidWebViewDebugging(bool enabled)
+        {
+            if (!DotEnv.IsE2EMode)
+                return;
+
+            try
+            {
+                using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                if (activity == null)
+                    return;
+
+                activity.Call(
+                    "runOnUiThread",
+                    new AndroidJavaRunnable(() =>
+                    {
+                        try
+                        {
+                            using var webView = new AndroidJavaClass("android.webkit.WebView");
+                            webView.CallStatic("setWebContentsDebuggingEnabled", enabled);
+                        }
+                        catch (AndroidJavaException ex)
+                        {
+                            Debug.LogWarning(
+                                $"[{Tag}] Could not set WebView debugging: {ex.Message}"
+                            );
+                        }
+                    })
+                );
+            }
+            catch (AndroidJavaException ex)
+            {
+                Debug.LogWarning($"[{Tag}] Could not set WebView debugging: {ex.Message}");
+            }
+        }
+#endif
 
         private void RegisterSdkListeners()
         {
@@ -99,30 +154,40 @@ namespace OneSignalDemo
             OneSignal.Notifications.ForegroundWillDisplay -= OnNotificationForegroundWillDisplay;
         }
 
-        private void OnIamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM will display: {e.Message.MessageId}");
+        private void OnIamWillDisplay(object sender, InAppMessageWillDisplayEventArgs e)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            SetAndroidWebViewDebugging(true);
+#endif
+            Debug.Log($"[{Tag}] IAM will display: {e.Message.MessageId}");
+        }
 
         private void OnIamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM did display: {e.Message.MessageId}");
+            Debug.Log($"[{Tag}] IAM did display: {e.Message.MessageId}");
 
         private void OnIamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM will dismiss: {e.Message.MessageId}");
+            Debug.Log($"[{Tag}] IAM will dismiss: {e.Message.MessageId}");
 
-        private void OnIamDidDismiss(object sender, InAppMessageDidDismissEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM did dismiss: {e.Message.MessageId}");
+        private void OnIamDidDismiss(object sender, InAppMessageDidDismissEventArgs e)
+        {
+            Debug.Log($"[{Tag}] IAM did dismiss: {e.Message.MessageId}");
+#if UNITY_ANDROID && !UNITY_EDITOR
+            SetAndroidWebViewDebugging(false);
+#endif
+        }
 
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"IAM clicked: {e.Result.ActionId}");
+            Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
 
         private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
-            LogManager.Instance.Info(Tag, $"Notification clicked: {e.Result.ActionId}");
+            Debug.Log($"[{Tag}] Notification clicked: {e.Result.ActionId}");
 
         private void OnNotificationForegroundWillDisplay(
             object sender,
             NotificationWillDisplayEventArgs e
         )
         {
-            LogManager.Instance.Info(Tag, "Notification received in foreground");
+            Debug.Log($"[{Tag}] Notification received in foreground");
             e.Notification.Display();
         }
     }

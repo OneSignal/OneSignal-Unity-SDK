@@ -29,7 +29,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(label);
 
             _externalIdField = new TextField();
-            _externalIdField.name = "login_external_id";
+            _externalIdField.name = "login_user_id_input";
             _externalIdField.AddToClassList("input-field");
             _externalIdField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_externalIdField);
@@ -40,7 +40,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_isSwitchUser ? "Switch" : "Login", OnConfirm);
-            _confirmButton.name = "login_confirm_button";
+            _confirmButton.name = "singleinput_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
@@ -49,14 +49,15 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void ValidateInput()
         {
-            _confirmButton?.SetEnabled(!string.IsNullOrEmpty(_externalIdField?.value));
+            _confirmButton?.SetEnabled(!string.IsNullOrWhiteSpace(_externalIdField?.value));
         }
 
         private void OnConfirm()
         {
-            var value = _externalIdField?.value;
+            var value = _externalIdField?.value?.Trim();
             if (!string.IsNullOrEmpty(value))
             {
+                _externalIdField?.Blur();
                 _onConfirm?.Invoke(value);
                 Dismiss();
             }

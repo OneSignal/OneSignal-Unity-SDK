@@ -106,6 +106,14 @@
     color: var(--os-text-primary);
 }
 
+.hint-text {
+    font-size: 12px;
+    color: var(--os-text-hint);
+    -unity-text-align: middle-center;
+    margin-top: 4px;
+    white-space: normal;
+}
+
 .text-warning-link {
     font-size: 12px;
     -unity-font-style: bold;
@@ -141,6 +149,10 @@
     border-bottom-width: 0;
 }
 
+.app-bar-left {
+    justify-content: flex-start;
+}
+
 .app-bar-logo {
     width: 99px;
     height: 22px;
@@ -156,6 +168,12 @@
     font-size: 14px;
     -unity-font-style: normal;
     color: white;
+}
+
+.app-bar-shadow {
+    height: 4px;
+    background-color: #B33A3C;
+    flex-shrink: 0;
 }
 
 .section-container {
@@ -178,8 +196,13 @@
 }
 
 .info-button {
-    width: 18px;
-    height: 18px;
+    /* 44px touch target meets the iOS HIG minimum. The Material icon
+       glyph is still rendered at 18px (font-size), centered via text-align,
+       so the button looks unchanged but absorbs small Appium tap-coord
+       drift after ScrollView momentum / accessibility-frame settle. The
+       transparent background keeps it visually identical. */
+    width: 44px;
+    height: 44px;
     background-color: rgba(0, 0, 0, 0);
     color: var(--os-grey-500);
     font-size: 18px;
@@ -482,8 +505,9 @@
     top: 0;
     bottom: 0;
     background-color: var(--os-backdrop);
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    padding-top: 80px;
 }
 
 .dialog-container {
@@ -650,26 +674,6 @@
 .radio-row:checked .unity-radio-button__checkmark {
     -unity-background-image-tint-color: var(--os-primary);
     background-color: var(--os-primary);
-}
-
-.loading-overlay {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: var(--os-backdrop);
-    justify-content: center;
-    align-items: center;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    border-width: 4px;
-    border-color: var(--os-divider);
-    border-top-color: var(--os-primary);
 }
 
 .toast-container {

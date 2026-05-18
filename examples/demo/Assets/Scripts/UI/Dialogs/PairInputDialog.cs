@@ -15,6 +15,7 @@ namespace OneSignalDemo.UI.Dialogs
         private TextField _keyField;
         private TextField _valueField;
         private Button _confirmButton;
+        private bool _submitted;
 
         public PairInputDialog(
             string title,
@@ -79,6 +80,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_confirmText, OnConfirm);
+            _confirmButton.name = "singlepair_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
@@ -88,20 +90,28 @@ namespace OneSignalDemo.UI.Dialogs
         private void ValidateInput()
         {
             bool valid =
-                !string.IsNullOrEmpty(_keyField?.value)
-                && !string.IsNullOrEmpty(_valueField?.value);
+                !string.IsNullOrWhiteSpace(_keyField?.value)
+                && !string.IsNullOrWhiteSpace(_valueField?.value);
             _confirmButton?.SetEnabled(valid);
         }
 
         private void OnConfirm()
         {
-            var key = _keyField?.value;
-            var value = _valueField?.value;
-            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
-            {
-                _onConfirm?.Invoke(key, value);
-                Dismiss();
-            }
+            // Guard against double-fire: rapid double-taps and the E2E
+            // accessibility tap fallback can both deliver a second click
+            // before Dismiss() tears the dialog down.
+            if (_submitted)
+                return;
+
+            var key = _keyField?.value?.Trim();
+            var value = _valueField?.value?.Trim();
+            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
+                return;
+
+            _submitted = true;
+            _confirmButton?.SetEnabled(false);
+            _onConfirm?.Invoke(key, value);
+            Dismiss();
         }
     }
 }

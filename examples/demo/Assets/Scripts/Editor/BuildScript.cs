@@ -77,9 +77,13 @@ public static class BuildScript
 
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
         PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+        // run-local.sh forces ARCHS=arm64 on Apple Silicon hosts. Match that
+        // here so Unity emits an arm64-slice baselib instead of the project
+        // default (x86_64), which fails to link in xcodebuild.
+        PlayerSettings.iOS.simulatorSdkArchitecture = AppleMobileArchitectureSimulator.Universal;
 
         Debug.Log(
-            $"[BuildScript] iOS sdk={PlayerSettings.iOS.sdkVersion} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.iOS)}"
+            $"[BuildScript] iOS sdk={PlayerSettings.iOS.sdkVersion} simArch={PlayerSettings.iOS.simulatorSdkArchitecture} backend={PlayerSettings.GetScriptingBackend(NamedBuildTarget.iOS)}"
         );
 
         PlayerSettings.SetIl2CppCodeGeneration(

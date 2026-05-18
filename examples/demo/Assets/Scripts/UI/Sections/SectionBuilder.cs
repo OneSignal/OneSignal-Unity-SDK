@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using OneSignalDemo.Services;
 using OneSignalDemo.UI;
 using UnityEngine.UIElements;
 
@@ -13,23 +15,43 @@ namespace OneSignalDemo.UI.Sections
         )
         {
             var section = new VisualElement();
-            section.name = name;
             section.AddToClassList("section-container");
 
             var header = new VisualElement();
             header.AddToClassList("section-header");
 
             var titleLabel = new Label(title.ToUpperInvariant());
+            titleLabel.name = name;
             titleLabel.AddToClassList("section-title");
             titleLabel.AddToClassList("text-section-header");
             header.Add(titleLabel);
 
             if (onInfoTap != null)
             {
-                var infoBtn = new Button(onInfoTap);
-                infoBtn.name = $"{name}_info";
-                infoBtn.text = MaterialIcons.Info;
+                // Plain Label (no Button/Clickable manipulator). On iOS, UI
+                // Toolkit's AtTarget dispatch on this Label is observed to
+                // drop the PointerDown whenever Appium injects a mobile:scroll
+                // just before the tap (every spec's `before` hook scrolls to
+                // its section first). The bridge installs a panel-root
+                // TrickleDown handler that dispatches by name — bypasses the
+                // dropped AtTarget. On Android, the same registration drives
+                // the UiAutomator2 click route.
+                var infoBtn = new Label(MaterialIcons.Info);
+                infoBtn.name = $"{SectionKeyFromName(name)}_info_icon";
                 infoBtn.AddToClassList("info-button");
+                infoBtn.pickingMode = PickingMode.Position;
+                bool CanOpenTooltip() => infoBtn.panel?.visualTree.Q("tooltip_title") == null;
+                void OpenTooltip()
+                {
+                    if (CanOpenTooltip())
+                        onInfoTap();
+                }
+                infoBtn.RegisterCallback<ClickEvent>(_ => OpenTooltip());
+                AccessibilityBridge.RegisterE2ETapTarget(
+                    infoBtn,
+                    CanOpenTooltip,
+                    OpenTooltip
+                );
                 header.Add(infoBtn);
             }
 
@@ -90,6 +112,7 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("primary-button");
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, onClick);
             return btn;
         }
 
@@ -99,6 +122,7 @@ namespace OneSignalDemo.UI.Sections
             btn.name = name;
             btn.text = text;
             btn.AddToClassList("destructive-button");
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, onClick);
             return btn;
         }
 
@@ -114,24 +138,27 @@ namespace OneSignalDemo.UI.Sections
         public static VisualElement CreateKeyValueItem(
             string key,
             string value,
-            string name = null,
+            string sectionKey = null,
+            string itemKey = null,
             Action onDelete = null
         )
         {
             var item = new VisualElement();
             item.AddToClassList("key-value-item");
-            if (!string.IsNullOrEmpty(name))
-                item.name = name;
 
             var texts = new VisualElement();
             texts.AddToClassList("key-value-texts");
 
             var keyLabel = new Label(key);
+            if (sectionKey != null && itemKey != null)
+                keyLabel.name = $"{sectionKey}_pair_key_{itemKey}";
             keyLabel.AddToClassList("key-value-key");
             keyLabel.AddToClassList("text-card-label");
             texts.Add(keyLabel);
 
             var valueLabel = new Label(value);
+            if (sectionKey != null && itemKey != null)
+                valueLabel.name = $"{sectionKey}_pair_value_{itemKey}";
             valueLabel.AddToClassList("key-value-value");
             valueLabel.AddToClassList("text-toggle-desc");
             texts.Add(valueLabel);
@@ -141,8 +168,11 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
+                if (sectionKey != null && itemKey != null)
+                    deleteBtn.name = $"{sectionKey}_remove_{itemKey}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
+                AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 
@@ -176,16 +206,16 @@ namespace OneSignalDemo.UI.Sections
 
         public static VisualElement CreateSingleItem(
             string value,
-            string name = null,
+            string sectionKey = null,
             Action onDelete = null
         )
         {
             var item = new VisualElement();
             item.AddToClassList("key-value-item");
-            if (!string.IsNullOrEmpty(name))
-                item.name = name;
 
             var label = new Label(value);
+            if (sectionKey != null)
+                label.name = $"{sectionKey}_value_{value}";
             label.AddToClassList("key-value-key");
             label.AddToClassList("text-card-label");
             label.AddToClassList("flex-grow");
@@ -194,20 +224,80 @@ namespace OneSignalDemo.UI.Sections
             if (onDelete != null)
             {
                 var deleteBtn = new Button(onDelete);
+                if (sectionKey != null)
+                    deleteBtn.name = $"{sectionKey}_remove_{value}";
                 deleteBtn.text = MaterialIcons.Close;
                 deleteBtn.AddToClassList("delete-button");
+                AccessibilityBridge.RegisterE2ETapTarget(deleteBtn, () => true, onDelete);
                 item.Add(deleteBtn);
             }
 
             return item;
         }
 
-        public static Label CreateEmptyState(string text)
+        public static Label CreateEmptyState(string text, string sectionKey = null)
         {
             var label = new Label(text);
+            if (sectionKey != null)
+                label.name = $"{sectionKey}_empty";
             label.AddToClassList("empty-state");
             label.AddToClassList("text-empty-state");
             return label;
         }
+
+        public static Label CreateLoadingState(string sectionKey)
+        {
+            var label = new Label("Loading…");
+            label.name = $"{sectionKey}_loading";
+            label.AddToClassList("empty-state");
+            label.AddToClassList("text-empty-state");
+            return label;
+        }
+
+        /// <summary>
+        /// Mirrors the Capacitor demo's PairList: rebuilds <paramref name="container"/>
+        /// with a loading state, an empty state, or a divider-separated list of
+        /// key/value rows. Section-specific button visibility is owned by callers.
+        /// </summary>
+        public static void RenderPairList(
+            VisualElement container,
+            IReadOnlyList<KeyValuePair<string, string>> items,
+            string emptyText,
+            string sectionKey,
+            bool loading = false,
+            Action<string> onRemove = null
+        )
+        {
+            container.Clear();
+
+            if (items.Count == 0)
+            {
+                container.Add(
+                    loading
+                        ? CreateLoadingState(sectionKey)
+                        : CreateEmptyState(emptyText, sectionKey)
+                );
+                return;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (i > 0)
+                    container.Add(CreateDivider(tight: true));
+                var kvp = items[i];
+                var capturedKey = kvp.Key;
+                Action delete = null;
+                if (onRemove != null)
+                    delete = () => onRemove(capturedKey);
+                container.Add(
+                    CreateKeyValueItem(capturedKey, kvp.Value, sectionKey, capturedKey, delete)
+                );
+            }
+        }
+
+        private static string SectionKeyFromName(string name) =>
+            name != null && name.EndsWith("_section")
+                ? name.Substring(0, name.Length - "_section".Length)
+                : name;
     }
 }

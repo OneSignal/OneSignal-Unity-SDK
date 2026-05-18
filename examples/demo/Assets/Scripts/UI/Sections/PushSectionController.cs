@@ -36,9 +36,9 @@ namespace OneSignalDemo.UI.Sections
             var pushIdRow = SectionBuilder.CreateInlineKeyValue(
                 "Push ID",
                 _viewModel.PushSubscriptionId ?? "\u2013",
-                "push_subscription_id"
+                "push_id"
             );
-            _pushIdLabel = pushIdRow.Q<Label>("push_subscription_id_value");
+            _pushIdLabel = pushIdRow.Q<Label>("push_id_value");
             card.Add(pushIdRow);
 
             card.Add(SectionBuilder.CreateDivider());

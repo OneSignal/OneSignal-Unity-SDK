@@ -13,6 +13,7 @@ namespace OneSignalDemo.UI.Sections
         private Button _startButton;
         private Button _updateButton;
         private Button _endButton;
+        private Label _apiKeyHint;
 
         public Action OnInfoTap;
 
@@ -48,7 +49,7 @@ namespace OneSignalDemo.UI.Sections
             var orderNumberRow = CreateInlineInputRow(
                 "Order #",
                 "ORD-1234",
-                "live_activity_order_input"
+                "live_activity_order_number_input"
             );
             _orderNumberField = orderNumberRow.Q<TextField>();
             inputCard.Add(orderNumberRow);
@@ -76,6 +77,11 @@ namespace OneSignalDemo.UI.Sections
             );
             section.Add(_endButton);
 
+            _apiKeyHint = new Label("Set ONESIGNAL_API_KEY in .env to enable update & end");
+            _apiKeyHint.name = "live_activity_api_key_hint";
+            _apiKeyHint.AddToClassList("hint-text");
+            section.Add(_apiKeyHint);
+
             RefreshButtonStates();
             return section;
         }
@@ -90,14 +96,20 @@ namespace OneSignalDemo.UI.Sections
             bool hasActivityId = !string.IsNullOrEmpty(_activityIdField?.value);
             bool hasApiKey = _viewModel.HasApiKey;
 
-            _startButton?.SetEnabled(hasActivityId && !_viewModel.IsLiveActivityUpdating);
+            _startButton?.SetEnabled(hasActivityId);
 
-            bool canUpdate = hasActivityId && hasApiKey && !_viewModel.IsLiveActivityUpdating;
-            _updateButton?.SetEnabled(canUpdate);
+            _updateButton?.SetEnabled(
+                hasActivityId && hasApiKey && !_viewModel.IsLiveActivityUpdating
+            );
             if (_updateButton != null)
                 _updateButton.text = $"UPDATE \u2192 {_viewModel.NextStatusLabel}";
 
-            _endButton?.SetEnabled(hasActivityId && hasApiKey && !_viewModel.IsLiveActivityUpdating);
+            _endButton?.SetEnabled(
+                hasActivityId && hasApiKey && !_viewModel.IsLiveActivityUpdating
+            );
+
+            if (_apiKeyHint != null)
+                _apiKeyHint.style.display = hasApiKey ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
         private void OnStartTap()

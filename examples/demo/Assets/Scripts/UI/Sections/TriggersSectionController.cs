@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -35,37 +34,51 @@ namespace OneSignalDemo.UI.Sections
             );
 
             var card = SectionBuilder.CreateCard("triggers_card");
+            if (AppViewModel.IsE2EMode)
+            {
+                card.style.paddingTop = 6;
+                card.style.paddingBottom = 6;
+                card.style.marginBottom = 4;
+            }
             _listContainer = new VisualElement();
             _listContainer.name = "triggers_list";
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(
-                SectionBuilder.CreatePrimaryButton(
-                    "ADD",
-                    "add_trigger_button",
-                    () => OnAddTap?.Invoke()
-                )
+            var addButton = SectionBuilder.CreatePrimaryButton(
+                "ADD TRIGGER",
+                "add_trigger_button",
+                InvokeAdd
             );
-            section.Add(
-                SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE",
-                    "add_multiple_triggers_button",
-                    () => OnAddMultipleTap?.Invoke()
-                )
+            if (AppViewModel.IsE2EMode)
+            {
+                addButton.style.minHeight = 40;
+                addButton.style.marginBottom = 4;
+            }
+            section.Add(addButton);
+            var addMultipleButton = SectionBuilder.CreatePrimaryButton(
+                "ADD MULTIPLE TRIGGERS",
+                "add_multiple_triggers_button",
+                InvokeAddMultiple
             );
+            if (AppViewModel.IsE2EMode)
+            {
+                addMultipleButton.style.minHeight = 40;
+                addMultipleButton.style.marginBottom = 4;
+            }
+            section.Add(addMultipleButton);
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
-                "REMOVE SELECTED",
-                "remove_selected_triggers_button",
-                () => OnRemoveSelectedTap?.Invoke()
+                "REMOVE TRIGGERS",
+                "remove_triggers_button",
+                InvokeRemoveSelected
             );
             section.Add(_removeSelectedButton);
 
             _clearAllButton = SectionBuilder.CreateDestructiveButton(
-                "CLEAR ALL",
-                "clear_all_triggers_button",
-                () => _viewModel.ClearAllTriggers()
+                "CLEAR ALL TRIGGERS",
+                "clear_triggers_button",
+                InvokeClearAll
             );
             section.Add(_clearAllButton);
 
@@ -73,39 +86,30 @@ namespace OneSignalDemo.UI.Sections
             return section;
         }
 
+        private void InvokeAddMultiple() => OnAddMultipleTap?.Invoke();
+
+        private void InvokeAdd() => OnAddTap?.Invoke();
+
+        private void InvokeRemoveSelected() => OnRemoveSelectedTap?.Invoke();
+
+        private void InvokeClearAll() => _viewModel.ClearAllTriggers();
+
         public void Refresh() => RefreshList();
 
         private void RefreshList()
         {
-            _listContainer.Clear();
-            var triggers = _viewModel.Triggers;
+            SectionBuilder.RenderPairList(
+                _listContainer,
+                _viewModel.Triggers,
+                "No triggers added",
+                "triggers",
+                onRemove: key => _viewModel.RemoveTrigger(key)
+            );
 
-            bool hasTriggers = triggers.Count > 0;
-            _removeSelectedButton.style.display = hasTriggers
-                ? DisplayStyle.Flex
-                : DisplayStyle.None;
+            bool hasTriggers = _viewModel.Triggers.Count > 0;
+            _removeSelectedButton.style.display =
+                hasTriggers ? DisplayStyle.Flex : DisplayStyle.None;
             _clearAllButton.style.display = hasTriggers ? DisplayStyle.Flex : DisplayStyle.None;
-
-            if (!hasTriggers)
-            {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Triggers Added"));
-                return;
-            }
-
-            for (int i = 0; i < triggers.Count; i++)
-            {
-                if (i > 0)
-                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
-                var kvp = triggers[i];
-                _listContainer.Add(
-                    SectionBuilder.CreateKeyValueItem(
-                        kvp.Key,
-                        kvp.Value,
-                        $"trigger_{i}",
-                        () => _viewModel.RemoveTrigger(kvp.Key)
-                    )
-                );
-            }
         }
     }
 }

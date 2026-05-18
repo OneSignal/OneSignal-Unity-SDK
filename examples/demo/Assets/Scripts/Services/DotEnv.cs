@@ -1,0 +1,110 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using UnityEngine;
+
+namespace OneSignalDemo.Services
+{
+    /// <summary>Loads key/value pairs from the demo's .env file (StreamingAssets in players, project root in editor).</summary>
+    public static class DotEnv
+    {
+        private static readonly Dictionary<string, string> _values = new();
+        private static bool _loaded;
+
+        public static void Load()
+        {
+            if (_loaded)
+                return;
+            _loaded = true;
+
+            try
+            {
+                var content = ReadEnvContent();
+                if (string.IsNullOrEmpty(content))
+                    return;
+
+                foreach (var line in content.Split('\n'))
+                {
+                    var trimmed = line.Trim();
+                    if (trimmed.Length == 0 || trimmed.StartsWith("#") || !trimmed.Contains("="))
+                        continue;
+
+                    var eqIndex = trimmed.IndexOf('=');
+                    var key = trimmed.Substring(0, eqIndex).Trim();
+                    var value = trimmed.Substring(eqIndex + 1).Trim();
+
+                    int commentIdx = value.IndexOf('#');
+                    if (commentIdx >= 0)
+                        value = value.Substring(0, commentIdx).Trim();
+
+                    if (
+                        value.Length >= 2
+                        && (
+                            (value[0] == '"' && value[value.Length - 1] == '"')
+                            || (value[0] == '\'' && value[value.Length - 1] == '\'')
+                        )
+                    )
+                        value = value.Substring(1, value.Length - 2);
+
+                    _values[key] = value;
+                }
+            }
+            catch (Exception)
+            {
+                // .env not bundled or unreadable -- keys remain empty
+            }
+        }
+
+        public static string Get(string key)
+        {
+            // Lazy-load so callers that race AppBootstrapper.Start (e.g. UI
+            // controllers' OnEnable) still see env values on first access.
+            Load();
+            return _values.TryGetValue(key, out var value) ? value : "";
+        }
+
+        public static bool IsE2EMode =>
+            string.Equals(Get("E2E_MODE"), "true", StringComparison.OrdinalIgnoreCase);
+
+        private static string ReadEnvContent()
+        {
+#if UNITY_EDITOR
+            var editorPath = Path.Combine(Application.dataPath, "..", ".env");
+            if (File.Exists(editorPath))
+                return File.ReadAllText(editorPath);
+#endif
+#if UNITY_ANDROID && !UNITY_EDITOR
+            return ReadAndroidAsset(".env");
+#else
+            var streamingPath = Path.Combine(Application.streamingAssetsPath, ".env");
+            if (File.Exists(streamingPath))
+                return File.ReadAllText(streamingPath);
+
+            return null;
+#endif
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static string ReadAndroidAsset(string path)
+        {
+            using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            using var assets = activity.Call<AndroidJavaObject>("getAssets");
+            using var stream = assets.Call<AndroidJavaObject>("open", path);
+            using var inputStreamReader = new AndroidJavaObject("java.io.InputStreamReader", stream);
+            using var reader = new AndroidJavaObject(
+                "java.io.BufferedReader",
+                inputStreamReader
+            );
+            var content = new StringBuilder();
+
+            string line;
+            while ((line = reader.Call<string>("readLine")) != null)
+                content.AppendLine(line);
+
+            return content.ToString();
+        }
+#endif
+    }
+}

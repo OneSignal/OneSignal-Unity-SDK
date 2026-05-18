@@ -4,6 +4,7 @@ namespace OneSignalDemo.Models
     {
         Simple,
         WithImage,
+        WithSound,
         Custom,
     }
 }

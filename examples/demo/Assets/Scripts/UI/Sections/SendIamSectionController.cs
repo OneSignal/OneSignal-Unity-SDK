@@ -1,5 +1,6 @@
 using System;
 using OneSignalDemo.Models;
+using OneSignalDemo.Services;
 using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
@@ -33,7 +34,7 @@ namespace OneSignalDemo.UI.Sections
                 CreateIamButton(
                     "TOP BANNER",
                     MaterialIcons.VerticalAlignTop,
-                    "send_iam_top",
+                    "send_iam_top_banner_button",
                     InAppMessageType.TopBanner
                 )
             );
@@ -41,7 +42,7 @@ namespace OneSignalDemo.UI.Sections
                 CreateIamButton(
                     "BOTTOM BANNER",
                     MaterialIcons.VerticalAlignBottom,
-                    "send_iam_bottom",
+                    "send_iam_bottom_banner_button",
                     InAppMessageType.BottomBanner
                 )
             );
@@ -49,7 +50,7 @@ namespace OneSignalDemo.UI.Sections
                 CreateIamButton(
                     "CENTER MODAL",
                     MaterialIcons.CropSquare,
-                    "send_iam_center",
+                    "send_iam_center_modal_button",
                     InAppMessageType.CenterModal
                 )
             );
@@ -57,7 +58,7 @@ namespace OneSignalDemo.UI.Sections
                 CreateIamButton(
                     "FULL SCREEN",
                     MaterialIcons.Fullscreen,
-                    "send_iam_full",
+                    "send_iam_full_screen_button",
                     InAppMessageType.FullScreen
                 )
             );
@@ -72,9 +73,11 @@ namespace OneSignalDemo.UI.Sections
             InAppMessageType type
         )
         {
-            var btn = new Button(() => _viewModel.SendInAppMessage(type));
+            void SendIam() => _viewModel.SendInAppMessage(type);
+            var btn = new Button(SendIam);
             btn.name = name;
             btn.AddToClassList("iam-button");
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, SendIam);
 
             var iconLabel = new Label(icon);
             iconLabel.AddToClassList("iam-button-icon");

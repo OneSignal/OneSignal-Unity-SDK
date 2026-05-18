@@ -21,10 +21,6 @@ namespace OneSignalDemo.UI
 
         private VisualElement _root;
         private VisualElement _contentRoot;
-        private VisualElement _loadingOverlay;
-        private VisualElement _spinner;
-        private IVisualElementScheduledItem _spinnerAnim;
-        private LogViewController _logView;
         private ToastView _toastView;
 
         private AppSectionController _appSection;
@@ -39,7 +35,7 @@ namespace OneSignalDemo.UI
         private TagsSectionController _tagsSection;
         private OutcomesSectionController _outcomesSection;
         private TriggersSectionController _triggersSection;
-        private TrackEventSectionController _trackEventSection;
+        private CustomEventsSectionController _customEventsSection;
         private LocationSectionController _locationSection;
         private LiveActivitiesSectionController _liveActivitiesSection;
 
@@ -59,12 +55,15 @@ namespace OneSignalDemo.UI
             if (themeSheet != null)
                 _root.styleSheets.Add(themeSheet);
 
-            var logViewSheet = Resources.Load<StyleSheet>("LogView");
-            if (logViewSheet != null)
-                _root.styleSheets.Add(logViewSheet);
-
             BuildScreen();
             WireEvents();
+
+#if UNITY_IOS || UNITY_ANDROID
+            // E2E only: publish the VisualElement tree to platform a11y so
+            // Appium (XCUITest / UiAutomator2) can locate elements by name.
+            // No-op outside E2E_MODE.
+            OneSignalDemo.Services.AccessibilityBridge.EnableForE2E(_root);
+#endif
         }
 
         private void OnDisable()
@@ -74,7 +73,6 @@ namespace OneSignalDemo.UI
                 _viewModel.OnStateChanged -= RefreshAll;
                 _viewModel.OnToastMessage -= ShowToast;
             }
-            _logView?.Destroy();
         }
 
         private void Update()
@@ -117,11 +115,7 @@ namespace OneSignalDemo.UI
             var safe = Screen.safeArea;
             float scale = rootHeight / Screen.height;
             float top = (Screen.height - safe.yMax) * scale;
-            float bottom = safe.y * scale;
 
-            var screenRoot = _root.Q("screen_root");
-            if (screenRoot != null)
-                screenRoot.style.paddingBottom = bottom;
             var statusSpacer = _root.Q("status_bar_spacer");
             if (statusSpacer != null)
                 statusSpacer.style.height = top;
@@ -155,9 +149,12 @@ namespace OneSignalDemo.UI
 
             screenRoot.Add(appBar);
 
-            _logView = new LogViewController(screenRoot);
+            var appBarShadow = new VisualElement();
+            appBarShadow.AddToClassList("app-bar-shadow");
+            screenRoot.Add(appBarShadow);
 
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
+            scrollView.name = "main_scroll_view";
             scrollView.AddToClassList("flex-grow");
 
             _contentRoot = new VisualElement();
@@ -167,17 +164,6 @@ namespace OneSignalDemo.UI
 
             scrollView.Add(_contentRoot);
             screenRoot.Add(scrollView);
-
-            _loadingOverlay = new VisualElement();
-            _loadingOverlay.name = "loading_overlay";
-            _loadingOverlay.AddToClassList("loading-overlay");
-            _loadingOverlay.style.display = DisplayStyle.None;
-
-            _spinner = new VisualElement();
-            _spinner.AddToClassList("loading-spinner");
-            _loadingOverlay.Add(_spinner);
-
-            screenRoot.Add(_loadingOverlay);
 
             _toastView = new ToastView(screenRoot);
 
@@ -246,10 +232,10 @@ namespace OneSignalDemo.UI
             _triggersSection.OnRemoveSelectedTap = ShowRemoveSelectedTriggersDialog;
             _contentRoot.Add(_triggersSection.Root);
 
-            _trackEventSection = new TrackEventSectionController(_viewModel);
-            _trackEventSection.OnInfoTap = () => ShowTooltip("trackEvent");
-            _trackEventSection.OnTrackEventTap = ShowTrackEventDialog;
-            _contentRoot.Add(_trackEventSection.Root);
+            _customEventsSection = new CustomEventsSectionController(_viewModel);
+            _customEventsSection.OnInfoTap = () => ShowTooltip("customEvents");
+            _customEventsSection.OnTrackEventTap = ShowTrackEventDialog;
+            _contentRoot.Add(_customEventsSection.Root);
 
             _locationSection = new LocationSectionController(_viewModel);
             _locationSection.OnInfoTap = () => ShowTooltip("location");
@@ -289,26 +275,6 @@ namespace OneSignalDemo.UI
             _triggersSection?.Refresh();
             _locationSection?.Refresh();
             _liveActivitiesSection?.Refresh();
-
-            var showLoading = _viewModel.IsLoading;
-            _loadingOverlay.style.display = showLoading ? DisplayStyle.Flex : DisplayStyle.None;
-
-            if (showLoading && _spinnerAnim == null)
-            {
-                float angle = 0f;
-                _spinnerAnim = _spinner
-                    .schedule.Execute(() =>
-                    {
-                        angle = (angle + 12f) % 360f;
-                        _spinner.style.rotate = new Rotate(Angle.Degrees(angle));
-                    })
-                    .Every(16);
-            }
-            else if (!showLoading && _spinnerAnim != null)
-            {
-                _spinnerAnim.Pause();
-                _spinnerAnim = null;
-            }
         }
 
         private void ShowToast(string message) => _toastView?.Show(message);
@@ -328,8 +294,8 @@ namespace OneSignalDemo.UI
                 "Add Alias",
                 "Label",
                 "ID",
-                "alias_key",
-                "alias_value",
+                "alias_label_input",
+                "alias_id_input",
                 "Add",
                 (key, value) => _viewModel.AddAlias(key, value)
             );
@@ -378,8 +344,8 @@ namespace OneSignalDemo.UI
                 "Add Tag",
                 "Key",
                 "Value",
-                "tag_key",
-                "tag_value",
+                "tag_key_input",
+                "tag_value_input",
                 "Add",
                 (key, value) => _viewModel.AddTag(key, value)
             );
@@ -418,8 +384,8 @@ namespace OneSignalDemo.UI
                 "Add Trigger",
                 "Key",
                 "Value",
-                "trigger_key",
-                "trigger_value",
+                "trigger_key_input",
+                "trigger_value_input",
                 "Add",
                 (key, value) => _viewModel.AddTrigger(key, value)
             );

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -39,14 +38,14 @@ namespace OneSignalDemo.UI.Sections
 
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD",
+                    "ADD ALIAS",
                     "add_alias_button",
                     () => OnAddTap?.Invoke()
                 )
             );
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE",
+                    "ADD MULTIPLE ALIASES",
                     "add_multiple_aliases_button",
                     () => OnAddMultipleTap?.Invoke()
                 )
@@ -60,24 +59,13 @@ namespace OneSignalDemo.UI.Sections
 
         private void RefreshList()
         {
-            _listContainer.Clear();
-            var aliases = _viewModel.Aliases;
-
-            if (aliases.Count == 0)
-            {
-                _listContainer.Add(SectionBuilder.CreateEmptyState("No Aliases Added"));
-                return;
-            }
-
-            for (int i = 0; i < aliases.Count; i++)
-            {
-                if (i > 0)
-                    _listContainer.Add(SectionBuilder.CreateDivider(tight: true));
-                var kvp = aliases[i];
-                _listContainer.Add(
-                    SectionBuilder.CreateKeyValueItem(kvp.Key, kvp.Value, $"alias_{i}")
-                );
-            }
+            SectionBuilder.RenderPairList(
+                _listContainer,
+                _viewModel.Aliases,
+                "No Aliases Added",
+                "aliases",
+                loading: _viewModel.IsLoading
+            );
         }
     }
 }

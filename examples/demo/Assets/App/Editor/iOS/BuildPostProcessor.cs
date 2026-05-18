@@ -34,6 +34,7 @@ using UnityEditor.iOS.Xcode;
 using UnityEditor.iOS.Xcode.Extensions;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace App.Editor.iOS
 {
@@ -52,6 +53,9 @@ namespace App.Editor.iOS
             "OneSignalWidgetBundle.swift",
             "OneSignalWidgetLiveActivity.swift",
         };
+
+        private static readonly string SoundsSourceDir = Path.Combine("iOS", "Sounds");
+        private static readonly string[] CustomSoundFiles = new string[] { "vine_boom.wav" };
 
         /// <summary>
         /// must be between 40 and 50 to ensure that it's not overriden by Podfile generation (40) and that it's
@@ -76,6 +80,7 @@ namespace App.Editor.iOS
 
             EnableAppForLiveActivities(report.summary.outputPath);
             CreateWidgetExtension(report.summary.outputPath);
+            AddCustomSoundsToMainTarget(report.summary.outputPath);
 
             Debug.Log("BuildPostProcessor.OnPostprocessBuild complete");
         }
@@ -100,6 +105,43 @@ namespace App.Editor.iOS
         {
             AddWidgetExtensionToProject(outputPath);
             AddWidgetExtensionToPodFile(outputPath);
+        }
+
+        /// <summary>
+        /// Copies bundled .wav files into the Xcode project and registers them on the main
+        /// target's Resources build phase so `ios_sound` payload values resolve to a real
+        /// `UNNotificationSound` resource in the .app bundle.
+        /// </summary>
+        static void AddCustomSoundsToMainTarget(string outputPath)
+        {
+            var project = new PBXProject();
+            var projectPath = PBXProject.GetPBXProjectPath(outputPath);
+            project.ReadFromString(File.ReadAllText(projectPath));
+
+            var mainTargetGuid = project.GetUnityMainTargetGuid();
+
+            foreach (var fileName in CustomSoundFiles)
+            {
+                var sourcePath = Path.Combine(SoundsSourceDir, fileName);
+                if (!File.Exists(sourcePath))
+                {
+                    Debug.LogWarning(
+                        $"Custom sound asset missing at {sourcePath}; skipping iOS bundling."
+                    );
+                    continue;
+                }
+
+                var destAbsolutePath = Path.Combine(outputPath, fileName);
+                File.Copy(sourcePath, destAbsolutePath, true);
+
+                if (!string.IsNullOrEmpty(project.FindFileGuidByProjectPath(fileName)))
+                    continue;
+
+                var fileGuid = project.AddFile(fileName, fileName);
+                project.AddFileToBuild(mainTargetGuid, fileGuid);
+            }
+
+            project.WriteToFile(projectPath);
         }
 
         static void AddWidgetExtensionToProject(string outputPath)
@@ -159,10 +201,61 @@ namespace App.Editor.iOS
                 return;
             }
 
+            // Keep the widget extension pinned to the same OneSignalXCFramework version as the
+            // core plugin so CocoaPods can resolve a single shared version across targets.
+            var requiredVersion = ResolveOneSignalXCFrameworkVersion();
+            var versionConstraint =
+                requiredVersion != null ? $"'{requiredVersion}'" : "'>= 5.0.2', '< 6.0.0'";
+            var requiredTarget =
+                $"target '{WidgetExtensionTargetName}' do\n  pod 'OneSignalXCFramework', {versionConstraint}\nend\n";
+
             var podfile = File.ReadAllText(podfilePath);
-            podfile +=
-                $"target '{WidgetExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '>= 5.0.2', '< 6.0.0'\nend\n";
+            var podfileRegex = new Regex(
+                $@"target '{WidgetExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '(.+)'\nend\n"
+            );
+
+            if (!podfileRegex.IsMatch(podfile))
+                podfile += requiredTarget;
+            else
+            {
+                var podfileTarget = podfileRegex.Match(podfile).ToString();
+                podfile = podfile.Replace(podfileTarget, requiredTarget);
+            }
+
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        static string ResolveOneSignalXCFrameworkVersion()
+        {
+            var dependenciesFilePath = Path.Combine(
+                "Packages",
+                "com.onesignal.unity.ios",
+                "Editor",
+                "OneSignaliOSDependencies.xml"
+            );
+
+            if (!File.Exists(dependenciesFilePath))
+            {
+                Debug.LogWarning(
+                    $"Could not find {dependenciesFilePath}; falling back to default OneSignalXCFramework version range."
+                );
+                return null;
+            }
+
+            var dependenciesFile = File.ReadAllText(dependenciesFilePath);
+            var dependenciesRegex = new Regex(
+                "(?<=<iosPod name=\"OneSignalXCFramework\" version=\")[^\"]+(?=\" addToAllTargets=\"true\" />)"
+            );
+
+            if (!dependenciesRegex.IsMatch(dependenciesFile))
+            {
+                Debug.LogWarning(
+                    $"Could not read OneSignalXCFramework version from {dependenciesFilePath}; falling back to default version range."
+                );
+                return null;
+            }
+
+            return dependenciesRegex.Match(dependenciesFile).ToString();
         }
 
         static void CopyFileOrDirectory(string sourcePath, string destinationPath)

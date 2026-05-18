@@ -28,7 +28,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(titleLabel);
 
             _titleField = new TextField();
-            _titleField.name = "custom_notif_title";
+            _titleField.name = "custom_notification_title_input";
             _titleField.AddToClassList("input-field");
             _titleField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_titleField);
@@ -39,7 +39,7 @@ namespace OneSignalDemo.UI.Dialogs
             container.Add(bodyLabel);
 
             _bodyField = new TextField();
-            _bodyField.name = "custom_notif_body";
+            _bodyField.name = "custom_notification_body_input";
             _bodyField.AddToClassList("input-field");
             _bodyField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_bodyField);
@@ -50,7 +50,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton("Send", OnConfirm);
-            _confirmButton.name = "custom_notif_confirm";
+            _confirmButton.name = "custom_notification_send_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using OneSignalDemo.Services;
 using OneSignalDemo.UI;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
@@ -15,6 +17,14 @@ namespace OneSignalDemo.UI.Dialogs
         private readonly List<(TextField key, TextField value, VisualElement row)> _rows = new();
         private VisualElement _rowsContainer;
         private Button _confirmButton;
+        private bool _submitted;
+        private double _lastAddRowMs = -1.0;
+        private const double AddRowDedupeMs = 500.0;
+        // Monotonic — we cannot derive ids from _rows.Count because RemoveRow
+        // does not renumber survivors, so a new row would collide with an
+        // existing name and AccessibilityBridge.WalkAndUpsert (first-wins by
+        // name) would silently drop it from the a11y tree.
+        private int _nextRowIndex;
 
         public MultiPairInputDialog(
             string title,
@@ -43,8 +53,14 @@ namespace OneSignalDemo.UI.Dialogs
 
             AddRow();
 
-            var addRowButton = new Button(AddRow);
+            var addRowButton = new Button(InvokeAddRow);
+            addRowButton.name = "multipair_add_row_button";
             addRowButton.AddToClassList("dialog-add-row-button");
+            AccessibilityBridge.RegisterE2ETapTarget(
+                addRowButton,
+                () => addRowButton.enabledInHierarchy,
+                InvokeAddRow
+            );
             var addIcon = new Label(MaterialIcons.Add);
             addIcon.AddToClassList("dialog-add-row-icon");
             addRowButton.Add(addIcon);
@@ -59,6 +75,7 @@ namespace OneSignalDemo.UI.Dialogs
             actions.Add(CreateCancelButton());
 
             _confirmButton = CreateConfirmButton(_confirmText, OnConfirm);
+            _confirmButton.name = "multipair_confirm_button";
             _confirmButton.SetEnabled(false);
             actions.Add(_confirmButton);
 
@@ -77,15 +94,17 @@ namespace OneSignalDemo.UI.Dialogs
             var row = new VisualElement();
             row.AddToClassList("dialog-row");
 
+            var rowIndex = _nextRowIndex++;
+
             var keyField = new TextField();
-            keyField.name = $"multi_key_{_rows.Count}";
+            keyField.name = $"multipair_key_{rowIndex}";
             keyField.AddToClassList("input-field");
             keyField.AddToClassList("dialog-field-group-left");
             keyField.textEdition.placeholder = _keyLabel;
             keyField.RegisterValueChangedCallback(_ => ValidateAll());
 
             var valueField = new TextField();
-            valueField.name = $"multi_value_{_rows.Count}";
+            valueField.name = $"multipair_value_{rowIndex}";
             valueField.AddToClassList("input-field");
             valueField.AddToClassList("dialog-field-group");
             valueField.textEdition.placeholder = _valueLabel;
@@ -106,6 +125,17 @@ namespace OneSignalDemo.UI.Dialogs
 
             UpdateDeleteVisibility();
             ValidateAll();
+        }
+
+        private void InvokeAddRow()
+        {
+            double now = Time.realtimeSinceStartupAsDouble * 1000.0;
+            if (_lastAddRowMs >= 0.0 && now - _lastAddRowMs < AddRowDedupeMs)
+                return;
+
+            _lastAddRowMs = now;
+            AddRow();
+            AccessibilityBridge.RequestImmediateResync();
         }
 
         private void RemoveRow((TextField key, TextField value, VisualElement row) entry)
@@ -143,7 +173,7 @@ namespace OneSignalDemo.UI.Dialogs
             bool allValid = _rows.Count > 0;
             foreach (var (key, value, _) in _rows)
             {
-                if (string.IsNullOrEmpty(key.value) || string.IsNullOrEmpty(value.value))
+                if (string.IsNullOrWhiteSpace(key.value) || string.IsNullOrWhiteSpace(value.value))
                 {
                     allValid = false;
                     break;
@@ -154,18 +184,25 @@ namespace OneSignalDemo.UI.Dialogs
 
         private void OnConfirm()
         {
+            if (_submitted)
+                return;
+
             var dict = new Dictionary<string, string>();
             foreach (var (key, value, _) in _rows)
             {
-                if (!string.IsNullOrEmpty(key.value) && !string.IsNullOrEmpty(value.value))
-                    dict[key.value] = value.value;
+                var trimmedKey = key.value?.Trim();
+                var trimmedValue = value.value?.Trim();
+                if (!string.IsNullOrEmpty(trimmedKey) && !string.IsNullOrEmpty(trimmedValue))
+                    dict[trimmedKey] = trimmedValue;
             }
 
-            if (dict.Count > 0)
-            {
-                _onConfirm?.Invoke(dict);
-                Dismiss();
-            }
+            if (dict.Count == 0)
+                return;
+
+            _submitted = true;
+            _confirmButton?.SetEnabled(false);
+            _onConfirm?.Invoke(dict);
+            Dismiss();
         }
     }
 }

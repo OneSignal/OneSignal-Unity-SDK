@@ -1,16 +1,32 @@
 using System;
+using System.Runtime.InteropServices;
+using OneSignalDemo.Services;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
 {
     public abstract class DialogBase
     {
+#if UNITY_IOS && !UNITY_EDITOR
+        // Native bridge in Assets/Plugins/iOS/OneSignalDemoKeyboard.mm.
+        // Calls [keyWindow endEditing:YES] to dismiss the iOS keyboard view
+        // immediately. UIToolkit's TextField.Blur() and TouchScreenKeyboard.
+        // Open("").active = false don't reliably tear down the UIKit keyboard
+        // when a UIToolkit-owned modal dismisses, leaving it floating over the
+        // app and blocking taps on controls behind it.
+        [DllImport("__Internal")]
+        private static extern void OneSignalDemoEndEditing();
+#endif
+
         protected VisualElement Overlay { get; private set; }
         protected VisualElement Container { get; private set; }
         private VisualElement _parent;
 
         public void Show(VisualElement parent)
         {
+            if (parent?.Q(className: "dialog-overlay") != null)
+                return;
+
             _parent = parent;
 
             Overlay = new VisualElement();
@@ -28,11 +44,42 @@ namespace OneSignalDemo.UI.Dialogs
 
             Overlay.Add(Container);
             parent.Add(Overlay);
+            AccessibilityBridge.RequestImmediateResync();
         }
 
         public void Dismiss()
         {
-            Overlay?.RemoveFromHierarchy();
+            var textField = Container?.Q<TextField>();
+            textField?.Blur();
+
+#if UNITY_IOS && !UNITY_EDITOR
+            // Force UIKit to resign first responder so the keyboard view tears
+            // down immediately. Without this the keyboard stays floating over
+            // the app after the modal closes and blocks taps on controls
+            // behind it (e.g. the logout button after login).
+            OneSignalDemoEndEditing();
+#endif
+
+            // Release any pointer capture the dismissed Overlay still holds
+            // before removing it. Without this UIToolkit can keep delivering
+            // the in-flight pointer sequence to the captured target after
+            // RemoveFromHierarchy, which swallows the next synthetic tap.
+            var overlay = Overlay;
+            if (overlay != null)
+            {
+                var panel = overlay.panel;
+                if (panel != null)
+                {
+                    for (int id = 0; id < PointerId.maxPointers; id++)
+                    {
+                        if (panel.GetCapturingElement(id) == overlay)
+                            overlay.ReleasePointer(id);
+                    }
+                }
+                overlay.RemoveFromHierarchy();
+                AccessibilityBridge.RequestImmediateResync();
+            }
+            Overlay = null;
         }
 
         protected abstract void BuildContent(VisualElement container);
@@ -61,6 +108,11 @@ namespace OneSignalDemo.UI.Dialogs
             btn.text = text;
             btn.AddToClassList("dialog-confirm-button");
             btn.AddToClassList("text-dialog-action");
+            AccessibilityBridge.RegisterE2ETapTarget(
+                btn,
+                () => btn.enabledInHierarchy,
+                onClick
+            );
             return btn;
         }
 
@@ -70,6 +122,7 @@ namespace OneSignalDemo.UI.Dialogs
             btn.text = text;
             btn.AddToClassList("dialog-cancel-button");
             btn.AddToClassList("text-dialog-action");
+            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, Dismiss);
             return btn;
         }
     }
