@@ -440,8 +440,11 @@ namespace OneSignalDemo.ViewModels
 
         public async void EndLiveActivity(string activityId)
         {
-            if (string.IsNullOrEmpty(activityId))
+            if (string.IsNullOrEmpty(activityId) || _isLiveActivityUpdating)
                 return;
+
+            _isLiveActivityUpdating = true;
+            NotifyStateChanged();
 
             try
             {
@@ -460,7 +463,6 @@ namespace OneSignalDemo.ViewModels
                 {
                     _liveActivityStatusIndex = 0;
                     Debug.Log($"[{Tag}] Ended Live Activity: {activityId}");
-                    NotifyStateChanged();
                 }
                 else
                 {
@@ -471,6 +473,9 @@ namespace OneSignalDemo.ViewModels
             {
                 Debug.LogError($"[{Tag}] Live Activity end error: {ex.Message}");
             }
+
+            _isLiveActivityUpdating = false;
+            NotifyStateChanged();
         }
 
         public void SetConsentRequired(bool required)
