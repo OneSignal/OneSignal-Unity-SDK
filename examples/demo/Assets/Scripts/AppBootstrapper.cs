@@ -92,32 +92,17 @@ namespace OneSignalDemo
 
         private void PromptPushForStartup()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            if (DotEnv.IsE2EMode)
-            {
-                RequestAndroidPostNotificationsPermission();
-                return;
-            }
-#endif
+            // Route both runtime and E2E flows through the SDK on every
+            // platform. The earlier Android E2E path called raw
+            // `activity.requestPermissions(POST_NOTIFICATIONS)`, which shows
+            // the OS dialog but never tells the OneSignal SDK about the
+            // grant. The SDK then enqueues two competing update-subscription
+            // ops (one SUBSCRIBED, one NO_PERMISSION) and which one wins is a
+            // race — pushes silently never deliver when NO_PERMISSION wins.
             _viewModel.PromptPush();
         }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-        private static void RequestAndroidPostNotificationsPermission()
-        {
-            using var version = new AndroidJavaClass("android.os.Build$VERSION");
-            if (version.GetStatic<int>("SDK_INT") < 33)
-                return;
-
-            using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            using var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            activity.Call(
-                "requestPermissions",
-                new[] { "android.permission.POST_NOTIFICATIONS" },
-                1001
-            );
-        }
-
         private static void SetAndroidWebViewDebugging(bool enabled)
         {
             if (!DotEnv.IsE2EMode)

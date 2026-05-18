@@ -1,4 +1,3 @@
-#if UNITY_IOS || UNITY_ANDROID
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -663,6 +662,9 @@ namespace OneSignalDemo.Services
             var boolField = _root.Q<BaseBoolField>(id);
             if (boolField != null)
             {
+                if (boolField is RadioButton && boolField.value)
+                    return;
+
                 boolField.value = !boolField.value;
                 return;
             }
@@ -727,17 +729,15 @@ namespace OneSignalDemo.Services
 
         private static string AndroidNativeRole(VisualElement el)
         {
-            if (AndroidClickTargets.ContainsKey(el))
-                return "button";
-
-            return el switch
+            var role = el switch
             {
                 TextField => "input",
                 BaseBoolField => "toggle",
                 OneSignalDemo.UI.SwitchToggle => "toggle",
                 Button => "button",
-                _ => "text",
+                _ => AndroidClickTargets.ContainsKey(el) ? "button" : "text",
             };
+            return role;
         }
 #else
         private void SyncAndroidNativeAccessibility() { }
@@ -1128,4 +1128,3 @@ namespace OneSignalDemo.Services
 #endif
     }
 }
-#endif

@@ -34,7 +34,7 @@ namespace App.Editor.iOS
         private const string ApsEnvironment = "development";
 
         private const string NseTargetName = "OneSignalNotificationServiceExtension";
-        private const string WidgetTargetName = "OneSignalWidget";
+        private const string WidgetTargetName = "OneSignalWidgetExtension";
 
         // Short bundle-id suffixes (match the Flutter demo).
         private const string NseBundleSuffix = "NSE";
