@@ -111,10 +111,14 @@ jobs:
           restore-keys: unity-library-ios-
 
       - name: Cache Xcode DerivedData
+        # Hash inputs to the Unity iOS export (files that exist at checkout
+        # time) rather than the exported Xcode project / Podfile, which
+        # don't exist until later steps run. Mirrors the Android Unity
+        # Library cache key shape above.
         uses: actions/cache@v5
         with:
           path: examples/demo/Build/iOS-DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Build/iOS/Unity-iPhone.xcodeproj/project.pbxproj', 'examples/demo/Build/iOS/Podfile') }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt', 'examples/demo/ProjectSettings/ProjectSettings.asset', 'com.onesignal.unity.ios/Editor/**', 'com.onesignal.unity.core/Editor/**', 'examples/demo/iOS/ExportOptions.plist') }}
           restore-keys: deriveddata-${{ runner.os }}-
 
       - name: Export Xcode project from Unity
