@@ -1,5 +1,6 @@
 #if UNITY_IOS
 
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
@@ -12,21 +13,10 @@ namespace App.Editor.iOS
     /// <summary>
     /// Final iOS post-processor for the demo app. Runs AFTER the OneSignal
     /// SDK and demo widget post-processors so it can correct things they set:
-    ///
-    ///  1. Flips the main target's aps-environment from "production" (the SDK
-    ///     default) to "development". The demo only ever runs on simulator or
-    ///     a development device; "production" mismatches the simulator's APNS
-    ///     environment and triggers iOS's "Keep receiving notifications?"
-    ///     tuning prompt on first delivery (matches what the Flutter demo
-    ///     ships with).
-    ///
-    ///  2. Normalizes extension bundle IDs to short suffixes (`.NSE`, `.LA`)
-    ///     to match the Flutter demo and keep provisioning profile names
-    ///     consistent across SDKs.
-    ///
-    ///  3. Pins DEVELOPMENT_TEAM on all targets so a future Manual signing
-    ///     setup with the OneSignal-owned profiles works without manual
-    ///     fix-up in Xcode.
+    /// flips aps-environment to "development", normalizes extension bundle
+    /// IDs, pins DEVELOPMENT_TEAM on every target, and (in CI only) switches
+    /// signing to Manual with the OneSignal-owned Appium provisioning
+    /// profiles so xcodebuild archive can sign the IPA unattended.
     /// </summary>
     public class SigningPostProcessor : IPostprocessBuildWithReport
     {
@@ -39,6 +29,17 @@ namespace App.Editor.iOS
         // Short bundle-id suffixes (match the Flutter demo).
         private const string NseBundleSuffix = "NSE";
         private const string WidgetBundleSuffix = "LA";
+
+        // CI-only manual signing config. Profile names must match the
+        // OneSignal-owned provisioning profiles fetched by
+        // .github/workflows/e2e.yml (`Download provisioning profiles`) and
+        // referenced by examples/demo/iOS/ExportOptions.plist. Local devs
+        // keep Xcode auto-signing because IsCiBuild only returns true when
+        // GitHub Actions / similar set CI=true.
+        private const string MainProfileName = "Appium Demo - Main";
+        private const string NseProfileName = "Appium Demo - NSE";
+        private const string WidgetProfileName = "Appium Demo - Live Activity";
+        private const string DevSignIdentity = "Apple Development";
 
         // Run after both demo widget post-processor (45) and SDK
         // post-processor (45). 100 puts us after pod install (50) too.
@@ -101,18 +102,24 @@ namespace App.Editor.iOS
             project.ReadFromString(File.ReadAllText(projectPath));
 
             var appId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
+            var manualSigning = IsCiBuild();
 
-            ApplyTeamId(project, project.GetUnityMainTargetGuid(), "Unity-iPhone");
+            var mainGuid = project.GetUnityMainTargetGuid();
+            ApplyTeamId(project, mainGuid, "Unity-iPhone");
+            if (manualSigning)
+                ApplyManualSigning(project, mainGuid, MainProfileName, "Unity-iPhone");
 
             ApplyExtensionFixup(
                 project,
                 NseTargetName,
-                $"{appId}.{NseBundleSuffix}"
+                $"{appId}.{NseBundleSuffix}",
+                manualSigning ? NseProfileName : null
             );
             ApplyExtensionFixup(
                 project,
                 WidgetTargetName,
-                $"{appId}.{WidgetBundleSuffix}"
+                $"{appId}.{WidgetBundleSuffix}",
+                manualSigning ? WidgetProfileName : null
             );
 
             File.WriteAllText(projectPath, project.WriteToString());
@@ -127,10 +134,39 @@ namespace App.Editor.iOS
             Debug.Log($"[SigningPostProcessor] Pinned DEVELOPMENT_TEAM={AppleTeamId} on {label}");
         }
 
+        private static void ApplyManualSigning(
+            PBXProject project,
+            string targetGuid,
+            string profileName,
+            string label
+        )
+        {
+            if (string.IsNullOrEmpty(targetGuid))
+                return;
+
+            project.SetBuildProperty(targetGuid, "CODE_SIGN_STYLE", "Manual");
+            project.SetBuildProperty(targetGuid, "PROVISIONING_PROFILE_SPECIFIER", profileName);
+            // PROVISIONING_PROFILE was deprecated by Xcode in favor of the
+            // specifier but Unity still emits it on every target; clear it so
+            // the specifier above wins instead of an empty UUID lookup.
+            project.SetBuildProperty(targetGuid, "PROVISIONING_PROFILE", "");
+            project.SetBuildProperty(targetGuid, "CODE_SIGN_IDENTITY", DevSignIdentity);
+            project.SetBuildProperty(
+                targetGuid,
+                "CODE_SIGN_IDENTITY[sdk=iphoneos*]",
+                DevSignIdentity
+            );
+
+            Debug.Log(
+                $"[SigningPostProcessor] Manual signing on {label}: profile=\"{profileName}\""
+            );
+        }
+
         private static void ApplyExtensionFixup(
             PBXProject project,
             string targetName,
-            string bundleId
+            string bundleId,
+            string profileName
         )
         {
             var guid = project.TargetGuidByName(targetName);
@@ -144,8 +180,19 @@ namespace App.Editor.iOS
 
             project.SetBuildProperty(guid, "PRODUCT_BUNDLE_IDENTIFIER", bundleId);
             ApplyTeamId(project, guid, targetName);
+            if (!string.IsNullOrEmpty(profileName))
+                ApplyManualSigning(project, guid, profileName, targetName);
             Debug.Log(
                 $"[SigningPostProcessor] Set {targetName} PRODUCT_BUNDLE_IDENTIFIER={bundleId}"
+            );
+        }
+
+        private static bool IsCiBuild()
+        {
+            return string.Equals(
+                Environment.GetEnvironmentVariable("CI"),
+                "true",
+                StringComparison.OrdinalIgnoreCase
             );
         }
     }
