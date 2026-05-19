@@ -73,7 +73,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: OneSignal/OneSignal-Unity-SDK
           ref: ${{ needs.prep.outputs.release_branch }}
