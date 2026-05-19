@@ -173,7 +173,9 @@ namespace OneSignalSDK.Android.Utilities
                         case bool boolValue:
                             value = new AndroidJavaObject("java.lang.Boolean", boolValue);
                             break;
-                        case Dictionary<string, object> dictValue:
+                        // Check IDictionary before IList: some dict-like types
+                        // (e.g. Newtonsoft's JObject) also implement IList.
+                        case System.Collections.IDictionary dictValue:
                             value = new AndroidJavaObject(
                                 "org.json.JSONObject",
                                 Json.Serialize(dictValue)

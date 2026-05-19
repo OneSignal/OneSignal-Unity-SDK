@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using OneSignalSDK;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
@@ -75,14 +75,7 @@ namespace OneSignalDemo.UI.Dialogs
             var propsText = _propertiesField?.value;
             if (!string.IsNullOrEmpty(propsText))
             {
-                try
-                {
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(propsText);
-                }
-                catch
-                {
-                    _jsonValid = false;
-                }
+                _jsonValid = TryParseProperties(propsText, out _);
             }
 
             _jsonError.style.display = _jsonValid ? DisplayStyle.None : DisplayStyle.Flex;
@@ -97,20 +90,30 @@ namespace OneSignalDemo.UI.Dialogs
 
             Dictionary<string, object> props = null;
             var propsText = _propertiesField?.value;
-            if (!string.IsNullOrEmpty(propsText))
+            if (!string.IsNullOrEmpty(propsText) && !TryParseProperties(propsText, out props))
             {
-                try
-                {
-                    props = JsonConvert.DeserializeObject<Dictionary<string, object>>(propsText);
-                }
-                catch
-                {
-                    return;
-                }
+                return;
             }
 
             _onConfirm?.Invoke(name, props);
             Dismiss();
+        }
+
+        // Use the SDK's MiniJSON parser so nested objects/arrays come back as plain
+        // Dictionary<string, object> / List<object>. Newtonsoft would hand back
+        // JObject/JArray, which the native bridges then mis-serialize.
+        private static bool TryParseProperties(string propsText, out Dictionary<string, object> props)
+        {
+            props = null;
+            try
+            {
+                props = Json.Deserialize(propsText) as Dictionary<string, object>;
+            }
+            catch
+            {
+                return false;
+            }
+            return props != null;
         }
     }
 }
