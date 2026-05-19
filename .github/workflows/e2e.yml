@@ -65,7 +65,7 @@ jobs:
           restore-keys: unity-library-android-
 
       - name: Build APK
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@v5
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
           UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
@@ -76,6 +76,11 @@ jobs:
           targetPlatform: Android
           buildMethod: BuildScript.BuildAndroidEmulator
           allowDirtyBuild: true
+          # Run the Docker build as the runner's host user so the Library
+          # folder is owned by the runner and actions/cache can tar it in
+          # the post step (otherwise tar exits with code 2 on root-owned
+          # files).
+          runAsHostUser: "true"
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
@@ -122,7 +127,7 @@ jobs:
           restore-keys: deriveddata-${{ runner.os }}-
 
       - name: Export Xcode project from Unity
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@v5
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
           UNITY_EMAIL: ${{ secrets.UNITY_USERNAME }}
