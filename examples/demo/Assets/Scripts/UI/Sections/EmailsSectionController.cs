@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -7,17 +8,18 @@ namespace OneSignalDemo.UI.Sections
     public class EmailsSectionController
     {
         private readonly AppViewModel _viewModel;
+        private readonly VisualElement _dialogRoot;
         private readonly VisualElement _root;
         private VisualElement _listContainer;
         private bool _expanded;
         private const int CollapseThreshold = 5;
 
         public Action OnInfoTap;
-        public Action OnAddTap;
 
-        public EmailsSectionController(AppViewModel viewModel)
+        public EmailsSectionController(AppViewModel viewModel, VisualElement dialogRoot)
         {
             _viewModel = viewModel;
+            _dialogRoot = dialogRoot;
             _root = BuildSection();
         }
 
@@ -41,12 +43,24 @@ namespace OneSignalDemo.UI.Sections
                 SectionBuilder.CreatePrimaryButton(
                     "ADD EMAIL",
                     "add_email_button",
-                    () => OnAddTap?.Invoke()
+                    ShowAddEmailDialog
                 )
             );
 
             RefreshList();
             return section;
+        }
+
+        private void ShowAddEmailDialog()
+        {
+            var dialog = new SingleInputDialog(
+                "Add Email",
+                "Email",
+                "email_input",
+                "Add",
+                email => _viewModel.AddEmail(email)
+            );
+            dialog.Show(_dialogRoot);
         }
 
         public void Refresh() => RefreshList();
@@ -61,7 +75,7 @@ namespace OneSignalDemo.UI.Sections
                 _listContainer.Add(
                     _viewModel.IsLoading
                         ? SectionBuilder.CreateLoadingState("emails")
-                        : SectionBuilder.CreateEmptyState("No Emails Added", "emails")
+                        : SectionBuilder.CreateEmptyState("No emails added", "emails")
                 );
                 return;
             }

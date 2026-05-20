@@ -180,22 +180,83 @@ namespace OneSignalDemo.Services
                 ["contents"] = new JObject { ["en"] = body },
             };
 
+        // Retry while the OneSignal backend hasn't yet indexed the freshly
+        // created subscription. The /notifications endpoint reports this race
+        // in a few different shapes, all of which return HTTP 200:
+        //   {"id":"...","recipients":0}                       (user just switched, push token not yet attached)
+        //   {"id":"...","errors":{"invalid_player_ids":[...]}}
+        //   {"id":"","errors":["All included players are not subscribed"]}
+        //   {"id":"","errors":[...]}
+        // Treat any 200 response with no real id, populated errors, or recipients=0 as transient.
         private async Task<bool> PostNotification(string jsonPayload)
         {
-            var request = new UnityWebRequest("https://onesignal.com/api/v1/notifications", "POST");
-            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Accept", "application/vnd.onesignal.v1+json");
+            const int maxAttempts = 3;
 
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-            operation.completed += _ => tcs.TrySetResult(true);
-            await tcs.Task;
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                var request = new UnityWebRequest(
+                    "https://onesignal.com/api/v1/notifications",
+                    "POST"
+                );
+                request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("Accept", "application/vnd.onesignal.v1+json");
 
-            bool success = request.result == UnityWebRequest.Result.Success;
-            request.Dispose();
-            return success;
+                var tcs = new TaskCompletionSource<bool>();
+                var operation = request.SendWebRequest();
+                operation.completed += _ => tcs.TrySetResult(true);
+                await tcs.Task;
+
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    request.Dispose();
+                    return false;
+                }
+
+                var responseText = request.downloadHandler.text;
+                request.Dispose();
+
+                if (IsTransientSendFailure(responseText))
+                {
+                    if (attempt < maxAttempts)
+                    {
+                        await Task.Delay(3000 * attempt);
+                        continue;
+                    }
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsTransientSendFailure(string responseJson)
+        {
+            if (string.IsNullOrWhiteSpace(responseJson))
+                return false;
+            try
+            {
+                var parsed = JObject.Parse(responseJson);
+                var id = parsed["id"]?.ToString();
+                var errors = parsed["errors"];
+                bool hasErrors =
+                    (errors is JArray arr && arr.Count > 0) ||
+                    (errors is JObject obj && obj.Count > 0);
+                bool missingId = string.IsNullOrEmpty(id);
+                var recipientsToken = parsed["recipients"];
+                bool zeroRecipients =
+                    recipientsToken != null
+                    && recipientsToken.Type == JTokenType.Integer
+                    && recipientsToken.Value<long>() == 0;
+                return hasErrors || missingId || zeroRecipients;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

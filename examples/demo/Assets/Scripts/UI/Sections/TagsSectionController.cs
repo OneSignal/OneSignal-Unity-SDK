@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -7,18 +9,17 @@ namespace OneSignalDemo.UI.Sections
     public class TagsSectionController
     {
         private readonly AppViewModel _viewModel;
+        private readonly VisualElement _dialogRoot;
         private readonly VisualElement _root;
         private VisualElement _listContainer;
         private Button _removeSelectedButton;
 
         public Action OnInfoTap;
-        public Action OnAddTap;
-        public Action OnAddMultipleTap;
-        public Action OnRemoveSelectedTap;
 
-        public TagsSectionController(AppViewModel viewModel)
+        public TagsSectionController(AppViewModel viewModel, VisualElement dialogRoot)
         {
             _viewModel = viewModel;
+            _dialogRoot = dialogRoot;
             _root = BuildSection();
         }
 
@@ -42,26 +43,66 @@ namespace OneSignalDemo.UI.Sections
                 SectionBuilder.CreatePrimaryButton(
                     "ADD TAG",
                     "add_tag_button",
-                    () => OnAddTap?.Invoke()
+                    ShowAddTagDialog
                 )
             );
             section.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "ADD MULTIPLE TAGS",
                     "add_multiple_tags_button",
-                    () => OnAddMultipleTap?.Invoke()
+                    ShowAddMultipleTagsDialog
                 )
             );
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
                 "REMOVE TAGS",
                 "remove_tags_button",
-                () => OnRemoveSelectedTap?.Invoke()
+                ShowRemoveSelectedTagsDialog
             );
             section.Add(_removeSelectedButton);
 
             RefreshList();
             return section;
+        }
+
+        private void ShowAddTagDialog()
+        {
+            var dialog = new PairInputDialog(
+                "Add Tag",
+                "Key",
+                "Value",
+                "tag_key_input",
+                "tag_value_input",
+                "Add",
+                (key, value) => _viewModel.AddTag(key, value)
+            );
+            dialog.Show(_dialogRoot);
+        }
+
+        private void ShowAddMultipleTagsDialog()
+        {
+            var dialog = new MultiPairInputDialog(
+                "Add Multiple Tags",
+                "Key",
+                "Value",
+                "Add all",
+                pairs => _viewModel.AddTags(pairs)
+            );
+            dialog.Show(_dialogRoot);
+        }
+
+        private void ShowRemoveSelectedTagsDialog()
+        {
+            var items = _viewModel.Tags.ToList();
+            if (items.Count == 0)
+                return;
+
+            var dialog = new MultiSelectRemoveDialog(
+                "Remove Tags",
+                items,
+                keys => _viewModel.RemoveSelectedTags(keys)
+            );
+            dialog.Show(_dialogRoot);
         }
 
         public void Refresh() => RefreshList();
@@ -71,7 +112,7 @@ namespace OneSignalDemo.UI.Sections
             SectionBuilder.RenderPairList(
                 _listContainer,
                 _viewModel.Tags,
-                "No Tags Added",
+                "No tags added",
                 "tags",
                 loading: _viewModel.IsLoading,
                 onRemove: key => _viewModel.RemoveTag(key)

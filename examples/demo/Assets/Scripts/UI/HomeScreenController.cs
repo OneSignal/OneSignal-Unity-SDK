@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using OneSignalDemo.Models;
 using OneSignalDemo.Services;
 using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.UI.Sections;
@@ -21,7 +18,6 @@ namespace OneSignalDemo.UI
 
         private VisualElement _root;
         private VisualElement _contentRoot;
-        private ToastView _toastView;
 
         private AppSectionController _appSection;
         private UserSectionController _userSection;
@@ -71,7 +67,6 @@ namespace OneSignalDemo.UI
             if (_viewModel != null)
             {
                 _viewModel.OnStateChanged -= RefreshAll;
-                _viewModel.OnToastMessage -= ShowToast;
             }
         }
 
@@ -165,7 +160,7 @@ namespace OneSignalDemo.UI
             scrollView.Add(_contentRoot);
             screenRoot.Add(scrollView);
 
-            _toastView = new ToastView(screenRoot);
+            DemoToast.Initialize(screenRoot);
 
             _root.Add(screenRoot);
         }
@@ -175,18 +170,15 @@ namespace OneSignalDemo.UI
             _appSection = new AppSectionController(_viewModel);
             _contentRoot.Add(_appSection.Root);
 
-            _userSection = new UserSectionController(_viewModel);
-            _userSection.OnLoginTap = ShowLoginDialog;
-            _userSection.OnLogoutTap = () => _viewModel.LogoutUser();
+            _userSection = new UserSectionController(_viewModel, _root);
             _contentRoot.Add(_userSection.Root);
 
             _pushSection = new PushSectionController(_viewModel);
             _pushSection.OnInfoTap = () => ShowTooltip("push");
             _contentRoot.Add(_pushSection.Root);
 
-            _sendPushSection = new SendPushSectionController(_viewModel);
+            _sendPushSection = new SendPushSectionController(_viewModel, _root);
             _sendPushSection.OnInfoTap = () => ShowTooltip("sendPushNotification");
-            _sendPushSection.OnCustomTap = ShowCustomNotificationDialog;
             _contentRoot.Add(_sendPushSection.Root);
 
             _inAppSection = new InAppSectionController(_viewModel);
@@ -197,44 +189,32 @@ namespace OneSignalDemo.UI
             _sendIamSection.OnInfoTap = () => ShowTooltip("sendInAppMessage");
             _contentRoot.Add(_sendIamSection.Root);
 
-            _aliasesSection = new AliasesSectionController(_viewModel);
+            _aliasesSection = new AliasesSectionController(_viewModel, _root);
             _aliasesSection.OnInfoTap = () => ShowTooltip("aliases");
-            _aliasesSection.OnAddTap = ShowAddAliasDialog;
-            _aliasesSection.OnAddMultipleTap = ShowAddMultipleAliasesDialog;
             _contentRoot.Add(_aliasesSection.Root);
 
-            _emailsSection = new EmailsSectionController(_viewModel);
+            _emailsSection = new EmailsSectionController(_viewModel, _root);
             _emailsSection.OnInfoTap = () => ShowTooltip("emails");
-            _emailsSection.OnAddTap = ShowAddEmailDialog;
             _contentRoot.Add(_emailsSection.Root);
 
-            _smsSection = new SmsSectionController(_viewModel);
+            _smsSection = new SmsSectionController(_viewModel, _root);
             _smsSection.OnInfoTap = () => ShowTooltip("sms");
-            _smsSection.OnAddTap = ShowAddSmsDialog;
             _contentRoot.Add(_smsSection.Root);
 
-            _tagsSection = new TagsSectionController(_viewModel);
+            _tagsSection = new TagsSectionController(_viewModel, _root);
             _tagsSection.OnInfoTap = () => ShowTooltip("tags");
-            _tagsSection.OnAddTap = ShowAddTagDialog;
-            _tagsSection.OnAddMultipleTap = ShowAddMultipleTagsDialog;
-            _tagsSection.OnRemoveSelectedTap = ShowRemoveSelectedTagsDialog;
             _contentRoot.Add(_tagsSection.Root);
 
-            _outcomesSection = new OutcomesSectionController(_viewModel);
+            _outcomesSection = new OutcomesSectionController(_viewModel, _root);
             _outcomesSection.OnInfoTap = () => ShowTooltip("outcomes");
-            _outcomesSection.OnSendOutcomeTap = ShowOutcomeDialog;
             _contentRoot.Add(_outcomesSection.Root);
 
-            _triggersSection = new TriggersSectionController(_viewModel);
+            _triggersSection = new TriggersSectionController(_viewModel, _root);
             _triggersSection.OnInfoTap = () => ShowTooltip("triggers");
-            _triggersSection.OnAddTap = ShowAddTriggerDialog;
-            _triggersSection.OnAddMultipleTap = ShowAddMultipleTriggersDialog;
-            _triggersSection.OnRemoveSelectedTap = ShowRemoveSelectedTriggersDialog;
             _contentRoot.Add(_triggersSection.Root);
 
-            _customEventsSection = new CustomEventsSectionController(_viewModel);
+            _customEventsSection = new CustomEventsSectionController(_viewModel, _root);
             _customEventsSection.OnInfoTap = () => ShowTooltip("customEvents");
-            _customEventsSection.OnTrackEventTap = ShowTrackEventDialog;
             _contentRoot.Add(_customEventsSection.Root);
 
             _locationSection = new LocationSectionController(_viewModel);
@@ -259,7 +239,6 @@ namespace OneSignalDemo.UI
         private void WireEvents()
         {
             _viewModel.OnStateChanged += RefreshAll;
-            _viewModel.OnToastMessage += ShowToast;
         }
 
         private void RefreshAll()
@@ -275,183 +254,6 @@ namespace OneSignalDemo.UI
             _triggersSection?.Refresh();
             _locationSection?.Refresh();
             _liveActivitiesSection?.Refresh();
-        }
-
-        private void ShowToast(string message) => _toastView?.Show(message);
-
-        private void ShowLoginDialog()
-        {
-            var dialog = new LoginDialog(
-                externalId => _viewModel.LoginUser(externalId),
-                _viewModel.IsLoggedIn
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddAliasDialog()
-        {
-            var dialog = new PairInputDialog(
-                "Add Alias",
-                "Label",
-                "ID",
-                "alias_label_input",
-                "alias_id_input",
-                "Add",
-                (key, value) => _viewModel.AddAlias(key, value)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddMultipleAliasesDialog()
-        {
-            var dialog = new MultiPairInputDialog(
-                "Add Multiple Aliases",
-                "Label",
-                "ID",
-                "Add all",
-                pairs => _viewModel.AddAliases(pairs)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddEmailDialog()
-        {
-            var dialog = new SingleInputDialog(
-                "Add Email",
-                "Email",
-                "email_input",
-                "Add",
-                email => _viewModel.AddEmail(email)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddSmsDialog()
-        {
-            var dialog = new SingleInputDialog(
-                "Add SMS",
-                "SMS",
-                "sms_input",
-                "Add",
-                sms => _viewModel.AddSms(sms)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddTagDialog()
-        {
-            var dialog = new PairInputDialog(
-                "Add Tag",
-                "Key",
-                "Value",
-                "tag_key_input",
-                "tag_value_input",
-                "Add",
-                (key, value) => _viewModel.AddTag(key, value)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddMultipleTagsDialog()
-        {
-            var dialog = new MultiPairInputDialog(
-                "Add Multiple Tags",
-                "Key",
-                "Value",
-                "Add all",
-                pairs => _viewModel.AddTags(pairs)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowRemoveSelectedTagsDialog()
-        {
-            var items = _viewModel.Tags.ToList();
-            if (items.Count == 0)
-                return;
-
-            var dialog = new MultiSelectRemoveDialog(
-                "Remove Tags",
-                items,
-                keys => _viewModel.RemoveSelectedTags(keys)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddTriggerDialog()
-        {
-            var dialog = new PairInputDialog(
-                "Add Trigger",
-                "Key",
-                "Value",
-                "trigger_key_input",
-                "trigger_value_input",
-                "Add",
-                (key, value) => _viewModel.AddTrigger(key, value)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowAddMultipleTriggersDialog()
-        {
-            var dialog = new MultiPairInputDialog(
-                "Add Multiple Triggers",
-                "Key",
-                "Value",
-                "Add all",
-                pairs => _viewModel.AddTriggers(pairs)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowRemoveSelectedTriggersDialog()
-        {
-            var items = _viewModel.Triggers.ToList();
-            if (items.Count == 0)
-                return;
-
-            var dialog = new MultiSelectRemoveDialog(
-                "Remove Triggers",
-                items,
-                keys => _viewModel.RemoveSelectedTriggers(keys)
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowOutcomeDialog()
-        {
-            var dialog = new OutcomeDialog(
-                (type, name, value) =>
-                {
-                    switch (type)
-                    {
-                        case OutcomeType.Normal:
-                            _viewModel.SendOutcome(name);
-                            break;
-                        case OutcomeType.Unique:
-                            _viewModel.SendUniqueOutcome(name);
-                            break;
-                        case OutcomeType.WithValue:
-                            _viewModel.SendOutcomeWithValue(name, value);
-                            break;
-                    }
-                }
-            );
-            dialog.Show(_root);
-        }
-
-        private void ShowTrackEventDialog()
-        {
-            var dialog = new TrackEventDialog((name, props) => _viewModel.TrackEvent(name, props));
-            dialog.Show(_root);
-        }
-
-        private void ShowCustomNotificationDialog()
-        {
-            var dialog = new CustomNotificationDialog(
-                (title, body) => _viewModel.SendCustomNotification(title, body)
-            );
-            dialog.Show(_root);
         }
 
         private void ShowTooltip(string key)

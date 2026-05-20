@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Accessibility;
 using UnityEngine.UIElements;
@@ -8,104 +10,74 @@ using UnityEngine.UIElements;
 namespace OneSignalDemo.Services
 {
     /// <summary>
-    /// Mirrors the demo's UI Toolkit VisualElement tree into Unity's
-    /// AccessibilityHierarchy so that XCUITest (iOS) and UiAutomator2
-    /// (Android) can locate elements by their VisualElement.name. UI
-    /// Toolkit renders to a single texture-backed view and is invisible to
-    /// platform accessibility services unless we publish a parallel a11y
-    /// tree via this bridge. Active only in E2E mode.
+    /// Mirrors UI Toolkit's VisualElement tree into Unity's AccessibilityHierarchy so XCUITest
+    /// (iOS) and UiAutomator2 (Android) can find elements by name. E2E mode only.
     /// </summary>
     public class AccessibilityBridge : MonoBehaviour
     {
-        // Backstop frame refresh tick. The hot path is GeometryChangedEvent
-        // (registered in BuildHierarchy) which dispatches a same-frame
-        // refresh whenever anything in the tree resizes, scrolls, or
-        // re-layouts. The timer only catches drift from sources that don't
-        // raise GeometryChangedEvent — animation curves, opacity tweens, and
-        // value mutations on TextField/Toggle/Label.
+        // GeometryChangedEvent is the hot path; this tick catches drift from sources that
+        // don't raise it (animation curves, opacity tweens, value mutations).
         private const float FrameRefreshIntervalSeconds = 0.05f;
-        private const float TapMarkerSize = 28f;
-        private const int MaxTapMarkers = 40;
         private const float ScrollOffsetEpsilon = 0.5f;
         private const double ScrollSettleLayoutChangeDelayMs = 150.0;
-        // Backstop structural poll. The hot path is DetachFromPanelEvent
-        // (per node, see WalkAndAdd) which schedules an immediate resync the
-        // moment a tracked element leaves the tree. The timer catches
-        // additions, since a freshly-created VisualElement has nothing for
-        // us to subscribe to until BuildHierarchy walks it.
+        // DetachFromPanelEvent covers removals; this timer catches additions since a fresh
+        // VisualElement has nothing to subscribe to until BuildHierarchy walks it.
         private const float StructurePollIntervalSeconds = 0.1f;
         private const string GameObjectName = "OneSignalAccessibilityBridge";
+        private const double StalePointerCaptureWindowMs = 200.0;
 
         private static AccessibilityBridge _instance;
 #if UNITY_ANDROID && !UNITY_EDITOR
-        // Named-element click registry. UiAutomator2 only sees a flat
-        // accessibility tree, so a "click" arriving from the OS for element
-        // foo_button must be routed to the C# Action that the foo button's
-        // builder wired up. The dict is keyed by element instance and grows
-        // for the life of the app; named-element churn is bounded by the
-        // number of distinct UI builders, not test iterations.
+        // UiAutomator2 sees a flat tree, so a "click" arriving by name must be routed to the
+        // C# Action wired up by the named element's builder. Keyed by element instance.
         private static readonly Dictionary<VisualElement, AndroidClickTarget> AndroidClickTargets
             = new();
         private static AndroidJavaClass _androidAccessibilityBridge;
         private static bool _androidSyncErrorLogged;
 #endif
 #if UNITY_IOS && !UNITY_EDITOR
-        // iOS-only name-keyed dispatch table for "*_info_icon" Labels.
-        // Plain Label has no Clickable manipulator, so XCUITest taps reach
-        // the target via UI Toolkit's hit-test but no AtTarget callback runs.
-        // Worse, after iOS Appium injects a mobile:scroll before the tap,
-        // AtTarget dispatch on the Label is observed to drop entirely — the
-        // panel root sees the PointerDown with the correct target, but the
-        // target's own callback never fires. We bypass AtTarget by dispatching
-        // from a TrickleDown handler installed once on the panel root (see
-        // BuildHierarchy), keyed by element name so modal overlays can't
-        // bleed through.
-        private static readonly Dictionary<string, IosInfoTap> _iosInfoTapByName
-            = new();
+        // "*_info_icon" Labels have no Clickable manipulator and Appium's mobile:scroll drops
+        // their AtTarget dispatch; we route via panel-root TrickleDown keyed by name.
+        private static readonly Dictionary<string, IosInfoTap> _iosInfoTapByName = new();
 #endif
 
         private VisualElement _root;
         private AccessibilityHierarchy _hierarchy;
         private readonly Dictionary<VisualElement, AccessibilityNode> _map = new();
+        // Reused per BuildHierarchy to avoid per-rebuild allocation.
+        private readonly Dictionary<string, AccessibilityNode> _existingByName = new();
+        private readonly HashSet<string> _seenNames = new();
         private bool _resyncScheduled;
         private bool _frameRefreshScheduled;
         private float _frameRefreshTimer;
         private float _structurePollTimer;
         private int _lastStructureSignature = -1;
-        private int _tapMarkerCount;
-        private VisualElement _tapMarkerOverlay;
         private Vector2 _lastScrollOffset;
         private double _lastScrollChangeMs = -1.0;
         private bool _scrollLayoutChangePending;
         private readonly EventCallback<GeometryChangedEvent> _onGeometryChanged;
         private readonly EventCallback<DetachFromPanelEvent> _onDetachFromPanel;
-        private readonly EventCallback<PointerDownEvent> _onTapMarkerPointerDown;
-        // Set true after the one-shot ScrollView taming hooks (WheelEvent
-        // block + clamp settings) are installed; BuildHierarchy can fire many
-        // times per session and we only want one subscription.
+        // BuildHierarchy can fire many times per session; this one-shot guards ScrollView taming.
         private bool _scrollViewHooksInstalled;
 #if UNITY_IOS && !UNITY_EDITOR
         private readonly EventCallback<PointerDownEvent> _onIosInfoIconPointerDown;
 #endif
-        // E2E only: cached ScrollView ref + stale-capture watchdog. A self-
-        // destroying child (e.g. triggers_remove) can leave ScrollView's
-        // pending-capture latch set because the matching PointerUp is dropped
-        // when its target detaches mid-touch. The next unrelated pointer event
-        // is then interpreted as a continuation of the prior drag, scrolling
-        // the content out from under the test's tap. We reset the latch via
-        // reflection if no pointer activity is observed for a short window.
+        // Cached main ScrollView + stale-capture watchdog. A self-destroying child can leave
+        // ScrollView's pending-capture latch set; we reset via reflection on idle.
         private ScrollView _mainSv;
         private double _lastTouchActivityMs = -1.0;
-        private const double StalePointerCaptureWindowMs = 200.0;
-        private static System.Reflection.FieldInfo _svPointerCaptureScheduledField;
-        private static System.Reflection.FieldInfo _svPressedField;
+        private static FieldInfo _svPointerCaptureScheduledField;
+        private static FieldInfo _svPressedField;
         private static bool _svReflectionResolved;
+
+        // Unity's iOS a11y plugin treats AccessibilityNode.frameGetter Rect as physical screen
+        // pixels; multiply panel-local worldBound by this to match.
+        private float _panelToScreenScale = 1f;
 
         public AccessibilityBridge()
         {
             _onGeometryChanged = _ => ScheduleFrameRefresh();
             _onDetachFromPanel = _ => ScheduleResync();
-            _onTapMarkerPointerDown = e => AddTapMarker(new Vector2(e.position.x, e.position.y));
 #if UNITY_IOS && !UNITY_EDITOR
             _onIosInfoIconPointerDown = OnIosInfoIconPointerDown;
 #endif
@@ -127,20 +99,8 @@ namespace OneSignalDemo.Services
         }
 #endif
 
-        // Empirically, Unity's iOS accessibility plugin treats the Rect we
-        // hand to AccessibilityNode.frameGetter as if it were already in
-        // physical screen pixels, then divides by the device scale to get
-        // UIKit points. UI Toolkit, however, reports VisualElement.worldBound
-        // in panel-local coordinates (reference resolution scaled to fit), so
-        // unscaled frames render ~1/scale of where the UI is actually drawn.
-        // This factor brings panel coords into the same space the plugin
-        // expects; recomputed on every BuildHierarchy in case the panel size
-        // changes (rotation, safe-area shift, multi-display).
-        private float _panelToScreenScale = 1f;
-
         /// <summary>
-        /// Idempotent entry point. Safe to call multiple times; only the first
-        /// call wires the bridge. No-ops outside E2E_MODE.
+        /// Idempotent entry point. Safe to call multiple times; no-ops outside E2E_MODE.
         /// </summary>
         public static void EnableForE2E(VisualElement root)
         {
@@ -168,12 +128,8 @@ namespace OneSignalDemo.Services
         }
 
         /// <summary>
-        /// Registers a named element as a click target. On Android, reports
-        /// the element as role=button to UiAutomator2 and routes incoming
-        /// "click" actions by name. On iOS, only "*_info_icon" Labels need
-        /// special handling — they have no Clickable manipulator, so their
-        /// action is dispatched via the bridge's panel-root PointerDown
-        /// handler. All other iOS taps ride UI Toolkit's standard Clickable.
+        /// Android: reports the element as role=button and routes "click" by name. iOS: only
+        /// "*_info_icon" Labels need this; other taps use UI Toolkit's Clickable.
         /// </summary>
         public static void RegisterE2ETapTarget(
             VisualElement target,
@@ -232,9 +188,8 @@ namespace OneSignalDemo.Services
             _root = root;
             _lastStructureSignature = -1; // force first poll to rebuild
 
-            // Without this override, AssistiveSupport.activeHierarchy is auto-cleared
-            // whenever the OS reports VoiceOver/TalkBack as off. XCUITest reads the
-            // a11y tree without enabling VoiceOver, so we have to lie.
+            // AssistiveSupport.activeHierarchy is auto-cleared when the OS reports screen
+            // reader off; XCUITest queries without enabling VoiceOver, so we have to lie.
             AssistiveSupport.screenReaderStatusOverride =
                 AssistiveSupport.ScreenReaderStatusOverride.ForceEnabled;
             AssistiveSupport.screenReaderStatusChanged -= OnScreenReaderStatusChanged;
@@ -254,15 +209,8 @@ namespace OneSignalDemo.Services
                 _instance = null;
         }
 
-        // After returnToApp() the test runner's first query can read a stale
-        // accessibility snapshot: WDA on iOS (and to a lesser extent
-        // UiAutomator2 on Android) caches the tree, and neither
-        // BuildHierarchy's "structure changed" check nor the OS's own
-        // notifications reliably invalidate that cache when the tree is
-        // identical to before backgrounding. Rebuild and broadcast a
-        // screen-changed notification unconditionally on every foreground so
-        // the next XCUITest/UiAutomator2 query returns fresh data without the
-        // Appium side having to spin on a fixed sleep.
+        // Forces a rebuild + screen-changed ping on every foreground because WDA/UiAutomator2
+        // cache the tree and don't reliably invalidate when the post-resume tree is identical.
         private void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus || _hierarchy == null || _root == null)
@@ -276,8 +224,6 @@ namespace OneSignalDemo.Services
             if (_root != null)
             {
                 _root.UnregisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
-                // Disabled: purple tap-marker overlay (debug visual for E2E taps).
-                // _root.UnregisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
 #if UNITY_IOS && !UNITY_EDITOR
                 var visualTree = _root.panel?.visualTree;
                 if (visualTree != null)
@@ -312,12 +258,8 @@ namespace OneSignalDemo.Services
             if (_hierarchy == null || _root == null)
                 return;
 
-            // Cheap structural-change check: count named descendants and
-            // rebuild on diff. Catches dialog open/close, scene swap, section
-            // refresh — every test-relevant mutation creates or removes named
-            // VisualElements. Avoids hot event hooks during layout.
             _structurePollTimer += Time.unscaledDeltaTime;
-            // Stale-pointer-capture watchdog: see field comment for context.
+            // Stale-pointer-capture watchdog: see _mainSv field comment.
             if (_lastTouchActivityMs > 0.0)
             {
                 double now = Time.realtimeSinceStartupAsDouble * 1000.0;
@@ -340,25 +282,14 @@ namespace OneSignalDemo.Services
                 }
             }
 
-            // Live frames + values: scroll/animation moves elements and
-            // toggles/labels mutate text without altering tree structure.
-            // RefreshNodeFrames covers geometry; AccessibilityNode.value is
-            // a plain field with no per-node "value changed" notification
-            // (the dispatcher only exposes Layout/Screen/Page/Announcement),
-            // so writes don't push to the platform unless we re-publish the
-            // whole hierarchy. We compare against last-known values per tick
-            // and rebuild only when something actually changed — avoids the
-            // every-frame churn the Unity perf docs warn against.
+            // AccessibilityNode.value has no per-node change notification; diff in-tick and
+            // re-publish only when something changed to avoid every-frame churn.
             _frameRefreshTimer += Time.unscaledDeltaTime;
             if (_frameRefreshTimer >= FrameRefreshIntervalSeconds)
             {
                 _frameRefreshTimer = 0f;
-                // Only push to the platform a11y service when something actually
-                // changed. Unconditional RefreshNodeFrames + Android sync every
-                // 50ms emits a continuous stream of TYPE_WINDOW_CONTENT_CHANGED
-                // AccessibilityEvents that prevent UiAutomator2's wait-for-idle
-                // from observing 500ms of quiet, stalling every click for the
-                // full waitForIdleTimeout (default 10s).
+                // Skip the sync when nothing changed — unconditional sync floods UiAutomator2
+                // with TYPE_WINDOW_CONTENT_CHANGED events and stalls every click.
                 if (RefreshNodeValuesAndActive())
                 {
                     _hierarchy.RefreshNodeFrames();
@@ -376,9 +307,7 @@ namespace OneSignalDemo.Services
                 var node = kvp.Value;
                 var newValue = ExtractValue(el);
                 var newActive = IsVisible(el);
-                bool valueChanged = node.value != newValue;
-                bool activeChanged = node.isActive != newActive;
-                if (!valueChanged && !activeChanged)
+                if (node.value == newValue && node.isActive == newActive)
                     continue;
 
                 node.value = newValue;
@@ -388,13 +317,8 @@ namespace OneSignalDemo.Services
             return anyChanged;
         }
 
-        // Order-sensitive FNV-1a hash over named descendants. A bare count missed
-        // dialog→section transitions where the closing dialog and the freshly
-        // revealed section exposed the same number of named descendants — the
-        // bridge would skip BuildHierarchy and XCUITest would keep reading a
-        // stale tree (e.g. add_multiple_tags_button stuck at active=0, rect=0x0)
-        // until the next unrelated mutation. Hashing names catches structural
-        // identity changes even when the cardinality is unchanged.
+        // Order-sensitive FNV-1a hash over named descendants. Hashing (not counting) names
+        // catches dialog→section swaps where cardinality stays the same.
         private static int ComputeStructureSignature(VisualElement el)
         {
             unchecked
@@ -429,8 +353,7 @@ namespace OneSignalDemo.Services
 
         private void OnScreenReaderStatusChanged(bool _)
         {
-            // Unity nulls activeHierarchy when the OS reports screen reader off;
-            // reassert immediately since our override should have prevented it.
+            // Unity nulls activeHierarchy when the OS reports screen reader off; reassert.
             if (_hierarchy != null)
                 AssistiveSupport.activeHierarchy = _hierarchy;
         }
@@ -445,8 +368,7 @@ namespace OneSignalDemo.Services
 
         private IEnumerator ResyncEndOfFrame()
         {
-            // Wait until current frame finishes laying out so child mutations
-            // batch into a single rebuild.
+            // Batch child mutations into a single end-of-frame rebuild.
             yield return new WaitForEndOfFrame();
             _resyncScheduled = false;
             BuildHierarchy();
@@ -457,46 +379,28 @@ namespace OneSignalDemo.Services
             if (_root == null)
                 return;
 
-            // Disabled: purple tap-marker overlay (debug visual for E2E taps).
-            // EnsureTapMarkerOverlay();
             UnregisterTreeCallbacks();
 
             _hierarchy ??= new AccessibilityHierarchy();
 
-            // Recompute the panel→screen scale before walking the tree so each
-            // node's frameGetter sees the correct ratio.
+            // Recompute panel→screen scale before walking so each frameGetter sees the ratio.
             var rootBound = _root.worldBound;
             _panelToScreenScale =
                 rootBound.width > 0 ? Screen.width / rootBound.width : 1f;
 
-            // TrickleDown so we receive geometry events bubbling up from
-            // every descendant without having to register per-element. One
-            // callback drives a coalesced end-of-frame RefreshNodeFrames so
-            // a tap fired immediately after a scroll sees fresh frames
-            // instead of a 50ms-stale snapshot.
+            // TrickleDown so we get geometry events from every descendant without per-element
+            // registration. Drives a coalesced end-of-frame RefreshNodeFrames.
             _root.RegisterCallback(_onGeometryChanged, TrickleDown.TrickleDown);
-            // Disabled: purple tap-marker overlay (debug visual for E2E taps).
-            // Drops a circular marker at every tap location so the demo
-            // overlay matches XCUITest's reported coordinates. Does not
-            // dispatch any action; UI Toolkit's hit-test handles the real
-            // tap routing.
-            // _root.RegisterCallback(_onTapMarkerPointerDown, TrickleDown.TrickleDown);
 #if UNITY_IOS && !UNITY_EDITOR
-            // Register on the panel's visualTree (the absolute topmost
-            // dispatch point), not _root. Anything in TrickleDown above _root
-            // — including ScrollView's own pan-capture handlers — could
-            // StopPropagation before the event reaches a descendant
-            // registration. AtTarget drops on the info Label (observed after
-            // iOS Appium injects mobile:scroll mid-test) would then take the
-            // tooltip tap with them. See _iosInfoTapByName field comment.
+            // Register on panel.visualTree (the topmost dispatch point), not _root, so nothing
+            // above _root can StopPropagation before our handler runs.
             var visualTree = _root.panel?.visualTree;
             if (visualTree != null)
                 visualTree.RegisterCallback(_onIosInfoIconPointerDown, TrickleDown.TrickleDown);
 #endif
 
-            // One-shot per root ScrollView taming: BuildHierarchy can run
-            // dozens of times per scene (every dialog open/close, every
-            // section refresh), but a scene/root swap needs fresh hooks.
+            // One-shot per root: BuildHierarchy fires many times but a scene/root swap is
+            // detected in Initialize, which resets this flag.
             if (!_scrollViewHooksInstalled)
             {
                 var mainSv = _root.Q<ScrollView>("main_scroll_view");
@@ -511,31 +415,25 @@ namespace OneSignalDemo.Services
                 }
             }
 
-            // Incremental rebuild: preserve AccessibilityNode identities by
-            // name across rebuilds. _hierarchy.Clear() + re-add invalidates
-            // every WDA-cached element ref on iOS, producing a burst of
-            // "stale element - terminating request" warnings whenever a
-            // dialog opens/closes — even when most nodes are unchanged.
-            // We diff by name: reuse existing nodes (just re-bind their
-            // frameGetter to the current VisualElement instance), add new
-            // ones, remove ones whose names disappeared.
-            var existingByName = new Dictionary<string, AccessibilityNode>(_map.Count);
+            // Incremental rebuild: reuse AccessibilityNodes by name so WDA's cached element
+            // refs survive across rebuilds (Clear() + re-add invalidates them all).
+            _existingByName.Clear();
             foreach (var kvp in _map)
             {
                 var n = kvp.Value;
                 if (n != null && !string.IsNullOrEmpty(kvp.Key?.name))
-                    existingByName[kvp.Key.name] = n;
+                    _existingByName[kvp.Key.name] = n;
             }
 
             _map.Clear();
-            var seenNames = new HashSet<string>();
+            _seenNames.Clear();
             bool addedAny = false;
-            WalkAndUpsert(_root, existingByName, seenNames, ref addedAny);
+            WalkAndUpsert(_root, ref addedAny);
 
             bool removedAny = false;
-            foreach (var kvp in existingByName)
+            foreach (var kvp in _existingByName)
             {
-                if (seenNames.Contains(kvp.Key))
+                if (_seenNames.Contains(kvp.Key))
                     continue;
                 try { _hierarchy.RemoveNode(kvp.Value); }
                 catch { /* node may already be detached */ }
@@ -546,10 +444,8 @@ namespace OneSignalDemo.Services
 
             if (AssistiveSupport.activeHierarchy != _hierarchy)
                 AssistiveSupport.activeHierarchy = _hierarchy;
-            // SendScreenChanged tells VoiceOver/XCUITest to refresh its
-            // element snapshot, which also invalidates cached refs. Skip it
-            // when we only re-bound existing nodes — frame/value updates
-            // ride out via the normal RefreshNodeFrames path.
+            // SendScreenChanged invalidates cached element refs; skip when only re-binding
+            // existing nodes — frame/value updates ride out via RefreshNodeFrames.
             if (addedAny || removedAny)
                 AssistiveSupport.notificationDispatcher?.SendScreenChanged();
             _hierarchy.RefreshNodeFrames();
@@ -573,22 +469,23 @@ namespace OneSignalDemo.Services
             var action = payload.Substring(firstBreak + 1, secondBreak - firstBreak - 1);
             var value = payload.Substring(secondBreak + 1);
 
-            if (action == "setValue")
+            switch (action)
             {
-                var field = _root.Q<TextField>(id);
-                if (field != null && field.value != value)
-                    field.value = value;
-                return;
+                case "setValue":
+                    var field = _root.Q<TextField>(id);
+                    if (field != null && field.value != value)
+                        field.value = value;
+                    break;
+                case "click":
+                    InvokeAndroidNativeAction(id);
+                    break;
+                case "scroll":
+                    InvokeAndroidNativeScroll(value);
+                    break;
+                case "scrollDelta":
+                    InvokeAndroidNativeScrollDelta(value);
+                    break;
             }
-
-            if (action == "click")
-            {
-                InvokeAndroidNativeAction(id);
-                return;
-            }
-
-            if (action == "scroll")
-                InvokeAndroidNativeScroll(value);
 #endif
         }
 
@@ -655,10 +552,8 @@ namespace OneSignalDemo.Services
                 return;
             }
 
-            // BaseBoolField is the common base of Toggle AND RadioButton in
-            // UI Toolkit. Q<Toggle> would miss radios entirely, leaving the
-            // overlay click as a no-op (clicking the unique/with-value radio
-            // wouldn't actually select that outcome type).
+            // BaseBoolField is the common base of Toggle AND RadioButton — Q<Toggle> would
+            // miss radios entirely, making the overlay click a no-op for radio selections.
             var boolField = _root.Q<BaseBoolField>(id);
             if (boolField != null)
             {
@@ -720,25 +615,53 @@ namespace OneSignalDemo.Services
             var delta = Mathf.Max(80f, viewportHeight * 0.6f);
             var maxY = Mathf.Max(0f, contentHeight - viewportHeight);
             var nextY = direction == "up" ? current.y - delta : current.y + delta;
-            _mainSv.scrollOffset = new Vector2(current.x, Mathf.Clamp(nextY, 0f, maxY));
+            ApplyScrollOffset(current.x, nextY, maxY);
+        }
+
+        // Pixel-accurate scroll from the native overlay's swipe intercept. Positive value =
+        // scroll content forward; convert screen px → panel units before applying.
+        private void InvokeAndroidNativeScrollDelta(string deltaStr)
+        {
+            if (_mainSv == null || string.IsNullOrEmpty(deltaStr))
+                return;
+            if (!float.TryParse(
+                    deltaStr,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var screenDelta))
+                return;
+
+            var viewportHeight = _mainSv.contentViewport?.layout.height ?? _mainSv.layout.height;
+            var contentHeight = _mainSv.contentContainer?.layout.height ?? 0f;
+            if (viewportHeight <= 0f || contentHeight <= viewportHeight)
+                return;
+
+            var scale = _panelToScreenScale > 0f ? _panelToScreenScale : 1f;
+            var panelDelta = screenDelta / scale;
+            var current = _mainSv.scrollOffset;
+            var maxY = Mathf.Max(0f, contentHeight - viewportHeight);
+            ApplyScrollOffset(current.x, current.y + panelDelta, maxY);
+        }
+
+        private void ApplyScrollOffset(float x, float y, float maxY)
+        {
+            if (_mainSv == null)
+                return;
+            _mainSv.scrollOffset = new Vector2(x, Mathf.Clamp(y, 0f, maxY));
 
             RefreshNodeValuesAndActive();
             _hierarchy?.RefreshNodeFrames();
             SyncAndroidNativeAccessibility();
         }
 
-        private static string AndroidNativeRole(VisualElement el)
+        private static string AndroidNativeRole(VisualElement el) => el switch
         {
-            var role = el switch
-            {
-                TextField => "input",
-                BaseBoolField => "toggle",
-                OneSignalDemo.UI.SwitchToggle => "toggle",
-                Button => "button",
-                _ => AndroidClickTargets.ContainsKey(el) ? "button" : "text",
-            };
-            return role;
-        }
+            TextField => "input",
+            BaseBoolField => "toggle",
+            OneSignalDemo.UI.SwitchToggle => "toggle",
+            Button => "button",
+            _ => AndroidClickTargets.ContainsKey(el) ? "button" : "text",
+        };
 #else
         private void SyncAndroidNativeAccessibility() { }
 #endif
@@ -756,10 +679,8 @@ namespace OneSignalDemo.Services
                 _scrollLayoutChangePending = true;
                 RefreshNodeValuesAndActive();
                 _hierarchy.RefreshNodeFrames();
-                // See settle branch below for rationale. Also ping during the
-                // scroll so a getLocation that races with the gesture's tail
-                // sees fresh data — the settle ping fires 150ms after the
-                // last change, which can land after the test's refetch.
+                // Ping during scroll too — the settle ping fires 150ms after the last change
+                // and can land after the test's refetch, leaving the queued tap on stale coords.
                 AssistiveSupport.notificationDispatcher?.SendScreenChanged();
                 return;
             }
@@ -773,128 +694,34 @@ namespace OneSignalDemo.Services
 
             _scrollLayoutChangePending = false;
             _hierarchy.RefreshNodeFrames();
-            // RefreshNodeFrames updates Unity's a11y node positions, but WDA
-            // keeps a cached element-frame snapshot until the OS reports an
-            // a11y notification. Without this ping, scrollToEl's refetch
-            // reads pre-scroll coordinates and openModal's click() lands on
-            // the icon's old off-screen spot — the modal never opens. Firing
-            // only on settle (not on every intermediate scroll frame) keeps
-            // the notification rate sane and gives WDA one clean signal that
-            // frames are stable and re-readable.
+            // WDA caches element frames until an a11y notification arrives. One ping on
+            // settle keeps the rate sane and signals frames are stable and re-readable.
             AssistiveSupport.notificationDispatcher?.SendScreenChanged();
         }
 
-        private void EnsureTapMarkerOverlay()
-        {
-            if (_tapMarkerOverlay?.panel != null)
-                return;
-
-            var mainSv = _root.Q<ScrollView>("main_scroll_view");
-            var parent = mainSv?.contentContainer ?? _root;
-
-            _tapMarkerOverlay = new VisualElement();
-            _tapMarkerOverlay.pickingMode = PickingMode.Ignore;
-            _tapMarkerOverlay.style.position = Position.Absolute;
-            _tapMarkerOverlay.style.left = 0;
-            _tapMarkerOverlay.style.top = 0;
-            _tapMarkerOverlay.style.right = 0;
-            _tapMarkerOverlay.style.bottom = 0;
-            parent.Add(_tapMarkerOverlay);
-        }
-
-        private void AddTapMarker(Vector2 position)
-        {
-            EnsureTapMarkerOverlay();
-            var localPosition = _tapMarkerOverlay.WorldToLocal(position);
-
-            var marker = new VisualElement();
-            marker.pickingMode = PickingMode.Ignore;
-            marker.style.position = Position.Absolute;
-            marker.style.width = TapMarkerSize;
-            marker.style.height = TapMarkerSize;
-            marker.style.left = localPosition.x - TapMarkerSize / 2f;
-            marker.style.top = localPosition.y - TapMarkerSize / 2f;
-            marker.style.borderTopLeftRadius = TapMarkerSize / 2f;
-            marker.style.borderTopRightRadius = TapMarkerSize / 2f;
-            marker.style.borderBottomLeftRadius = TapMarkerSize / 2f;
-            marker.style.borderBottomRightRadius = TapMarkerSize / 2f;
-            marker.style.borderTopWidth = 2;
-            marker.style.borderRightWidth = 2;
-            marker.style.borderBottomWidth = 2;
-            marker.style.borderLeftWidth = 2;
-            var markerColor = new Color(0.55f, 0f, 1f, 1f);
-            marker.style.borderTopColor = markerColor;
-            marker.style.borderRightColor = markerColor;
-            marker.style.borderBottomColor = markerColor;
-            marker.style.borderLeftColor = markerColor;
-            marker.style.backgroundColor = new Color(0.55f, 0f, 1f, 0.18f);
-
-            var label = new Label((++_tapMarkerCount).ToString());
-            label.pickingMode = PickingMode.Ignore;
-            label.style.unityTextAlign = TextAnchor.MiddleCenter;
-            label.style.color = markerColor;
-            label.style.fontSize = 10;
-            marker.Add(label);
-
-            _tapMarkerOverlay.Add(marker);
-            while (_tapMarkerOverlay.childCount > MaxTapMarkers)
-                _tapMarkerOverlay.RemoveAt(0);
-        }
-
         /// <summary>
-        /// Tames the main ScrollView so XCUITest taps land deterministically
-        /// on iOS. Two distinct sources can shift content during a queued tap
-        /// and make the click land on the wrong element:
-        ///   1. iOS XCUITest performs an implicit "scroll-to-visible" before
-        ///      dispatching the tap. The scroll arrives in UI Toolkit as a
-        ///      synthetic WheelEvent injected by DefaultEventSystem
-        ///      (SendPositionBasedEvent ← InputForUIProcessor.ProcessPointerEvent).
-        ///      The ScrollView consumes it and scrolls scrollOffset by ~120pt
-        ///      mid-tap, leaving the queued click on empty space.
-        ///   2. After a swipe gesture, ScrollView schedules
-        ///      `PostPointerUpAnimation` (elasticity bounce + inertia) via
-        ///      TimerEventScheduler. That tick fires AFTER the swipe ends and
-        ///      can run DURING the next queued tap, scrolling the content a
-        ///      few points so the click lands on `unity-content-container`.
-        /// Block both: stop WheelEvent at the ScrollView, and clamp the touch
-        /// scroll behaviour so there is no post-pointer-up animation. Manual
-        /// swipe gestures still work because they go through the
-        /// PointerDown/Move/Up path; the content just stops the moment the
-        /// finger lifts.
+        /// Tames the main ScrollView so XCUITest taps land deterministically: block synthetic
+        /// WheelEvents (mobile:scroll injected mid-tap) and disable post-pointer-up animation
+        /// so queued taps don't land on shifted content. Real swipes still work via PointerDown/Move/Up.
         /// </summary>
         private void InstallScrollViewE2EHooks(ScrollView mainSv)
         {
             mainSv.RegisterCallback<WheelEvent>(
-                e =>
-                {
-                    e.StopImmediatePropagation();
-                },
+                e => e.StopImmediatePropagation(),
                 TrickleDown.TrickleDown
             );
-            // Touch-activity watchdog: any real Down/Move/Up resets the timer.
-            // The Update tick clears ScrollView's stuck pan-capture latch if no
-            // touch event arrives within StalePointerCaptureWindowMs after a
-            // Down — that's the only way the latch can outlive a self-
-            // destroying child whose PointerUp is dropped by the dispatcher.
+            // Touch-activity watchdog: real Down/Move resets the timer; the Update tick clears
+            // ScrollView's pan-capture latch if no touch arrives within the window.
             mainSv.RegisterCallback<PointerDownEvent>(
-                e =>
-                {
-                    _lastTouchActivityMs = Time.realtimeSinceStartupAsDouble * 1000.0;
-                },
+                _ => _lastTouchActivityMs = Time.realtimeSinceStartupAsDouble * 1000.0,
                 TrickleDown.TrickleDown
             );
             mainSv.RegisterCallback<PointerMoveEvent>(
-                e =>
-                {
-                    _lastTouchActivityMs = Time.realtimeSinceStartupAsDouble * 1000.0;
-                },
+                _ => _lastTouchActivityMs = Time.realtimeSinceStartupAsDouble * 1000.0,
                 TrickleDown.TrickleDown
             );
             mainSv.RegisterCallback<PointerUpEvent>(
-                e =>
-                {
-                    _lastTouchActivityMs = -1.0;
-                },
+                _ => _lastTouchActivityMs = -1.0,
                 TrickleDown.TrickleDown
             );
             mainSv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
@@ -902,24 +729,15 @@ namespace OneSignalDemo.Services
             mainSv.elasticity = 0f;
         }
 
-        // Reflection-based reset for ScrollView's stuck pan-capture latches.
-        // We deliberately only clear m_PointerCaptureScheduled and m_Pressed —
-        // those represent "a touch is currently captured / pending capture",
-        // which is the state we need to release when a child detaches mid-
-        // touch and PointerUp never arrives. m_TouchPointerMoveAllowed is per-
-        // gesture state owned by PointerDown/PointerUp; clearing it here
-        // disables touch scrolling for the *next* swipe, since iOS XCUITest
-        // sometimes drops PointerUp on the ScrollView and the watchdog ends
-        // up running mid-swipe with that flag set true. Leave it alone so the
-        // next swipe's PointerDown can manage it normally.
-        // Field names match Unity 2022+ UI Toolkit; resolve once and cache.
+        // Reset ScrollView's pan-capture latches via reflection. Only the "captured / pending
+        // capture" fields are cleared; m_TouchPointerMoveAllowed is owned by Down/Up.
         private static void ResetScrollViewPanState(ScrollView sv)
         {
             if (sv == null) return;
             if (!_svReflectionResolved)
             {
                 var t = typeof(ScrollView);
-                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
                 _svPointerCaptureScheduledField = t.GetField("m_PointerCaptureScheduled", flags);
                 _svPressedField = t.GetField("m_Pressed", flags);
                 _svReflectionResolved = true;
@@ -934,33 +752,20 @@ namespace OneSignalDemo.Services
             }
         }
 
-        private void WalkAndUpsert(
-            VisualElement el,
-            Dictionary<string, AccessibilityNode> existingByName,
-            HashSet<string> seenNames,
-            ref bool addedAny
-        )
+        private void WalkAndUpsert(VisualElement el, ref bool addedAny)
         {
             if (el == null)
                 return;
 
-            // Publish every named element as a direct child of the hierarchy
-            // root (parent: null) — iOS UIAccessibility requires container
-            // elements to themselves be non-elements. Nesting our nodes makes
-            // ancestors opaque hit targets that swallow visibility tests for
-            // descendants (XCUITest reports visible="false" even when the
-            // child's frame is on screen). The test framework only ever looks
-            // up by name, so containment doesn't affect reachability.
+            // Publish every named element as a direct child of the hierarchy root (parent:
+            // null) — iOS UIAccessibility containers must themselves be non-elements.
             if (!string.IsNullOrEmpty(el.name) && !_map.ContainsKey(el))
             {
                 var name = el.name;
-                // Two distinct VisualElements with the same name (e.g.
-                // freshly-rebuilt dialog) — first one wins; only one
-                // accessibility node per name to keep ids unambiguous.
-                if (seenNames.Add(name))
+                // Duplicate names (e.g. freshly-rebuilt dialog) — first wins to keep ids unique.
+                if (_seenNames.Add(name))
                 {
-                    AccessibilityNode node;
-                    if (!existingByName.TryGetValue(name, out node))
+                    if (!_existingByName.TryGetValue(name, out var node))
                     {
                         node = _hierarchy.AddNode(name, parent: null);
                         addedAny = true;
@@ -971,16 +776,13 @@ namespace OneSignalDemo.Services
                     node.value = ExtractValue(el);
                     node.isActive = IsVisible(el);
                     _map[el] = node;
-                    // Detach fires the moment a tracked element leaves the
-                    // panel — Dismiss(), section refresh, scene swap. Drives
-                    // an immediate ScheduleResync so XCUITest can't read a
-                    // node whose owner is already gone.
+                    // Detach schedules a resync so XCUITest can't read a node whose owner is gone.
                     el.RegisterCallback(_onDetachFromPanel);
                 }
             }
 
             for (int i = 0; i < el.childCount; i++)
-                WalkAndUpsert(el[i], existingByName, seenNames, ref addedAny);
+                WalkAndUpsert(el[i], ref addedAny);
         }
 
         private static AccessibilityRole MapRole(VisualElement el)
@@ -993,15 +795,8 @@ namespace OneSignalDemo.Services
                 Button => AccessibilityRole.Button,
                 BaseBoolField => AccessibilityRole.Toggle,
                 OneSignalDemo.UI.SwitchToggle => AccessibilityRole.Toggle,
-                // ScrollView intentionally NOT exposed as AccessibilityRole.ScrollView.
-                // XCUITest's `XCUIElement.tap()` performs an implicit
-                // `scrollToVisible` on the nearest accessibility ancestor that
-                // claims a scrollable role, which under our setup invoked Unity's
-                // ScrollView mid-tap, shifted the entire content by ~120pt, and
-                // made the queued touch land on empty space (root cause of the
-                // "no PointerDown, button moved 120pt" failure on the multiple
-                // trigger test). Test code drives scrolling via raw swipes, so
-                // dropping the role is a no-op for navigation.
+                // ScrollView intentionally NOT exposed: XCUIElement.tap()'s implicit
+                // scrollToVisible would shift content mid-tap onto empty space.
                 Slider => AccessibilityRole.Slider,
                 TextField => AccessibilityRole.SearchField,
                 Label => AccessibilityRole.StaticText,
@@ -1014,10 +809,7 @@ namespace OneSignalDemo.Services
         {
             TextField tf => tf.value ?? string.Empty,
             BaseBoolField b => b.value ? "1" : "0",
-            // The demo uses a custom SwitchToggle (VisualElement) that does
-            // not inherit from UnityEngine.UIElements.Toggle, so the platform
-            // a11y value would be empty without this case. The selectors
-            // helper reads `value`/`checked` and expects "1"/"0" on iOS.
+            // Demo's custom SwitchToggle isn't a UI Toolkit Toggle — selectors expect "1"/"0".
             OneSignalDemo.UI.SwitchToggle st => st.Value ? "1" : "0",
             Label l => l.text ?? string.Empty,
             Button b => b.text ?? string.Empty,
@@ -1036,20 +828,15 @@ namespace OneSignalDemo.Services
             if (IsSectionAnchor(el))
                 return true;
 
-            // An element whose worldBound has been clipped away by an ancestor
-            // ScrollView/clip container is visually invisible. Other SDKs get
-            // this for free because they render through native UIScrollView /
-            // android.widget.ScrollView whose accessibilityFrame already
-            // excludes clipped children. UI Toolkit reports children's panel
-            // coordinates regardless of clip, so we have to intersect here.
+            // Clipped children aren't visible; native SDKs get this for free via their
+            // backing scroll views, but UI Toolkit reports panel coords regardless of clip.
             var visible = ComputeVisibleWorldBound(GetFrameElement(el));
             return visible.width > 0f && visible.height > 0f;
         }
 
         /// <summary>
-        /// Intersects an element's worldBound with every ancestor that clips
-        /// (ScrollView's contentViewport, or any element with overflow !=
-        /// Visible). Returns Rect.zero when the element is fully clipped.
+        /// Intersects an element's worldBound with every clipping ancestor (ScrollView's
+        /// contentViewport). Returns Rect.zero when fully clipped.
         /// </summary>
         private static Rect ComputeVisibleWorldBound(VisualElement el)
         {

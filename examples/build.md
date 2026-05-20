@@ -13,12 +13,11 @@ Replace `{{PLATFORM}}` with `Unity` everywhere in that guide. Everything below e
 
 Create a new Unity project at `examples/demo/` (relative to the SDK repo root).
 
-- Unity UI Toolkit (UXML + USS) for the interface
+- Unity UI Toolkit for the interface. Section UXML files DO NOT exist -- sections are assembled in C# via `Assets/Scripts/UI/Sections/SectionBuilder.cs` + `*SectionController.cs`. `HomeScreen.uxml` and `SecondaryScreen.uxml` are empty shells; controllers `_root.Clear()` and rebuild from C#.
 - C# 9+ features where supported
-- Minimum Unity version: 2021.3 LTS
+- Editor: `6000.4.6f1` (per `ProjectSettings/ProjectVersion.txt`).
 - Target Android API: 33+, iOS deployment target: 13.0+
 - Use `SerializeField` for Inspector-configurable references; avoid public fields
-- Separate UXML/USS per section
 
 App bar logo: Unity cannot load SVGs as Texture2D natively. Convert to PNG:
 ```bash
@@ -47,8 +46,10 @@ SDK reference via local path in `Packages/manifest.json`:
 "com.onesignal.unity.core": "file:../../../com.onesignal.unity.core",
 "com.onesignal.unity.android": "file:../../../com.onesignal.unity.android",
 "com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios",
-"com.unity.nuget.newtonsoft-json": "3.2.1"
+"com.unity.nuget.newtonsoft-json": "3.2.2"
 ```
+
+The manifest also declares Unity modules `com.unity.modules.accessibility`, `com.unity.modules.androidjni`, `com.unity.modules.uielements`, `com.unity.modules.unitywebrequest`, plus a `scopedRegistries` entry for `npmjs` scoping `com.onesignal`.
 
 Built-in (no manifest entry): `UnityEngine.Networking` (UnityWebRequest), `PlayerPrefs`.
 
@@ -92,7 +93,7 @@ using OneSignalSDK.Debug.Models;
 | IsPushOptedIn() | `OneSignal.User.PushSubscription.OptedIn` |
 | OptInPush() | `OneSignal.User.PushSubscription.OptIn()` |
 | OptOutPush() | `OneSignal.User.PushSubscription.OptOut()` |
-| ClearAllNotifications() | `OneSignal.Notifications.ClearAll()` |
+| ClearAllNotifications() | `OneSignal.Notifications.ClearAllNotifications()` |
 | HasPermission() | `OneSignal.Notifications.Permission` |
 | RequestPermissionAsync(fallback) | `OneSignal.Notifications.RequestPermissionAsync(fallback)` |
 | SetInAppMessagesPaused(paused) | `OneSignal.InAppMessages.Paused = paused` |
@@ -148,82 +149,106 @@ OneSignal.User.Changed += handler;
 
 ## State Management (MonoBehaviour + Events)
 
-- `AppBootstrapper.cs` on a `DontDestroyOnLoad` GameObject: initializes SDK, creates and injects dependencies, fetches tooltips in background
-- `AppViewModel` extends `MonoBehaviour`: holds all UI state as private fields with public properties, fires C# events (`Action`, `EventHandler`) on state changes, receives `OneSignalRepository` and `PreferencesService` via `Init()`
-- `HomeScreenController` extends `MonoBehaviour`: subscribes to ViewModel events, owns root `VisualElement` via `UIDocument`, delegates user actions to ViewModel
+- `AppBootstrapper.cs` -- `Awake()` calls `DontDestroyOnLoad(gameObject)`; `Start()` initializes SDK, creates and injects dependencies, fetches tooltips in background. `AppViewModel` is a child `MonoBehaviour` on the same GameObject and follows that lifetime by attachment.
+- `AppViewModel` extends `MonoBehaviour`: holds all UI state as private fields with public properties; single `public event Action OnStateChanged` (`Assets/Scripts/ViewModels/AppViewModel.cs` line ~88). Initialized via `Init(PreferencesService prefs, OneSignalApiService apiService)` (line ~90).
+- `HomeScreenController` extends `MonoBehaviour`: subscribes to `OnStateChanged`, owns root `VisualElement` via `UIDocument`, delegates user actions to ViewModel.
+- `OneSignalApiService` (`Assets/Scripts/Services/OneSignalApiService.cs`) is the REST client. Handles push send, custom push send, user fetch, and Live Activity update/end using `ONESIGNAL_API_KEY`.
 
 ### Persistence
 
-- `PreferencesService` wraps `PlayerPrefs` with typed getters/setters (`GetBool`, `SetBool`, `GetString`, `SetString`)
-- Triggers list (`triggersList`) is NOT persisted
-- In-memory lists use `List<KeyValuePair<string, string>>`
+- `PreferencesService` (`Assets/Scripts/Services/PreferencesService.cs`) wraps `PlayerPrefs`. Public API is properties: `ConsentRequired`, `PrivacyConsent`, `ExternalUserId`, `LocationShared`, `IamPaused`. The underlying `GetBool` / `SetBool` / `GetString` / `SetString` helpers are private.
+- Triggers list (`triggersList`) is NOT persisted.
+- In-memory lists use `List<KeyValuePair<string, string>>`.
 
 ### SDK State Restoration
 
 In `AppBootstrapper.Start()`, restore from `PlayerPrefs` BEFORE `Initialize`:
 ```csharp
-OneSignal.ConsentRequired = cachedConsentRequired;
-OneSignal.ConsentGiven = cachedPrivacyConsent;
+OneSignal.ConsentRequired = _prefs.ConsentRequired;
+OneSignal.ConsentGiven = _prefs.PrivacyConsent;
 OneSignal.Initialize(appId);
 ```
 
 Then AFTER initialize:
 ```csharp
-OneSignal.InAppMessages.Paused = cachedPausedStatus;
-OneSignal.Location.IsShared = cachedLocationShared;
+OneSignal.InAppMessages.Paused = _prefs.IamPaused;
+OneSignal.Location.IsShared = _prefs.LocationShared;
 ```
 
-In `AppViewModel.LoadInitialState()`, read UI state from SDK (not cache):
-- `OneSignal.InAppMessages.Paused` for IAM paused state
-- `OneSignal.Location.IsShared` for location state
-- `OneSignal.User.ExternalId` for external user ID
+In `AppViewModel.LoadInitialState()` (`AppViewModel.cs` lines ~110-122), UI state is read primarily from cached preferences, with the SDK queried only for live push/identity fields:
+- `_prefs.IamPaused`, `_prefs.LocationShared`, `_prefs.ExternalUserId`, `_prefs.ConsentRequired`, `_prefs.PrivacyConsent` for cached state
+- `OneSignal.User.PushSubscription.Id`, `OneSignal.User.PushSubscription.OptedIn`, `OneSignal.Notifications.Permission`, `OneSignal.User.OneSignalId` for live SDK state
+
+### AppBootstrapper extras
+
+- E2E dev-console suppression: when `DotEnv.IsE2EMode` is true, `Debug.developerConsoleEnabled` and `Debug.developerConsoleVisible` are disabled so the iOS development-console overlay never occludes test taps.
+- Android WebView debugging is toggled around IAM display: enabled in `OnIamWillDisplay`, disabled in `OnIamDidDismiss` (E2E mode only, via `WebView.setWebContentsDebuggingEnabled` through `AndroidJavaClass`).
 
 ---
 
 ## Unity-Specific UI Details
 
 ### Notification Permission
-- Call `viewModel.PromptPush()` in `HomeScreenController.OnEnable` or `Start`
+- `AppBootstrapper.Start()` calls `_viewModel.PromptPush()` right after `Init`/`LoadInitialState` (`Assets/Scripts/AppBootstrapper.cs` line ~86). `HomeScreenController` does NOT call it.
+- `PushSectionController` also exposes a PROMPT PUSH button that re-invokes `_viewModel.PromptPush()`.
 
-### Loading Overlay
-- `VisualElement` with `position: absolute` + stretch, centered spinner
-- Show/hide via `DisplayStyle.Flex` / `DisplayStyle.None`
-- Animate spinner: `VisualElement.schedule.Execute().Every(16)` to rotate ~12 degrees per tick
-- Use `await Task.Yield()` or `await Task.Delay(100)` after setting state for render delay
+### Loading Indicator
+- No full-screen overlay. Sections that fetch data render an inline `"Loading..."` label via `SectionBuilder.CreateLoadingState(sectionKey)`.
+- `SectionBuilder.RenderPairList(..., loading: _viewModel.IsLoading)` swaps the list body for the loading label while `AppViewModel.IsLoading` is true (used by alias, email, SMS, tag sections).
 
 ### Toast Messages
-- `AppViewModel` exposes `Action<string> OnToastMessage` event
-- `HomeScreenController` subscribes and shows a `ToastView` overlay Label at the bottom, auto-hides after ~2 seconds
-
-### Send In-App Message Icons
-- TOP BANNER: up arrow icon
-- BOTTOM BANNER: down arrow icon
-- CENTER MODAL: square icon
-- FULL SCREEN: expand icon
+- `DemoToast` static class (`Assets/Scripts/UI/DemoToast.cs`) owns the lone toast `VisualElement` overlay.
+- Initialize-once pattern: `DemoToast.Initialize(VisualElement root)` is called exactly once on `screenRoot` from `HomeScreenController.BuildScreen()`. The static class caches that root for subsequent `Show` calls.
+- `DemoToast.Show(string message)` takes ONLY a message -- no root argument. Section controllers call it directly, e.g. `DemoToast.Show($"Outcome sent: {name}")` (`OutcomesSectionController.cs`, `CustomEventsSectionController.cs`, `LocationSectionController.cs`).
+- Replace-on-show: `Show(...)` calls `_hideSchedule?.Pause()` and `_container?.RemoveFromHierarchy()` before creating a new container, then schedules `Hide()` after `DurationMs`.
+- Duration is the static constant `public const int DurationMs = 3000;` (milliseconds).
+- `AppViewModel` does not expose toast events or hold toast state. `HomeScreenController` does not subscribe to a toast event -- sections call `DemoToast` directly.
 
 ### Secondary Screen
 - Load a second scene or show a second panel
 - Back navigation returns to the main screen
 
 ### Dialogs
-- `VisualElements` added to the root overlay, not separate scenes
-- Shared `DialogBase` class handles modal backdrop, close on backdrop tap
-- `MultiSelectRemoveDialog` uses `Toggle` elements for checkboxes
-- Outcome dialog uses `Toggle` group for radio options
-- Track Event JSON parsing via `JsonConvert.DeserializeObject` into `Dictionary<string, object>`
+- `HomeScreenController` owns layout + tooltip dialogs only (`ShowTooltip(key)`). Each section's `OnInfoTap` event is wired to the matching tooltip key.
+- Section constructor signatures vary by responsibility:
+    - Six sections take `AppViewModel` only: `AppSectionController`, `PushSectionController`, `InAppSectionController`, `SendIamSectionController`, `LocationSectionController`, `LiveActivitiesSectionController`.
+    - The remaining (dialog-presenting) sections take `(AppViewModel viewModel, VisualElement dialogRoot)`: `UserSectionController`, `SendPushSectionController`, `AliasesSectionController`, `EmailsSectionController`, `SmsSectionController`, `TagsSectionController`, `OutcomesSectionController`, `TriggersSectionController`, `CustomEventsSectionController`.
+- Dialog-presenting sections call shared dialog classes from `Assets/Scripts/UI/Dialogs/` inside private `Show*Dialog` methods bound to section buttons. They do not expose `OnAddTap` / `OnLoginTap` / similar action callbacks back to `HomeScreenController`.
+- `AppViewModel` does not hold any action-dialog visibility flags or dialog input drafts.
+- All dialogs add `VisualElement`s to the dialog root overlay (not separate scenes). Shared `DialogBase` class handles the modal backdrop and close-on-backdrop-tap. `MultiSelectRemoveDialog` uses `Toggle` elements for checkboxes. The outcome dialog uses `RadioButton` elements (`_normalRadio`, `_uniqueRadio`, `_withValueRadio`) for its three modes. Track Event JSON parsing uses `OneSignalSDK.Json.Deserialize(propsText) as Dictionary<string, object>` (`TrackEventDialog.cs` lines ~102-116) -- the comment in code explicitly avoids Newtonsoft so the native bridges receive plain `Dictionary<string, object>` / `List<object>` rather than `JObject`/`JArray`.
+- Shared dialog classes live in `Assets/Scripts/UI/Dialogs/` (`DialogBase`, `SingleInputDialog`, `PairInputDialog`, `MultiPairInputDialog`, `MultiSelectRemoveDialog`, `LoginDialog`, `OutcomeDialog`, `TrackEventDialog`, `CustomNotificationDialog`, `TooltipDialog`).
 
-### Accessibility (Appium)
-- Use `VisualElement.name` for all interactive elements
+### SectionBuilder
+- `Assets/Scripts/UI/Sections/SectionBuilder.cs` is the central UI-construction helper. There is no per-section UXML; section controllers compose layouts in C#.
+- Factory methods include `CreateSection`, `CreateCard`, `CreateToggleRow`, `CreatePrimaryButton`, `CreateDestructiveButton`, `CreateDivider`, `CreateKeyValueItem`, `CreateInlineKeyValue`, `CreateSingleItem`, `CreateEmptyState`, `CreateLoadingState`, and `RenderPairList`.
+- Each section controller exposes a `BuildSection()` / `BuildContent()` method that calls these factories and adds the result to its `Root` `VisualElement`. `HomeScreenController.BuildSections()` instantiates the controllers and adds each `.Root` to the scroll content.
 
-### Log Manager
-- Singleton with `Action<LogEntry> OnLogAdded` event for reactive UI
-- `.Debug(tag, message)`, `.Info()`, `.Warn()`, `.Error()` with `UnityEngine.Debug.Log` forwarding
+### Environment / secrets
+- `Assets/StreamingAssets/.env` is loaded at startup via `DotEnv.Load()` (`Assets/Scripts/Services/DotEnv.cs`). In the Editor, `DotEnv` reads `<project>/.env` directly; on Android it reads via `AssetManager.open(".env")`.
+- Recognized keys: `ONESIGNAL_APP_ID`, `ONESIGNAL_API_KEY`, `ONESIGNAL_ANDROID_CHANNEL_ID`, `E2E_MODE`.
+- `AppBootstrapper.Start()` calls `DotEnv.Load()` BEFORE `OneSignal.Initialize`. App ID falls back to the hard-coded default when the env value is empty or the `your-onesignal-app-id` placeholder.
+
+### Accessibility / Appium bridge
+- `Assets/Scripts/Services/AccessibilityBridge.cs` mirrors the UI Toolkit `VisualElement` tree into Unity's `AccessibilityHierarchy` so Appium (XCUITest on iOS, UiAutomator2 on Android) can find elements by `VisualElement.name`.
+- `EnableForE2E(_root)` is invoked from `HomeScreenController.OnEnable` and `SecondaryScreenController.OnEnable` and is a no-op outside E2E mode.
+- E2E mode (`E2E_MODE=true`) disables the iOS dev console, registers per-element tap targets so Android UiAutomator2 can drive C# `Action`s by element name, and adds an iOS panel-root `TrickleDown` handler for info-icon labels whose AtTarget dispatch is dropped after a mobile:scroll.
+
+### Live Activities (iOS only)
+- `LiveActivitiesSectionController` is added to `HomeScreenController` under `#if UNITY_IOS`.
+- `AppBootstrapper.Start()` calls `OneSignal.LiveActivities.SetupDefault(new LiveActivitySetupOptions { EnablePushToStart = true, EnablePushToUpdate = true })` inside an `#if UNITY_IOS` block.
+- `AppViewModel.StartLiveActivity` uses `OneSignal.LiveActivities.StartDefault`. `UpdateLiveActivity` / `EndLiveActivity` call `OneSignalApiService.UpdateLiveActivity(activityId, "update"|"end", eventUpdates)`, which posts to the OneSignal REST API using `ONESIGNAL_API_KEY`.
+- The section shows a hint label ("Set ONESIGNAL_API_KEY in .env to enable update & end") and disables the update/end buttons when `AppViewModel.HasApiKey` is false.
+
+### Editor build tooling
+- `Assets/Scripts/Editor/BuildScript.cs` -- CI entry points for headless Unity builds.
+- `Assets/Scripts/Editor/SceneSetup.cs` -- scene bootstrap helper.
+- `Assets/Scripts/Editor/CopyEnvPreBuild.cs` -- `IPreprocessBuildWithReport` that copies `<project>/.env` into `Assets/StreamingAssets/.env` before each build (and deletes the stale copy if no source `.env` exists).
 
 ---
 
 ## Theme
 
-Create `Assets/UI/Theme/Theme.uss` with USS variables at `:root` mapped from the shared style reference.
+Create `Assets/Resources/Theme.uss` with USS variables at `:root` mapped from the shared style reference. The stylesheet lives under `Resources/` because `HomeScreenController` and `SecondaryScreenController` load it via `Resources.Load<StyleSheet>("Theme")` and add it to `_root.styleSheets`.
 
 Unity-specific considerations:
 - USS does not support CSS `gap`; use `margin` on child elements instead
@@ -238,12 +263,11 @@ PanelSettings (`Assets/UI/PanelSettings.asset`):
 
 ### Safe Area
 
-- `HomeScreenController` reads `Screen.safeArea` every frame in `Update()`
-- Top inset: sets height of a `status_bar_spacer` element above the app bar
-- Bottom inset: applies as `paddingBottom` on the screen root container
-- Guards against NaN/zero values from `resolvedStyle.height` before computing scale
-- On Android, `androidRenderOutsideSafeArea` is disabled so the spacer calculates to 0
-- On iOS, the spacer handles the notch/Dynamic Island inset
+- `HomeScreenController.ApplySafeArea()` and `SecondaryScreenController.ApplySafeArea()` read `Screen.safeArea` every frame in `Update()`.
+- Only the top inset is applied: sets the height of the `status_bar_spacer` element above the app bar. No bottom padding is added.
+- Guards against NaN/zero values from `resolvedStyle.height` before computing scale.
+- On Android, `androidRenderOutsideSafeArea` is disabled so the spacer calculates to 0.
+- On iOS, the spacer handles the notch/Dynamic Island inset.
 
 ---
 
@@ -282,17 +306,21 @@ examples/demo/
 │   │   ├── Services/
 │   │   │   ├── OneSignalApiService.cs
 │   │   │   ├── PreferencesService.cs
-│   │   │   ├── TooltipHelper.cs
-│   │   │   └── LogManager.cs
-│   │   ├── Repositories/
-│   │   │   └── OneSignalRepository.cs
+│   │   │   ├── DotEnv.cs
+│   │   │   ├── AccessibilityBridge.cs
+│   │   │   └── TooltipHelper.cs
 │   │   ├── ViewModels/
 │   │   │   └── AppViewModel.cs
+│   │   ├── Editor/
+│   │   │   ├── BuildScript.cs
+│   │   │   ├── SceneSetup.cs
+│   │   │   └── CopyEnvPreBuild.cs
 │   │   └── UI/
 │   │       ├── HomeScreenController.cs
 │   │       ├── SecondaryScreenController.cs
-│   │       ├── LogViewController.cs
-│   │       ├── ToastView.cs
+│   │       ├── DemoToast.cs
+│   │       ├── SwitchToggle.cs
+│   │       ├── MaterialIcons.cs
 │   │       ├── Dialogs/
 │   │       │   ├── DialogBase.cs
 │   │       │   ├── SingleInputDialog.cs
@@ -305,6 +333,7 @@ examples/demo/
 │   │       │   ├── CustomNotificationDialog.cs
 │   │       │   └── TooltipDialog.cs
 │   │       └── Sections/
+│   │           ├── SectionBuilder.cs
 │   │           ├── AppSectionController.cs
 │   │           ├── UserSectionController.cs
 │   │           ├── PushSectionController.cs
@@ -317,67 +346,44 @@ examples/demo/
 │   │           ├── TagsSectionController.cs
 │   │           ├── OutcomesSectionController.cs
 │   │           ├── TriggersSectionController.cs
-│   │           ├── TrackEventSectionController.cs
-│   │           └── LocationSectionController.cs
+│   │           ├── CustomEventsSectionController.cs
+│   │           ├── LocationSectionController.cs
+│   │           └── LiveActivitiesSectionController.cs
 │   ├── UI/
-│   │   ├── Theme/
-│   │   │   └── Theme.uss
+│   │   ├── PanelSettings.asset
 │   │   ├── Screens/
 │   │   │   ├── HomeScreen.uxml
 │   │   │   └── SecondaryScreen.uxml
-│   │   ├── Components/
-│   │   │   ├── SectionCard.uxml
-│   │   │   ├── ToggleRow.uxml
-│   │   │   ├── LogView.uxml / LogView.uss
-│   │   │   ├── LoadingOverlay.uxml
-│   │   │   └── ToastView.uxml
-│   │   ├── Dialogs/
-│   │   │   ├── DialogBase.uxml
-│   │   │   ├── SingleInputDialog.uxml
-│   │   │   ├── PairInputDialog.uxml
-│   │   │   ├── MultiPairInputDialog.uxml
-│   │   │   ├── MultiSelectRemoveDialog.uxml
-│   │   │   ├── LoginDialog.uxml
-│   │   │   ├── OutcomeDialog.uxml
-│   │   │   ├── TrackEventDialog.uxml
-│   │   │   ├── CustomNotificationDialog.uxml
-│   │   │   └── TooltipDialog.uxml
-│   │   └── Sections/
-│   │       ├── AppSection.uxml
-│   │       ├── PushSection.uxml
-│   │       ├── SendPushSection.uxml
-│   │       ├── InAppSection.uxml
-│   │       ├── SendIamSection.uxml
-│   │       ├── AliasesSection.uxml
-│   │       ├── EmailsSection.uxml
-│   │       ├── SmsSection.uxml
-│   │       ├── TagsSection.uxml
-│   │       ├── OutcomesSection.uxml
-│   │       ├── TriggersSection.uxml
-│   │       ├── TrackEventSection.uxml
-│   │       └── LocationSection.uxml
-│   └── Resources/
-│       └── onesignal_logo.png
+│   │   └── Components/
+│   │       └── LogView.uss
+│   ├── Resources/
+│   │   ├── Theme.uss
+│   │   └── onesignal_logo.png
+│   └── StreamingAssets/
+│       └── .env
 ├── Packages/
 │   └── manifest.json
 └── ProjectSettings/
-    └── ProjectSettings.asset
+    ├── ProjectSettings.asset
+    └── ProjectVersion.txt
 ```
+
+Note: section UI is built in C# via `SectionBuilder.cs`. There are no per-section UXML files and no per-dialog UXML files. The two UXML shells under `UI/Screens/` are empty containers cleared and rebuilt by their screen controllers.
 
 ---
 
 ## Unity Best Practices
 
-- **DontDestroyOnLoad** for persistent managers (AppBootstrapper, AppViewModel) across scene loads
-- **C# events** (`Action`, `EventHandler`) for decoupled state-to-UI communication
+- **DontDestroyOnLoad** on `AppBootstrapper` so the bootstrapper GameObject (and the `AppViewModel` attached to it) survives scene loads
+- **Single `OnStateChanged` event** on `AppViewModel` for decoupled state-to-UI communication
 - **SerializeField** over public fields for Inspector-exposed references
-- **Singleton pattern** for services (LogManager, TooltipHelper) that survive scene transitions
+- **Singleton pattern** for `TooltipHelper` that survives scene transitions
 - **async/await** with Task-based APIs where the SDK supports it
-- **UI Toolkit** (UXML + USS) for resolution-independent, stylesheet-driven UI
+- **UI Toolkit** with C#-built sections (no per-section UXML) for resolution-independent UI
 - **PanelSettings** with ScaleWithScreenSize for dp-accurate scaling on mobile
 - **Safe area** insets via `Screen.safeArea` for notches and system bars
 - **Unsubscribe in OnDestroy** from all events to prevent memory leaks
 - **Assembly definitions** (.asmdef) for faster compilation
 - **Coroutine-to-Task bridge** for UnityWebRequest async/await
-- **VisualElement.name** on interactive elements for Appium automation
-- **Newtonsoft.Json** for JSON parsing
+- **VisualElement.name** on interactive elements for Appium automation (mirrored to platform a11y via `AccessibilityBridge`)
+- **`OneSignalSDK.Json.Deserialize`** for any payload handed to the native bridges; **Newtonsoft.Json** for REST payloads built in `OneSignalApiService`

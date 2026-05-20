@@ -1,7 +1,5 @@
 using System;
 using OneSignalDemo.Models;
-using OneSignalDemo.Services;
-using OneSignalDemo.UI;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -31,63 +29,35 @@ namespace OneSignalDemo.UI.Sections
             );
 
             section.Add(
-                CreateIamButton(
+                SectionBuilder.CreatePrimaryButton(
                     "TOP BANNER",
-                    MaterialIcons.VerticalAlignTop,
                     "send_iam_top_banner_button",
-                    InAppMessageType.TopBanner
+                    () => _viewModel.SendInAppMessage(InAppMessageType.TopBanner)
                 )
             );
             section.Add(
-                CreateIamButton(
+                SectionBuilder.CreatePrimaryButton(
                     "BOTTOM BANNER",
-                    MaterialIcons.VerticalAlignBottom,
                     "send_iam_bottom_banner_button",
-                    InAppMessageType.BottomBanner
+                    () => _viewModel.SendInAppMessage(InAppMessageType.BottomBanner)
                 )
             );
             section.Add(
-                CreateIamButton(
+                SectionBuilder.CreatePrimaryButton(
                     "CENTER MODAL",
-                    MaterialIcons.CropSquare,
                     "send_iam_center_modal_button",
-                    InAppMessageType.CenterModal
+                    () => _viewModel.SendInAppMessage(InAppMessageType.CenterModal)
                 )
             );
             section.Add(
-                CreateIamButton(
+                SectionBuilder.CreatePrimaryButton(
                     "FULL SCREEN",
-                    MaterialIcons.Fullscreen,
                     "send_iam_full_screen_button",
-                    InAppMessageType.FullScreen
+                    () => _viewModel.SendInAppMessage(InAppMessageType.FullScreen)
                 )
             );
 
             return section;
-        }
-
-        private VisualElement CreateIamButton(
-            string text,
-            string icon,
-            string name,
-            InAppMessageType type
-        )
-        {
-            void SendIam() => _viewModel.SendInAppMessage(type);
-            var btn = new Button(SendIam);
-            btn.name = name;
-            btn.AddToClassList("iam-button");
-            AccessibilityBridge.RegisterE2ETapTarget(btn, () => btn.enabledInHierarchy, SendIam);
-
-            var iconLabel = new Label(icon);
-            iconLabel.AddToClassList("iam-button-icon");
-            btn.Add(iconLabel);
-
-            var textLabel = new Label(text);
-            textLabel.AddToClassList("iam-button-label");
-            btn.Add(textLabel);
-
-            return btn;
         }
     }
 }

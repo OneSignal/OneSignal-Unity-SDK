@@ -25,6 +25,7 @@ namespace OneSignalDemo.ViewModels
         private bool _inAppMessagesPaused;
         private bool _locationShared;
         private string _externalUserId;
+        private string _oneSignalId;
         private string _pushSubscriptionId;
         private bool _pushOptedIn;
         private bool _hasPermission;
@@ -58,6 +59,7 @@ namespace OneSignalDemo.ViewModels
         public bool InAppMessagesPaused => _inAppMessagesPaused;
         public bool LocationShared => _locationShared;
         public string ExternalUserId => _externalUserId;
+        public string OneSignalId => _oneSignalId;
         public string PushSubscriptionId => _pushSubscriptionId;
         public bool PushOptedIn => _pushOptedIn;
         public bool HasPermission => _hasPermission;
@@ -73,7 +75,6 @@ namespace OneSignalDemo.ViewModels
         public int LiveActivityStatusIndex => _liveActivityStatusIndex;
         public bool IsLiveActivityUpdating => _isLiveActivityUpdating;
         public bool HasApiKey => _apiService?.HasApiKey() ?? false;
-        public static bool IsE2EMode => DotEnv.IsE2EMode;
 
         public string NextStatusLabel
         {
@@ -85,7 +86,6 @@ namespace OneSignalDemo.ViewModels
         }
 
         public event Action OnStateChanged;
-        public event Action<string> OnToastMessage;
 
         public void Init(PreferencesService prefs, OneSignalApiService apiService)
         {
@@ -96,9 +96,6 @@ namespace OneSignalDemo.ViewModels
             OneSignal.Notifications.PermissionChanged += OnPermissionChanged;
             OneSignal.User.Changed += OnUserChanged;
         }
-
-        private static string MaskValue(string value) =>
-            string.IsNullOrEmpty(value) ? value : new string('\u2022', value.Length);
 
         private void OnDestroy()
         {
@@ -112,18 +109,17 @@ namespace OneSignalDemo.ViewModels
 
         public void LoadInitialState()
         {
-            var rawAppId = _apiService?.GetAppId() ?? "";
-            _appId = IsE2EMode ? MaskValue(rawAppId) : rawAppId;
+            _appId = _apiService?.GetAppId() ?? "";
             _consentRequired = _prefs.ConsentRequired;
             _privacyConsentGiven = _prefs.PrivacyConsent;
             _inAppMessagesPaused = _prefs.IamPaused;
             _locationShared = _prefs.LocationShared;
             _externalUserId = _prefs.ExternalUserId;
 
-            var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
-            _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
+            _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
             _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
             _hasPermission = OneSignal.Notifications.Permission;
+            _oneSignalId = OneSignal.User.OneSignalId ?? "";
 
             NotifyStateChanged();
         }
@@ -153,7 +149,6 @@ namespace OneSignalDemo.ViewModels
                 _externalUserId = externalUserId;
 
                 Debug.Log($"[{Tag}] Logged in as: {externalUserId}");
-                ShowToast($"Logged in as: {externalUserId}");
                 // The user 'change' listener runs FetchUserDataFromApi once the new
                 // onesignalId is assigned; that call clears isLoading in its finally.
             }
@@ -175,7 +170,6 @@ namespace OneSignalDemo.ViewModels
             ClearUserData();
 
             Debug.Log($"[{Tag}] Logged out");
-            ShowToast("Logged out");
             NotifyStateChanged();
         }
 
@@ -312,28 +306,24 @@ namespace OneSignalDemo.ViewModels
         {
             OneSignal.Session.AddOutcome(name);
             Debug.Log($"[{Tag}] Outcome sent: {name}");
-            ShowToast($"Outcome sent: {name}");
         }
 
         public void SendUniqueOutcome(string name)
         {
             OneSignal.Session.AddUniqueOutcome(name);
             Debug.Log($"[{Tag}] Unique outcome sent: {name}");
-            ShowToast($"Unique outcome sent: {name}");
         }
 
         public void SendOutcomeWithValue(string name, float value)
         {
             OneSignal.Session.AddOutcomeWithValue(name, value);
             Debug.Log($"[{Tag}] Outcome sent: {name} = {value}");
-            ShowToast($"Outcome sent: {name} = {value}");
         }
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null)
         {
             OneSignal.User.TrackEvent(name, properties);
             Debug.Log($"[{Tag}] Event tracked: {name}");
-            ShowToast($"Event tracked: {name}");
         }
 
         public async void SendNotification(NotificationType type)
@@ -520,10 +510,9 @@ namespace OneSignalDemo.ViewModels
             Debug.Log($"[{Tag}] Location permission requested");
         }
 
-        public void CheckLocationShared()
+        public bool CheckLocationShared()
         {
-            bool shared = OneSignal.Location.IsShared;
-            ShowToast($"Location shared: {shared.ToString().ToLowerInvariant()}");
+            return OneSignal.Location.IsShared;
         }
 
         public async void PromptPush()
@@ -582,8 +571,7 @@ namespace OneSignalDemo.ViewModels
                     _prefs.ExternalUserId = userData.ExternalId;
                 }
 
-                var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
-                _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
+                _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
                 _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
                 _hasPermission = OneSignal.Notifications.Permission;
 
@@ -618,8 +606,6 @@ namespace OneSignalDemo.ViewModels
 
         private void NotifyStateChanged() => OnStateChanged?.Invoke();
 
-        private void ShowToast(string message) => OnToastMessage?.Invoke(message);
-
         private static void MergePairs(
             List<KeyValuePair<string, string>> target,
             IDictionary<string, string> source
@@ -651,10 +637,9 @@ namespace OneSignalDemo.ViewModels
 
         private void OnPushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e)
         {
-            var rawPushId = OneSignal.User.PushSubscription.Id ?? "";
-            _pushSubscriptionId = IsE2EMode ? MaskValue(rawPushId) : rawPushId;
+            _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
             _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
-            Debug.Log($"[{Tag}] Push subscription changed: {rawPushId}");
+            Debug.Log($"[{Tag}] Push subscription changed: {_pushSubscriptionId}");
             NotifyStateChanged();
         }
 
@@ -668,6 +653,8 @@ namespace OneSignalDemo.ViewModels
         private async void OnUserChanged(object sender, UserStateChangedEventArgs e)
         {
             Debug.Log($"[{Tag}] User changed, fetching data...");
+            _oneSignalId = OneSignal.User.OneSignalId ?? "";
+            NotifyStateChanged();
             await FetchUserDataFromApi();
         }
     }

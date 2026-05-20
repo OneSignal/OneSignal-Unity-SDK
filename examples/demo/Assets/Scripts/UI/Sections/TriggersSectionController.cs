@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using OneSignalDemo.Services;
+using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -7,19 +10,18 @@ namespace OneSignalDemo.UI.Sections
     public class TriggersSectionController
     {
         private readonly AppViewModel _viewModel;
+        private readonly VisualElement _dialogRoot;
         private readonly VisualElement _root;
         private VisualElement _listContainer;
         private Button _removeSelectedButton;
         private Button _clearAllButton;
 
         public Action OnInfoTap;
-        public Action OnAddTap;
-        public Action OnAddMultipleTap;
-        public Action OnRemoveSelectedTap;
 
-        public TriggersSectionController(AppViewModel viewModel)
+        public TriggersSectionController(AppViewModel viewModel, VisualElement dialogRoot)
         {
             _viewModel = viewModel;
+            _dialogRoot = dialogRoot;
             _root = BuildSection();
         }
 
@@ -34,7 +36,7 @@ namespace OneSignalDemo.UI.Sections
             );
 
             var card = SectionBuilder.CreateCard("triggers_card");
-            if (AppViewModel.IsE2EMode)
+            if (DotEnv.IsE2EMode)
             {
                 card.style.paddingTop = 6;
                 card.style.paddingBottom = 6;
@@ -48,9 +50,9 @@ namespace OneSignalDemo.UI.Sections
             var addButton = SectionBuilder.CreatePrimaryButton(
                 "ADD TRIGGER",
                 "add_trigger_button",
-                InvokeAdd
+                ShowAddTriggerDialog
             );
-            if (AppViewModel.IsE2EMode)
+            if (DotEnv.IsE2EMode)
             {
                 addButton.style.minHeight = 40;
                 addButton.style.marginBottom = 4;
@@ -59,9 +61,9 @@ namespace OneSignalDemo.UI.Sections
             var addMultipleButton = SectionBuilder.CreatePrimaryButton(
                 "ADD MULTIPLE TRIGGERS",
                 "add_multiple_triggers_button",
-                InvokeAddMultiple
+                ShowAddMultipleTriggersDialog
             );
-            if (AppViewModel.IsE2EMode)
+            if (DotEnv.IsE2EMode)
             {
                 addMultipleButton.style.minHeight = 40;
                 addMultipleButton.style.marginBottom = 4;
@@ -71,14 +73,14 @@ namespace OneSignalDemo.UI.Sections
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
                 "REMOVE TRIGGERS",
                 "remove_triggers_button",
-                InvokeRemoveSelected
+                ShowRemoveSelectedTriggersDialog
             );
             section.Add(_removeSelectedButton);
 
             _clearAllButton = SectionBuilder.CreateDestructiveButton(
                 "CLEAR ALL TRIGGERS",
                 "clear_triggers_button",
-                InvokeClearAll
+                () => _viewModel.ClearAllTriggers()
             );
             section.Add(_clearAllButton);
 
@@ -86,13 +88,45 @@ namespace OneSignalDemo.UI.Sections
             return section;
         }
 
-        private void InvokeAddMultiple() => OnAddMultipleTap?.Invoke();
+        private void ShowAddTriggerDialog()
+        {
+            var dialog = new PairInputDialog(
+                "Add Trigger",
+                "Key",
+                "Value",
+                "trigger_key_input",
+                "trigger_value_input",
+                "Add",
+                (key, value) => _viewModel.AddTrigger(key, value)
+            );
+            dialog.Show(_dialogRoot);
+        }
 
-        private void InvokeAdd() => OnAddTap?.Invoke();
+        private void ShowAddMultipleTriggersDialog()
+        {
+            var dialog = new MultiPairInputDialog(
+                "Add Multiple Triggers",
+                "Key",
+                "Value",
+                "Add all",
+                pairs => _viewModel.AddTriggers(pairs)
+            );
+            dialog.Show(_dialogRoot);
+        }
 
-        private void InvokeRemoveSelected() => OnRemoveSelectedTap?.Invoke();
+        private void ShowRemoveSelectedTriggersDialog()
+        {
+            var items = _viewModel.Triggers.ToList();
+            if (items.Count == 0)
+                return;
 
-        private void InvokeClearAll() => _viewModel.ClearAllTriggers();
+            var dialog = new MultiSelectRemoveDialog(
+                "Remove Triggers",
+                items,
+                keys => _viewModel.RemoveSelectedTriggers(keys)
+            );
+            dialog.Show(_dialogRoot);
+        }
 
         public void Refresh() => RefreshList();
 

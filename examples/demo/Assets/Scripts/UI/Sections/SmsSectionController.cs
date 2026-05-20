@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -7,17 +8,18 @@ namespace OneSignalDemo.UI.Sections
     public class SmsSectionController
     {
         private readonly AppViewModel _viewModel;
+        private readonly VisualElement _dialogRoot;
         private readonly VisualElement _root;
         private VisualElement _listContainer;
         private bool _expanded;
         private const int CollapseThreshold = 5;
 
         public Action OnInfoTap;
-        public Action OnAddTap;
 
-        public SmsSectionController(AppViewModel viewModel)
+        public SmsSectionController(AppViewModel viewModel, VisualElement dialogRoot)
         {
             _viewModel = viewModel;
+            _dialogRoot = dialogRoot;
             _root = BuildSection();
         }
 
@@ -41,12 +43,24 @@ namespace OneSignalDemo.UI.Sections
                 SectionBuilder.CreatePrimaryButton(
                     "ADD SMS",
                     "add_sms_button",
-                    () => OnAddTap?.Invoke()
+                    ShowAddSmsDialog
                 )
             );
 
             RefreshList();
             return section;
+        }
+
+        private void ShowAddSmsDialog()
+        {
+            var dialog = new SingleInputDialog(
+                "Add SMS",
+                "SMS",
+                "sms_input",
+                "Add",
+                sms => _viewModel.AddSms(sms)
+            );
+            dialog.Show(_dialogRoot);
         }
 
         public void Refresh() => RefreshList();
@@ -61,7 +75,7 @@ namespace OneSignalDemo.UI.Sections
                 _listContainer.Add(
                     _viewModel.IsLoading
                         ? SectionBuilder.CreateLoadingState("sms")
-                        : SectionBuilder.CreateEmptyState("No SMS Added", "sms")
+                        : SectionBuilder.CreateEmptyState("No SMS added", "sms")
                 );
                 return;
             }

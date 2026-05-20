@@ -53,7 +53,11 @@ namespace OneSignalDemo.UI.Sections
                 SectionBuilder.CreatePrimaryButton(
                     "CHECK LOCATION SHARED",
                     "check_location_button",
-                    () => _viewModel.CheckLocationShared()
+                    () =>
+                    {
+                        bool shared = _viewModel.CheckLocationShared();
+                        DemoToast.Show($"Location shared: {shared.ToString().ToLowerInvariant()}");
+                    }
                 )
             );
 

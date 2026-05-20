@@ -1,22 +1,26 @@
 using OneSignalDemo.Services;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI
 {
-    public class ToastView
+    public static class DemoToast
     {
-        private readonly VisualElement _root;
-        private VisualElement _container;
-        private IVisualElementScheduledItem _hideSchedule;
+        public const int DurationMs = 3000;
 
-        public ToastView(VisualElement root)
+        private static VisualElement _root;
+        private static VisualElement _container;
+        private static IVisualElementScheduledItem _hideSchedule;
+
+        public static void Initialize(VisualElement root)
         {
             _root = root;
         }
 
-        public void Show(string message)
+        public static void Show(string message)
         {
+            if (_root == null)
+                return;
+
             _hideSchedule?.Pause();
             _container?.RemoveFromHierarchy();
 
@@ -38,10 +42,10 @@ namespace OneSignalDemo.UI
             _root.Add(_container);
             AccessibilityBridge.RequestImmediateResync();
 
-            _hideSchedule = _container.schedule.Execute(Hide).StartingIn(2500);
+            _hideSchedule = _container.schedule.Execute(Hide).StartingIn(DurationMs);
         }
 
-        private void Hide()
+        private static void Hide()
         {
             _container?.RemoveFromHierarchy();
             _container = null;

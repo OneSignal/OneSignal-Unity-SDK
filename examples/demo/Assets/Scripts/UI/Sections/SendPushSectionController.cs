@@ -1,5 +1,6 @@
 using System;
 using OneSignalDemo.Models;
+using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -8,14 +9,15 @@ namespace OneSignalDemo.UI.Sections
     public class SendPushSectionController
     {
         private readonly AppViewModel _viewModel;
+        private readonly VisualElement _dialogRoot;
         private readonly VisualElement _root;
 
         public Action OnInfoTap;
-        public Action OnCustomTap;
 
-        public SendPushSectionController(AppViewModel viewModel)
+        public SendPushSectionController(AppViewModel viewModel, VisualElement dialogRoot)
         {
             _viewModel = viewModel;
+            _dialogRoot = dialogRoot;
             _root = BuildSection();
         }
 
@@ -57,7 +59,7 @@ namespace OneSignalDemo.UI.Sections
                 SectionBuilder.CreatePrimaryButton(
                     "CUSTOM",
                     "send_custom_button",
-                    () => OnCustomTap?.Invoke()
+                    ShowCustomNotificationDialog
                 )
             );
 
@@ -70,6 +72,14 @@ namespace OneSignalDemo.UI.Sections
             );
 
             return section;
+        }
+
+        private void ShowCustomNotificationDialog()
+        {
+            var dialog = new CustomNotificationDialog(
+                (title, body) => _viewModel.SendCustomNotification(title, body)
+            );
+            dialog.Show(_dialogRoot);
         }
     }
 }

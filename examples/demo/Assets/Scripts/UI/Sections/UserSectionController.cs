@@ -1,4 +1,5 @@
 using System;
+using OneSignalDemo.UI.Dialogs;
 using OneSignalDemo.ViewModels;
 using UnityEngine.UIElements;
 
@@ -7,18 +8,17 @@ namespace OneSignalDemo.UI.Sections
     public class UserSectionController
     {
         private readonly AppViewModel _viewModel;
+        private readonly VisualElement _dialogRoot;
         private readonly VisualElement _root;
         private Label _statusValue;
         private Label _externalIdValue;
         private Button _loginButton;
         private Button _logoutButton;
 
-        public Action OnLoginTap;
-        public Action OnLogoutTap;
-
-        public UserSectionController(AppViewModel viewModel)
+        public UserSectionController(AppViewModel viewModel, VisualElement dialogRoot)
         {
             _viewModel = viewModel;
+            _dialogRoot = dialogRoot;
             _root = BuildSection();
         }
 
@@ -43,7 +43,7 @@ namespace OneSignalDemo.UI.Sections
 
             var extIdRow = SectionBuilder.CreateInlineKeyValue(
                 "External ID",
-                _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013",
+                _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2014",
                 "user_external_id"
             );
             _externalIdValue = extIdRow.Q<Label>("user_external_id_value");
@@ -53,14 +53,14 @@ namespace OneSignalDemo.UI.Sections
             _loginButton = SectionBuilder.CreatePrimaryButton(
                 _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER",
                 "login_user_button",
-                () => OnLoginTap?.Invoke()
+                ShowLoginDialog
             );
             section.Add(_loginButton);
 
             _logoutButton = SectionBuilder.CreateDestructiveButton(
                 "LOGOUT USER",
                 "logout_user_button",
-                () => OnLogoutTap?.Invoke()
+                () => _viewModel.LogoutUser()
             );
             _logoutButton.style.display = _viewModel.IsLoggedIn
                 ? DisplayStyle.Flex
@@ -70,12 +70,21 @@ namespace OneSignalDemo.UI.Sections
             return section;
         }
 
+        private void ShowLoginDialog()
+        {
+            var dialog = new LoginDialog(
+                externalId => _viewModel.LoginUser(externalId),
+                _viewModel.IsLoggedIn
+            );
+            dialog.Show(_dialogRoot);
+        }
+
         public void Refresh()
         {
             _statusValue.text = _viewModel.IsLoggedIn ? "Logged In" : "Anonymous";
             _statusValue.EnableInClassList("status-value-green", _viewModel.IsLoggedIn);
 
-            _externalIdValue.text = _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2013";
+            _externalIdValue.text = _viewModel.IsLoggedIn ? _viewModel.ExternalUserId : "\u2014";
 
             _loginButton.text = _viewModel.IsLoggedIn ? "SWITCH USER" : "LOGIN USER";
             _logoutButton.style.display = _viewModel.IsLoggedIn

@@ -200,7 +200,9 @@
        glyph is still rendered at 18px (font-size), centered via text-align,
        so the button looks unchanged but absorbs small Appium tap-coord
        drift after ScrollView momentum / accessibility-frame settle. The
-       transparent background keeps it visually identical. */
+       transparent background keeps it visually identical. The negative
+       right margin pulls the icon's visual center toward the row edge,
+       matching the alignment used in the other SDK demos. */
     width: 44px;
     height: 44px;
     background-color: rgba(0, 0, 0, 0);
@@ -211,7 +213,7 @@
     border-width: 0;
     border-radius: 0;
     padding: 0;
-    margin: 0;
+    margin: 0 -11px 0 0;
 }
 
 .card {
@@ -325,35 +327,6 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: var(--card-gap);
-}
-
-.iam-button {
-    background-color: var(--os-primary);
-    color: white;
-    border-radius: 8px;
-    padding: 14px 16px;
-    border-width: 0;
-    font-size: 14px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-left;
-    margin-bottom: var(--card-gap);
-    flex-direction: row;
-    align-items: center;
-}
-
-.iam-button-icon {
-    font-size: 18px;
-    color: white;
-    margin-right: 8px;
-    width: 20px;
-    -unity-font-definition: resource("MaterialIcons-Regular");
-    -unity-text-align: middle-center;
-}
-
-.iam-button-label {
-    color: white;
-    font-size: 14px;
-    -unity-font-style: bold;
 }
 
 .key-value-item {

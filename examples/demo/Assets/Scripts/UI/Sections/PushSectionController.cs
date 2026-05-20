@@ -35,7 +35,7 @@ namespace OneSignalDemo.UI.Sections
 
             var pushIdRow = SectionBuilder.CreateInlineKeyValue(
                 "Push ID",
-                _viewModel.PushSubscriptionId ?? "\u2013",
+                FormatIdValue(_viewModel.PushSubscriptionId),
                 "push_id"
             );
             _pushIdLabel = pushIdRow.Q<Label>("push_id_value");
@@ -71,13 +71,16 @@ namespace OneSignalDemo.UI.Sections
 
         public void Refresh()
         {
-            _pushIdLabel.text = _viewModel.PushSubscriptionId ?? "\u2013";
+            _pushIdLabel.text = FormatIdValue(_viewModel.PushSubscriptionId);
             _enabledToggle.SetValueWithoutNotify(_viewModel.PushOptedIn);
             _enabledToggle.SetEnabled(_viewModel.HasPermission);
             _promptButton.style.display = _viewModel.HasPermission
                 ? DisplayStyle.None
                 : DisplayStyle.Flex;
         }
+
+        private static string FormatIdValue(string value) =>
+            string.IsNullOrEmpty(value) ? "—" : value;
 
         private void OnEnabledChanged(bool value) => _viewModel.SetPushEnabled(value);
     }

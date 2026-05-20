@@ -149,6 +149,12 @@ public final class OneSignalUnityE2EAccessibility {
       if ("button".equals(role)) {
         view.setClickable(true);
         view.setOnClickListener(v -> sendToUnity(id, "click", ""));
+      } else if ("main_scroll_view".equals(id)) {
+        // Claim ACTION_DOWN on the scrollable's empty regions so the parent
+        // E2EOverlay sees subsequent ACTION_MOVE events and can intercept
+        // vertical drags. Without this, swipes on bare space fall straight
+        // through the overlay and Appium scrollIntoView never advances.
+        view.setClickable(true);
       }
     }
 
@@ -211,44 +217,69 @@ public final class OneSignalUnityE2EAccessibility {
   }
 
   private static final class E2EOverlay extends FrameLayout {
-    private final int gutterWidth;
     private final int touchSlop;
-    private boolean trackingGutterDrag;
+    // Once a swipe is detected we hijack the gesture: the originally-targeted
+    // child (often a button TextView) receives ACTION_CANCEL and every later
+    // ACTION_MOVE/UP routes to this overlay's onTouchEvent.
+    private boolean interceptingScroll;
+    private float startX;
     private float startY;
 
     E2EOverlay(Activity activity) {
       super(activity);
-      // The test swipe lane is x=10. Keep this narrow so dialog checkboxes
-      // near the left edge still receive normal clicks.
-      gutterWidth = 24;
       touchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-      if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-        trackingGutterDrag = event.getX() <= gutterWidth;
-        startY = event.getY();
-        if (trackingGutterDrag) return true;
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+      // Unity renders into a SurfaceView, so UI Toolkit's ScrollView never
+      // sees touches that an overlay accessibility child consumed first.
+      // Appium's `scrollIntoView` swipes through the horizontal centre of
+      // `main_scroll_view`, often starting on top of a clickable overlay
+      // TextView (button) — that child eats ACTION_DOWN and the rest of the
+      // gesture, so the ScrollView never scrolls. Catch any vertical drag
+      // here and convert it to a real ScrollView offset change. Plain taps
+      // stay under touchSlop and pass through unaffected.
+      switch (ev.getActionMasked()) {
+        case MotionEvent.ACTION_DOWN:
+          startX = ev.getX();
+          startY = ev.getY();
+          interceptingScroll = false;
+          return false;
+        case MotionEvent.ACTION_MOVE:
+          if (interceptingScroll) return true;
+          float dx = ev.getX() - startX;
+          float dy = ev.getY() - startY;
+          if (Math.abs(dy) > touchSlop && Math.abs(dy) > Math.abs(dx)) {
+            interceptingScroll = true;
+            return true;
+          }
+          return false;
+        default:
+          return false;
       }
+    }
 
-      if (!trackingGutterDrag) return super.dispatchTouchEvent(event);
-
-      if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-        float deltaY = event.getY() - startY;
-        if (Math.abs(deltaY) > touchSlop) {
-          sendToUnity("main_scroll_view", "scroll", deltaY < 0 ? "down" : "up");
-        }
-        trackingGutterDrag = false;
-        return true;
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+      if (!interceptingScroll) return false;
+      switch (ev.getActionMasked()) {
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_CANCEL:
+          float deltaY = ev.getY() - startY;
+          interceptingScroll = false;
+          if (Math.abs(deltaY) > touchSlop) {
+            // Positive value = scroll forward (reveal content below),
+            // matching a finger that travels upward on screen. Unity converts
+            // screen pixels to UI Toolkit panel units before mutating
+            // scrollOffset.
+            sendToUnity(
+                "main_scroll_view", "scrollDelta", String.valueOf(Math.round(-deltaY)));
+          }
+          return true;
+        default:
+          return true;
       }
-
-      if (event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-        trackingGutterDrag = false;
-        return true;
-      }
-
-      return true;
     }
   }
 
