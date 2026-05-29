@@ -83,8 +83,6 @@ namespace OneSignalDemo
             _viewModel.Init(_prefs, _apiService);
             _viewModel.LoadInitialState();
 
-            _viewModel.PromptPush();
-
             await _viewModel.LoadInitialDataAsync();
 
             _ = TooltipHelper.Instance.InitAsync();
