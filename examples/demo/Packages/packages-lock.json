@@ -1,26 +1,29 @@
 {
   "dependencies": {
     "com.onesignal.unity.android": {
-      "version": "file:../../../com.onesignal.unity.android",
+      "version": "5.2.1",
       "depth": 0,
-      "source": "local",
+      "source": "registry",
       "dependencies": {
-        "com.onesignal.unity.core": "5.2.8"
-      }
+        "com.onesignal.unity.core": "5.2.1"
+      },
+      "url": "https://registry.npmjs.org"
     },
     "com.onesignal.unity.core": {
-      "version": "file:../../../com.onesignal.unity.core",
+      "version": "5.2.1",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://registry.npmjs.org"
     },
     "com.onesignal.unity.ios": {
-      "version": "file:../../../com.onesignal.unity.ios",
+      "version": "5.2.1",
       "depth": 0,
-      "source": "local",
+      "source": "registry",
       "dependencies": {
-        "com.onesignal.unity.core": "5.2.8"
-      }
+        "com.onesignal.unity.core": "5.2.1"
+      },
+      "url": "https://registry.npmjs.org"
     },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.2.2",

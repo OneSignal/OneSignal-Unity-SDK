@@ -138,7 +138,7 @@ namespace OneSignalDemo.UI
                 logo.style.backgroundImage = new StyleBackground(logoTexture);
             appBar.Add(logo);
 
-            var appBarTitle = new Label("Unity");
+            var appBarTitle = new Label("Unity 5.2.1");
             appBarTitle.AddToClassList("app-bar-title");
             appBar.Add(appBarTitle);
 

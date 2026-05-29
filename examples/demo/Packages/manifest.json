@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "com.onesignal.unity.android": "file:../../../com.onesignal.unity.android",
-    "com.onesignal.unity.core": "file:../../../com.onesignal.unity.core",
-    "com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios",
+    "com.onesignal.unity.android": "5.2.1",
+    "com.onesignal.unity.core": "5.2.1",
+    "com.onesignal.unity.ios": "5.2.1",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
