@@ -40,7 +40,7 @@ namespace OneSignalSDK
 {
     public abstract class OneSignalPlatform
     {
-        public const string VersionHeader = "050208";
+        public const string VersionHeader = "050209";
 
         internal static event Action<string> OnInitialize;
 
