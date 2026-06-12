@@ -2,7 +2,13 @@
 
 Minimal Unity project for apps that use OneSignal without the native location module.
 
-Open this folder in Unity. The project setting below is checked in:
+Open this folder in Unity. Location is disabled with the same project setting used by the root README:
+
+```csharp
+OneSignalSDK.OneSignalSDKSettings.DisableLocation = true;
+```
+
+The saved project setting is checked in as:
 
 ```json
 {
