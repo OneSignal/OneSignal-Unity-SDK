@@ -33,14 +33,22 @@
 
 extern "C" {
     bool _oneSignalLocationGetIsShared() {
+#if ONESIGNAL_DISABLE_LOCATION
+        return false;
+#else
         return [OneSignal.Location isShared];
+#endif
     }
 
     void _oneSignalLocationSetIsShared(bool shared) {
+#if !ONESIGNAL_DISABLE_LOCATION
         [OneSignal.Location setShared:shared];
+#endif
     }
 
     void _oneSignalLocationRequestPermission() {
+#if !ONESIGNAL_DISABLE_LOCATION
         [OneSignal.Location requestPermission];
+#endif
     }
 }

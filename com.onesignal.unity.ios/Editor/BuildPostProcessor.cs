@@ -126,8 +126,10 @@ namespace OneSignalSDK.iOS
             AddNotificationServiceExtension();
 
             DisableBitcode();
+            ConfigureLocationModule();
 
-            AddLocationUsageDescription();
+            if (!OneSignalSDK.OneSignalSDKSettings.DisableLocation)
+                AddLocationUsageDescription();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
@@ -327,7 +329,7 @@ namespace OneSignalSDK.iOS
 
             var dependenciesFile = File.ReadAllText(dependenciesFilePath);
             var dependenciesRegex = new Regex(
-                "(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)"
+                "<iosPod name=\"OneSignalXCFramework(?:/[^\"]+)?\" version=\"([^\"]+)\" addToAllTargets=\"true\" />"
             );
 
             if (!dependenciesRegex.IsMatch(dependenciesFile))
@@ -340,12 +342,12 @@ namespace OneSignalSDK.iOS
 
             var podfile = File.ReadAllText(podfilePath);
             var podfileRegex = new Regex(
-                $@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '(.+)'\nend\n"
+                $@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework(?:/OneSignalExtension)?', '(.+)'\nend\n"
             );
 
-            var requiredVersion = dependenciesRegex.Match(dependenciesFile).ToString();
+            var requiredVersion = dependenciesRegex.Match(dependenciesFile).Groups[1].Value;
             var requiredTarget =
-                $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{requiredVersion}'\nend\n";
+                $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework/OneSignalExtension', '{requiredVersion}'\nend\n";
 
             if (!podfileRegex.IsMatch(podfile))
                 podfile += requiredTarget;
@@ -356,6 +358,18 @@ namespace OneSignalSDK.iOS
             }
 
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void ConfigureLocationModule()
+        {
+            if (!OneSignalSDK.OneSignalSDKSettings.DisableLocation)
+                return;
+
+            _project.AddBuildProperty(
+                _project.GetUnityFrameworkTargetGuid(),
+                "GCC_PREPROCESSOR_DEFINITIONS",
+                "ONESIGNAL_DISABLE_LOCATION=1"
+            );
         }
 
         private void AddLocationUsageDescription()

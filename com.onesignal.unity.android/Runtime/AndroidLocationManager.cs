@@ -25,8 +25,9 @@
  * THE SOFTWARE.
  */
 
-using System.Threading.Tasks;
+using System;
 using OneSignalSDK.Android.Utilities;
+using OneSignalSDK.Debug.Utilities;
 using OneSignalSDK.Location;
 using UnityEngine;
 
@@ -38,17 +39,33 @@ namespace OneSignalSDK.Android.Location
 
         public AndroidLocationManager(AndroidJavaClass sdkClass)
         {
-            _location = sdkClass.CallStatic<AndroidJavaObject>("getLocation");
+            try
+            {
+                _location = sdkClass.CallStatic<AndroidJavaObject>("getLocation");
+            }
+            catch (Exception)
+            {
+                SDKDebug.Warn(
+                    "OneSignal location module is not available. OneSignal.Location calls will no-op."
+                );
+            }
         }
 
         public bool IsShared
         {
-            get => _location.Call<bool>("isShared");
-            set => _location.Call("setShared", value);
+            get => _location != null && _location.Call<bool>("isShared");
+            set
+            {
+                if (_location != null)
+                    _location.Call("setShared", value);
+            }
         }
 
         public void RequestPermission()
         {
+            if (_location == null)
+                return;
+
             var continuation = new BoolContinuation();
             _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
         }
