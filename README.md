@@ -154,11 +154,13 @@ with your own. There is a complete guide for this [in the plugin's README](com.o
 
 By default, the OneSignal Unity SDK includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, select **OneSignal > Disable Location Module** in the Unity Editor before resolving Android dependencies or building iOS.
 
-You can also set the same project setting from an editor script:
+For automated Unity project setup, you can set the same Editor project setting from an Editor script before dependency resolution or build:
 
 ```C#
 OneSignalSDK.OneSignalSDKSettings.DisableLocation = true;
 ```
+
+Do not call this from runtime app code; it changes the Unity project configuration used by native dependency resolution.
 
 When disabled, Android resolves OneSignal's native modules without the location artifact and iOS uses OneSignal pods without `OneSignalLocation`. `OneSignal.Location.RequestPermission()` and `OneSignal.Location.IsShared = ...` no-op on native builds without the location module, and `OneSignal.Location.IsShared` returns `false`.
 
