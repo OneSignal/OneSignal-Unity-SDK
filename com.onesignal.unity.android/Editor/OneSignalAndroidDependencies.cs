@@ -28,7 +28,7 @@
 using System;
 using System.IO;
 using UnityEditor;
-using Debug = UnityEngine.Debug;
+using UnityDebug = UnityEngine.Debug;
 
 namespace OneSignalSDK
 {
@@ -60,7 +60,7 @@ namespace OneSignalSDK
             }
             catch (Exception exception)
             {
-                Debug.LogWarning(
+                UnityDebug.LogWarning(
                     $"Could not update OneSignal Android dependencies at {_dependenciesPath}: {exception.Message}"
                 );
             }

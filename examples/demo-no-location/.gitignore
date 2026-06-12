@@ -1,0 +1,54 @@
+# Unity generated folders
+/.utmp/
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Mm]emoryCaptures/
+/[Uu]serSettings/
+
+# Keep this demo project minimal. Unity regenerates the rest of ProjectSettings.
+/ProjectSettings/*
+!/ProjectSettings/AndroidResolverDependencies.xml
+!/ProjectSettings/EditorBuildSettings.asset
+!/ProjectSettings/OneSignalSettings.json
+!/ProjectSettings/ProjectSettings.asset
+!/ProjectSettings/ProjectVersion.txt
+
+# Asset meta data should only be ignored when the corresponding asset is also ignored.
+!/[Aa]ssets/**/*.meta
+
+# IDE and generated project files
+.vs/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Build outputs
+*.apk
+*.unitypackage
+
+# Environment files
+.env
+Assets/StreamingAssets/.env
+Assets/StreamingAssets/.env.meta

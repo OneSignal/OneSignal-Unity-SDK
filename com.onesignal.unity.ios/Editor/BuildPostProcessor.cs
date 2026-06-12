@@ -60,7 +60,7 @@ using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode.Extensions;
-using Debug = UnityEngine.Debug;
+using UnityDebug = UnityEngine.Debug;
 using UnityEditor.Callbacks;
 
 namespace OneSignalSDK.iOS
@@ -313,7 +313,7 @@ namespace OneSignalSDK.iOS
 
             if (!File.Exists(podfilePath))
             {
-                Debug.LogError(
+                UnityDebug.LogError(
                     $"Could not find Podfile. {ServiceExtensionFilename} will have errors."
                 );
                 return;
@@ -323,7 +323,7 @@ namespace OneSignalSDK.iOS
 
             if (!File.Exists(dependenciesFilePath))
             {
-                Debug.LogError($"Could not find {DependenciesFilename}");
+                UnityDebug.LogError($"Could not find {DependenciesFilename}");
                 return;
             }
 
@@ -334,7 +334,7 @@ namespace OneSignalSDK.iOS
 
             if (!dependenciesRegex.IsMatch(dependenciesFile))
             {
-                Debug.LogError(
+                UnityDebug.LogError(
                     $"Could not read current iOS framework dependency version from {DependenciesFilename}"
                 );
                 return;

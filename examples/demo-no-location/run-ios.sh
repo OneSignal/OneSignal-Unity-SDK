@@ -65,6 +65,63 @@ for r,devs in d['devices'].items():
   SIM_NAME=$(echo "$LINE" | cut -d'|' -f2)
 }
 
+ensure_podfile() {
+  [ -f "$XCODE_DIR/Podfile" ] && return
+
+  DEPS="$SCRIPT_DIR/../../com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
+  [ ! -f "$DEPS" ] && return
+
+  python3 - "$DEPS" "$XCODE_DIR/Podfile" <<'PY'
+import os
+import sys
+import xml.etree.ElementTree as ET
+
+deps_path, podfile_path = sys.argv[1:3]
+root = ET.parse(deps_path).getroot()
+pods = []
+
+for pod in root.findall("./iosPods/iosPod"):
+    name = pod.get("name")
+    version = pod.get("version")
+    if name and version:
+        pods.append((name, version))
+
+if not pods:
+    sys.exit(0)
+
+onesignal_version = next(
+    (version for name, version in pods if name.startswith("OneSignalXCFramework")),
+    None,
+)
+
+lines = [
+    "source 'https://cdn.cocoapods.org/'",
+    "install! 'cocoapods', :disable_input_output_paths => true",
+    "platform :ios, '13.0'",
+    "use_frameworks! :linkage => :static",
+    "",
+]
+
+for target in ("UnityFramework", "Unity-iPhone"):
+    lines.append(f"target '{target}' do")
+    for name, version in pods:
+        lines.append(f"  pod '{name}', '{version}'")
+    lines.extend(["end", ""])
+
+if onesignal_version:
+    lines.extend([
+        "target 'OneSignalNotificationServiceExtension' do",
+        f"  pod 'OneSignalXCFramework/OneSignalExtension', '{onesignal_version}'",
+        "end",
+        "",
+    ])
+
+os.makedirs(os.path.dirname(podfile_path), exist_ok=True)
+with open(podfile_path, "w", encoding="utf-8") as podfile:
+    podfile.write("\n".join(lines))
+PY
+}
+
 SIM_UDID=""
 SIM_NAME=""
 [ "$INSTALL" = true ] && pick_simulator && echo "Target: $SIM_NAME ($SIM_UDID)" && echo ""
@@ -96,6 +153,8 @@ else
   [ ! -d "$XCODE_DIR/Unity-iPhone.xcodeproj" ] && echo "Build failed after $((ELAPSED/60))m $((ELAPSED%60))s. Check $LOG" && exit 1
   echo "Xcode project generated in $((ELAPSED/60))m $((ELAPSED%60))s"
 fi
+
+ensure_podfile
 
 if [ -f "$XCODE_DIR/Podfile" ]; then
   echo "Running pod install..."
