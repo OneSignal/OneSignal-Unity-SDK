@@ -37,6 +37,67 @@ for arg in "$@"; do
   esac
 done
 
+# Unity batchmode fails with misleading errors when these are missing
+# (Rosetta: instant death with an unrelated dialog; iOS Build Support:
+# 'build target was unsupported' buried in the log), so check up front.
+preflight_unity() {
+  if [ "$(uname -m)" = "arm64" ]; then
+    if [ ! -f /usr/libexec/rosetta/runtime ] && ! pgrep -q oahd 2>/dev/null; then
+      echo "Rosetta 2 is not installed — Unity's iOS build tooling requires it on Apple Silicon."
+      echo "Install it with: softwareupdate --install-rosetta --agree-to-license"
+      exit 1
+    fi
+  fi
+
+  # $UNITY is .../Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity;
+  # the iOS module lives at .../Hub/Editor/<version>/PlaybackEngines/iOSSupport.
+  UNITY_ROOT="$(cd "$(dirname "$UNITY")/../../.." && pwd)"
+  if [ ! -d "$UNITY_ROOT/PlaybackEngines/iOSSupport" ]; then
+    echo "Unity iOS Build Support module not found at $UNITY_ROOT/PlaybackEngines/iOSSupport."
+    echo "Install 'iOS Build Support' via Unity Hub for $(basename "$UNITY_ROOT"), then re-run."
+    exit 1
+  fi
+}
+
+# Boot the newest available iPhone when nothing is booted yet.
+boot_newest_iphone() {
+  AVAIL=$(xcrun simctl list devices available -j \
+    | python3 -c "
+import json,re,sys
+d=json.load(sys.stdin)
+rows=[]
+for rt,devs in d['devices'].items():
+    m=re.search(r'iOS-(\d+)-(\d+)$',rt)
+    if not m: continue
+    ver=(int(m.group(1)),int(m.group(2)))
+    for dev in devs:
+        if dev.get('isAvailable') and dev['name'].startswith('iPhone'):
+            rows.append((ver,dev['name'],dev['udid']))
+rows.sort()
+for ver,name,udid in rows:
+    print(udid + '|' + name + '|' + '%d.%d' % ver)
+" 2>/dev/null || true)
+
+  if [ -z "$AVAIL" ]; then
+    echo "No booted simulators and no available iPhone simulators found."
+    echo "Install an iOS runtime via Xcode > Settings > Components, or boot a device with: xcrun simctl boot <device>"
+    exit 1
+  fi
+
+  echo "No booted simulators found. Available iPhones:"
+  printf '%s\n' "$AVAIL" | while IFS='|' read -r UDID NAME VER; do
+    printf '  %s (iOS %s)\n' "$NAME" "$VER"
+  done
+
+  LINE=$(printf '%s\n' "$AVAIL" | tail -1)
+  SIM_UDID=$(echo "$LINE" | cut -d'|' -f1)
+  SIM_NAME=$(echo "$LINE" | cut -d'|' -f2)
+  echo "Booting newest: $SIM_NAME (iOS $(echo "$LINE" | cut -d'|' -f3))..."
+  xcrun simctl boot "$SIM_UDID" 2>/dev/null || true
+  open -a Simulator
+  xcrun simctl bootstatus "$SIM_UDID" -b >/dev/null
+}
+
 pick_simulator() {
   LIST=$(xcrun simctl list devices booted -j \
     | python3 -c "
@@ -49,7 +110,7 @@ for r,devs in d['devices'].items():
 " 2>/dev/null || true)
   COUNT=$(printf '%s\n' "$LIST" | grep -c . || true)
 
-  [ "$COUNT" -eq 0 ] && echo "No booted simulators found. Boot one with: xcrun simctl boot <device>" && exit 1
+  [ "$COUNT" -eq 0 ] && boot_newest_iphone && return
   [ "$COUNT" -eq 1 ] && SIM_UDID=$(echo "$LIST" | cut -d'|' -f1) && SIM_NAME=$(echo "$LIST" | cut -d'|' -f2) && return
 
   echo "Multiple simulators booted — pick one:"
@@ -83,6 +144,7 @@ if [ "$SKIP_BUILD" = true ]; then
   echo "Skipping Unity build, using existing Xcode project"
 else
   [ ! -x "$UNITY" ] && echo "Unity not found at $UNITY — set UNITY_PATH" && exit 1
+  preflight_unity
   mkdir -p "$XCODE_DIR"
   echo "Generating Xcode project (IL2CPP / Simulator)..."
   echo "Log: $LOG"
