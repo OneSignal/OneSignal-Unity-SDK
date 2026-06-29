@@ -66,7 +66,7 @@ namespace OneSignalSDK
             }
         }
 
-        private const string Version = "5.9.3";
+        private const string Version = "5.9.5";
 
         private static readonly string _dependenciesPath = Path.Combine(
             "Packages",

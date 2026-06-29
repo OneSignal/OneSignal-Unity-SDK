@@ -32,9 +32,9 @@ Open `Assets/Scenes/Main.unity`, select the `OneSignal No Location Demo` GameObj
 The resolver snapshot uses OneSignal native modules without the location artifact:
 
 ```xml
-<package>com.onesignal:core:5.9.3</package>
-<package>com.onesignal:notifications:5.9.3</package>
-<package>com.onesignal:in-app-messages:5.9.3</package>
+<package>com.onesignal:core:5.9.5</package>
+<package>com.onesignal:notifications:5.9.5</package>
+<package>com.onesignal:in-app-messages:5.9.5</package>
 ```
 
 If you force-resolve again, keep the location module disabled.

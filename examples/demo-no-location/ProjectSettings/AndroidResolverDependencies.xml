@@ -1,8 +1,8 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:core:5.9.3</package>
-    <package>com.onesignal:notifications:5.9.3</package>
-    <package>com.onesignal:in-app-messages:5.9.3</package>
+    <package>com.onesignal:core:5.9.5</package>
+    <package>com.onesignal:notifications:5.9.5</package>
+    <package>com.onesignal:in-app-messages:5.9.5</package>
   </packages>
   <files />
   <settings>
