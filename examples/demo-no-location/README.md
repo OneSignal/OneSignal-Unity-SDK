@@ -14,10 +14,21 @@ Before resolving Android dependencies or building iOS, confirm **OneSignal > Dis
 
 ## Configure App ID
 
-This demo does **not** read `.env` files or `ONESIGNAL_APP_ID` environment variables.
-`.env.example` is provided only as a reference for the value to configure in Unity.
+For scripted builds, `run-android.sh` and `run-ios.sh` read `ONESIGNAL_APP_ID` from the shell environment or from `.env` in this folder. The environment variable wins if both are set.
 
-To configure the app ID:
+```sh
+cp .env.example .env
+```
+
+Then edit `.env`:
+
+```sh
+ONESIGNAL_APP_ID=YOUR-ONESIGNAL-APP-ID
+```
+
+The build injects that value into the generated app without saving it into the tracked scene file.
+
+For Play Mode in the Unity Editor:
 
 1. Open `Assets/Scenes/Main.unity`.
 2. Select the `OneSignal No Location Demo` GameObject.
