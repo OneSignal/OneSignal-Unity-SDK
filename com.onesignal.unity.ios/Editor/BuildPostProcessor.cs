@@ -336,8 +336,7 @@ namespace OneSignalSDK.iOS
             // "Multiple commands produce" error. Dropping the declared input/output paths
             // makes the copy phases run unconditionally and resolves the conflict.
             if (!podfile.Contains("disable_input_output_paths"))
-                podfile =
-                    "install! 'cocoapods', :disable_input_output_paths => true\n" + podfile;
+                podfile = "install! 'cocoapods', :disable_input_output_paths => true\n" + podfile;
 
             File.WriteAllText(podfilePath, podfile);
         }
