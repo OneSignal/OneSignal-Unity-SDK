@@ -1,6 +1,10 @@
+using System;
+using System.Text;
+using System.Threading.Tasks;
 using OneSignalSDK;
 using OneSignalSDK.Debug.Models;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public sealed class NoLocationDemo : MonoBehaviour
 {
@@ -34,6 +38,7 @@ public sealed class NoLocationDemo : MonoBehaviour
     private Vector2 _scrollPosition;
 
     private string _locationStatus = "Location test not run";
+    private string _pushStatus = string.Empty;
     private bool _initialized;
 
     private void Start()
@@ -74,7 +79,7 @@ public sealed class NoLocationDemo : MonoBehaviour
 
         var scrollRect = new Rect(0, headerHeight, logicalWidth, logicalHeight - headerHeight);
         var contentWidth = logicalWidth - 32f;
-        var contentHeight = 560f + bottomInset;
+        var contentHeight = 690f + bottomInset;
 
         _scrollPosition = GUI.BeginScrollView(
             scrollRect,
@@ -117,7 +122,8 @@ public sealed class NoLocationDemo : MonoBehaviour
         DrawSectionHeader(x, y, "PUSH");
         y += 24f;
 
-        var cardHeight = 164f;
+        var hasStatus = !string.IsNullOrEmpty(_pushStatus);
+        var cardHeight = hasStatus ? 280f : 252f;
         GUI.Box(new Rect(x, y, width, cardHeight), GUIContent.none, _cardStyle);
 
         var contentX = x + 12f;
@@ -140,8 +146,14 @@ public sealed class NoLocationDemo : MonoBehaviour
         DrawDivider(contentX, y + 45f, contentWidth);
         DrawKeyValueRow(contentX, y + 58f, contentWidth, "Push ID", pushId, _valueStyle);
 
-        if (GUI.Button(new Rect(contentX, y + 104f, contentWidth, 48f), "REQUEST PERMISSION", _buttonStyle))
+        if (GUI.Button(new Rect(contentX, y + 100f, contentWidth, 48f), "REQUEST PERMISSION", _buttonStyle))
             RequestPushPermission();
+
+        if (GUI.Button(new Rect(contentX, y + 156f, contentWidth, 48f), "SEND TEST NOTIFICATION", _buttonStyle))
+            SendTestNotification();
+
+        if (hasStatus)
+            GUI.Label(new Rect(contentX, y + 212f, contentWidth, 56f), _pushStatus, _bodyStyle);
 
         return y + cardHeight + 24f;
     }
@@ -285,6 +297,69 @@ public sealed class NoLocationDemo : MonoBehaviour
         {
             Debug.LogError($"[NoLocationDemo] Push permission request failed: {exception.Message}");
         }
+    }
+
+    private async void SendTestNotification()
+    {
+        if (!_initialized || !IsConfigured)
+        {
+            _pushStatus = "Set ONESIGNAL_APP_ID before sending a test push.";
+            return;
+        }
+
+        if (!OneSignal.Notifications.Permission)
+        {
+            _pushStatus = "Request notification permission before sending a test push.";
+            return;
+        }
+
+        var pushSubscriptionId = OneSignal.User.PushSubscription.Id;
+        if (string.IsNullOrWhiteSpace(pushSubscriptionId))
+        {
+            _pushStatus = "Allow notifications, then wait for a push ID.";
+            return;
+        }
+
+        _pushStatus = "Sending test notification...";
+
+        try
+        {
+            var sent = await PostTestNotification(pushSubscriptionId);
+            _pushStatus = sent
+                ? "Test notification requested."
+                : "Send failed. Verify the OneSignal App ID.";
+        }
+        catch (Exception exception)
+        {
+            _pushStatus = $"Send failed: {exception.Message}";
+        }
+    }
+
+    private async Task<bool> PostTestNotification(string pushSubscriptionId)
+    {
+        var payload =
+            "{"
+            + $"\"app_id\":\"{_oneSignalAppId}\","
+            + $"\"include_subscription_ids\":[\"{pushSubscriptionId}\"],"
+            + "\"headings\":{\"en\":\"OneSignal No-Location Demo\"},"
+            + "\"contents\":{\"en\":\"This test push was sent without linking the location module.\"}"
+            + "}";
+
+        using var request = new UnityWebRequest(
+            "https://onesignal.com/api/v1/notifications",
+            UnityWebRequest.kHttpVerbPOST
+        );
+        request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(payload));
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Accept", "application/vnd.onesignal.v1+json");
+
+        var completion = new TaskCompletionSource<bool>();
+        var operation = request.SendWebRequest();
+        operation.completed += _ => completion.TrySetResult(true);
+        await completion.Task;
+
+        return request.result == UnityWebRequest.Result.Success;
     }
 
     private void TestLocationRequest()

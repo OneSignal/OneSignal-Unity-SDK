@@ -5,6 +5,7 @@
     "com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
-    "com.unity.modules.jsonserialize": "1.0.0"
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.unitywebrequest": "1.0.0"
   }
 }

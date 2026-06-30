@@ -100,7 +100,9 @@ The notification service extension still uses `OneSignalXCFramework/OneSignalExt
 
 ## App Code
 
-`NoLocationDemo.cs` initializes OneSignal, requests push permission, and includes a test button for `OneSignal.Location.RequestPermission()`. With the native location module excluded, location calls no-op and `OneSignal.Location.IsShared` returns `false`.
+`NoLocationDemo.cs` initializes OneSignal, requests push permission, sends a test push to the current subscription via the OneSignal REST API, and includes a test button for `OneSignal.Location.RequestPermission()`. With the native location module excluded, location calls no-op and `OneSignal.Location.IsShared` returns `false`.
+
+The test push is sent with the app ID only (no REST API key), targeting the current `include_subscription_ids`, matching the other OneSignal no-location demos.
 
 ## Code Stripping (`link.xml`)
 
