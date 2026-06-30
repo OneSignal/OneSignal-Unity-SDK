@@ -61,6 +61,12 @@ Have an iOS simulator booted, then run:
 ./run-ios.sh
 ```
 
+Recent macOS ships `openrsync` as `/usr/bin/rsync`, which fails the CocoaPods "Copy XCFrameworks" build phase (`renameat: No such file or directory` on the OneSignal dSYM). Install a real rsync once and `run-ios.sh` will prefer it automatically:
+
+```sh
+brew install rsync
+```
+
 Useful options:
 
 ```sh
