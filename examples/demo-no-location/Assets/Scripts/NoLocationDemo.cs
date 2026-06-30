@@ -33,7 +33,7 @@ public sealed class NoLocationDemo : MonoBehaviour
     private Texture2D _backgroundTexture;
     private Vector2 _scrollPosition;
 
-    private string _status = "Set your OneSignal App ID in the Inspector.";
+    private string _locationStatus = "Location test not run";
     private bool _initialized;
 
     private void Start()
@@ -45,7 +45,6 @@ public sealed class NoLocationDemo : MonoBehaviour
 
         OneSignal.Initialize(_oneSignalAppId);
         _initialized = true;
-        _status = "OneSignal initialized without native location module.";
     }
 
     private void OnGUI()
@@ -75,7 +74,7 @@ public sealed class NoLocationDemo : MonoBehaviour
 
         var scrollRect = new Rect(0, headerHeight, logicalWidth, logicalHeight - headerHeight);
         var contentWidth = logicalWidth - 32f;
-        var contentHeight = 520f + bottomInset;
+        var contentHeight = 560f + bottomInset;
 
         _scrollPosition = GUI.BeginScrollView(
             scrollRect,
@@ -118,25 +117,28 @@ public sealed class NoLocationDemo : MonoBehaviour
         DrawSectionHeader(x, y, "PUSH");
         y += 24f;
 
-        var cardHeight = 196f;
+        var cardHeight = 164f;
         GUI.Box(new Rect(x, y, width, cardHeight), GUIContent.none, _cardStyle);
 
         var contentX = x + 12f;
         var contentWidth = width - 24f;
+        var permission = _initialized
+            ? OneSignal.Notifications.Permission
+                ? "Granted"
+                : "Not granted"
+            : "Not initialized";
+        var pushId = _initialized ? FormatValue(OneSignal.User.PushSubscription.Id) : "-";
+
         DrawKeyValueRow(
             contentX,
             y + 12f,
             contentWidth,
             "Permission",
-            _initialized
-                ? OneSignal.Notifications.Permission
-                    ? "Granted"
-                    : "Not granted"
-                : "Not initialized",
+            permission,
             _valueStyle
         );
         DrawDivider(contentX, y + 45f, contentWidth);
-        DrawKeyValueRow(contentX, y + 58f, contentWidth, "Status", _status, _valueStyle);
+        DrawKeyValueRow(contentX, y + 58f, contentWidth, "Push ID", pushId, _valueStyle);
 
         if (GUI.Button(new Rect(contentX, y + 104f, contentWidth, 48f), "REQUEST PERMISSION", _buttonStyle))
             RequestPushPermission();
@@ -160,10 +162,7 @@ public sealed class NoLocationDemo : MonoBehaviour
             _bodyStyle
         );
 
-        var locationStatus = _initialized
-            ? $"Location IsShared: {OneSignal.Location.IsShared}"
-            : "Location test not run";
-        GUI.Label(new Rect(contentX, y + 94f, contentWidth, 28f), locationStatus, _bodyStyle);
+        GUI.Label(new Rect(contentX, y + 94f, contentWidth, 28f), _locationStatus, _bodyStyle);
 
         if (
             GUI.Button(
@@ -275,29 +274,44 @@ public sealed class NoLocationDemo : MonoBehaviour
     {
         if (!_initialized)
         {
-            _status = "Initialize OneSignal before requesting push permission.";
             return;
         }
 
-        var granted = await OneSignal.Notifications.RequestPermissionAsync(false);
-        _status = $"Push permission: {(granted ? "granted" : "not granted")}";
+        try
+        {
+            await OneSignal.Notifications.RequestPermissionAsync(false);
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogError($"[NoLocationDemo] Push permission request failed: {exception.Message}");
+        }
     }
 
     private void TestLocationRequest()
     {
         if (!_initialized)
         {
-            _status = "Initialize OneSignal before testing location.";
+            _locationStatus = "Initialize OneSignal before testing location.";
             return;
         }
 
-        OneSignal.Location.RequestPermission();
-        _status = "Location request no-op completed.";
+        try
+        {
+            OneSignal.Location.RequestPermission();
+            _locationStatus = "Location request completed without linking the location module.";
+        }
+        catch (System.Exception exception)
+        {
+            _locationStatus = $"Location request failed: {exception.Message}";
+        }
     }
 
     private bool IsConfigured =>
         !string.IsNullOrWhiteSpace(_oneSignalAppId)
         && !_oneSignalAppId.StartsWith("YOUR-");
+
+    private static string FormatValue(string value) =>
+        string.IsNullOrWhiteSpace(value) ? "-" : value;
 
     private static Rect ScaleRect(Rect rect, float scale) =>
         new Rect(rect.x * scale, rect.y * scale, rect.width * scale, rect.height * scale);
