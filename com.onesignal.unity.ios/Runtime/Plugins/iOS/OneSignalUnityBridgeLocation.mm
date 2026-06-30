@@ -31,9 +31,12 @@
 #import <OneSignalUser/OneSignalUser-Swift.h>
 #import <OneSignalFramework/OneSignalFramework.h>
 
+static NSString *const OneSignalLocationModuleNotFoundMessage = @"OneSignalLocation not found. In order to use OneSignal's location features the OneSignalLocation module must be added.";
+
 extern "C" {
     bool _oneSignalLocationGetIsShared() {
 #if ONESIGNAL_DISABLE_LOCATION
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:OneSignalLocationModuleNotFoundMessage];
         return false;
 #else
         return [OneSignal.Location isShared];
@@ -41,13 +44,17 @@ extern "C" {
     }
 
     void _oneSignalLocationSetIsShared(bool shared) {
-#if !ONESIGNAL_DISABLE_LOCATION
+#if ONESIGNAL_DISABLE_LOCATION
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:OneSignalLocationModuleNotFoundMessage];
+#else
         [OneSignal.Location setShared:shared];
 #endif
     }
 
     void _oneSignalLocationRequestPermission() {
-#if !ONESIGNAL_DISABLE_LOCATION
+#if ONESIGNAL_DISABLE_LOCATION
+        [OneSignalLog onesignalLog:ONE_S_LL_ERROR message:OneSignalLocationModuleNotFoundMessage];
+#else
         [OneSignal.Location requestPermission];
 #endif
     }
