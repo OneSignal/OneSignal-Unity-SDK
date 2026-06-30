@@ -102,6 +102,14 @@ The notification service extension still uses `OneSignalXCFramework/OneSignalExt
 
 `NoLocationDemo.cs` initializes OneSignal, requests push permission, and includes a test button for `OneSignal.Location.RequestPermission()`. With the native location module excluded, location calls no-op and `OneSignal.Location.IsShared` returns `false`.
 
+## Code Stripping (`link.xml`)
+
+`Assets/OneSignal/link.xml` is required. Do not delete it.
+
+The scripted builds use `ManagedStrippingLevel.High`, and the OneSignal platform implementations (`OneSignaliOS`, `OneSignalAndroid`) are resolved by reflection at runtime. Without this file, IL2CPP strips those types, so `OneSignal.Default` throws on first use and the SDK never initializes (the app shows `Not initialized` and no permission prompt appears).
+
+In a normal SDK integration the OneSignal Setup window generates this file automatically; this demo is built headlessly via `BuildScript`, so the file is checked in instead.
+
 ## Generated Files
 
 Unity build output is generated under `Build/`, `Library/`, `Logs/`, and `UserSettings/`. These folders are ignored.
