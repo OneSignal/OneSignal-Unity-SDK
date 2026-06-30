@@ -35,6 +35,9 @@ namespace OneSignalSDK.Android.Location
 {
     internal sealed class AndroidLocationManager : ILocationManager
     {
+        private const string LocationModuleNotAvailable =
+            "OneSignal location module is not available. Add the location dependency to use OneSignal.Location.";
+
         private readonly AndroidJavaObject _location;
 
         public AndroidLocationManager(AndroidJavaClass sdkClass)
@@ -45,29 +48,49 @@ namespace OneSignalSDK.Android.Location
             }
             catch (Exception)
             {
-                SDKDebug.Warn(
-                    "OneSignal location module is not available. OneSignal.Location calls will no-op."
-                );
+                SDKDebug.Error(LocationModuleNotAvailable);
             }
         }
 
         public bool IsShared
         {
-            get => _location != null && _location.Call<bool>("isShared");
+            get
+            {
+                try
+                {
+                    return _location != null && _location.Call<bool>("isShared");
+                }
+                catch (Exception)
+                {
+                    SDKDebug.Error(LocationModuleNotAvailable);
+                    return false;
+                }
+            }
             set
             {
-                if (_location != null)
-                    _location.Call("setShared", value);
+                try
+                {
+                    if (_location != null)
+                        _location.Call("setShared", value);
+                }
+                catch (Exception)
+                {
+                    SDKDebug.Error(LocationModuleNotAvailable);
+                }
             }
         }
 
         public void RequestPermission()
         {
-            if (_location == null)
-                return;
-
-            var continuation = new BoolContinuation();
-            _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
+            try
+            {
+                var continuation = new BoolContinuation();
+                _location.Call<AndroidJavaObject>("requestPermission", continuation.Proxy);
+            }
+            catch (Exception)
+            {
+                SDKDebug.Error(LocationModuleNotAvailable);
+            }
         }
     }
 }
