@@ -89,8 +89,8 @@ jobs:
 
           # Get versions from target branch (not the release branch)
           CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:examples/demo/Assets/OneSignal/VERSION | tr -d '\n\r' | xargs)
-          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml | grep -oE 'spec="com.onesignal:OneSignal:[0-9]+\.[0-9]+\.[0-9]+"' | sed -E 's/.*OneSignal:([0-9]+\.[0-9]+\.[0-9]+)".*/\1/' | head -1)
-          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml | grep -oE 'version="[0-9.]+"' | grep -oE '[0-9.]+' | head -1)
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.cs | grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.cs | grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "unity_from=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
           echo "android_from=${ANDROID_VERSION}" >> $GITHUB_OUTPUT
           echo "ios_from=${IOS_VERSION}" >> $GITHUB_OUTPUT
@@ -109,7 +109,8 @@ jobs:
             sleep 30
           done
           if [ "$FOUND" != "true" ]; then echo "✗ Android SDK version ${VERSION} not found after 5 attempts"; exit 1; fi
-          sed -i -E "s/spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/spec=\"com.onesignal:OneSignal:$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.xml
+          sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.cs
+          sed -i -E "s/<androidPackage spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/<androidPackage spec=\"com.onesignal:OneSignal:$VERSION\"/" examples/demo/Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
           sed -i -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" examples/demo/Assets/Plugins/Android/mainTemplate.gradle
           sed -i -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" examples/demo/ProjectSettings/AndroidResolverDependencies.xml
 
@@ -132,7 +133,8 @@ jobs:
             sleep 30
           done
           if [ "$FOUND" != "true" ]; then echo "✗ iOS SDK version ${VERSION} not found after 5 attempts"; exit 1; fi
-          sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml
+          sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.cs
+          sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" examples/demo/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml
 
           # Only commit if there are changes
           git add -A

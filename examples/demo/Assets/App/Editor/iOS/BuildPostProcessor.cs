@@ -228,8 +228,8 @@ namespace App.Editor.iOS
         static string ResolveOneSignalXCFrameworkVersion()
         {
             var dependenciesFilePath = Path.Combine(
-                "Packages",
-                "com.onesignal.unity.ios",
+                "Assets",
+                "OneSignal",
                 "Editor",
                 "OneSignaliOSDependencies.xml"
             );
