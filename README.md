@@ -152,17 +152,20 @@ with your own. There is a complete guide for this [in the plugin's README](com.o
 
 ### Disable Location Module
 
-By default, the OneSignal Unity SDK includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, select **OneSignal > Disable Location Module** in the Unity Editor before resolving Android dependencies or building iOS.
+By default, the OneSignal Unity SDK includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds. There are two ways to opt out:
 
-For automated Unity project setup, you can set the same Editor project setting from an Editor script before dependency resolution or build:
+- **Editor toggle** (interactive): select **OneSignal > Disable Location Module** in the Unity Editor before resolving Android dependencies or building iOS. This is persisted per project in `ProjectSettings/OneSignalSettings.json`.
+- **Environment variable** (CLI/CI): set `ONESIGNAL_DISABLE_LOCATION=true` (or `1`) in the environment before launching Unity, for example:
 
-```C#
-OneSignalSDK.OneSignalSDKSettings.DisableLocation = true;
-```
+  ```sh
+  ONESIGNAL_DISABLE_LOCATION=true /path/to/Unity -batchmode -quit -projectPath . -buildTarget iOS -executeMethod BuildScript.BuildiOSSimulator
+  ```
 
-Do not call this from runtime app code; it changes the Unity project configuration used by native dependency resolution.
+When set, the environment variable takes precedence over the Editor toggle, so headless builds can opt out without changing project settings.
 
-When disabled, Android resolves OneSignal's native modules without the location artifact and iOS uses OneSignal pods without `OneSignalLocation`. `OneSignal.Location.RequestPermission()` and `OneSignal.Location.IsShared = ...` no-op on native builds without the location module, and `OneSignal.Location.IsShared` returns `false`.
+With the location module disabled, Android resolves OneSignal's native modules without the location artifact and iOS uses OneSignal pods without `OneSignalLocation`. `OneSignal.Location.RequestPermission()` and `OneSignal.Location.IsShared = ...` no-op on native builds without the location module, and `OneSignal.Location.IsShared` returns `false`.
+
+When toggling the flag, clear stale native outputs (the generated Xcode project, CocoaPods/Gradle caches, and prior `Build/` artifacts) so a previously linked location module isn't reused.
 
 ## Usage
 You can find a complete implementation in our included [example MonoBehaviour](OneSignalExample/Assets/OneSignal/Example/OneSignalExampleBehaviour.cs). Additionally we have included a

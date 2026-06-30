@@ -2,15 +2,18 @@
 
 Minimal Unity project for apps that use OneSignal without the native location module.
 
-The saved OneSignal project setting is checked in as:
+This demo opts out of location two ways, so it stays no-location whether you build from the Editor or the command line:
 
-```json
-{
-    "disableLocation": true
-}
-```
+- The `run-ios.sh` and `run-android.sh` scripts export `ONESIGNAL_DISABLE_LOCATION=true` before launching Unity. The environment variable takes precedence over the Editor toggle.
+- The Editor toggle is checked in for interactive use (`ProjectSettings/OneSignalSettings.json`):
 
-Before resolving Android dependencies or building iOS, confirm **OneSignal > Disable Location Module** is checked.
+  ```json
+  {
+      "disableLocation": true
+  }
+  ```
+
+If you open the project in the Editor without the environment variable, confirm **OneSignal > Disable Location Module** is checked before resolving Android dependencies or building iOS.
 
 ## Configure App ID
 
@@ -80,6 +83,8 @@ Set `UNITY_PATH` if you want to use a specific Unity executable.
 The iOS script generates a minimal Podfile when External Dependency Manager does not create one, then runs `pod install` and builds the generated Xcode workspace.
 
 ## Native Dependencies
+
+The SDK generates the EDM4U manifests per project at `Assets/OneSignal/Editor/OneSignal{Android,iOS}Dependencies.xml` based on the location flag, so the granular (no-location) dependency set below is what EDM4U resolves for this demo.
 
 ### Android
 

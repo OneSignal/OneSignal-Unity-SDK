@@ -43,7 +43,7 @@ namespace OneSignalSDK.iOS
 
         internal static void WriteDependencies()
         {
-            var contents = OneSignalSDK.OneSignalSDKSettings.DisableLocation
+            var contents = OneSignalSDK.OneSignalSDKSettings.EffectiveDisableLocation
                 ? DisabledLocationDependencies
                 : DefaultDependencies;
 
@@ -55,6 +55,7 @@ namespace OneSignalSDK.iOS
                 )
                     return;
 
+                Directory.CreateDirectory(Path.GetDirectoryName(_dependenciesPath));
                 File.WriteAllText(_dependenciesPath, contents);
                 AssetDatabase.ImportAsset(_dependenciesPath);
             }
@@ -66,11 +67,11 @@ namespace OneSignalSDK.iOS
             }
         }
 
-        private const string Version = "5.5.3";
+        internal const string Version = "5.5.3";
 
         private static readonly string _dependenciesPath = Path.Combine(
-            "Packages",
-            "com.onesignal.unity.ios",
+            "Assets",
+            "OneSignal",
             "Editor",
             "OneSignaliOSDependencies.xml"
         );

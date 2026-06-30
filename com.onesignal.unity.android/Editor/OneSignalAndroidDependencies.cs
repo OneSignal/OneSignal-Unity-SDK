@@ -43,7 +43,7 @@ namespace OneSignalSDK
 
         internal static void WriteDependencies()
         {
-            var contents = OneSignalSDKSettings.DisableLocation
+            var contents = OneSignalSDKSettings.EffectiveDisableLocation
                 ? DisabledLocationDependencies
                 : DefaultDependencies;
 
@@ -55,6 +55,7 @@ namespace OneSignalSDK
                 )
                     return;
 
+                Directory.CreateDirectory(Path.GetDirectoryName(_dependenciesPath));
                 File.WriteAllText(_dependenciesPath, contents);
                 AssetDatabase.ImportAsset(_dependenciesPath);
             }
@@ -66,11 +67,11 @@ namespace OneSignalSDK
             }
         }
 
-        private const string Version = "5.9.5";
+        internal const string Version = "5.9.5";
 
         private static readonly string _dependenciesPath = Path.Combine(
-            "Packages",
-            "com.onesignal.unity.android",
+            "Assets",
+            "OneSignal",
             "Editor",
             "OneSignalAndroidDependencies.xml"
         );

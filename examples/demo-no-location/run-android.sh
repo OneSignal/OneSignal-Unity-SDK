@@ -5,6 +5,10 @@
 #   ./run-android.sh [--no-install] [--install-only]
 set -eu
 
+# Opt out of the OneSignal location module for this build. The SDK reads this at
+# dependency-resolution time and links the granular artifacts without location.
+export ONESIGNAL_DISABLE_LOCATION=true
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 find_unity() {

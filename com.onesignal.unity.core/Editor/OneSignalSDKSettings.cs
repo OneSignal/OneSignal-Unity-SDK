@@ -34,6 +34,8 @@ namespace OneSignalSDK
 {
     public static class OneSignalSDKSettings
     {
+        public const string DisableLocationEnvVar = "ONESIGNAL_DISABLE_LOCATION";
+
         public static event Action Changed;
 
         public static bool DisableLocation
@@ -48,6 +50,27 @@ namespace OneSignalSDK
                 Save();
                 Changed?.Invoke();
                 AssetDatabase.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Resolved value used by the build pipeline. The <see cref="DisableLocationEnvVar"/>
+        /// environment variable, when present, overrides the persisted Editor setting so CLI
+        /// and CI builds can opt out without mutating project settings.
+        /// </summary>
+        public static bool EffectiveDisableLocation
+        {
+            get
+            {
+                var environmentValue = Environment.GetEnvironmentVariable(DisableLocationEnvVar);
+                if (!string.IsNullOrEmpty(environmentValue))
+                {
+                    var normalized = environmentValue.Trim();
+                    return normalized.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || normalized == "1";
+                }
+
+                return _settings.disableLocation;
             }
         }
 

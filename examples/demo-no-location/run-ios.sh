@@ -5,6 +5,10 @@
 #   ./run-ios.sh [--no-install] [--install-only] [--open]
 set -eu
 
+# Opt out of the OneSignal location module for this build. The SDK reads this at
+# dependency-resolution time and links the granular pods without OneSignalLocation.
+export ONESIGNAL_DISABLE_LOCATION=true
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 find_unity() {
@@ -65,10 +69,13 @@ for r,devs in d['devices'].items():
   SIM_NAME=$(echo "$LINE" | cut -d'|' -f2)
 }
 
+# Fallback Podfile generator: EDM4U's iOS resolver normally emits the Podfile
+# during the Unity build from the generated per-project dependency manifest. This
+# only runs if that didn't happen, so the no-location build still works offline.
 ensure_podfile() {
   [ -f "$XCODE_DIR/Podfile" ] && return
 
-  DEPS="$SCRIPT_DIR/../../com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.xml"
+  DEPS="$SCRIPT_DIR/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml"
   [ ! -f "$DEPS" ] && return
 
   python3 - "$DEPS" "$XCODE_DIR/Podfile" <<'PY'

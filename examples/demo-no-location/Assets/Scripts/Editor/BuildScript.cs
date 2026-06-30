@@ -18,8 +18,6 @@ public static class BuildScript
 
     public static void BuildAndroidEmulator()
     {
-        EnforceNoLocationBuild();
-
         var outputPath = Path.Combine(AndroidOutputDir, ApkName);
         Directory.CreateDirectory(AndroidOutputDir);
 
@@ -65,8 +63,6 @@ public static class BuildScript
 
     public static void BuildiOSSimulator()
     {
-        EnforceNoLocationBuild();
-
         Directory.CreateDirectory(IOSOutputDir);
 
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
@@ -96,12 +92,6 @@ public static class BuildScript
             );
 
         HandleReport(report, IOSOutputDir);
-    }
-
-    private static void EnforceNoLocationBuild()
-    {
-        // Scripted builds should stay no-location even if the Editor menu setting was toggled.
-        OneSignalSDK.OneSignalSDKSettings.DisableLocation = true;
     }
 
     private static IDisposable ApplyConfiguredAppId()

@@ -73,14 +73,8 @@ namespace OneSignalSDK.iOS
     {
         private const string ServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
         private const string ServiceExtensionFilename = "NotificationService.swift";
-        private const string DependenciesFilename = "OneSignaliOSDependencies.xml";
         private const string PackageName = "com.onesignal.unity.ios";
 
-        private static readonly string EditorFilesPath = Path.Combine(
-            "Packages",
-            PackageName,
-            "Editor"
-        );
         private static readonly string PluginLibrariesPath = Path.Combine(
             PackageName,
             "Runtime",
@@ -128,7 +122,7 @@ namespace OneSignalSDK.iOS
             DisableBitcode();
             ConfigureLocationModule();
 
-            if (!OneSignalSDK.OneSignalSDKSettings.DisableLocation)
+            if (!OneSignalSDK.OneSignalSDKSettings.EffectiveDisableLocation)
                 AddLocationUsageDescription();
 
             // Save the project back out
@@ -319,33 +313,12 @@ namespace OneSignalSDK.iOS
                 return;
             }
 
-            var dependenciesFilePath = Path.Combine(EditorFilesPath, DependenciesFilename);
-
-            if (!File.Exists(dependenciesFilePath))
-            {
-                UnityDebug.LogError($"Could not find {DependenciesFilename}");
-                return;
-            }
-
-            var dependenciesFile = File.ReadAllText(dependenciesFilePath);
-            var dependenciesRegex = new Regex(
-                "<iosPod name=\"OneSignalXCFramework(?:/[^\"]+)?\" version=\"([^\"]+)\" addToAllTargets=\"true\" />"
-            );
-
-            if (!dependenciesRegex.IsMatch(dependenciesFile))
-            {
-                UnityDebug.LogError(
-                    $"Could not read current iOS framework dependency version from {DependenciesFilename}"
-                );
-                return;
-            }
-
             var podfile = File.ReadAllText(podfilePath);
             var podfileRegex = new Regex(
                 $@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework(?:/OneSignalExtension)?', '(.+)'\nend\n"
             );
 
-            var requiredVersion = dependenciesRegex.Match(dependenciesFile).Groups[1].Value;
+            var requiredVersion = OneSignaliOSDependencies.Version;
             var requiredTarget =
                 $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework/OneSignalExtension', '{requiredVersion}'\nend\n";
 
@@ -357,12 +330,21 @@ namespace OneSignalSDK.iOS
                 podfile = podfile.Replace(podfileTarget, requiredTarget);
             }
 
+            // The app, widget, and notification service extension targets each copy the
+            // OneSignal XCFrameworks. With static frameworks this declares the same output
+            // file from multiple script phases, which newer Xcode treats as a hard
+            // "Multiple commands produce" error. Dropping the declared input/output paths
+            // makes the copy phases run unconditionally and resolves the conflict.
+            if (!podfile.Contains("disable_input_output_paths"))
+                podfile =
+                    "install! 'cocoapods', :disable_input_output_paths => true\n" + podfile;
+
             File.WriteAllText(podfilePath, podfile);
         }
 
         private void ConfigureLocationModule()
         {
-            if (!OneSignalSDK.OneSignalSDKSettings.DisableLocation)
+            if (!OneSignalSDK.OneSignalSDKSettings.EffectiveDisableLocation)
                 return;
 
             _project.AddBuildProperty(
