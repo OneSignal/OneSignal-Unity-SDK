@@ -1,0 +1,10 @@
+<dependencies>
+  <androidPackages>
+    <repositories>
+      <repository>https://repo.maven.apache.org/maven2</repository>
+    </repositories>
+    <androidPackage spec="com.onesignal:core:5.9.5" />
+    <androidPackage spec="com.onesignal:notifications:5.9.5" />
+    <androidPackage spec="com.onesignal:in-app-messages:5.9.5" />
+  </androidPackages>
+</dependencies>
