@@ -79,7 +79,7 @@ public sealed class NoLocationDemo : MonoBehaviour
 
         var scrollRect = new Rect(0, headerHeight, logicalWidth, logicalHeight - headerHeight);
         var contentWidth = logicalWidth - 32f;
-        var contentHeight = 690f + bottomInset;
+        var contentHeight = 740f + bottomInset;
 
         _scrollPosition = GUI.BeginScrollView(
             scrollRect,
@@ -163,7 +163,7 @@ public sealed class NoLocationDemo : MonoBehaviour
         DrawSectionHeader(x, y, "LOCATION MODULE");
         y += 24f;
 
-        var cardHeight = 188f;
+        var cardHeight = 240f;
         GUI.Box(new Rect(x, y, width, cardHeight), GUIContent.none, _cardStyle);
 
         var contentX = x + 12f;
@@ -174,11 +174,11 @@ public sealed class NoLocationDemo : MonoBehaviour
             _bodyStyle
         );
 
-        GUI.Label(new Rect(contentX, y + 94f, contentWidth, 28f), _locationStatus, _bodyStyle);
+        GUI.Label(new Rect(contentX, y + 94f, contentWidth, 72f), _locationStatus, _bodyStyle);
 
         if (
             GUI.Button(
-                new Rect(contentX, y + 128f, contentWidth, 48f),
+                new Rect(contentX, y + 180f, contentWidth, 48f),
                 "TEST LOCATION REQUEST",
                 _outlineButtonStyle
             )
