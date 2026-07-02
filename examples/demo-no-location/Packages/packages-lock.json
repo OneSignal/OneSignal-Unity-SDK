@@ -1,0 +1,50 @@
+{
+  "dependencies": {
+    "com.onesignal.unity.android": {
+      "version": "file:../../../com.onesignal.unity.android",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.onesignal.unity.core": "5.2.11"
+      }
+    },
+    "com.onesignal.unity.core": {
+      "version": "file:../../../com.onesignal.unity.core",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.onesignal.unity.ios": {
+      "version": "file:../../../com.onesignal.unity.ios",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.onesignal.unity.core": "5.2.11"
+      }
+    },
+    "com.unity.modules.androidjni": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.imgui": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.jsonserialize": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.unitywebrequest": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    }
+  }
+}
