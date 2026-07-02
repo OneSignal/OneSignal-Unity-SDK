@@ -60,7 +60,7 @@ using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode.Extensions;
-using Debug = UnityEngine.Debug;
+using UnityDebug = UnityEngine.Debug;
 using UnityEditor.Callbacks;
 
 namespace OneSignalSDK.iOS
@@ -73,14 +73,8 @@ namespace OneSignalSDK.iOS
     {
         private const string ServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
         private const string ServiceExtensionFilename = "NotificationService.swift";
-        private const string DependenciesFilename = "OneSignaliOSDependencies.xml";
         private const string PackageName = "com.onesignal.unity.ios";
 
-        private static readonly string EditorFilesPath = Path.Combine(
-            "Packages",
-            PackageName,
-            "Editor"
-        );
         private static readonly string PluginLibrariesPath = Path.Combine(
             PackageName,
             "Runtime",
@@ -126,8 +120,10 @@ namespace OneSignalSDK.iOS
             AddNotificationServiceExtension();
 
             DisableBitcode();
+            ConfigureLocationModule();
 
-            AddLocationUsageDescription();
+            if (!OneSignalSDK.OneSignalSDKSettings.EffectiveDisableLocation)
+                AddLocationUsageDescription();
 
             // Save the project back out
             File.WriteAllText(_projectPath, _project.WriteToString());
@@ -311,41 +307,20 @@ namespace OneSignalSDK.iOS
 
             if (!File.Exists(podfilePath))
             {
-                Debug.LogError(
+                UnityDebug.LogError(
                     $"Could not find Podfile. {ServiceExtensionFilename} will have errors."
-                );
-                return;
-            }
-
-            var dependenciesFilePath = Path.Combine(EditorFilesPath, DependenciesFilename);
-
-            if (!File.Exists(dependenciesFilePath))
-            {
-                Debug.LogError($"Could not find {DependenciesFilename}");
-                return;
-            }
-
-            var dependenciesFile = File.ReadAllText(dependenciesFilePath);
-            var dependenciesRegex = new Regex(
-                "(?<=<iosPod name=\"OneSignalXCFramework\" version=\").+(?=\" addToAllTargets=\"true\" />)"
-            );
-
-            if (!dependenciesRegex.IsMatch(dependenciesFile))
-            {
-                Debug.LogError(
-                    $"Could not read current iOS framework dependency version from {DependenciesFilename}"
                 );
                 return;
             }
 
             var podfile = File.ReadAllText(podfilePath);
             var podfileRegex = new Regex(
-                $@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '(.+)'\nend\n"
+                $@"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework(?:/OneSignalExtension)?', '(.+)'\nend\n"
             );
 
-            var requiredVersion = dependenciesRegex.Match(dependenciesFile).ToString();
+            var requiredVersion = OneSignaliOSDependencies.Version;
             var requiredTarget =
-                $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework', '{requiredVersion}'\nend\n";
+                $"target '{ServiceExtensionTargetName}' do\n  pod 'OneSignalXCFramework/OneSignalExtension', '{requiredVersion}'\nend\n";
 
             if (!podfileRegex.IsMatch(podfile))
                 podfile += requiredTarget;
@@ -355,7 +330,27 @@ namespace OneSignalSDK.iOS
                 podfile = podfile.Replace(podfileTarget, requiredTarget);
             }
 
+            // The app, widget, and notification service extension targets each copy the
+            // OneSignal XCFrameworks. With static frameworks this declares the same output
+            // file from multiple script phases, which newer Xcode treats as a hard
+            // "Multiple commands produce" error. Dropping the declared input/output paths
+            // makes the copy phases run unconditionally and resolves the conflict.
+            if (!podfile.Contains("disable_input_output_paths"))
+                podfile = "install! 'cocoapods', :disable_input_output_paths => true\n" + podfile;
+
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private void ConfigureLocationModule()
+        {
+            if (!OneSignalSDK.OneSignalSDKSettings.EffectiveDisableLocation)
+                return;
+
+            _project.AddBuildProperty(
+                _project.GetUnityFrameworkTargetGuid(),
+                "GCC_PREPROCESSOR_DEFINITIONS",
+                "ONESIGNAL_DISABLE_LOCATION=1"
+            );
         }
 
         private void AddLocationUsageDescription()

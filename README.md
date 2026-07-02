@@ -150,6 +150,23 @@ The only thing remaining is to setup your own notification icons. You can do thi
 with your own. There is a complete guide for this [in the plugin's README](com.onesignal.unity.android/Editor/OneSignalConfig.androidlib/README.md). See our 
 [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) page for additional details.
 
+### Disable Location Module
+
+By default, the OneSignal Unity SDK includes OneSignal's native location module so `OneSignal.Location` works without extra setup. If your app does not use location features, you can exclude the native location module from iOS and Android builds. There are two ways to opt out:
+
+- **Editor toggle** (interactive): select **OneSignal > Disable Location Module** in the Unity Editor before resolving Android dependencies or building iOS. This is persisted per project in `ProjectSettings/OneSignalSettings.json`.
+- **Environment variable** (CLI/CI): set `ONESIGNAL_DISABLE_LOCATION=true` (or `1`) in the environment before launching Unity, for example:
+
+  ```sh
+  ONESIGNAL_DISABLE_LOCATION=true /path/to/Unity -batchmode -quit -projectPath . -buildTarget iOS -executeMethod BuildScript.BuildiOSSimulator
+  ```
+
+When set, the environment variable takes precedence over the Editor toggle, so headless builds can opt out without changing project settings.
+
+With the location module disabled, Android resolves OneSignal's native modules without the location artifact and iOS uses OneSignal pods without `OneSignalLocation`. `OneSignal.Location.RequestPermission()` and `OneSignal.Location.IsShared = ...` no-op on native builds without the location module, and `OneSignal.Location.IsShared` returns `false`.
+
+When toggling the flag, clear stale native outputs (the generated Xcode project, CocoaPods/Gradle caches, and prior `Build/` artifacts) so a previously linked location module isn't reused.
+
 ## Usage
 You can find a complete implementation in our included [example MonoBehaviour](OneSignalExample/Assets/OneSignal/Example/OneSignalExampleBehaviour.cs). Additionally we have included a
 [sample scene](OneSignalExample/Assets/OneSignal/Example/OneSignalExampleScene.unity) which you can run to test out the SDK.
