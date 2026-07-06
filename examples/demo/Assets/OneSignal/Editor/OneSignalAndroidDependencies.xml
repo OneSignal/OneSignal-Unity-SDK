@@ -1,8 +1,0 @@
-<dependencies>
-  <androidPackages>
-    <repositories>
-      <repository>https://repo.maven.apache.org/maven2</repository>
-    </repositories>
-    <androidPackage spec="com.onesignal:OneSignal:5.9.5" />
-  </androidPackages>
-</dependencies>
