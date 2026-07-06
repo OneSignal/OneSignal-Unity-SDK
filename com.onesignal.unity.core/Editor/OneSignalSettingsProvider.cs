@@ -42,16 +42,15 @@ namespace OneSignalSDK
         [SettingsProvider]
         public static SettingsProvider Create()
         {
-            var keywords = new HashSet<string>(new[]
-            {
-                "OneSignal", "Push", "Notifications", "Location", "Disable Location"
-            });
+            var keywords = new HashSet<string>(
+                new[] { "OneSignal", "Push", "Notifications", "Location", "Disable Location" }
+            );
 
             return new SettingsProvider(_path, SettingsScope.Project)
             {
                 label = "OneSignal",
                 keywords = keywords,
-                guiHandler = _ => DrawGUI()
+                guiHandler = _ => DrawGUI(),
             };
         }
 
