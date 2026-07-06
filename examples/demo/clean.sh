@@ -1,5 +1,6 @@
 #!/bin/sh
 # Remove generated Unity/build state so Editor setup can be re-tested from a clean project.
+# Dependency manifest .meta files are kept so regenerated Unity GUIDs remain stable.
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -13,9 +14,7 @@ remove_path() {
 }
 
 remove_path "$SCRIPT_DIR/Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml"
-remove_path "$SCRIPT_DIR/Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml.meta"
 remove_path "$SCRIPT_DIR/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml"
-remove_path "$SCRIPT_DIR/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml.meta"
 
 for path in \
   "$SCRIPT_DIR/.utmp" \

@@ -30,7 +30,7 @@ Use `clean.sh` when you want to retest setup from the Unity Editor or clear buil
 ./clean.sh
 ```
 
-The script removes Unity-generated folders such as `Build/`, `Library/`, `Temp/`, `Obj/`, `Logs/`, and `UserSettings/`. It also removes the generated OneSignal dependency manifests:
+The script removes Unity-generated folders such as `Build/`, `Library/`, `Temp/`, `Obj/`, `Logs/`, and `UserSettings/`. It also removes the generated OneSignal dependency manifest XML files while preserving their `.meta` files so Unity GUIDs remain stable:
 
 ```text
 Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
