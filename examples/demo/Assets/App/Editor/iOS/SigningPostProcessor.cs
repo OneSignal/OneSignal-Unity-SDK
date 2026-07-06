@@ -101,7 +101,7 @@ namespace App.Editor.iOS
             var projectPath = PBXProject.GetPBXProjectPath(outputPath);
             project.ReadFromString(File.ReadAllText(projectPath));
 
-            var appId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
+            var appId = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.iOS);
             var manualSigning = IsCiBuild();
 
             var mainGuid = project.GetUnityMainTargetGuid();
