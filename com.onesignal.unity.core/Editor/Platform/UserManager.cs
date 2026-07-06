@@ -43,7 +43,11 @@ namespace OneSignalSDK.User
             get => null;
         }
 
-        public event EventHandler<UserStateChangedEventArgs> Changed;
+        public event EventHandler<UserStateChangedEventArgs> Changed
+        {
+            add { }
+            remove { }
+        }
 
         private PushSubscription _subscription = new PushSubscription();
 
