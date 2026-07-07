@@ -75,6 +75,10 @@ namespace OneSignalDemo
             );
 #endif
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+            await System.Threading.Tasks.Task.Delay(5000);
+            Debug.Log($"[{Tag}] Registering SDK listeners after 5s delay");
+#endif
             RegisterSdkListeners();
 
             OneSignal.InAppMessages.Paused = _prefs.IamPaused;
@@ -179,8 +183,17 @@ namespace OneSignalDemo
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
             Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
 
-        private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
-            Debug.Log($"[{Tag}] Notification clicked: {e.Result.ActionId}");
+        private void OnNotificationClicked(object sender, NotificationClickEventArgs e)
+        {
+            var additionalData =
+                e.Notification.AdditionalData != null
+                    ? Json.Serialize(e.Notification.AdditionalData)
+                    : null;
+
+            Debug.Log(
+                $"[{Tag}] Notification clicked: {e.Result.ActionId}, additionalData: {additionalData}"
+            );
+        }
 
         private void OnNotificationForegroundWillDisplay(
             object sender,
