@@ -47,8 +47,36 @@ namespace OneSignalSDK.Android.Notifications
         }
 
         public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
-        public event EventHandler<NotificationClickEventArgs> Clicked;
         public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
+
+        // Only set the native listener once
+        private bool _clickNativeListenerSet;
+
+        private EventHandler<NotificationClickEventArgs> _clicked;
+
+        /// <summary>
+        /// The native click listener is registered lazily on the first subscription. The native SDK
+        /// queues clicks that occur before a listener is added (e.g. a cold start from a notification
+        /// tap) and replays them when one is registered, so deferring registration until a C# handler
+        /// exists ensures those events are not dropped.
+        /// </summary>
+        public event EventHandler<NotificationClickEventArgs> Clicked
+        {
+            add
+            {
+                _clicked += value;
+
+                if (!_clickNativeListenerSet)
+                {
+                    _clickNativeListenerSet = true;
+                    _notifications.Call(
+                        "addClickListener",
+                        new InternalNotificationClickListener(this)
+                    );
+                }
+            }
+            remove { _clicked -= value; }
+        }
 
         public bool Permission
         {
@@ -91,7 +119,6 @@ namespace OneSignalSDK.Android.Notifications
                 "addForegroundLifecycleListener",
                 new InternalNotificationLifecycleListener(this)
             );
-            _notifications.Call("addClickListener", new InternalNotificationClickListener(this));
         }
 
         private sealed class InternalPermissionObserver : OneSignalAwaitableAndroidJavaProxy<bool>
@@ -194,7 +221,7 @@ namespace OneSignalSDK.Android.Notifications
                     result
                 );
 
-                EventHandler<NotificationClickEventArgs> handler = _parent.Clicked;
+                EventHandler<NotificationClickEventArgs> handler = _parent._clicked;
                 if (handler != null)
                 {
                     UnityMainThreadDispatch.Post(state => handler(_parent, args));
