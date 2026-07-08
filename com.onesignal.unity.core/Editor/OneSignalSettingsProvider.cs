@@ -38,6 +38,7 @@ namespace OneSignalSDK
     public static class OneSignalSettingsProvider
     {
         private const string _path = "Project/OneSignal";
+        private const float _contentPadding = 10f;
 
         [SettingsProvider]
         public static SettingsProvider Create()
@@ -56,12 +57,16 @@ namespace OneSignalSDK
 
         private static void DrawGUI()
         {
-            EditorGUILayout.Space();
-
             var environmentOverride = Environment.GetEnvironmentVariable(
                 OneSignalSDKSettings.DisableLocationEnvVar
             );
             var hasEnvironmentOverride = !string.IsNullOrEmpty(environmentOverride);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(_contentPadding);
+            EditorGUILayout.BeginVertical();
+
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Location", EditorStyles.boldLabel);
 
@@ -101,6 +106,10 @@ namespace OneSignalSDK
                     MessageType.None
                 );
             }
+
+            EditorGUILayout.EndVertical();
+            GUILayout.Space(_contentPadding);
+            EditorGUILayout.EndHorizontal();
         }
     }
 }
