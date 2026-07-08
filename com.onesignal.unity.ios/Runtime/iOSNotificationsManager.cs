@@ -91,23 +91,54 @@ namespace OneSignalSDK.iOS.Notifications
         public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
         public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
 
-        // Only set the native listner once
+        // Only set the native listener once
         private bool _clickNativeListenerSet;
 
+        private readonly object _clickRegistrationLock = new object();
+
         private EventHandler<NotificationClickEventArgs> _clicked;
+
+        /// <summary>
+        /// The native click listener is registered lazily on the first subscription. The native SDK
+        /// queues clicks that occur before a listener is added (e.g. a cold start from a notification
+        /// tap) and replays them when one is registered, so deferring registration until a C# handler
+        /// exists ensures those events are not dropped. The handler must be attached before the
+        /// native call, since the replay fires as soon as the listener registers. The flag is only
+        /// set after a successful native call so a transient failure can retry on the next
+        /// subscription.
+        /// </summary>
         public event EventHandler<NotificationClickEventArgs> Clicked
         {
             add
             {
-                _clicked += value;
-
-                if (!_clickNativeListenerSet)
+                lock (_clickRegistrationLock)
                 {
-                    _clickNativeListenerSet = true;
-                    _oneSignalNotificationsSetClickCallback(_onClicked);
+                    _clicked += value;
+
+                    if (!_clickNativeListenerSet)
+                    {
+                        try
+                        {
+                            _oneSignalNotificationsSetClickCallback(_onClicked);
+                        }
+                        catch
+                        {
+                            // Roll back so a failed subscription has no effect; retrying won't
+                            // add the same handler twice.
+                            _clicked -= value;
+                            throw;
+                        }
+                        _clickNativeListenerSet = true;
+                    }
                 }
             }
-            remove { _clicked -= value; }
+            remove
+            {
+                lock (_clickRegistrationLock)
+                {
+                    _clicked -= value;
+                }
+            }
         }
 
         private static iOSNotificationsManager _instance;
@@ -211,7 +242,10 @@ namespace OneSignalSDK.iOS.Notifications
             NotificationClickEventArgs args = new NotificationClickEventArgs(notif, result);
 
             EventHandler<NotificationClickEventArgs> handler = _instance._clicked;
-            UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            if (handler != null)
+            {
+                UnityMainThreadDispatch.Post(state => handler(_instance, args));
+            }
         }
 
         private static void _fillNotifFromObj(ref iOSDisplayableNotification notif, object notifObj)
