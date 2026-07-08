@@ -47,8 +47,60 @@ namespace OneSignalSDK.Android.Notifications
         }
 
         public event EventHandler<NotificationWillDisplayEventArgs> ForegroundWillDisplay;
-        public event EventHandler<NotificationClickEventArgs> Clicked;
         public event EventHandler<NotificationPermissionChangedEventArgs> PermissionChanged;
+
+        // Only set the native listener once
+        private bool _clickNativeListenerSet;
+
+        private readonly object _clickRegistrationLock = new object();
+
+        private EventHandler<NotificationClickEventArgs> _clicked;
+
+        /// <summary>
+        /// The native click listener is registered lazily on the first subscription. The native SDK
+        /// queues clicks that occur before a listener is added (e.g. a cold start from a notification
+        /// tap) and replays them when one is registered, so deferring registration until a C# handler
+        /// exists ensures those events are not dropped. The handler must be attached before the
+        /// native call, since the replay fires as soon as the listener registers. The flag is only
+        /// set after a successful native call so a transient failure can retry on the next
+        /// subscription.
+        /// </summary>
+        public event EventHandler<NotificationClickEventArgs> Clicked
+        {
+            add
+            {
+                lock (_clickRegistrationLock)
+                {
+                    _clicked += value;
+
+                    if (!_clickNativeListenerSet)
+                    {
+                        try
+                        {
+                            _notifications.Call(
+                                "addClickListener",
+                                new InternalNotificationClickListener(this)
+                            );
+                        }
+                        catch
+                        {
+                            // Roll back so a failed subscription has no effect; retrying won't
+                            // add the same handler twice.
+                            _clicked -= value;
+                            throw;
+                        }
+                        _clickNativeListenerSet = true;
+                    }
+                }
+            }
+            remove
+            {
+                lock (_clickRegistrationLock)
+                {
+                    _clicked -= value;
+                }
+            }
+        }
 
         public bool Permission
         {
@@ -91,7 +143,6 @@ namespace OneSignalSDK.Android.Notifications
                 "addForegroundLifecycleListener",
                 new InternalNotificationLifecycleListener(this)
             );
-            _notifications.Call("addClickListener", new InternalNotificationClickListener(this));
         }
 
         private sealed class InternalPermissionObserver : OneSignalAwaitableAndroidJavaProxy<bool>
@@ -194,7 +245,7 @@ namespace OneSignalSDK.Android.Notifications
                     result
                 );
 
-                EventHandler<NotificationClickEventArgs> handler = _parent.Clicked;
+                EventHandler<NotificationClickEventArgs> handler = _parent._clicked;
                 if (handler != null)
                 {
                     UnityMainThreadDispatch.Post(state => handler(_parent, args));
