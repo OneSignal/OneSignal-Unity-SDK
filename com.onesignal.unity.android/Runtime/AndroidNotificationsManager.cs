@@ -75,10 +75,20 @@ namespace OneSignalSDK.Android.Notifications
 
                     if (!_clickNativeListenerSet)
                     {
-                        _notifications.Call(
-                            "addClickListener",
-                            new InternalNotificationClickListener(this)
-                        );
+                        try
+                        {
+                            _notifications.Call(
+                                "addClickListener",
+                                new InternalNotificationClickListener(this)
+                            );
+                        }
+                        catch
+                        {
+                            // Roll back so a failed subscription has no effect; retrying won't
+                            // add the same handler twice.
+                            _clicked -= value;
+                            throw;
+                        }
                         _clickNativeListenerSet = true;
                     }
                 }
