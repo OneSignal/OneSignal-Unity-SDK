@@ -52,30 +52,44 @@ namespace OneSignalSDK.Android.Notifications
         // Only set the native listener once
         private bool _clickNativeListenerSet;
 
+        private readonly object _clickRegistrationLock = new object();
+
         private EventHandler<NotificationClickEventArgs> _clicked;
 
         /// <summary>
         /// The native click listener is registered lazily on the first subscription. The native SDK
         /// queues clicks that occur before a listener is added (e.g. a cold start from a notification
         /// tap) and replays them when one is registered, so deferring registration until a C# handler
-        /// exists ensures those events are not dropped.
+        /// exists ensures those events are not dropped. The handler must be attached before the
+        /// native call, since the replay fires as soon as the listener registers. The flag is only
+        /// set after a successful native call so a transient failure can retry on the next
+        /// subscription.
         /// </summary>
         public event EventHandler<NotificationClickEventArgs> Clicked
         {
             add
             {
-                _clicked += value;
-
-                if (!_clickNativeListenerSet)
+                lock (_clickRegistrationLock)
                 {
-                    _clickNativeListenerSet = true;
-                    _notifications.Call(
-                        "addClickListener",
-                        new InternalNotificationClickListener(this)
-                    );
+                    _clicked += value;
+
+                    if (!_clickNativeListenerSet)
+                    {
+                        _notifications.Call(
+                            "addClickListener",
+                            new InternalNotificationClickListener(this)
+                        );
+                        _clickNativeListenerSet = true;
+                    }
                 }
             }
-            remove { _clicked -= value; }
+            remove
+            {
+                lock (_clickRegistrationLock)
+                {
+                    _clicked -= value;
+                }
+            }
         }
 
         public bool Permission
