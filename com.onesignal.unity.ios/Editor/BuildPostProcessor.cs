@@ -209,7 +209,7 @@ namespace OneSignalSDK.iOS
             extensionGuid = _project.AddAppExtension(
                 _project.GetMainTargetGuid(),
                 ServiceExtensionTargetName,
-                PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS)
+                PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.iOS)
                     + "."
                     + ServiceExtensionTargetName,
                 ServiceExtensionTargetName + "/" + "Info.plist" // Unix path as it's used by Xcode

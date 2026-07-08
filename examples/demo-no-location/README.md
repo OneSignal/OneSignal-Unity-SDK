@@ -13,7 +13,7 @@ This demo opts out of location two ways, so it stays no-location whether you bui
   }
   ```
 
-If you open the project in the Editor without the environment variable, confirm **OneSignal > Disable Location Module** is checked before resolving Android dependencies or building iOS.
+If you open the project in the Editor without the environment variable, confirm **Project Settings > OneSignal > Disable Location Module** is checked before resolving Android dependencies or building iOS.
 
 ## Configure App ID
 
@@ -81,6 +81,23 @@ Useful options:
 Set `UNITY_PATH` if you want to use a specific Unity executable.
 
 The iOS script generates a minimal Podfile when External Dependency Manager does not create one, then runs `pod install` and builds the generated Xcode workspace.
+
+## Clean Generated State
+
+Use `clean.sh` when you want to retest setup from the Unity Editor or clear build artifacts before switching between dependency configurations:
+
+```sh
+./clean.sh
+```
+
+The script removes Unity-generated folders such as `Build/`, `Library/`, `Temp/`, `Obj/`, `Logs/`, and `UserSettings/`. It also removes the generated OneSignal dependency manifest XML files while preserving their `.meta` files so Unity GUIDs remain stable:
+
+```text
+Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+Assets/OneSignal/Editor/OneSignaliOSDependencies.xml
+```
+
+After running it, reopen the project in Unity. The OneSignal Editor setup code should regenerate those manifests from `ProjectSettings/OneSignalSettings.json`, where `disableLocation` is checked in as `true`. Confirm the regenerated files contain the granular no-location dependencies listed below.
 
 ## Native Dependencies
 

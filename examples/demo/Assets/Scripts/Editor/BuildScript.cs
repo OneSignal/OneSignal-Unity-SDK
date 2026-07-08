@@ -42,7 +42,6 @@ public static class BuildScript
             ManagedStrippingLevel.High
         );
         PlayerSettings.Android.minifyRelease = true;
-        PlayerSettings.Android.minifyWithR8 = true;
         PlayerSettings.stripEngineCode = true;
 
         PlayerSettings.SetIl2CppCompilerConfiguration(

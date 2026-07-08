@@ -167,7 +167,7 @@ namespace App.Editor.iOS
             extensionGuid = project.AddAppExtension(
                 project.GetUnityMainTargetGuid(),
                 WidgetExtensionTargetName,
-                $"{PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS)}.{WidgetExtensionTargetName}",
+                $"{PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.iOS)}.{WidgetExtensionTargetName}",
                 $"{WidgetExtensionTargetRelativePath}/Info.plist"
             );
 

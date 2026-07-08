@@ -22,6 +22,23 @@ You can build and install without opening the Unity editor by using the provided
 
 Both scripts accept `--no-install` to build only, `--install-only` to skip rebuilding, and `run-ios.sh` also supports `--open` to open the generated Xcode workspace. Set `UNITY_PATH` if Unity is not at the default location.
 
+## Clean Generated State
+
+Use `clean.sh` when you want to retest setup from the Unity Editor or clear build artifacts before switching between dependency configurations:
+
+```sh
+./clean.sh
+```
+
+The script removes Unity-generated folders such as `Build/`, `Library/`, `Temp/`, `Obj/`, `Logs/`, and `UserSettings/`. It also removes the generated OneSignal dependency manifest XML files while preserving their `.meta` files so Unity GUIDs remain stable:
+
+```text
+Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+Assets/OneSignal/Editor/OneSignaliOSDependencies.xml
+```
+
+After running it, reopen the project in Unity. The OneSignal Editor setup code should regenerate those manifests for the default location-enabled dependency set.
+
 ## Unity Editor
 
 ### Android

@@ -1,0 +1,30 @@
+/*
+   WARNING: Do NOT Modify! Changes will be overwritten by the OneSignal plugin.
+*/
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'com.onesignal.onesignalsdk'
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    def unityLib = project(':unityLibrary').extensions.getByName('android')
+
+    defaultConfig {
+        consumerProguardFiles "consumer-proguard.pro"
+        minSdkVersion unityLib.defaultConfig.minSdkVersion.mApiLevel
+        targetSdkVersion unityLib.defaultConfig.targetSdkVersion.mApiLevel
+    }
+
+    compileSdkVersion unityLib.compileSdkVersion
+    buildToolsVersion unityLib.buildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+}
