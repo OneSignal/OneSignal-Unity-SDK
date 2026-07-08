@@ -80,19 +80,6 @@ namespace OneSignalSDK
             File.WriteAllText(_settingsPath, JsonUtility.ToJson(_settings, true));
         }
 
-        [MenuItem("OneSignal/Disable Location Module")]
-        private static void ToggleDisableLocation()
-        {
-            DisableLocation = !DisableLocation;
-        }
-
-        [MenuItem("OneSignal/Disable Location Module", true)]
-        private static bool ToggleDisableLocationValidate()
-        {
-            Menu.SetChecked("OneSignal/Disable Location Module", DisableLocation);
-            return true;
-        }
-
         private static readonly string _settingsPath = Path.Combine(
             "ProjectSettings",
             "OneSignalSettings.json"

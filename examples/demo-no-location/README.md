@@ -13,7 +13,7 @@ This demo opts out of location two ways, so it stays no-location whether you bui
   }
   ```
 
-If you open the project in the Editor without the environment variable, confirm **OneSignal > Disable Location Module** is checked before resolving Android dependencies or building iOS.
+If you open the project in the Editor without the environment variable, confirm **Project Settings > OneSignal > Disable Location Module** is checked before resolving Android dependencies or building iOS.
 
 ## Configure App ID
 
