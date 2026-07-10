@@ -37,6 +37,9 @@ namespace OneSignalSDK
     {
         static OneSignalAndroidDependencies()
         {
+            if (AssetDatabase.IsAssetImportWorkerProcess())
+                return;
+
             OneSignalSDKSettings.Changed += WriteDependencies;
             WriteDependencies();
         }

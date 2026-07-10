@@ -47,7 +47,9 @@ namespace OneSignalSDK
         public static string[] GetCurrentPaths() =>
             ConvertPathsToUnix(
                 Directory.GetFiles(PackageAssetsPath, "*", SearchOption.AllDirectories)
-            );
+            )
+                .Except(GeneratedDependencyPaths)
+                .ToArray();
 
         /// <summary>
         /// Makes sure <see cref="paths"/> are using forward slash to be Unix compatible.
@@ -75,5 +77,22 @@ namespace OneSignalSDK
             "Resources"
         );
         public static readonly string AssetPath = Path.Combine(EditorResourcesPath, AssetName);
+        private static readonly string[] GeneratedDependencyPaths = ConvertPathsToUnix(
+            new[]
+            {
+                Path.Combine(
+                    PackageAssetsPath,
+                    "Editor",
+                    "OneSignalAndroidDependencies.xml"
+                ),
+                Path.Combine(
+                    PackageAssetsPath,
+                    "Editor",
+                    "OneSignalAndroidDependencies.xml.meta"
+                ),
+                Path.Combine(PackageAssetsPath, "Editor", "OneSignaliOSDependencies.xml"),
+                Path.Combine(PackageAssetsPath, "Editor", "OneSignaliOSDependencies.xml.meta"),
+            }
+        );
     }
 }
