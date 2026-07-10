@@ -4,7 +4,6 @@
     "com.onesignal.unity.core": "file:../../../com.onesignal.unity.core",
     "com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
-    "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"

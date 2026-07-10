@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using UnityEngine;
-#if UNITY_2023_2_OR_NEWER
+#if UNITY_2023_2_OR_NEWER && ONESIGNAL_E2E_ACCESSIBILITY
 using UnityEngine.Accessibility;
 #endif
 using UnityEngine.UIElements;
@@ -17,7 +17,7 @@ namespace OneSignalDemo.Services
     /// </summary>
     public class AccessibilityBridge : MonoBehaviour
     {
-#if UNITY_2023_2_OR_NEWER
+#if UNITY_2023_2_OR_NEWER && ONESIGNAL_E2E_ACCESSIBILITY
         // GeometryChangedEvent is the hot path; this tick catches drift from sources that
         // don't raise it (animation curves, opacity tweens, value mutations).
         private const float FrameRefreshIntervalSeconds = 0.05f;
