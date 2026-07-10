@@ -78,6 +78,9 @@ def validate_sample() -> None:
         fail("sample scene contains stale OneSignalExampleBehaviour type references")
     if "OneSignalExampleBehaviour, OneSignal.UnityPackage.Example" not in scene:
         fail("sample scene does not contain OneSignalExampleBehaviour button bindings")
+    behaviour = (SAMPLE / "OneSignalExampleBehaviour.cs").read_text()
+    if "ExitLiveActivityAsync" in scene or "LiveActivities.ExitAsync" in behaviour:
+        fail("sample exposes the deprecated Live Activities exit API")
 
     asmdef = json.loads((SAMPLE / "OneSignal.UnityPackage.Example.asmdef").read_text())
     required_references = {
