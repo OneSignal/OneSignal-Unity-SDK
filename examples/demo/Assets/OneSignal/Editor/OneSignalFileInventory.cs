@@ -44,12 +44,25 @@ namespace OneSignalSDK
         /// <summary>
         /// Array of current paths within the OneSignal directory
         /// </summary>
-        public static string[] GetCurrentPaths() =>
+        public static string[] GetDistributedPaths() =>
             ConvertPathsToUnix(
                 Directory.GetFiles(PackageAssetsPath, "*", SearchOption.AllDirectories)
             )
-                .Except(GeneratedDependencyPaths)
+                .Where(IsDistributedPath)
+                .OrderBy(path => path, System.StringComparer.Ordinal)
                 .ToArray();
+
+        public static bool IsDistributedPath(string path)
+        {
+            var unixPath = ConvertPathToUnix(path);
+
+            return !ExcludedPaths.Any(excludedPath =>
+                    unixPath == excludedPath
+                    || unixPath == excludedPath + ".meta"
+                    || unixPath.StartsWith(excludedPath + "/")
+                )
+                && !unixPath.EndsWith("/.DS_Store");
+        }
 
         /// <summary>
         /// Makes sure <see cref="paths"/> are using forward slash to be Unix compatible.
@@ -59,18 +72,23 @@ namespace OneSignalSDK
         /// <returns>paths with / as the directory separator</returns>
         public static string[] ConvertPathsToUnix(string[] paths)
         {
-            if (Path.DirectorySeparatorChar == Path.AltDirectorySeparatorChar)
-                return paths;
-
-            var fixedPaths = paths.Select(path =>
-                path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            );
-
-            return fixedPaths.ToArray();
+            return paths.Select(ConvertPathToUnix).ToArray();
         }
+
+        private static string ConvertPathToUnix(string path) =>
+            path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
         public const string AssetName = "OneSignalFileInventory.asset";
         public static readonly string PackageAssetsPath = Path.Combine("Assets", "OneSignal");
+        private static readonly string[] ExcludedPaths = ConvertPathsToUnix(
+            new[]
+            {
+                Path.Combine(PackageAssetsPath, "Attribution"),
+                Path.Combine(PackageAssetsPath, "Example"),
+                Path.Combine(PackageAssetsPath, "Editor", "OneSignalAndroidDependencies.xml"),
+                Path.Combine(PackageAssetsPath, "Editor", "OneSignaliOSDependencies.xml"),
+            }
+        );
         public static readonly string EditorResourcesPath = Path.Combine(
             PackageAssetsPath,
             "Editor",

@@ -12,7 +12,9 @@
       "version": "file:../../../com.onesignal.unity.core",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0"
+      }
     },
     "com.onesignal.unity.ios": {
       "version": "file:../../../com.onesignal.unity.ios",

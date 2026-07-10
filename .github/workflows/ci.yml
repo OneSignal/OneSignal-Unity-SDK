@@ -22,3 +22,6 @@ jobs:
 
       - name: Check formatting
         run: csharpier check .
+
+      - name: Validate Unity distribution layout
+        run: python3 .github/scripts/validate-unity-distribution.py
