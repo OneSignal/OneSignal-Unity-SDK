@@ -98,8 +98,15 @@ namespace OneSignalDemo.UI.Dialogs
             field.name = name;
             field.AddToClassList("input-field");
             if (!string.IsNullOrEmpty(placeholder))
-                field.textEdition.placeholder = placeholder;
+                SetPlaceholder(field, placeholder);
             return field;
+        }
+
+        protected static void SetPlaceholder(TextField field, string placeholder)
+        {
+#if UNITY_2023_1_OR_NEWER
+            field.textEdition.placeholder = placeholder;
+#endif
         }
 
         protected Button CreateConfirmButton(string text, Action onClick)

@@ -22,6 +22,16 @@ You can build and install without opening the Unity editor by using the provided
 
 Both scripts accept `--no-install` to build only, `--install-only` to skip rebuilding, and `run-ios.sh` also supports `--open` to open the generated Xcode workspace. Set `UNITY_PATH` if Unity is not at the default location.
 
+### Unity 2022
+
+Unity's Accessibility module is not available in 2022.3. Use the compatibility launcher to open the demo without that module:
+
+```sh
+./open-unity-2022.sh
+```
+
+The launcher restores the Unity 6 package configuration when the Editor exits. Set `UNITY_PATH` to use a different 2022.3 installation.
+
 ## Clean Generated State
 
 Use `clean.sh` when you want to retest setup from the Unity Editor or clear build artifacts before switching between dependency configurations:

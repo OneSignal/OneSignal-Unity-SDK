@@ -64,7 +64,7 @@ namespace OneSignalDemo.UI.Dialogs
             _nameField = new TextField();
             _nameField.name = "outcome_name_input";
             _nameField.AddToClassList("input-field");
-            _nameField.textEdition.placeholder = "Outcome Name";
+            SetPlaceholder(_nameField, "Outcome Name");
             _nameField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_nameField);
 
@@ -74,7 +74,7 @@ namespace OneSignalDemo.UI.Dialogs
             _valueField = new TextField();
             _valueField.name = "outcome_value_input";
             _valueField.AddToClassList("input-field");
-            _valueField.textEdition.placeholder = "Value";
+            SetPlaceholder(_valueField, "Value");
             _valueField.RegisterValueChangedCallback(_ => ValidateInput());
             _valueContainer.Add(_valueField);
 
