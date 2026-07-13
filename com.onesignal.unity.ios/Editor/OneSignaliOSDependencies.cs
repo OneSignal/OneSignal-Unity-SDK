@@ -37,6 +37,9 @@ namespace OneSignalSDK.iOS
     {
         static OneSignaliOSDependencies()
         {
+            if (AssetDatabase.IsAssetImportWorkerProcess())
+                return;
+
             OneSignalSDK.OneSignalSDKSettings.Changed += WriteDependencies;
             WriteDependencies();
         }

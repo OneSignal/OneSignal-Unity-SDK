@@ -42,6 +42,19 @@ jobs:
           onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
           onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
 
+      - name: Enable E2E accessibility
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("examples/demo/Packages/manifest.json")
+          manifest = json.loads(path.read_text())
+          manifest["dependencies"]["com.unity.modules.accessibility"] = "1.0.0"
+          path.write_text(json.dumps(manifest, indent=2) + "\n")
+          PY
+          printf '%s\n' '-define:ONESIGNAL_E2E_ACCESSIBILITY' > examples/demo/Assets/csc.rsp
+
       - name: Resolve OneSignal Android SDK version
         id: android-sdk-version
         run: |
@@ -61,7 +74,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: examples/demo/Library
-          key: unity-library-android-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt') }}
+          key: unity-library-android-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/Assets/csc.rsp', 'examples/demo/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: unity-library-android-
 
       - name: Build APK
@@ -72,7 +85,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: examples/demo
-          unityVersion: auto
+          unityVersion: 6000.4.11f1
           targetPlatform: Android
           buildMethod: BuildScript.BuildAndroidEmulator
           allowDirtyBuild: true
@@ -108,11 +121,24 @@ jobs:
           onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
           onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
 
+      - name: Enable E2E accessibility
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("examples/demo/Packages/manifest.json")
+          manifest = json.loads(path.read_text())
+          manifest["dependencies"]["com.unity.modules.accessibility"] = "1.0.0"
+          path.write_text(json.dumps(manifest, indent=2) + "\n")
+          PY
+          printf '%s\n' '-define:ONESIGNAL_E2E_ACCESSIBILITY' > examples/demo/Assets/csc.rsp
+
       - name: Cache Unity Library
         uses: actions/cache@v5
         with:
           path: examples/demo/Library
-          key: unity-library-ios-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt') }}
+          key: unity-library-ios-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/Assets/csc.rsp', 'examples/demo/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: unity-library-ios-
 
       - name: Cache Xcode DerivedData
@@ -123,7 +149,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: examples/demo/Build/iOS-DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/ProjectSettings/ProjectVersion.txt', 'examples/demo/ProjectSettings/ProjectSettings.asset', 'com.onesignal.unity.ios/Editor/**', 'com.onesignal.unity.core/Editor/**', 'examples/demo/iOS/ExportOptions.plist') }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/Assets/csc.rsp', 'examples/demo/ProjectSettings/ProjectVersion.txt', 'examples/demo/ProjectSettings/ProjectSettings.asset', 'com.onesignal.unity.ios/Editor/**', 'com.onesignal.unity.core/Editor/**', 'examples/demo/iOS/ExportOptions.plist') }}
           restore-keys: deriveddata-${{ runner.os }}-
 
       - name: Export Xcode project from Unity
@@ -134,7 +160,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: examples/demo
-          unityVersion: auto
+          unityVersion: 6000.4.11f1
           targetPlatform: iOS
           buildMethod: BuildScript.BuildiOSDevice
           allowDirtyBuild: true

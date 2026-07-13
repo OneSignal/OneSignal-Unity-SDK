@@ -32,7 +32,7 @@ And via many additional platforms. [Check them all out](https://documentation.on
 ## Requirements
 - A [OneSignal Account](https://app.onesignal.com/signup) if you do not already have one
 - Your OneSignal App ID which you can find under **Settings > Keys & IDs**
-- Unity 2021.3 or newer
+- Unity 2022.3 or newer
 - Android Builds: Target API Level 33 or higher
 - iOS Builds: CocoaPods 1.11.3 or newer
 - In order to test push notifications you will need

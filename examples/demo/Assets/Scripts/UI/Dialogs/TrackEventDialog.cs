@@ -45,7 +45,7 @@ namespace OneSignalDemo.UI.Dialogs
             _propertiesField = new TextField();
             _propertiesField.name = "event_properties_input";
             _propertiesField.AddToClassList("input-field");
-            _propertiesField.textEdition.placeholder = "{\"key\": \"value\"}";
+            SetPlaceholder(_propertiesField, "{\"key\": \"value\"}");
             _propertiesField.RegisterValueChangedCallback(_ => ValidateInput());
             container.Add(_propertiesField);
 

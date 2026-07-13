@@ -100,14 +100,14 @@ namespace OneSignalDemo.UI.Dialogs
             keyField.name = $"multipair_key_{rowIndex}";
             keyField.AddToClassList("input-field");
             keyField.AddToClassList("dialog-field-group-left");
-            keyField.textEdition.placeholder = _keyLabel;
+            SetPlaceholder(keyField, _keyLabel);
             keyField.RegisterValueChangedCallback(_ => ValidateAll());
 
             var valueField = new TextField();
             valueField.name = $"multipair_value_{rowIndex}";
             valueField.AddToClassList("input-field");
             valueField.AddToClassList("dialog-field-group");
-            valueField.textEdition.placeholder = _valueLabel;
+            SetPlaceholder(valueField, _valueLabel);
             valueField.RegisterValueChangedCallback(_ => ValidateAll());
 
             row.Add(keyField);
