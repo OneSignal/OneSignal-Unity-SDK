@@ -20,7 +20,7 @@ If you run into any challenges or have concerns, please contact our support team
 
 A free email, sms, push notification and in app messaging solution for mobile applications built through Unity.
 
-[OneSignal](https://onesignal.com) provides a fully array of omni-channel messaging solutions across:
+[OneSignal](https://onesignal.com) provides a full array of omni-channel messaging solutions across:
 
 - Push Notifications (mobile & web)
 - In App Messages

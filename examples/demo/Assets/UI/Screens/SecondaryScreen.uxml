@@ -1,3 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="secondary_screen_root" class="screen-root" />
-</ui:UXML>

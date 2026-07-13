@@ -70,6 +70,6 @@ Check your build profiles and make sure iOS platform is selected.
 Then configure your play settings and set `Target SDK` to `Simulator SDK`
 ![iOS Example 1](docs/ios-example-1.png)
 
-Then click `Build and Run` and select a location for the apk bundle. Or click `Build` to use own simulator.
+Then click `Build and Run` and select a location for the Xcode project. Or click `Build` to use your own simulator.
 
-![iOS Example 1](docs/ios-example-2.png)
+![iOS Example 2](docs/ios-example-2.png)

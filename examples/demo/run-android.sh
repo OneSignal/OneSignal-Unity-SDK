@@ -2,7 +2,7 @@
 # Build the OneSignal Unity demo APK and install it on a running emulator.
 #
 # Usage:
-#   ./build_android.sh [--no-install] [--install-only]
+#   ./run-android.sh [--no-install] [--install-only]
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
