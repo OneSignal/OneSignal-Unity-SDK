@@ -537,18 +537,6 @@ public class OneSignalExampleBehaviour : MonoBehaviour
             _log("Live Activity enter failed");
     }
 
-    public async void ExitLiveActivityAsync()
-    {
-        _log($"Exiting Live Activity with id: <b>{liveActivityId}</b> and awaiting result...");
-
-        var result = await OneSignal.LiveActivities.ExitAsync(liveActivityId);
-
-        if (result)
-            _log("Live Activity exit success");
-        else
-            _log("Live Activity exit failed");
-    }
-
     public void SetPushToStartToken()
     {
         _log(

@@ -289,7 +289,7 @@ The debug namespace is accessible via `OneSignal.Debug` and provides access to d
 # Troubleshooting
 ## Android
 ```
-Assets/OneSignal/Example/OneSignalExampleBehaviou.cs: error CS0246: The type or namespace name '...' could not be found (are you missing a using directive or an assembly reference?)
+Assets/Samples/OneSignal Unity SDK - Core/<version>/Full Usage/OneSignalExampleBehaviour.cs: error CS0246: The type or namespace name '...' could not be found (are you missing a using directive or an assembly reference?)
 ```
 
 ```

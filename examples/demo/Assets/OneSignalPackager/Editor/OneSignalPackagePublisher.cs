@@ -47,12 +47,24 @@ namespace OneSignalSDK
         {
             UnityEngine.Debug.Log($"[OneSignalPackagePublisher] start exporting package");
             AssetDatabase.Refresh();
+            var inventoryPaths = OneSignalDistributionValidator.ValidateInventory();
+            var filePaths = inventoryPaths
+                .Where(path => !path.EndsWith(".meta"))
+                .Concat(
+                    inventoryPaths
+                        .Where(path =>
+                            path.EndsWith(".meta")
+                            && Directory.Exists(path.Substring(0, path.Length - 5))
+                        )
+                        .Select(path => path.Substring(0, path.Length - 5))
+                )
+                .Distinct()
+                .ToArray();
             var packageVersion = File.ReadAllText(VersionFilePath);
             var packageName = $"OneSignal-v{packageVersion}.unitypackage";
 
             UnityEngine.Debug.Log($"[OneSignalPackagePublisher] package name: {packageName}");
 
-            string[] filePaths = _filePaths();
             UnityEngine.Debug.Log(
                 $"[OneSignalPackagePublisher] Found {filePaths.Length} files/directories to include:"
             );
@@ -64,34 +76,11 @@ namespace OneSignalSDK
             AssetDatabase.ExportPackage(
                 filePaths,
                 packageName,
-                ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
+                ExportPackageOptions.IncludeDependencies
             );
         }
 
         private static readonly string PackagePath = Path.Combine("Assets", "OneSignal");
         private static readonly string VersionFilePath = Path.Combine(PackagePath, "VERSION");
-
-        private static readonly string[] Exclusions =
-        {
-            Path.Combine(PackagePath, "Attribution"),
-            ".DS_Store",
-        };
-
-        private static string[] _filePaths()
-        {
-            var files = Directory.GetFileSystemEntries(PackagePath);
-            UnityEngine.Debug.Log(
-                $"[OneSignalPackagePublisher] Getting file paths from: {PackagePath}"
-            );
-            var pathsToInclude = files.Where(file =>
-            {
-                if (file.EndsWith(".meta"))
-                    file = file.Substring(0, file.Length - 5);
-
-                return !Exclusions.Contains(file);
-            });
-
-            return pathsToInclude.ToArray();
-        }
     }
 }

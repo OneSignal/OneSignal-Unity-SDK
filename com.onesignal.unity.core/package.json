@@ -5,13 +5,13 @@
   "unity": "2022.3",
   "description": "OneSignal is the market leader in customer engagement, powering mobile push, web push, email, and in-app messages.",
   "dependencies": {
+    "com.unity.modules.jsonserialize": "1.0.0"
   },
   "keywords": [
     "push-notifications",
     "notification-service",
     "notifications",
     "sdk",
-    "pushnotificaitions",
     "apns",
     "gcm"
   ],
@@ -33,7 +33,7 @@
   "samples": [
     {
       "displayName": "Full Usage",
-      "description": "An example monobehaviour which implements all of the major OneSignal features.",
+      "description": "A uGUI sample scene implementing the major OneSignal features. Requires com.unity.ugui.",
       "path": "Samples~"
     }
   ]

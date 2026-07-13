@@ -13,7 +13,7 @@ public static class BuildScript
 
     /// <summary>
     /// Builds an Android APK using the architecture and scripting backend
-    /// pre-configured in ProjectSettings.asset by build_android.sh.
+    /// pre-configured in ProjectSettings.asset by run-android.sh.
     ///
     /// In Unity 6, only ARMv7 supports Mono; ARM64 requires IL2CPP.
     /// The shell script patches the correct values before launching Unity.

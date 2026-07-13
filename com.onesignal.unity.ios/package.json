@@ -12,7 +12,6 @@
     "notification-service",
     "notifications",
     "sdk",
-    "pushnotificaitions",
     "apns",
     "gcm",
     "ios"

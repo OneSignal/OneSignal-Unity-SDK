@@ -1,0 +1,28 @@
+{
+    "name": "OneSignal.UnityPackage.Example",
+    "rootNamespace": "",
+    "references": [
+        "OneSignal.Core",
+        "UnityEngine.UI",
+        "UnityEngine.JSONSerializeModule"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.onesignal.unity.core",
+            "expression": "5.3.0",
+            "define": "ONE_SIGNAL_INSTALLED"
+        }
+    ],
+    "noEngineReferences": false
+}

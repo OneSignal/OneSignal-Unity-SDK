@@ -42,11 +42,19 @@ namespace OneSignalSDK
         [MenuItem("OneSignal/Generate File Inventory", false, 100)]
         public static void GenerateInventory()
         {
-            var inventory = ScriptableObject.CreateInstance<OneSignalFileInventory>();
-            inventory.DistributedPaths = OneSignalFileInventory.GetCurrentPaths();
-
             Directory.CreateDirectory(OneSignalFileInventory.EditorResourcesPath);
-            AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);
+            var inventory = AssetDatabase.LoadAssetAtPath<OneSignalFileInventory>(
+                OneSignalFileInventory.AssetPath
+            );
+            if (inventory == null)
+            {
+                inventory = ScriptableObject.CreateInstance<OneSignalFileInventory>();
+                AssetDatabase.CreateAsset(inventory, OneSignalFileInventory.AssetPath);
+            }
+
+            inventory.DistributedPaths = OneSignalFileInventory.GetDistributedPaths();
+            EditorUtility.SetDirty(inventory);
+            AssetDatabase.SaveAssets();
         }
     }
 }

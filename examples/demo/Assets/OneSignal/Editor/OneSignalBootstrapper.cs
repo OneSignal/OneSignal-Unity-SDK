@@ -61,7 +61,7 @@ namespace OneSignalSDK
             if (inventory == null)
                 return; // error
 
-            var currentPaths = OneSignalFileInventory.GetCurrentPaths();
+            var currentPaths = OneSignalFileInventory.GetDistributedPaths();
             var diff = currentPaths.Except(inventory.DistributedPaths);
 
             if (diff.Any())

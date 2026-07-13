@@ -20,7 +20,7 @@ If you run into any challenges or have concerns, please contact our support team
 
 A free email, sms, push notification and in app messaging solution for mobile applications built through Unity.
 
-[OneSignal](https://onesignal.com) provides a fully array of omni-channel messaging solutions across:
+[OneSignal](https://onesignal.com) provides a full array of omni-channel messaging solutions across:
 
 - Push Notifications (mobile & web)
 - In App Messages
@@ -76,7 +76,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
 2. Find the package waiting for you to download by clicking **Open in Unity** from that same page. This will open the Unity Editor and its Package Manager window.
 3. On the SDK's listing in the Editor click the **Download** button. When it finishes click **Import**.
 
-    ![onesignal unity sdk in my assets](Documentation/asset_listing.png)
+    ![onesignal unity sdk in my assets](examples/demo/Assets/OneSignal/Documentation/asset_listing.png)
 
 4. A prompt to import all of the files of the OneSignal Unity SDK will appear. Click **Import** to continue and compile the scripts into your project.
 5. Navigate to **Window > OneSignal SDK Setup** (or follow the popup if upgrading) in the Unity Editor which will bring up a window with some final steps which need 
@@ -84,7 +84,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
    
     > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
    
-    ![sdk setup steps window](Documentation/setup_window.png)
+    ![sdk setup steps window](examples/demo/Assets/OneSignal/Documentation/setup_window.png)
 
 6. After importing the packages Unity will notify you that a new registry has been added and the **OneSignal SDK Setup** window will have refreshed with a few additional 
    steps. Following these will finalize your installation of the OneSignal Unity SDK.
@@ -95,7 +95,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
 
 1. From within the Unity Editor navigate to **Edit > Project Settings** and then to the **Package Manager** settings tab.
    
-    ![unity registry manager](Documentation/package_manager_tab.png)
+    ![unity registry manager](examples/demo/Assets/OneSignal/Documentation/package_manager_tab.png)
 
 2. Create a *New Scoped Registry* by entering 
     ```
@@ -111,7 +111,7 @@ There are two methods of installation available for the OneSignal Unity SDK:
 
     > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
 
-    ![my registries menu selection](Documentation/registry_menu.png)
+    ![my registries menu selection](examples/demo/Assets/OneSignal/Documentation/registry_menu.png)
 
 </details>
 
@@ -122,16 +122,16 @@ After building in Unity and exporting the XCode project follow these steps:
 2. Click on the **Unity-iPhone** project and its similarly named target and select the **Signing & Capabilities** tab.
 3. From here check **Automatically manage signing**, on the prompt click **Enable Automatic**, and select your **Team**.
 
-    ![automatically manage signing](Documentation/ios_auto_sign.png)
+    ![automatically manage signing](examples/demo/Assets/OneSignal/Documentation/ios_auto_sign.png)
 
 4. Scroll down to **App Groups** and click on the refresh button.
     > NOTE: You may have to press this a few times as it will ask you for each signing type.
 
-    ![refresh app groups](Documentation/ios_refresh_app_groups.png)
+    ![refresh app groups](examples/demo/Assets/OneSignal/Documentation/ios_refresh_app_groups.png)
 
 5. Repeat the same steps above but for the **OneSignalNotificationServiceExtension** target this time.
 
-    ![extension signing and groups](Documentation/ios_extension_sign_and_groups.png)
+    ![extension signing and groups](examples/demo/Assets/OneSignal/Documentation/ios_extension_sign_and_groups.png)
 
 6. **App Groups** should now be provisioned for you going forward for your iOS bundle id, even on clean builds.
 
@@ -168,8 +168,7 @@ With the location module disabled, Android resolves OneSignal's native modules w
 When toggling the flag, clear stale native outputs (the generated Xcode project, CocoaPods/Gradle caches, and prior `Build/` artifacts) so a previously linked location module isn't reused.
 
 ## Usage
-You can find a complete implementation in our included [example MonoBehaviour](OneSignalExample/Assets/OneSignal/Example/OneSignalExampleBehaviour.cs). Additionally we have included a
-[sample scene](OneSignalExample/Assets/OneSignal/Example/OneSignalExampleScene.unity) which you can run to test out the SDK.
+For a compact implementation of the major SDK features, open **Window > Package Manager**, select **OneSignal Unity SDK - Core**, and import the **Full Usage** sample. The sample requires Unity UI (`com.unity.ugui`). The repository's complete development demo is available in [`examples/demo`](examples/demo).
 
 ### Initialization
 #### Prefab

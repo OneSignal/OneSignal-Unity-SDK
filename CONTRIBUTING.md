@@ -20,7 +20,7 @@ Before creating bug reports, please check this list of steps to follow.
 
 #### How Do I Submit a Good Bug Report
 * **Use a clear and descriptive title** for the issue to identify the problem.
-* **Include Reproducibility** It is nearly always a good idea to include steps to reproduct the issue. If you cannot reliably reproduce the issue yourself, that's ok, but reproducible steps help best.
+* **Include Reproducibility** It is nearly always a good idea to include steps to reproduce the issue. If you cannot reliably reproduce the issue yourself, that's ok, but reproducible steps help best.
 * **Describe your environment**, tell us what version of the Unity OneSignal SDK you are using, what platforms the issue occurs on (android/iOS), related code samples, and so on.
 * **Include a Stack Trace** If your issue involves a crash/exception, ***PLEASE*** post the stack trace to help us identify the root issue.
-* **Include an Example Project** This isn't required, but if you want your issue fixed quickly, it's often a good idea to include an example project as a zip and include it with the issue. You can also download the Demo project (included in the `/OneSignalExample` folder of this repo) and set up an example project with this code as a starting point.
+* **Include an Example Project** This isn't required, but if you want your issue fixed quickly, it's often a good idea to include an example project as a zip and include it with the issue. You can also use the Demo project in [`examples/demo`](examples/demo) as a starting point.

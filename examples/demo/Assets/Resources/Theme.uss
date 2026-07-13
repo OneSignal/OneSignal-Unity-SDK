@@ -13,12 +13,6 @@
     --os-text-primary: #202124;
     --os-text-secondary: #757575;
     --os-text-hint: #9E9E9E;
-    --os-log-background: #1A1B1E;
-    --os-log-debug: #82AAFF;
-    --os-log-info: #C3E88D;
-    --os-log-warn: #FFCB6B;
-    --os-log-error: #FF5370;
-    --os-log-timestamp: #676E7B;
     --card-gap: 8px;
 }
 

@@ -13,11 +13,55 @@ MonoBehaviour:
   m_Name: OneSignalFileInventory
   m_EditorClassIdentifier: 
   DistributedPaths:
-  - Assets/OneSignal/Attribution.meta
-  - Assets/OneSignal/CHANGELOG.md
-  - Assets/OneSignal/CHANGELOG.md.meta
+  - Assets/OneSignal/Documentation.meta
+  - Assets/OneSignal/Documentation/asset_listing.png
+  - Assets/OneSignal/Documentation/asset_listing.png.meta
+  - Assets/OneSignal/Documentation/ios_auto_sign.png
+  - Assets/OneSignal/Documentation/ios_auto_sign.png.meta
+  - Assets/OneSignal/Documentation/ios_extension_sign_and_groups.png
+  - Assets/OneSignal/Documentation/ios_extension_sign_and_groups.png.meta
+  - Assets/OneSignal/Documentation/ios_refresh_app_groups.png
+  - Assets/OneSignal/Documentation/ios_refresh_app_groups.png.meta
+  - Assets/OneSignal/Documentation/package_manager_tab.png
+  - Assets/OneSignal/Documentation/package_manager_tab.png.meta
+  - Assets/OneSignal/Documentation/registry_menu.png
+  - Assets/OneSignal/Documentation/registry_menu.png.meta
+  - Assets/OneSignal/Documentation/setup_window.png
+  - Assets/OneSignal/Documentation/setup_window.png.meta
   - Assets/OneSignal/Editor.meta
-  - Assets/OneSignal/Example.meta
+  - Assets/OneSignal/Editor/AssemblyInfo.cs
+  - Assets/OneSignal/Editor/AssemblyInfo.cs.meta
+  - Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef
+  - Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef.meta
+  - Assets/OneSignal/Editor/OneSignalBootstrapper.cs
+  - Assets/OneSignal/Editor/OneSignalBootstrapper.cs.meta
+  - Assets/OneSignal/Editor/OneSignalFileInventory.cs
+  - Assets/OneSignal/Editor/OneSignalFileInventory.cs.meta
+  - Assets/OneSignal/Editor/PackageManagement.meta
+  - Assets/OneSignal/Editor/PackageManagement/Dependency.cs
+  - Assets/OneSignal/Editor/PackageManagement/Dependency.cs.meta
+  - Assets/OneSignal/Editor/PackageManagement/Manifest.cs
+  - Assets/OneSignal/Editor/PackageManagement/Manifest.cs.meta
+  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs
+  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs.meta
+  - Assets/OneSignal/Editor/Resources.meta
+  - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset
+  - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset.meta
+  - Assets/OneSignal/Editor/Setup.meta
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupStep.cs
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupStep.cs.meta
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupWindow.cs
+  - Assets/OneSignal/Editor/Setup/OneSignalSetupWindow.cs.meta
+  - Assets/OneSignal/Editor/SetupSteps.meta
+  - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs
+  - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs.meta
+  - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs
+  - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs.meta
+  - Assets/OneSignal/Editor/Utilities.meta
+  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
+  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
+  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs
+  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs.meta
   - Assets/OneSignal/LICENSE.md
   - Assets/OneSignal/LICENSE.md.meta
   - Assets/OneSignal/MIGRATION_GUIDE_v2_to_v3.md
@@ -30,62 +74,3 @@ MonoBehaviour:
   - Assets/OneSignal/VERSION.meta
   - Assets/OneSignal/link.xml
   - Assets/OneSignal/link.xml.meta
-  - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef
-  - Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef.meta
-  - Assets/OneSignal/Attribution/OneSignalVSAttribution.cs
-  - Assets/OneSignal/Attribution/OneSignalVSAttribution.cs.meta
-  - Assets/OneSignal/Attribution/VSAttribution.cs
-  - Assets/OneSignal/Attribution/VSAttribution.cs.meta
-  - Assets/OneSignal/Documentation~/asset_listing.png
-  - Assets/OneSignal/Documentation~/ios_auto_sign.png
-  - Assets/OneSignal/Documentation~/ios_extension_sign_and_groups.png
-  - Assets/OneSignal/Documentation~/ios_refresh_app_groups.png
-  - Assets/OneSignal/Documentation~/menu_import_package.png
-  - Assets/OneSignal/Documentation~/menu_my_assets.png
-  - Assets/OneSignal/Documentation~/menu_package_manager.png
-  - Assets/OneSignal/Documentation~/outdated_callout.png
-  - Assets/OneSignal/Documentation~/package_import.png
-  - Assets/OneSignal/Documentation~/package_manager_tab.png
-  - Assets/OneSignal/Documentation~/registry_menu.png
-  - Assets/OneSignal/Documentation~/setup_window.png
-  - Assets/OneSignal/Editor/AssemblyInfo.cs
-  - Assets/OneSignal/Editor/AssemblyInfo.cs.meta
-  - Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef
-  - Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef.meta
-  - Assets/OneSignal/Editor/OneSignalBootstrapper.cs
-  - Assets/OneSignal/Editor/OneSignalBootstrapper.cs.meta
-  - Assets/OneSignal/Editor/OneSignalFileInventory.cs
-  - Assets/OneSignal/Editor/OneSignalFileInventory.cs.meta
-  - Assets/OneSignal/Editor/PackageManagement.meta
-  - Assets/OneSignal/Editor/Resources.meta
-  - Assets/OneSignal/Editor/Setup.meta
-  - Assets/OneSignal/Editor/SetupSteps.meta
-  - Assets/OneSignal/Editor/Utilities.meta
-  - Assets/OneSignal/Editor/PackageManagement/Dependency.cs
-  - Assets/OneSignal/Editor/PackageManagement/Dependency.cs.meta
-  - Assets/OneSignal/Editor/PackageManagement/Manifest.cs
-  - Assets/OneSignal/Editor/PackageManagement/Manifest.cs.meta
-  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs
-  - Assets/OneSignal/Editor/PackageManagement/ScopeRegistry.cs.meta
-  - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset
-  - Assets/OneSignal/Editor/Resources/OneSignalFileInventory.asset.meta
-  - Assets/OneSignal/Editor/Setup/OneSignalSetupStep.cs
-  - Assets/OneSignal/Editor/Setup/OneSignalSetupStep.cs.meta
-  - Assets/OneSignal/Editor/Setup/OneSignalSetupWindow.cs
-  - Assets/OneSignal/Editor/Setup/OneSignalSetupWindow.cs.meta
-  - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs
-  - Assets/OneSignal/Editor/SetupSteps/CleanUpLegacyStep.cs.meta
-  - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs
-  - Assets/OneSignal/Editor/SetupSteps/ImportPackagesStep.cs.meta
-  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs
-  - Assets/OneSignal/Editor/Utilities/MiniJSON.cs.meta
-  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs
-  - Assets/OneSignal/Editor/Utilities/ReflectionHelpers.cs.meta
-  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF
-  - Assets/OneSignal/Example/INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta
-  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef
-  - Assets/OneSignal/Example/OneSignal.UnityPackage.Example.asmdef.meta
-  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs
-  - Assets/OneSignal/Example/OneSignalExampleBehaviour.cs.meta
-  - Assets/OneSignal/Example/OneSignalExampleScene.unity
-  - Assets/OneSignal/Example/OneSignalExampleScene.unity.meta
