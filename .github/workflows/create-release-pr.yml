@@ -151,7 +151,7 @@ jobs:
           done
           sed -i "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" com.onesignal.unity.core/Runtime/OneSignal.cs
           sed -i "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" com.onesignal.unity.core/Runtime/OneSignalPlatform.cs
-          for asm in examples/demo/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef examples/demo/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef; do
+          for asm in examples/demo/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef examples/demo/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef com.onesignal.unity.core/Samples~/OneSignal.UnityPackage.Example.asmdef; do
             sed -i "s/\"expression\": \".*\"/\"expression\": \"${{ inputs.unity_version }}\"/" "$asm"
           done
           sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" examples/demo/Packages/packages-lock.json
