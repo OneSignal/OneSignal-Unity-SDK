@@ -31,6 +31,23 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.sharp-zip-lib": {
+      "version": "1.4.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.upm-publishing-tools": {
+      "version": "0.3.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.sharp-zip-lib": "1.4.1",
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
       "depth": 0,
