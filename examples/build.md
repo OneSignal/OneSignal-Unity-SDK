@@ -35,17 +35,17 @@ Android status bar:
 
 SDK reference via local path in `Packages/manifest.json`:
 ```json
-"com.onesignal.unity.core": "file:../../../com.onesignal.unity.core",
-"com.onesignal.unity.android": "file:../../../com.onesignal.unity.android",
-"com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios"
+"com.onesignal.unitysdk.core": "file:../../../com.onesignal.unitysdk.core",
+"com.onesignal.unitysdk.android": "file:../../../com.onesignal.unitysdk.android",
+"com.onesignal.unitysdk.ios": "file:../../../com.onesignal.unitysdk.ios"
 ```
 
 ### Dependencies (Packages/manifest.json)
 
 ```json
-"com.onesignal.unity.core": "file:../../../com.onesignal.unity.core",
-"com.onesignal.unity.android": "file:../../../com.onesignal.unity.android",
-"com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios",
+"com.onesignal.unitysdk.core": "file:../../../com.onesignal.unitysdk.core",
+"com.onesignal.unitysdk.android": "file:../../../com.onesignal.unitysdk.android",
+"com.onesignal.unitysdk.ios": "file:../../../com.onesignal.unitysdk.ios",
 "com.unity.nuget.newtonsoft-json": "3.2.2"
 ```
 

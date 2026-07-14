@@ -73,9 +73,9 @@ namespace OneSignalSDK
              */
             var manifest = new Manifest();
             manifest.Fetch();
-            manifest.RemoveDependency("com.onesignal.unity.core");
-            manifest.RemoveDependency("com.onesignal.unity.android");
-            manifest.RemoveDependency("com.onesignal.unity.ios");
+            manifest.RemoveDependency("com.onesignal.unitysdk.core");
+            manifest.RemoveDependency("com.onesignal.unitysdk.android");
+            manifest.RemoveDependency("com.onesignal.unitysdk.ios");
             manifest.RemoveScopeRegistry("https://registry.npmjs.org");
             manifest.ApplyChanges();
 

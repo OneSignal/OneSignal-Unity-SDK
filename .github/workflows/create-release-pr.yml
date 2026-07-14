@@ -89,8 +89,8 @@ jobs:
 
           # Get versions from target branch (not the release branch)
           CURRENT_VERSION=$(git show origin/${{ inputs.target_branch }}:examples/demo/Assets/OneSignal/VERSION | tr -d '\n\r' | xargs)
-          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.cs | grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.cs | grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          ANDROID_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unitysdk.android/Editor/OneSignalAndroidDependencies.cs | grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          IOS_VERSION=$(git show origin/${{ inputs.target_branch }}:com.onesignal.unitysdk.ios/Editor/OneSignaliOSDependencies.cs | grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "unity_from=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
           echo "android_from=${ANDROID_VERSION}" >> $GITHUB_OUTPUT
           echo "ios_from=${IOS_VERSION}" >> $GITHUB_OUTPUT
@@ -109,7 +109,7 @@ jobs:
             sleep 30
           done
           if [ "$FOUND" != "true" ]; then echo "✗ Android SDK version ${VERSION} not found after 5 attempts"; exit 1; fi
-          sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.cs
+          sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unitysdk.android/Editor/OneSignalAndroidDependencies.cs
           sed -i -E "s/<androidPackage spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/<androidPackage spec=\"com.onesignal:OneSignal:$VERSION\"/" examples/demo/Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
           sed -i -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" examples/demo/Assets/Plugins/Android/mainTemplate.gradle
           sed -i -E "s/<package>com\.onesignal:OneSignal:[0-9][0-9.]*<\/package>/<package>com.onesignal:OneSignal:$VERSION<\/package>/" examples/demo/ProjectSettings/AndroidResolverDependencies.xml
@@ -133,7 +133,7 @@ jobs:
             sleep 30
           done
           if [ "$FOUND" != "true" ]; then echo "✗ iOS SDK version ${VERSION} not found after 5 attempts"; exit 1; fi
-          sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.cs
+          sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unitysdk.ios/Editor/OneSignaliOSDependencies.cs
           sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" examples/demo/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml
 
           # Only commit if there are changes
@@ -145,18 +145,18 @@ jobs:
         run: |
           PADDED_VERSION=$(echo "${{ inputs.unity_version }}" | awk -F. '{printf "%02d%02d%02d", $1, $2, $3}')
           printf "%s" "${{ inputs.unity_version }}" > examples/demo/Assets/OneSignal/VERSION
-          for file in com.onesignal.unity.core/package.json com.onesignal.unity.android/package.json com.onesignal.unity.ios/package.json; do
+          for file in com.onesignal.unitysdk.core/package.json com.onesignal.unitysdk.android/package.json com.onesignal.unitysdk.ios/package.json; do
             sed -i "s/\"version\": \".*\"/\"version\": \"${{ inputs.unity_version }}\"/" "$file"
-            sed -i "s/\"com.onesignal.unity.core\": \".*\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/" "$file"
+            sed -i "s/\"com.onesignal.unitysdk.core\": \".*\"/\"com.onesignal.unitysdk.core\": \"${{ inputs.unity_version }}\"/" "$file"
           done
-          sed -i "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" com.onesignal.unity.core/Runtime/OneSignal.cs
-          sed -i "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" com.onesignal.unity.core/Runtime/OneSignalPlatform.cs
-          for asm in examples/demo/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef examples/demo/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef com.onesignal.unity.core/Samples~/OneSignal.UnityPackage.Example.asmdef; do
+          sed -i "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" com.onesignal.unitysdk.core/Runtime/OneSignal.cs
+          sed -i "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" com.onesignal.unitysdk.core/Runtime/OneSignalPlatform.cs
+          for asm in examples/demo/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef examples/demo/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef com.onesignal.unitysdk.core/Samples~/OneSignal.UnityPackage.Example.asmdef; do
             sed -i "s/\"expression\": \".*\"/\"expression\": \"${{ inputs.unity_version }}\"/" "$asm"
           done
-          sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" examples/demo/Packages/packages-lock.json
+          sed -i "s/\"com.onesignal.unitysdk.core\": \"[0-9.]\+\"/\"com.onesignal.unitysdk.core\": \"${{ inputs.unity_version }}\"/g" examples/demo/Packages/packages-lock.json
           sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" examples/demo/ProjectSettings/ProjectSettings.asset
-          sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
+          sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unitysdk.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
           # Only commit if there are changes
           git add -A 

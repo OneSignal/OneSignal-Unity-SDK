@@ -148,7 +148,7 @@ namespace OneSignalSDK
         private const string _pluginName = "OneSignalConfig.androidlib";
         private static readonly string _packagePath = Path.Combine(
             "Packages",
-            "com.onesignal.unity.android",
+            "com.onesignal.unitysdk.android",
             "Editor"
         );
         private static readonly string _androidPluginsPath = Path.Combine(

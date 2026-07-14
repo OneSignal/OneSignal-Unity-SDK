@@ -9,8 +9,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DEMO = ROOT / "examples/demo"
 BOOTSTRAP = ROOT / "examples/demo/Assets/OneSignal"
-SAMPLE = ROOT / "com.onesignal.unity.core/Samples~"
+SAMPLE = ROOT / "com.onesignal.unitysdk.core/Samples~"
 INVENTORY = BOOTSTRAP / "Editor/Resources/OneSignalFileInventory.asset"
+PACKAGE_NAMES = (
+    "com.onesignal.unitysdk.core",
+    "com.onesignal.unitysdk.android",
+    "com.onesignal.unitysdk.ios",
+)
+CORE_PACKAGE = PACKAGE_NAMES[0]
+MINIMUM_UNITY_VERSION = "2022.3"
 
 EXCLUDED_PREFIXES = (
     "Assets/OneSignal/Attribution",
@@ -64,6 +71,41 @@ def validate_inventory() -> None:
         )
 
 
+def validate_packages() -> None:
+    packages = {
+        name: json.loads((ROOT / name / "package.json").read_text())
+        for name in PACKAGE_NAMES
+    }
+    core_version = packages[CORE_PACKAGE]["version"]
+
+    for name, package in packages.items():
+        if package.get("name") != name:
+            fail(f"{name}/package.json name does not match its folder")
+        if package.get("version") != core_version:
+            fail(f"{name} version does not match {CORE_PACKAGE}")
+        if package.get("unity") != MINIMUM_UNITY_VERSION:
+            fail(f"{name} does not support Unity {MINIMUM_UNITY_VERSION}")
+        if package.get("license") != "SEE LICENSE IN LICENSE.md":
+            fail(f"{name} does not reference its package license")
+        if not package.get("documentationUrl", "").startswith("https://"):
+            fail(f"{name} does not have an HTTPS documentation URL")
+        if not package.get("repository", {}).get("url", "").startswith("https://"):
+            fail(f"{name} does not have an HTTPS repository URL")
+        if name != CORE_PACKAGE:
+            if package.get("dependencies", {}).get(CORE_PACKAGE) != core_version:
+                fail(f"{name} does not depend on {CORE_PACKAGE}@{core_version}")
+            if package.get("samples"):
+                fail(f"{name} must not contain samples")
+
+    manifest = json.loads((DEMO / "Packages/manifest.json").read_text())
+    if manifest.get("scopedRegistries"):
+        fail("demo requires a scoped registry")
+    for name in PACKAGE_NAMES:
+        expected_path = f"file:../../../{name}"
+        if manifest["dependencies"].get(name) != expected_path:
+            fail(f"demo does not reference {name} at {expected_path}")
+
+
 def validate_sample() -> None:
     for filename, expected_guid in REQUIRED_SAMPLE_GUIDS.items():
         path = SAMPLE / filename
@@ -91,11 +133,11 @@ def validate_sample() -> None:
     if not required_references.issubset(asmdef["references"]):
         fail("sample assembly is missing required references")
 
-    package = json.loads((ROOT / "com.onesignal.unity.core/package.json").read_text())
+    package = json.loads((ROOT / CORE_PACKAGE / "package.json").read_text())
     if not any(sample.get("path") == "Samples~" for sample in package.get("samples", [])):
         fail("core package does not register Samples~")
     if not any(
-        version.get("name") == "com.onesignal.unity.core"
+        version.get("name") == "com.onesignal.unitysdk.core"
         and version.get("expression") == package["version"]
         and version.get("define") == "ONE_SIGNAL_INSTALLED"
         for version in asmdef.get("versionDefines", [])
@@ -111,6 +153,7 @@ def main() -> None:
     if not (BOOTSTRAP / "Documentation").is_dir():
         fail("exportable bootstrap documentation is missing")
     validate_inventory()
+    validate_packages()
     validate_sample()
     print("Unity distribution layout is valid.")
 

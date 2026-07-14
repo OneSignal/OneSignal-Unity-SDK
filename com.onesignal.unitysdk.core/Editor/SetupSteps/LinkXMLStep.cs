@@ -57,7 +57,7 @@ namespace OneSignalSDK
 
         private static readonly string _sourcePath = Path.Combine(
             "Packages",
-            "com.onesignal.unity.core",
+            "com.onesignal.unitysdk.core",
             "Editor",
             "link.xml"
         );

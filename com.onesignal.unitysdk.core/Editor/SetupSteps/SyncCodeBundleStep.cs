@@ -95,7 +95,7 @@ namespace OneSignalSDK
 
         private static readonly string _packagePath = Path.Combine(
             "Packages",
-            "com.onesignal.unity.core"
+            "com.onesignal.unitysdk.core"
         );
         private static readonly string _packageJsonPath = Path.Combine(
             _packagePath,

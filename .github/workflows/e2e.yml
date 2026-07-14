@@ -58,7 +58,7 @@ jobs:
       - name: Resolve OneSignal Android SDK version
         id: android-sdk-version
         run: |
-          VERSION=$(grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.cs | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION=$(grep -oE 'Version = "[0-9]+\.[0-9]+\.[0-9]+"' com.onesignal.unitysdk.android/Editor/OneSignalAndroidDependencies.cs | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           if [ -z "$VERSION" ]; then
             echo "::error::Could not parse OneSignal Android SDK version from OneSignalAndroidDependencies.cs"
             exit 1
@@ -149,7 +149,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: examples/demo/Build/iOS-DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/Assets/csc.rsp', 'examples/demo/ProjectSettings/ProjectVersion.txt', 'examples/demo/ProjectSettings/ProjectSettings.asset', 'com.onesignal.unity.ios/Editor/**', 'com.onesignal.unity.core/Editor/**', 'examples/demo/iOS/ExportOptions.plist') }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('examples/demo/Packages/manifest.json', 'examples/demo/Assets/csc.rsp', 'examples/demo/ProjectSettings/ProjectVersion.txt', 'examples/demo/ProjectSettings/ProjectSettings.asset', 'com.onesignal.unitysdk.ios/Editor/**', 'com.onesignal.unitysdk.core/Editor/**', 'examples/demo/iOS/ExportOptions.plist') }}
           restore-keys: deriveddata-${{ runner.os }}-
 
       - name: Export Xcode project from Unity

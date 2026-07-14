@@ -19,8 +19,8 @@
     "defineConstraints": [],
     "versionDefines": [
         {
-            "name": "com.onesignal.unity.core",
-            "expression": "5.3.1",
+            "name": "com.onesignal.unitysdk.core",
+            "expression": "6.0.0",
             "define": "ONE_SIGNAL_INSTALLED"
         }
     ],

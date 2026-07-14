@@ -1,0 +1,35 @@
+{
+  "name": "com.onesignal.unitysdk.ios",
+  "displayName": "OneSignal SDK iOS",
+  "version": "6.0.0",
+  "unity": "2022.3",
+  "description": "iOS platform implementation for the OneSignal Unity SDK, including the native bridge, CocoaPods dependencies, and Xcode post-processing.",
+  "dependencies": {
+    "com.onesignal.unitysdk.core": "6.0.0"
+  },
+  "keywords": [
+    "push-notifications",
+    "notification-service",
+    "notifications",
+    "sdk",
+    "apns",
+    "onesignal",
+    "ios"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "OneSignal",
+    "email": "support@onesignal.com",
+    "url": "https://onesignal.com/"
+  },
+  "homepage": "https://onesignal.com/",
+  "documentationUrl": "https://documentation.onesignal.com/docs/unity-sdk-setup",
+  "bugs": {
+    "url": "https://github.com/OneSignal/OneSignal-Unity-SDK/issues",
+    "email": "support@onesignal.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OneSignal/OneSignal-Unity-SDK.git"
+  }
+}

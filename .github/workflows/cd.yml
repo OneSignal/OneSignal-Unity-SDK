@@ -37,7 +37,7 @@ jobs:
       - name: Determine npm tag
         id: npm-tag
         run: |
-          VERSION=$(node -p "require('./com.onesignal.unity.core/package.json').version")
+          VERSION=$(node -p "require('./com.onesignal.unitysdk.core/package.json').version")
           echo "Detected version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           TAG=""
@@ -72,9 +72,9 @@ jobs:
             fi
             cd ..
           }
-          publish_pkg com.onesignal.unity.core
-          publish_pkg com.onesignal.unity.android
-          publish_pkg com.onesignal.unity.ios
+          publish_pkg com.onesignal.unitysdk.core
+          publish_pkg com.onesignal.unitysdk.android
+          publish_pkg com.onesignal.unitysdk.ios
 
   create_github_release:
     needs: publish
