@@ -1,25 +1,25 @@
 {
   "dependencies": {
-    "com.onesignal.unity.android": {
-      "version": "file:../../../com.onesignal.unity.android",
+    "com.onesignal.unitysdk.android": {
+      "version": "file:../../../com.onesignal.unitysdk.android",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "5.2.11"
+        "com.onesignal.unitysdk.core": "6.0.0"
       }
     },
-    "com.onesignal.unity.core": {
-      "version": "file:../../../com.onesignal.unity.core",
+    "com.onesignal.unitysdk.core": {
+      "version": "file:../../../com.onesignal.unitysdk.core",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
-    "com.onesignal.unity.ios": {
-      "version": "file:../../../com.onesignal.unity.ios",
+    "com.onesignal.unitysdk.ios": {
+      "version": "file:../../../com.onesignal.unitysdk.ios",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "5.2.11"
+        "com.onesignal.unitysdk.core": "6.0.0"
       }
     },
     "com.unity.modules.androidjni": {

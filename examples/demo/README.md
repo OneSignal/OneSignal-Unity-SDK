@@ -15,7 +15,7 @@ The Asset Store package is a bootstrapper, not the full demo or the UPM sample. 
 3. Select **OneSignal > ExportUnityPackage**.
 4. Inspect the exported `.unitypackage` before upload. It must contain only the bootstrap content under `Assets/OneSignal`; it must not contain `Example`, `Attribution`, packager tooling, demo assets, generated dependency XML files, or `StreamingAssets/.env`.
 
-The canonical user sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`. The complete demo in this directory is for repository development and testing only.
+The canonical user sample is the **Full Usage** sample in `com.onesignal.unitysdk.core/Samples~`. The complete demo in this directory is for repository development and testing only.
 
 ## Command Line
 

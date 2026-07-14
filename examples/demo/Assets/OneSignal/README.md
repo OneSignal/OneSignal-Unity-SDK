@@ -47,58 +47,18 @@ You must generate the appropriate credentials for the platform(s) you are releas
 - Amazon Fire - [Generate an Amazon API Key](https://documentation.onesignal.com/docs/generate-an-amazon-api-key)
 
 ## Installation
-There are two methods of installation available for the OneSignal Unity SDK:
 > **Upgrading from 2.x.x to 3.x.x?**</br>
 > Please check out our [v2 to v3 migration guide](MIGRATION_GUIDE_v2_to_v3.md).
 
 > **Upgrading from 3.x.x to 5.x.x?**</br>
 > Please check out our [v3 to v5 migration guide](MIGRATION_GUIDE_v3_to_v5.md).
 
-<details>
-<summary><b>Unity Asset Store</b> <i>(click to expand)</i></summary>
-
 1. Add the OneSignal Unity SDK as an available asset to your account by clicking **Add to My Assets** from [our listing on the Unity Asset Store](https://assetstore.unity.com/packages/add-ons/services/billing/onesignal-sdk-193316).
 2. Find the package waiting for you to download by clicking **Open in Unity** from that same page. This will open the Unity Editor and its Package Manager window.
-3. On the SDK's listing in the Editor click the **Download** button. When it finishes click **Import**.
+3. Install **OneSignal SDK Android** and/or **OneSignal SDK iOS** from the product. Unity installs **OneSignal SDK Core** automatically as a dependency.
+4. Open **Window > OneSignal SDK Setup** and complete the remaining platform setup steps.
 
-    ![onesignal unity sdk in my assets](Documentation/asset_listing.png)
-
-4. A prompt to import all of the files of the OneSignal Unity SDK will appear. Click **Import** to continue and compile the scripts into your project.
-5. Navigate to **Window > OneSignal SDK Setup** (or follow the popup if upgrading) in the Unity Editor which will bring up a window with some final steps which need 
-   to be completed in order to finalize the installation. The most important of these steps is **Import OneSignal packages**.
-   
-    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
-   
-    ![sdk setup steps window](Documentation/setup_window.png)
-
-6. After importing the packages Unity will notify you that a new registry has been added and the **OneSignal SDK Setup** window will have refreshed with a few additional 
-   steps. Following these will finalize your installation of the OneSignal Unity SDK.
-</details>
-
-<details>
-<summary><b>Unity Package Manager</b> <i>(click to expand)</i></summary>
-
-1. From within the Unity Editor navigate to **Edit > Project Settings** and then to the **Package Manager** settings tab.
-   
-    ![unity registry manager](Documentation/package_manager_tab.png)
-
-2. Create a *New Scoped Registry* by entering 
-    ```
-    Name        npmjs
-    URL         https://registry.npmjs.org
-    Scope(s)    com.onesignal
-    ```
-   and click **Save**.
-3. Open the **Window > Package Manager** and switch to **My Registries** via the **Packages:** dropdown menu. You will see all of the OneSignal Unity SDK packages available
-   on which you can then click **Install** for the platforms you would like to include. Dependencies will be added automatically.
-4. Once the packages have finished importing you will find a new menu under **Window > OneSignal SDK Setup**. Open it and you will find some final steps which need to be completed
-   in order to finalize the installation.
-
-    > *Depending on your project configuration and if you are upgrading from a previous version, some of these steps may already be marked as "completed"*
-
-    ![my registries menu selection](Documentation/registry_menu.png)
-
-</details>
+No scoped npm registry is required.
 
 ## Platform Configuration
 ### iOS
@@ -131,8 +91,8 @@ After building in Unity and exporting the XCode project follow these steps:
 
 Most of the Android setup was already handled during installation!
 
-The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res` 
-with your own. There is a complete guide for this [in the plugin's README](com.onesignal.unity.android/Editor/OneSignalConfig.androidlib/README.md). See our 
+The only thing remaining is to setup your own notification icons. You can do this be replacing the example icons located at `Assets/Plugins/Android/OneSignalConfig.androidlib/src/main/res`
+with your own. There is a complete guide for this [in the plugin's README](com.onesignal.unitysdk.android/Editor/OneSignalConfig.androidlib/README.md). See our
 [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) page for additional details.
 
 ## Usage
@@ -140,7 +100,7 @@ For a compact implementation of the major SDK features, open **Window > Package 
 
 ### Initialization
 #### Prefab
-Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
+Located in the `com.onesignal.unitysdk.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar
 to find `OneSignalController.prefab` and making sure to select **All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill
 in the **App Id**, and you are immediately ready to go!
 

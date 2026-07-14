@@ -73,7 +73,7 @@ namespace OneSignalSDK.iOS
     {
         private const string ServiceExtensionTargetName = "OneSignalNotificationServiceExtension";
         private const string ServiceExtensionFilename = "NotificationService.swift";
-        private const string PackageName = "com.onesignal.unity.ios";
+        private const string PackageName = "com.onesignal.unitysdk.ios";
 
         private static readonly string PluginLibrariesPath = Path.Combine(
             PackageName,

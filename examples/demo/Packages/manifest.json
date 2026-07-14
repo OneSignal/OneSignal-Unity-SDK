@@ -1,20 +1,11 @@
 {
   "dependencies": {
-    "com.onesignal.unity.android": "file:../../../com.onesignal.unity.android",
-    "com.onesignal.unity.core": "file:../../../com.onesignal.unity.core",
-    "com.onesignal.unity.ios": "file:../../../com.onesignal.unity.ios",
+    "com.onesignal.unitysdk.android": "file:../../../com.onesignal.unitysdk.android",
+    "com.onesignal.unitysdk.core": "file:../../../com.onesignal.unitysdk.core",
+    "com.onesignal.unitysdk.ios": "file:../../../com.onesignal.unitysdk.ios",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
-  },
-  "scopedRegistries": [
-    {
-      "name": "npmjs",
-      "url": "https://registry.npmjs.org",
-      "scopes": [
-        "com.onesignal"
-      ]
-    }
-  ]
+  }
 }

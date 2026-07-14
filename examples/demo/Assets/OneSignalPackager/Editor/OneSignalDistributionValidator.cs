@@ -84,7 +84,7 @@ namespace OneSignalSDK
             var repositoryRoot = Path.GetFullPath(
                 Path.Combine(Application.dataPath, "..", "..", "..")
             );
-            var samplePath = Path.Combine(repositoryRoot, "com.onesignal.unity.core", "Samples~");
+            var samplePath = Path.Combine(repositoryRoot, "com.onesignal.unitysdk.core", "Samples~");
             var requiredFiles = new[]
             {
                 "INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF",

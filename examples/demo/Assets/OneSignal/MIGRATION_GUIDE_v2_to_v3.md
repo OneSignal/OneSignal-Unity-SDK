@@ -160,7 +160,7 @@ OneSignal.Default.Initialize("your_app_id");
 
 We also now include a prefab for codeless initialization!
 
-Located in the `com.onesignal.unity.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar to find `OneSignalController.prefab` and making sure to select All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill in the **App Id, and you are immediately ready to go!
+Located in the `com.onesignal.unitysdk.core` package we've include a simple prefab which initializes OneSignal. You can easily find it using the Asset search bar to find `OneSignalController.prefab` and making sure to select All** or **In Packages** for your search option. Drag the prefab into your very first scene, fill in the **App Id, and you are immediately ready to go!
 
 #### Debugging
 Set the log and alert levels
