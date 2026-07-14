@@ -69,6 +69,10 @@ crashlytics-build.properties
 Assets/StreamingAssets/.env
 Assets/StreamingAssets/.env.meta
 
+# Generated empty framework leftover (not part of the SDK)
+/Assets/StreamingAssets/SwiftPlugin.framework/
+/Assets/StreamingAssets/SwiftPlugin.framework.meta
+
 # Gradle template backup files
 *.backup
 *.backup.meta
