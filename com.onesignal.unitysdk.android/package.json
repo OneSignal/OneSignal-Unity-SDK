@@ -3,6 +3,7 @@
   "displayName": "OneSignal SDK Android",
   "version": "6.0.0",
   "unity": "2022.3",
+  "unityRelease": "0f1",
   "description": "Android platform implementation for the OneSignal Unity SDK, including native dependency resolution and notification resources.",
   "dependencies": {
     "com.onesignal.unitysdk.core": "6.0.0"

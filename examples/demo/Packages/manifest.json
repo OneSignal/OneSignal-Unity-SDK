@@ -4,6 +4,7 @@
     "com.onesignal.unitysdk.core": "file:../../../com.onesignal.unitysdk.core",
     "com.onesignal.unitysdk.ios": "file:../../../com.onesignal.unitysdk.ios",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
+    "com.unity.upm-publishing-tools": "0.3.1",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"

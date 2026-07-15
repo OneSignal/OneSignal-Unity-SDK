@@ -18,6 +18,7 @@ PACKAGE_NAMES = (
 )
 CORE_PACKAGE = PACKAGE_NAMES[0]
 MINIMUM_UNITY_VERSION = "2022.3"
+MINIMUM_UNITY_RELEASE = "0f1"
 
 EXCLUDED_PREFIXES = (
     "Assets/OneSignal/Attribution",
@@ -85,6 +86,11 @@ def validate_packages() -> None:
             fail(f"{name} version does not match {CORE_PACKAGE}")
         if package.get("unity") != MINIMUM_UNITY_VERSION:
             fail(f"{name} does not support Unity {MINIMUM_UNITY_VERSION}")
+        if package.get("unityRelease") != MINIMUM_UNITY_RELEASE:
+            fail(
+                f"{name} does not support Unity "
+                f"{MINIMUM_UNITY_VERSION}.{MINIMUM_UNITY_RELEASE}"
+            )
         if package.get("license") != "SEE LICENSE IN LICENSE.md":
             fail(f"{name} does not reference its package license")
         if not package.get("documentationUrl", "").startswith("https://"):
