@@ -119,7 +119,7 @@ def validate_packages() -> None:
         project_name = project.relative_to(ROOT)
         manifest = json.loads((project / "Packages/manifest.json").read_text())
         if manifest.get("scopedRegistries"):
-            fail(f"{project_name} requires a scoped registry")
+            fail(f"{project_name} must not declare a scoped registry")
         for name in PACKAGE_NAMES:
             expected_path = f"file:../../../{name}"
             if manifest["dependencies"].get(name) != expected_path:
