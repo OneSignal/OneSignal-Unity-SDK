@@ -68,6 +68,9 @@ You must generate the appropriate credentials for the platform(s) you are releas
 > **Upgrading from 3.x.x to 5.x.x?**</br>
 > Please check out our [v3 to v5 migration guide](MIGRATION_GUIDE_v3_to_v5.md).
 
+> **Upgrading to 6.x.x?**</br>
+> Version 6 uses [Unity's External Dependency Manager](https://docs.unity3d.com/Packages/com.unity.external-dependency-manager@2.0/manual/get-started-with-edm.html). If your project still contains Google's legacy EDM4U under `Assets/ExternalDependencyManager`, select **Use Unity's External Dependency Manager** when prompted. After confirming that your other plugins support Unity EDM, delete the legacy Assets installation so only one dependency manager remains.
+
 1. Add the OneSignal Unity SDK as an available asset to your account by clicking **Add to My Assets** from [our listing on the Unity Asset Store](https://assetstore.unity.com/packages/add-ons/services/billing/onesignal-sdk-193316).
 2. Find the package waiting for you to download by clicking **Open in Unity** from that same page. This will open the Unity Editor and its Package Manager window.
 3. Install **OneSignal SDK Android** and/or **OneSignal SDK iOS** from the product. Unity installs **OneSignal SDK Core** automatically as a dependency.

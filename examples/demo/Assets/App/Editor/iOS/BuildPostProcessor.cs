@@ -60,7 +60,6 @@ namespace App.Editor.iOS
         /// <summary>
         /// must be between 40 and 50 to ensure that it's not overriden by Podfile generation (40) and that it's
         /// added before "pod install" (50)
-        /// https://github.com/googlesamples/unity-jar-resolver#appending-text-to-generated-podfile
         /// </summary>
         public int callbackOrder => 45;
 

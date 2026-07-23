@@ -5,26 +5,45 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unitysdk.core": "6.0.0"
+        "com.onesignal.unitysdk.core": "6.0.0",
+        "com.unity.external-dependency-manager": "2.0.0"
       }
     },
     "com.onesignal.unitysdk.core": {
       "version": "file:../../../com.onesignal.unitysdk.core",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0"
+      }
     },
     "com.onesignal.unitysdk.ios": {
       "version": "file:../../../com.onesignal.unitysdk.ios",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unitysdk.core": "6.0.0"
+        "com.onesignal.unitysdk.core": "6.0.0",
+        "com.unity.external-dependency-manager": "2.0.0"
       }
+    },
+    "com.unity.external-dependency-manager": {
+      "version": "2.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
       "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.hierarchycore": {
+      "version": "1.0.0",
+      "depth": 3,
       "source": "builtin",
       "dependencies": {}
     },
@@ -39,6 +58,30 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {}
+    },
+    "com.unity.modules.physics": {
+      "version": "1.0.0",
+      "depth": 3,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.ui": {
+      "version": "1.0.0",
+      "depth": 3,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.uielements": {
+      "version": "1.0.0",
+      "depth": 2,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.hierarchycore": "1.0.0",
+        "com.unity.modules.physics": "1.0.0"
+      }
     },
     "com.unity.modules.unitywebrequest": {
       "version": "1.0.0",

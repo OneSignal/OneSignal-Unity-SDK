@@ -6,7 +6,8 @@
   "unityRelease": "0f1",
   "description": "Android platform implementation for the OneSignal Unity SDK, including native dependency resolution and notification resources.",
   "dependencies": {
-    "com.onesignal.unitysdk.core": "6.0.0"
+    "com.onesignal.unitysdk.core": "6.0.0",
+    "com.unity.external-dependency-manager": "2.0.0"
   },
   "keywords": [
     "push-notifications",

@@ -13,6 +13,7 @@
 /ProjectSettings/*
 !/ProjectSettings/AndroidResolverDependencies.xml
 !/ProjectSettings/EditorBuildSettings.asset
+!/ProjectSettings/ExternalDependencyManagerSettings.json
 !/ProjectSettings/OneSignalSettings.json
 !/ProjectSettings/ProjectSettings.asset
 !/ProjectSettings/ProjectVersion.txt
