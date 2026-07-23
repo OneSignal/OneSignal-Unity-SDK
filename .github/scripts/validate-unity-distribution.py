@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DEMO = ROOT / "examples/demo"
+DEMO_PROJECTS = (DEMO, ROOT / "examples/demo-no-location")
 BOOTSTRAP = ROOT / "examples/demo/Assets/OneSignal"
 SAMPLE = ROOT / "com.onesignal.unitysdk.core/Samples~"
 INVENTORY = BOOTSTRAP / "Editor/Resources/OneSignalFileInventory.asset"
@@ -114,13 +115,15 @@ def validate_packages() -> None:
     if legacy_installer.exists():
         fail(f"{legacy_installer.relative_to(ROOT)} installs unsupported Google EDM4U")
 
-    manifest = json.loads((DEMO / "Packages/manifest.json").read_text())
-    if manifest.get("scopedRegistries"):
-        fail("demo requires a scoped registry")
-    for name in PACKAGE_NAMES:
-        expected_path = f"file:../../../{name}"
-        if manifest["dependencies"].get(name) != expected_path:
-            fail(f"demo does not reference {name} at {expected_path}")
+    for project in DEMO_PROJECTS:
+        project_name = project.relative_to(ROOT)
+        manifest = json.loads((project / "Packages/manifest.json").read_text())
+        if manifest.get("scopedRegistries"):
+            fail(f"{project_name} requires a scoped registry")
+        for name in PACKAGE_NAMES:
+            expected_path = f"file:../../../{name}"
+            if manifest["dependencies"].get(name) != expected_path:
+                fail(f"{project_name} does not reference {name} at {expected_path}")
 
 
 def validate_sample() -> None:
@@ -163,10 +166,16 @@ def validate_sample() -> None:
 
 
 def main() -> None:
-    for project in (DEMO, ROOT / "examples/demo-no-location"):
+    for project in DEMO_PROJECTS:
         legacy_edm = project / "Assets/ExternalDependencyManager"
         if legacy_edm.exists():
             fail(f"{legacy_edm.relative_to(ROOT)} bundles unsupported Google EDM4U")
+        settings_path = project / "ProjectSettings/ExternalDependencyManagerSettings.json"
+        if not settings_path.is_file():
+            fail(f"{settings_path.relative_to(ROOT)} is missing")
+        settings = json.loads(settings_path.read_text())
+        if not settings.get("edmEnabled"):
+            fail(f"{settings_path.relative_to(ROOT)} does not enable Unity EDM")
     if (BOOTSTRAP / "Example").exists() or (BOOTSTRAP / "Example.meta").exists():
         fail("empty legacy Asset Store Example path still exists")
     if (BOOTSTRAP / "Documentation~").exists():
