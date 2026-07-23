@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "5.3.1"
+        "com.onesignal.unity.core": "5.3.2"
       }
     },
     "com.onesignal.unity.core": {
@@ -21,7 +21,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.onesignal.unity.core": "5.3.1"
+        "com.onesignal.unity.core": "5.3.2"
       }
     },
     "com.unity.nuget.newtonsoft-json": {

@@ -99,16 +99,13 @@ jobs:
         if: inputs.android_version != ''
         run: |
           VERSION="${{ inputs.android_version }}"
-          FOUND=false
-          for i in 1 2 3 4 5; do
-            if curl -sfH "Authorization: token ${{ github.token }}" \
-              "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}" >/dev/null; then
-              FOUND=true; break
-            fi
-            echo "Attempt $i: Android SDK version ${VERSION} not found, retrying in 30s..."
-            sleep 30
-          done
-          if [ "$FOUND" != "true" ]; then echo "✗ Android SDK version ${VERSION} not found after 5 attempts"; exit 1; fi
+          if ! curl --fail --silent --show-error --retry 4 --retry-delay 30 \
+            -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-Android-SDK/releases/tags/${VERSION}" \
+            >/dev/null; then
+            echo "✗ Android SDK version ${VERSION} not found"
+            exit 1
+          fi
           sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unity.android/Editor/OneSignalAndroidDependencies.cs
           sed -i -E "s/<androidPackage spec=\"com\.onesignal:OneSignal:[0-9][0-9.]*\"/<androidPackage spec=\"com.onesignal:OneSignal:$VERSION\"/" examples/demo/Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
           sed -i -E "s/'com\.onesignal:OneSignal:[0-9][0-9.]*'/'com.onesignal:OneSignal:$VERSION'/" examples/demo/Assets/Plugins/Android/mainTemplate.gradle
@@ -123,16 +120,13 @@ jobs:
         if: inputs.ios_version != ''
         run: |
           VERSION="${{ inputs.ios_version }}"
-          FOUND=false
-          for i in 1 2 3 4 5; do
-            if curl -sfH "Authorization: token ${{ github.token }}" \
-              "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}" >/dev/null; then
-              FOUND=true; break
-            fi
-            echo "Attempt $i: iOS SDK version ${VERSION} not found, retrying in 30s..."
-            sleep 30
-          done
-          if [ "$FOUND" != "true" ]; then echo "✗ iOS SDK version ${VERSION} not found after 5 attempts"; exit 1; fi
+          if ! curl --fail --silent --show-error --retry 4 --retry-delay 30 \
+            -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/OneSignal/OneSignal-iOS-SDK/releases/tags/${VERSION}" \
+            >/dev/null; then
+            echo "✗ iOS SDK version ${VERSION} not found"
+            exit 1
+          fi
           sed -i -E "s/const string Version = \"[0-9][0-9.]*\"/const string Version = \"$VERSION\"/" com.onesignal.unity.ios/Editor/OneSignaliOSDependencies.cs
           sed -i -E "s/version=\"[0-9][0-9.]*\"/version=\"$VERSION\"/" examples/demo/Assets/OneSignal/Editor/OneSignaliOSDependencies.xml
 
