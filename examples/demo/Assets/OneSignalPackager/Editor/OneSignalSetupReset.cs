@@ -50,12 +50,6 @@ namespace OneSignalSDK
             );
 
             /*
-             * InstallEdm4UStep
-             * deletes the edm4u directory
-             */
-            AssetDatabase.DeleteAsset(Path.Combine("Assets", "ExternalDependencyManager"));
-
-            /*
              * SetupManifestStep
              * handled by ExportAndroidResourcesStep
              */

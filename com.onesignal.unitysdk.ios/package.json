@@ -6,7 +6,8 @@
   "unityRelease": "0f1",
   "description": "iOS platform implementation for the OneSignal Unity SDK, including the native bridge, CocoaPods dependencies, and Xcode post-processing.",
   "dependencies": {
-    "com.onesignal.unitysdk.core": "6.0.0"
+    "com.onesignal.unitysdk.core": "6.0.0",
+    "com.unity.external-dependency-manager": "2.0.0"
   },
   "keywords": [
     "push-notifications",

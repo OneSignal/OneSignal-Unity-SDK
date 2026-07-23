@@ -17,6 +17,9 @@ PACKAGE_NAMES = (
     "com.onesignal.unitysdk.ios",
 )
 CORE_PACKAGE = PACKAGE_NAMES[0]
+PLATFORM_PACKAGES = PACKAGE_NAMES[1:]
+EDM_PACKAGE = "com.unity.external-dependency-manager"
+EDM_VERSION = "2.0.0"
 MINIMUM_UNITY_VERSION = "2022.3"
 MINIMUM_UNITY_RELEASE = "0f1"
 
@@ -103,6 +106,14 @@ def validate_packages() -> None:
             if package.get("samples"):
                 fail(f"{name} must not contain samples")
 
+    for name in PLATFORM_PACKAGES:
+        if packages[name].get("dependencies", {}).get(EDM_PACKAGE) != EDM_VERSION:
+            fail(f"{name} does not depend on {EDM_PACKAGE}@{EDM_VERSION}")
+
+    legacy_installer = ROOT / CORE_PACKAGE / "Editor/SetupSteps/InstallEdm4uStep.cs"
+    if legacy_installer.exists():
+        fail(f"{legacy_installer.relative_to(ROOT)} installs unsupported Google EDM4U")
+
     manifest = json.loads((DEMO / "Packages/manifest.json").read_text())
     if manifest.get("scopedRegistries"):
         fail("demo requires a scoped registry")
@@ -152,6 +163,10 @@ def validate_sample() -> None:
 
 
 def main() -> None:
+    for project in (DEMO, ROOT / "examples/demo-no-location"):
+        legacy_edm = project / "Assets/ExternalDependencyManager"
+        if legacy_edm.exists():
+            fail(f"{legacy_edm.relative_to(ROOT)} bundles unsupported Google EDM4U")
     if (BOOTSTRAP / "Example").exists() or (BOOTSTRAP / "Example.meta").exists():
         fail("empty legacy Asset Store Example path still exists")
     if (BOOTSTRAP / "Documentation~").exists():

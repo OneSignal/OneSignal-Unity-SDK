@@ -101,7 +101,7 @@ After running it, reopen the project in Unity. The OneSignal Editor setup code s
 
 ## Native Dependencies
 
-The SDK generates the EDM4U manifests per project at `Assets/OneSignal/Editor/OneSignal{Android,iOS}Dependencies.xml` based on the location flag, so the granular (no-location) dependency set below is what EDM4U resolves for this demo.
+The SDK generates Unity EDM manifests per project at `Assets/OneSignal/Editor/OneSignal{Android,iOS}Dependencies.xml` based on the location flag, so the granular (no-location) dependency set below is what Unity EDM resolves for this demo.
 
 ### Android
 
