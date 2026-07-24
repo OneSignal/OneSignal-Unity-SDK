@@ -5,9 +5,6 @@
   "unity": "2022.3",
   "unityRelease": "0f1",
   "description": "Core APIs, editor setup, and shared runtime for the OneSignal Unity SDK. Install the Android and/or iOS package for native platform support.",
-  "dependencies": {
-    "com.unity.modules.jsonserialize": "1.0.0"
-  },
   "keywords": [
     "push-notifications",
     "notification-service",
@@ -31,12 +28,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/OneSignal/OneSignal-Unity-SDK.git"
-  },
-  "samples": [
-    {
-      "displayName": "Full Usage",
-      "description": "A uGUI sample scene implementing the major OneSignal features. Requires com.unity.ugui.",
-      "path": "Samples~"
-    }
-  ]
+  }
 }

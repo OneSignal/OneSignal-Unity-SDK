@@ -10,7 +10,6 @@ ROOT = Path(__file__).resolve().parents[2]
 DEMO = ROOT / "examples/demo"
 DEMO_PROJECTS = (DEMO, ROOT / "examples/demo-no-location")
 BOOTSTRAP = ROOT / "examples/demo/Assets/OneSignal"
-SAMPLE = ROOT / "com.onesignal.unitysdk.core/Samples~"
 INVENTORY = BOOTSTRAP / "Editor/Resources/OneSignalFileInventory.asset"
 PACKAGE_NAMES = (
     "com.onesignal.unitysdk.core",
@@ -34,14 +33,6 @@ EXCLUDED_FILES = {
     "Assets/OneSignal/Editor/OneSignaliOSDependencies.xml",
     "Assets/OneSignal/Editor/OneSignaliOSDependencies.xml.meta",
 }
-REQUIRED_SAMPLE_GUIDS = {
-    "OneSignal.UnityPackage.Example.asmdef.meta": "a28dab59edddfb3448f1fd9318f85c32",
-    "OneSignalExampleBehaviour.cs.meta": "1a40a711031e4cb8b9b3f674dda19d55",
-    "OneSignalExampleScene.unity.meta": "54284d014d2241544a24b57b13c09ac8",
-    "INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta": "792110c4f5f19e64196eb25f41c0b783",
-}
-
-
 def fail(message: str) -> None:
     print(f"Unity distribution validation failed: {message}", file=sys.stderr)
     raise SystemExit(1)
@@ -101,11 +92,11 @@ def validate_packages() -> None:
             fail(f"{name} does not have an HTTPS documentation URL")
         if not package.get("repository", {}).get("url", "").startswith("https://"):
             fail(f"{name} does not have an HTTPS repository URL")
+        if package.get("samples"):
+            fail(f"{name} must not contain samples")
         if name != CORE_PACKAGE:
             if package.get("dependencies", {}).get(CORE_PACKAGE) != core_version:
                 fail(f"{name} does not depend on {CORE_PACKAGE}@{core_version}")
-            if package.get("samples"):
-                fail(f"{name} must not contain samples")
 
     for name in PLATFORM_PACKAGES:
         if packages[name].get("dependencies", {}).get(EDM_PACKAGE) != EDM_VERSION:
@@ -124,45 +115,6 @@ def validate_packages() -> None:
             expected_path = f"file:../../../{name}"
             if manifest["dependencies"].get(name) != expected_path:
                 fail(f"{project_name} does not reference {name} at {expected_path}")
-
-
-def validate_sample() -> None:
-    for filename, expected_guid in REQUIRED_SAMPLE_GUIDS.items():
-        path = SAMPLE / filename
-        if not path.is_file():
-            fail(f"sample is missing {path.relative_to(ROOT)}")
-        match = re.search(r"^guid:\s*(\w+)$", path.read_text(), re.MULTILINE)
-        if match is None or match.group(1) != expected_guid:
-            fail(f"{path.relative_to(ROOT)} does not preserve GUID {expected_guid}")
-
-    scene = (SAMPLE / "OneSignalExampleScene.unity").read_text()
-    if "OneSignalSDK.OneSignalExampleBehaviour" in scene:
-        fail("sample scene contains stale OneSignalExampleBehaviour type references")
-    if "OneSignalExampleBehaviour, OneSignal.UnityPackage.Example" not in scene:
-        fail("sample scene does not contain OneSignalExampleBehaviour button bindings")
-    behaviour = (SAMPLE / "OneSignalExampleBehaviour.cs").read_text()
-    if "ExitLiveActivityAsync" in scene or "LiveActivities.ExitAsync" in behaviour:
-        fail("sample exposes the deprecated Live Activities exit API")
-
-    asmdef = json.loads((SAMPLE / "OneSignal.UnityPackage.Example.asmdef").read_text())
-    required_references = {
-        "OneSignal.Core",
-        "UnityEngine.UI",
-        "UnityEngine.JSONSerializeModule",
-    }
-    if not required_references.issubset(asmdef["references"]):
-        fail("sample assembly is missing required references")
-
-    package = json.loads((ROOT / CORE_PACKAGE / "package.json").read_text())
-    if not any(sample.get("path") == "Samples~" for sample in package.get("samples", [])):
-        fail("core package does not register Samples~")
-    if not any(
-        version.get("name") == "com.onesignal.unitysdk.core"
-        and version.get("expression") == package["version"]
-        and version.get("define") == "ONE_SIGNAL_INSTALLED"
-        for version in asmdef.get("versionDefines", [])
-    ):
-        fail("sample version define does not match the core package version")
 
 
 def main() -> None:
@@ -184,7 +136,6 @@ def main() -> None:
         fail("exportable bootstrap documentation is missing")
     validate_inventory()
     validate_packages()
-    validate_sample()
     print("Unity distribution layout is valid.")
 
 

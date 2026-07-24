@@ -1,7 +1,8 @@
 {
     "name": "OneSignal.iOS.Editor",
     "references": [
-        "OneSignal.Core.Editor"
+        "OneSignal.Core.Editor",
+        "Unity.ExternalDependencyManager.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

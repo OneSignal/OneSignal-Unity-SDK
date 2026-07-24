@@ -99,7 +99,7 @@ with your own. There is a complete guide for this [in the plugin's README](com.o
 [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) page for additional details.
 
 ## Usage
-For a compact implementation of the major SDK features, open **Window > Package Manager**, select **OneSignal Unity SDK - Core**, and import the **Full Usage** sample. The sample requires Unity UI (`com.unity.ugui`). Contributors can find the complete development demo in the repository's `examples/demo` directory.
+Follow the [Unity SDK setup guide](https://documentation.onesignal.com/docs/unity-sdk-setup) to initialize OneSignal. Contributors can find the complete development demo in the repository's `examples/demo` directory.
 
 ### Initialization
 #### Prefab

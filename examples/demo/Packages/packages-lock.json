@@ -13,9 +13,7 @@
       "version": "file:../../../com.onesignal.unitysdk.core",
       "depth": 0,
       "source": "local",
-      "dependencies": {
-        "com.unity.modules.jsonserialize": "1.0.0"
-      }
+      "dependencies": {}
     },
     "com.onesignal.unitysdk.ios": {
       "version": "file:../../../com.onesignal.unitysdk.ios",

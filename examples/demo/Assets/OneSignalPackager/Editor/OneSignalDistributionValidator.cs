@@ -26,7 +26,6 @@
  */
 
 using System;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -39,7 +38,6 @@ namespace OneSignalSDK
         public static void Validate()
         {
             ValidateInventory();
-            ValidateSample();
             Debug.Log("[OneSignalDistributionValidator] Distribution layout is valid.");
         }
 
@@ -77,39 +75,6 @@ namespace OneSignalSDK
                 );
 
             return actualPaths;
-        }
-
-        private static void ValidateSample()
-        {
-            var repositoryRoot = Path.GetFullPath(
-                Path.Combine(Application.dataPath, "..", "..", "..")
-            );
-            var samplePath = Path.Combine(repositoryRoot, "com.onesignal.unitysdk.core", "Samples~");
-            var requiredFiles = new[]
-            {
-                "INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF",
-                "INCONSOLATA-VARIABLEFONT_WDTH,WGHT.TTF.meta",
-                "OneSignal.UnityPackage.Example.asmdef",
-                "OneSignal.UnityPackage.Example.asmdef.meta",
-                "OneSignalExampleBehaviour.cs",
-                "OneSignalExampleBehaviour.cs.meta",
-                "OneSignalExampleScene.unity",
-                "OneSignalExampleScene.unity.meta",
-            };
-            var missingFiles = requiredFiles.Where(file =>
-                !File.Exists(Path.Combine(samplePath, file))
-            );
-            if (missingFiles.Any())
-                throw new InvalidOperationException(
-                    "The Full Usage sample is incomplete."
-                        + FormatPaths(" Missing", missingFiles)
-                );
-
-            var scene = File.ReadAllText(Path.Combine(samplePath, "OneSignalExampleScene.unity"));
-            if (scene.Contains("OneSignalSDK.OneSignalExampleBehaviour"))
-                throw new InvalidOperationException(
-                    "The Full Usage sample scene contains stale OneSignalExampleBehaviour references."
-                );
         }
 
         private static string FormatPaths(string label, System.Collections.Generic.IEnumerable<string> paths)

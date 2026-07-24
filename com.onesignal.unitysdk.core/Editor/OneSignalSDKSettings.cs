@@ -26,9 +26,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using UnityEngine;
 
 namespace OneSignalSDK
 {
@@ -77,7 +77,16 @@ namespace OneSignalSDK
         public static void Save()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_settingsPath));
-            File.WriteAllText(_settingsPath, JsonUtility.ToJson(_settings, true));
+            File.WriteAllText(
+                _settingsPath,
+                Json.Serialize(
+                    new Dictionary<string, object>
+                    {
+                        { nameof(Settings.disableLocation), _settings.disableLocation },
+                    },
+                    true
+                )
+            );
         }
 
         private static readonly string _settingsPath = Path.Combine(
@@ -94,13 +103,22 @@ namespace OneSignalSDK
 
             try
             {
-                return JsonUtility.FromJson<Settings>(File.ReadAllText(_settingsPath))
-                    ?? new Settings();
+                var values =
+                    Json.Deserialize(File.ReadAllText(_settingsPath))
+                    as Dictionary<string, object>;
+                if (
+                    values != null
+                    && values.TryGetValue(nameof(Settings.disableLocation), out var value)
+                    && value is bool disableLocation
+                )
+                    return new Settings { disableLocation = disableLocation };
             }
             catch
             {
                 return new Settings();
             }
+
+            return new Settings();
         }
 
         [Serializable]

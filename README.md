@@ -131,7 +131,7 @@ With the location module disabled, Android resolves OneSignal's native modules w
 When toggling the flag, clear stale native outputs (the generated Xcode project, CocoaPods/Gradle caches, and prior `Build/` artifacts) so a previously linked location module isn't reused.
 
 ## Usage
-For a compact implementation of the major SDK features, open **Window > Package Manager**, select **OneSignal Unity SDK - Core**, and import the **Full Usage** sample. The sample requires Unity UI (`com.unity.ugui`). The repository's complete development demo is available in [`examples/demo`](examples/demo).
+Follow the [Unity SDK setup guide](https://documentation.onesignal.com/docs/unity-sdk-setup) to initialize OneSignal. A complete development demo is available in [`examples/demo`](examples/demo).
 
 ### Initialization
 #### Prefab
