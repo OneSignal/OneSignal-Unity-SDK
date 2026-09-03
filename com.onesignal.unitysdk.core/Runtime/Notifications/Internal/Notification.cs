@@ -125,7 +125,7 @@ namespace OneSignalSDK.Notifications.Internal
         /// <summary>
         /// List of action buttons on the notification
         /// </summary>
-        public List<IActionButton> ActionButtons => actionButtons.ToList<IActionButton>();
+        public List<IActionButton> ActionButtons => actionButtons?.ToList<IActionButton>();
 
         /// <summary>
         /// Raw JSON payload string received from OneSignal
@@ -320,7 +320,7 @@ namespace OneSignalSDK.Notifications.Internal
         /// </summary>
         /// <remarks>Android only</remarks>
         public List<INotificationBase> GroupedNotifications =>
-            groupedNotifications.ToList<INotificationBase>();
+            groupedNotifications?.ToList<INotificationBase>();
 
         #region Native Field Handling
         public List<NotificationBase> groupedNotifications;
