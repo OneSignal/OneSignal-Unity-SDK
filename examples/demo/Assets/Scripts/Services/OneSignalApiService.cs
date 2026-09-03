@@ -18,6 +18,8 @@ namespace OneSignalDemo.Services
 
         private const string DefaultAndroidChannelId = "b3b015d9-c050-4042-8548-dcc34aa44aa4";
 
+        private const string DemoAndroidGroup = "demo-group";
+
         public void SetAppId(string appId) => _appId = appId;
 
         public string GetAppId() => _appId;
@@ -178,6 +180,7 @@ namespace OneSignalDemo.Services
                 ["include_subscription_ids"] = new JArray(subscriptionId),
                 ["headings"] = new JObject { ["en"] = title },
                 ["contents"] = new JObject { ["en"] = body },
+                ["android_group"] = DemoAndroidGroup,
             };
 
         // Retry while the OneSignal backend hasn't yet indexed the freshly

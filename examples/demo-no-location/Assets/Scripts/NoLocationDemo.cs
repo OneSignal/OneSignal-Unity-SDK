@@ -12,6 +12,7 @@ public sealed class NoLocationDemo : MonoBehaviour
     private string _oneSignalAppId = "YOUR-ONESIGNAL-APP-ID";
 
     private const float ReferenceWidth = 393f;
+    private const string DemoAndroidGroup = "demo-group";
     private static readonly Color _backgroundColor = new Color32(248, 249, 250, 255);
     private static readonly Color _primaryColor = new Color32(229, 75, 77, 255);
     private static readonly Color _valueColor = new Color32(47, 52, 55, 255);
@@ -342,7 +343,8 @@ public sealed class NoLocationDemo : MonoBehaviour
             + $"\"app_id\":\"{_oneSignalAppId}\","
             + $"\"include_subscription_ids\":[\"{pushSubscriptionId}\"],"
             + "\"headings\":{\"en\":\"OneSignal No-Location Demo\"},"
-            + "\"contents\":{\"en\":\"This test push was sent without linking the location module.\"}"
+            + "\"contents\":{\"en\":\"This test push was sent without linking the location module.\"},"
+            + $"\"android_group\":\"{DemoAndroidGroup}\""
             + "}";
 
         using var request = new UnityWebRequest(
