@@ -38,11 +38,15 @@ namespace OneSignalSDK.Notifications.Internal
         public string Id => id;
         public string Text => text;
         public string Icon => icon;
+        public string TemplateIcon => templateIcon;
+        public string SystemIcon => systemIcon;
 
         #region Native Field Handling
         public string id;
         public string text;
         public string icon;
+        public string templateIcon;
+        public string systemIcon;
         #endregion
     }
 

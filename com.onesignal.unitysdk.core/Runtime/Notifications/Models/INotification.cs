@@ -46,6 +46,8 @@ namespace OneSignalSDK.Notifications.Models
         string Id { get; }
         string Text { get; }
         string Icon { get; }
+        string TemplateIcon { get; }
+        string SystemIcon { get; }
     }
 
     /// <summary>
