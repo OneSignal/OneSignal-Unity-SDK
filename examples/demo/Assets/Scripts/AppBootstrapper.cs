@@ -1,3 +1,7 @@
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
 using OneSignalSDK;
@@ -15,6 +19,11 @@ namespace OneSignalDemo
         private const string DefaultAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
         private const string PlaceholderAppId = "your-onesignal-app-id";
         private const string Tag = "AppBootstrapper";
+
+        private static readonly JsonSerializerSettings ClickLogJsonSettings = new()
+        {
+            ContractResolver = new PropertiesOnlyContractResolver(),
+        };
 
         [SerializeField]
         private AppViewModel _viewModel;
@@ -57,7 +66,7 @@ namespace OneSignalDemo
 
             _apiService.SetAppId(appId);
 
-            OneSignal.Debug.LogLevel = LogLevel.Verbose;
+            OneSignal.Debug.LogLevel = LogLevel.None;
 #if UNITY_ANDROID && !UNITY_EDITOR
             SetAndroidWebViewDebugging(false);
 #endif
@@ -179,8 +188,36 @@ namespace OneSignalDemo
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
             Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
 
-        private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
-            Debug.Log($"[{Tag}] Notification clicked: {e.Result.ActionId}");
+        private void OnNotificationClicked(object sender, NotificationClickEventArgs e)
+        {
+            Debug.Log($"[OneSignal] Notification click: {e.Notification.Title ?? string.Empty}");
+
+            // to see the full notification click result, uncomment the following code
+            // var notification = JObject.Parse(
+            //     JsonConvert.SerializeObject(
+            //         e.Notification,
+            //         typeof(INotification),
+            //         Formatting.None,
+            //         ClickLogJsonSettings
+            //     )
+            // );
+            // notification.Remove("NotifJO");
+
+            // var click = new JObject
+            // {
+            //     ["Notification"] = notification,
+            //     ["Result"] = JToken.Parse(
+            //         JsonConvert.SerializeObject(
+            //             e.Result,
+            //             typeof(INotificationClickResult),
+            //             Formatting.None,
+            //             ClickLogJsonSettings
+            //         )
+            //     ),
+            // };
+
+            // LogClickJson(click.ToString(Formatting.Indented));
+        }
 
         private void OnNotificationForegroundWillDisplay(
             object sender,
@@ -189,6 +226,39 @@ namespace OneSignalDemo
         {
             Debug.Log($"[{Tag}] Notification received in foreground");
             e.Notification.Display();
+        }
+
+        private static void LogClickJson(string json)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            const int maxChunkLength = 3000;
+            using var androidLog = new AndroidJavaClass("android.util.Log");
+
+            for (var offset = 0; offset < json.Length; )
+            {
+                var length = System.Math.Min(maxChunkLength, json.Length - offset);
+                if (char.IsHighSurrogate(json[offset + length - 1]))
+                    length--;
+
+                androidLog.CallStatic<int>("i", "OneSignal", json.Substring(offset, length));
+                offset += length;
+            }
+#else
+            Debug.Log(json);
+#endif
+        }
+
+        private sealed class PropertiesOnlyContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(
+                MemberInfo member,
+                MemberSerialization memberSerialization
+            )
+            {
+                var property = base.CreateProperty(member, memberSerialization);
+                property.Ignored = member.MemberType != MemberTypes.Property;
+                return property;
+            }
         }
     }
 }
