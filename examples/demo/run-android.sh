@@ -41,6 +41,8 @@ ADB="$(find_adb)"
 
 OUTPUT="$SCRIPT_DIR/Build/Android/onesignal-demo.apk"
 LOG="$SCRIPT_DIR/Build/build-android.log"
+APP_BUNDLE_ID="com.onesignal.example"
+APP_ACTIVITY="com.unity3d.player.UnityPlayerActivity"
 INSTALL=true
 SKIP_BUILD=false
 
@@ -100,5 +102,11 @@ if [ "$INSTALL" = true ] && [ -n "$EMULATOR" ]; then
   "$ADB" -s "$EMULATOR" wait-for-device
   echo "Installing on $EMULATOR..."
   "$ADB" -s "$EMULATOR" install -r "$OUTPUT"
-  "$ADB" -s "$EMULATOR" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
+  "$ADB" -s "$EMULATOR" shell am start -W -n "$APP_BUNDLE_ID/$APP_ACTIVITY"
+
+  APP_PID=$("$ADB" -s "$EMULATOR" shell pidof -s "$APP_BUNDLE_ID" | tr -d '\r')
+  [ -z "$APP_PID" ] && echo "App launched, but its process could not be found." && exit 1
+
+  echo "Console attached (press Ctrl-C to detach)..."
+  "$ADB" -s "$EMULATOR" logcat --pid="$APP_PID"
 fi
