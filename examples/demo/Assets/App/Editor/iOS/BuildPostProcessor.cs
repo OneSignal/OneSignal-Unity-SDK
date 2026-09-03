@@ -56,13 +56,24 @@ namespace App.Editor.iOS
 
         private static readonly string SoundsSourceDir = Path.Combine("iOS", "Sounds");
         private static readonly string[] CustomSoundFiles = new string[] { "vine_boom.wav" };
+        private static readonly string NotificationIconsSourceDir = Path.Combine(
+            "iOS",
+            "NotificationIcons"
+        );
+        private static readonly string[] NotificationIconFiles = new string[]
+        {
+            "template-bookmark-icon.png",
+            "template-share-icon.png",
+        };
+        private const string NotificationServiceExtensionTargetName =
+            "OneSignalNotificationServiceExtension";
 
         /// <summary>
         /// must be between 40 and 50 to ensure that it's not overriden by Podfile generation (40) and that it's
         /// added before "pod install" (50)
         /// https://github.com/googlesamples/unity-jar-resolver#appending-text-to-generated-podfile
         /// </summary>
-        public int callbackOrder => 45;
+        public int callbackOrder => 46;
 
         public void OnPostprocessBuild(BuildReport report)
         {
@@ -81,6 +92,7 @@ namespace App.Editor.iOS
             EnableAppForLiveActivities(report.summary.outputPath);
             CreateWidgetExtension(report.summary.outputPath);
             AddCustomSoundsToMainTarget(report.summary.outputPath);
+            AddNotificationIconsToTargets(report.summary.outputPath);
 
             Debug.Log("BuildPostProcessor.OnPostprocessBuild complete");
         }
@@ -139,6 +151,51 @@ namespace App.Editor.iOS
 
                 var fileGuid = project.AddFile(fileName, fileName);
                 project.AddFileToBuild(mainTargetGuid, fileGuid);
+            }
+
+            project.WriteToFile(projectPath);
+        }
+
+        static void AddNotificationIconsToTargets(string outputPath)
+        {
+            var project = new PBXProject();
+            var projectPath = PBXProject.GetPBXProjectPath(outputPath);
+            project.ReadFromString(File.ReadAllText(projectPath));
+
+            var mainTargetGuid = project.GetUnityMainTargetGuid();
+            var extensionTargetGuid = project.TargetGuidByName(
+                NotificationServiceExtensionTargetName
+            );
+
+            if (string.IsNullOrEmpty(extensionTargetGuid))
+            {
+                Debug.LogWarning(
+                    $"{NotificationServiceExtensionTargetName} target is missing; notification icons will only be bundled with the main app."
+                );
+            }
+
+            foreach (var fileName in NotificationIconFiles)
+            {
+                var sourcePath = Path.Combine(NotificationIconsSourceDir, fileName);
+                if (!File.Exists(sourcePath))
+                {
+                    Debug.LogWarning(
+                        $"Notification action icon missing at {sourcePath}; skipping iOS bundling."
+                    );
+                    continue;
+                }
+
+                var destAbsolutePath = Path.Combine(outputPath, fileName);
+                File.Copy(sourcePath, destAbsolutePath, true);
+
+                var fileGuid = project.FindFileGuidByProjectPath(fileName);
+                if (string.IsNullOrEmpty(fileGuid))
+                    fileGuid = project.AddFile(fileName, fileName);
+
+                project.AddFileToBuild(mainTargetGuid, fileGuid);
+
+                if (!string.IsNullOrEmpty(extensionTargetGuid))
+                    project.AddFileToBuild(extensionTargetGuid, fileGuid);
             }
 
             project.WriteToFile(projectPath);

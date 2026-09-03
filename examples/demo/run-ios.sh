@@ -151,9 +151,19 @@ else
   echo ""
 
   START=$(date +%s)
-  "$UNITY" -batchmode -nographics -quit -buildTarget iOS \
+  if ! "$UNITY" -batchmode -nographics -quit -buildTarget iOS \
     -projectPath "$SCRIPT_DIR" -executeMethod BuildScript.BuildiOSSimulator \
-    -logFile "$LOG"
+    -logFile "$LOG"; then
+    ELAPSED=$(( $(date +%s) - START ))
+    if grep -q "No valid Unity Editor license found" "$LOG"; then
+      echo "Unity build failed: no valid Unity Editor license is active."
+      echo "Open Unity Hub, sign in and activate a license, then re-run this script."
+    else
+      echo "Unity build failed after $((ELAPSED/60))m $((ELAPSED%60))s."
+      echo "Check the log for details: $LOG"
+    fi
+    exit 1
+  fi
   ELAPSED=$(( $(date +%s) - START ))
 
   [ ! -d "$XCODE_DIR/Unity-iPhone.xcodeproj" ] && echo "Build failed after $((ELAPSED/60))m $((ELAPSED%60))s. Check $LOG" && exit 1
@@ -193,5 +203,6 @@ if [ "$INSTALL" = true ] && [ -n "$SIM_UDID" ]; then
 
   echo "Installing on $SIM_NAME..."
   xcrun simctl install "$SIM_UDID" "$APP_PATH"
-  xcrun simctl launch "$SIM_UDID" "$APP_BUNDLE_ID"
+  echo "Launching with console attached (press Ctrl-C to detach)..."
+  xcrun simctl launch --console "$SIM_UDID" "$APP_BUNDLE_ID"
 fi
