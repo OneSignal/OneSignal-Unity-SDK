@@ -171,6 +171,17 @@ if [ "$INSTALL" = true ] && [ -n "$SIM_UDID" ]; then
   WS="$XCODE_DIR/Unity-iPhone.xcworkspace"
   [ ! -d "$WS" ] && WS=""
 
+  # macos ships openrsync as /usr/bin/rsync, which fails the CocoaPods "Copy
+  # XCFrameworks" phase ("renameat: No such file or directory" on the dSYM
+  # DWARF). Prefer a real rsync (brew install rsync) on PATH if present.
+  if [ -x /opt/homebrew/bin/rsync ]; then
+    PATH="/opt/homebrew/bin:$PATH"
+    export PATH
+  elif [ -x /usr/local/bin/rsync ]; then
+    PATH="/usr/local/bin:$PATH"
+    export PATH
+  fi
+
   BUILD_START=$(date +%s)
   if [ -n "$WS" ]; then
     xcodebuild -workspace "$WS" -scheme "$SCHEME" \

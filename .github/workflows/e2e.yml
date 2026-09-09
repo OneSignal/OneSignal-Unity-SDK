@@ -166,9 +166,79 @@ jobs:
           allowDirtyBuild: true
           cacheUnityInstallationOnMac: true
 
+      - name: Install GNU rsync
+        # macos-latest ships openrsync as /usr/bin/rsync. CocoaPods
+        # [CP] Copy XCFrameworks uses rsync --delete, and openrsync fails
+        # with renameat on OneSignalCore dSYMs.
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install rsync
+          echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
+          echo "/usr/local/bin" >> "$GITHUB_PATH"
+
       - name: Pod install
         working-directory: examples/demo/Build/iOS
         run: pod install --repo-update
+
+      - name: Serialize XCFramework rsync
+        # App, NSE, and widget each run [CP] Copy XCFrameworks into the same
+        # PODS_XCFRAMEWORKS_BUILD_DIR. Parallel rsync --delete races on dSYM
+        # temp files. The SDK Podfile post_install injects a mkdir lock;
+        # this step is the CI backstop if that hook did not run.
+        working-directory: examples/demo/Build/iOS
+        run: |
+          python3 - <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          marker = "ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK"
+          wrapper = """# ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK
+          rsync() {
+            if [ "$1" = "--delete" ]; then
+              _dest="$1"
+              for _dest; do :; done
+              _lock="${TMPDIR:-/tmp}/onesignal-xcframework-$(printf '%s' "${_dest}" | shasum | awk '{print $1}').lock"
+              _waited=0
+              while ! mkdir "${_lock}" 2>/dev/null; do
+                sleep 0.1
+                _waited=$((_waited + 1))
+                if [ "${_waited}" -ge 6000 ]; then
+                  echo "warning: removing stale OneSignal XCFramework rsync lock ${_lock}"
+                  rmdir "${_lock}" 2>/dev/null || true
+                fi
+              done
+              command rsync "$@"
+              _status=$?
+              rmdir "${_lock}" 2>/dev/null || true
+              return ${_status}
+            fi
+            command rsync "$@"
+          }
+
+          """
+
+          root = Path("Pods/Target Support Files")
+          scripts = sorted(root.rglob("*xcframeworks.sh"))
+          if not scripts:
+              print("::error::No CocoaPods xcframeworks.sh scripts found", file=sys.stderr)
+              sys.exit(1)
+
+          patched = 0
+          for script in scripts:
+              text = script.read_text()
+              if marker in text:
+                  patched += 1
+                  continue
+              match = re.match(r"(#!/bin/[^\n]+\n(?:set .*\n)*)", text)
+              if match:
+                  text = match.group(1) + wrapper + text[match.end() :]
+              else:
+                  text = wrapper + text
+              script.write_text(text)
+              patched += 1
+
+          print(f"Serialized rsync in {patched} xcframeworks.sh script(s)")
+          PY
 
       - name: Set up iOS codesigning
         uses: OneSignal/sdk-shared/.github/actions/setup-ios-demo-codesigning@main
@@ -188,6 +258,7 @@ jobs:
         # SigningPostProcessor already pinned DEVELOPMENT_TEAM and the NSE /
         # Live Activity bundle IDs to match ExportOptions.plist.
         run: |
+          export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           if [ -d Unity-iPhone.xcworkspace ]; then
             CONTAINER_ARGS=(-workspace Unity-iPhone.xcworkspace)
           else

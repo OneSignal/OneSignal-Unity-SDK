@@ -338,7 +338,72 @@ namespace OneSignalSDK.iOS
             if (!podfile.Contains("disable_input_output_paths"))
                 podfile = "install! 'cocoapods', :disable_input_output_paths => true\n" + podfile;
 
+            // Those copy phases still run in parallel and rsync --delete races on
+            // shared dSYM temp files. The post_install lock serializes copies of
+            // the same destination.
+            EnsureXcframeworkRsyncLock(ref podfile);
+
             File.WriteAllText(podfilePath, podfile);
+        }
+
+        private const string XcframeworkRsyncLockMarker = "ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK";
+
+        // Injected into the Podfile. CocoaPods only allows one post_install hook,
+        // so this is merged into an existing block when present.
+        private const string XcframeworkRsyncLockBody =
+            @"
+  Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*xcframeworks.sh')).each do |script|
+    contents = File.read(script)
+    next if contents.include?('ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK')
+    wrapper = <<'ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK'
+# ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK
+rsync() {
+  if [ ""$1"" = ""--delete"" ]; then
+    _dest=""$1""
+    for _dest; do :; done
+    _lock=""${TMPDIR:-/tmp}/onesignal-xcframework-$(printf '%s' ""${_dest}"" | shasum | awk '{print $1}').lock""
+    _waited=0
+    while ! mkdir ""${_lock}"" 2>/dev/null; do
+      sleep 0.1
+      _waited=$((_waited + 1))
+      if [ ""${_waited}"" -ge 6000 ]; then
+        echo ""warning: removing stale OneSignal XCFramework rsync lock ${_lock}""
+        rmdir ""${_lock}"" 2>/dev/null || true
+      fi
+    done
+    command rsync ""$@""
+    _status=$?
+    rmdir ""${_lock}"" 2>/dev/null || true
+    return ${_status}
+  fi
+  command rsync ""$@""
+}
+
+ONESIGNAL_XCFRAMEWORK_RSYNC_LOCK
+    if contents.sub!(/\A(#!\/bin\/[^\n]+\n(?:set .*\n)*)/, ""\\1#{wrapper}"")
+      File.write(script, contents)
+    else
+      File.write(script, wrapper + contents)
+    end
+  end
+";
+
+        private static void EnsureXcframeworkRsyncLock(ref string podfile)
+        {
+            if (podfile.Contains(XcframeworkRsyncLockMarker))
+                return;
+
+            var existing = Regex.Match(podfile, @"post_install do \|installer\|\s*\n");
+            if (existing.Success)
+            {
+                podfile = podfile.Insert(
+                    existing.Index + existing.Length,
+                    XcframeworkRsyncLockBody
+                );
+                return;
+            }
+
+            podfile += "\npost_install do |installer|" + XcframeworkRsyncLockBody + "end\n";
         }
 
         private void ConfigureLocationModule()
