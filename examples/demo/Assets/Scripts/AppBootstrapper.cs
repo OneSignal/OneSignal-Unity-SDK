@@ -195,7 +195,7 @@ namespace OneSignalDemo
             Debug.Log($"[OneSignal] Notification click: {e.Notification.Title ?? string.Empty}");
 
             // uncomment to see the full event object
-            LogJson("[OneSignal] click event:", e);
+            // LogJson("[OneSignal] click event:", e);
         }
 
         private void OnNotificationForegroundWillDisplay(
@@ -208,7 +208,7 @@ namespace OneSignalDemo
             );
 
             // uncomment to see the full notification object
-            LogJson("[OneSignal] will display event:", e.Notification);
+            // LogJson("[OneSignal] will display event:", e.Notification);
 
             // uncomment to test preventing the default display behavior
             // e.PreventDefault();
