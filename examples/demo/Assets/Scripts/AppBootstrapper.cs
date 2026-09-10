@@ -1,6 +1,6 @@
+using System.Collections;
 using System.Reflection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
@@ -20,9 +20,11 @@ namespace OneSignalDemo
         private const string PlaceholderAppId = "your-onesignal-app-id";
         private const string Tag = "AppBootstrapper";
 
-        private static readonly JsonSerializerSettings ClickLogJsonSettings = new()
+        private static readonly JsonSerializerSettings EventLogJsonSettings = new()
         {
-            ContractResolver = new PropertiesOnlyContractResolver(),
+            ContractResolver = new PropertiesOnlyCamelCaseContractResolver(),
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            NullValueHandling = NullValueHandling.Ignore,
         };
 
         [SerializeField]
@@ -192,31 +194,8 @@ namespace OneSignalDemo
         {
             Debug.Log($"[OneSignal] Notification click: {e.Notification.Title ?? string.Empty}");
 
-            // to see the full notification click result, uncomment the following code
-            // var notification = JObject.Parse(
-            //     JsonConvert.SerializeObject(
-            //         e.Notification,
-            //         typeof(INotification),
-            //         Formatting.None,
-            //         ClickLogJsonSettings
-            //     )
-            // );
-            // notification.Remove("NotifJO");
-
-            // var click = new JObject
-            // {
-            //     ["Notification"] = notification,
-            //     ["Result"] = JToken.Parse(
-            //         JsonConvert.SerializeObject(
-            //             e.Result,
-            //             typeof(INotificationClickResult),
-            //             Formatting.None,
-            //             ClickLogJsonSettings
-            //         )
-            //     ),
-            // };
-
-            // LogClickJson(click.ToString(Formatting.Indented));
+            // uncomment to see the full event object
+            LogJson("[OneSignal] click event:", e);
         }
 
         private void OnNotificationForegroundWillDisplay(
@@ -224,12 +203,47 @@ namespace OneSignalDemo
             NotificationWillDisplayEventArgs e
         )
         {
-            Debug.Log($"[{Tag}] Notification received in foreground");
-            e.Notification.Display();
+            Debug.Log(
+                $"[OneSignal] Notification foregroundWillDisplay: {e.Notification.Title ?? string.Empty}"
+            );
+
+            // uncomment to see the full notification object
+            LogJson("[OneSignal] will display event:", e.Notification);
+
+            // uncomment to test preventing the default display behavior
+            // e.PreventDefault();
+
+            // call this after PreventDefault() (within about 25 seconds) to force display
+            // e.Notification.Display();
+
+            // example with a delay (assumes PreventDefault() was called)
+            // StartCoroutine(DisplayNotificationAfterDelay(e.Notification, 24));
         }
 
-        private static void LogClickJson(string json)
+        private static IEnumerator DisplayNotificationAfterDelay(
+            IDisplayableNotification notification,
+            int seconds
+        )
         {
+            Debug.Log($"[OneSignal] Forcing notification display in {seconds} seconds");
+
+            while (seconds > 0)
+            {
+                Debug.Log($"[OneSignal] Displaying notification in {seconds} seconds");
+                yield return new WaitForSecondsRealtime(1);
+                seconds--;
+            }
+
+            Debug.Log("[OneSignal] Displaying notification");
+            notification.Display();
+        }
+
+        private static void LogJson(string label, object value)
+        {
+            var json =
+                $"{label}\n"
+                + JsonConvert.SerializeObject(value, Formatting.Indented, EventLogJsonSettings);
+
 #if UNITY_ANDROID && !UNITY_EDITOR
             const int maxChunkLength = 3000;
             using var androidLog = new AndroidJavaClass("android.util.Log");
@@ -248,7 +262,8 @@ namespace OneSignalDemo
 #endif
         }
 
-        private sealed class PropertiesOnlyContractResolver : DefaultContractResolver
+        private sealed class PropertiesOnlyCamelCaseContractResolver
+            : CamelCasePropertyNamesContractResolver
         {
             protected override JsonProperty CreateProperty(
                 MemberInfo member,

@@ -120,9 +120,9 @@ namespace OneSignalSDK.Notifications.Models
         List<IActionButton> ActionButtons { get; }
 
         /// <summary>
-        /// Raw JSON payload string received from OneSignal
+        /// Raw payload received from OneSignal
         /// </summary>
-        string RawPayload { get; }
+        IDictionary<string, object> RawPayload { get; }
 
         #region Android
         /// <summary>

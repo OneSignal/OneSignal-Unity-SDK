@@ -128,9 +128,9 @@ namespace OneSignalSDK.Notifications.Internal
         public List<IActionButton> ActionButtons => actionButtons?.ToList<IActionButton>();
 
         /// <summary>
-        /// Raw JSON payload string received from OneSignal
+        /// Raw payload received from OneSignal
         /// </summary>
-        public string RawPayload => rawPayload;
+        public IDictionary<string, object> RawPayload => rawPayload;
 
         #region Android
         /// <summary>
@@ -286,7 +286,7 @@ namespace OneSignalSDK.Notifications.Internal
         public string collapseId;
         public IDictionary<string, object> additionalData;
         public List<ActionButton> actionButtons;
-        public string rawPayload;
+        public IDictionary<string, object> rawPayload;
         public int androidNotificationId;
         public string smallIcon;
         public string largeIcon;

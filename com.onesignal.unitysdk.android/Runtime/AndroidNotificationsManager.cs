@@ -279,7 +279,8 @@ namespace OneSignalSDK.Android.Notifications
             if (rawPayloadJson != null)
             {
                 var rawPayloadJsonStr = rawPayloadJson.Call<string>("toString");
-                notification.rawPayload = rawPayloadJsonStr;
+                notification.rawPayload =
+                    Json.Deserialize(rawPayloadJsonStr) as Dictionary<string, object>;
             }
 
             // attach the Java-Object to the notifification just built.
