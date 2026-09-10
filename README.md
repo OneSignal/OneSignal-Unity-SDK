@@ -52,7 +52,7 @@ And via many additional platforms. [Check them all out](https://documentation.on
 - iOS Builds: CocoaPods 1.11.3 or newer
 - In order to test push notifications you will need
   - An Android 7 or newer device or emulator with "Google Play Store (Services)" installed
-  - An iOS 11 or newer device (iPhone, iPad, or iPod Touch)
+  - An iOS 12 or newer device (iPhone, iPad, or iPod Touch)
 
 ### Push Notification Credentials
 You must generate the appropriate credentials for the platform(s) you are releasing on:
