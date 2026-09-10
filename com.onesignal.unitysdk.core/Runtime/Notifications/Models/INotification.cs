@@ -46,7 +46,17 @@ namespace OneSignalSDK.Notifications.Models
         string Id { get; }
         string Text { get; }
         string Icon { get; }
+
+        /// <summary>
+        /// Template image name for the action button icon
+        /// </summary>
+        /// <remarks>iOS only</remarks>
         string TemplateIcon { get; }
+
+        /// <summary>
+        /// SF Symbol name for the action button icon
+        /// </summary>
+        /// <remarks>iOS only</remarks>
         string SystemIcon { get; }
     }
 

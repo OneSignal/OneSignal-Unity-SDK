@@ -68,7 +68,7 @@ namespace OneSignalDemo
 
             _apiService.SetAppId(appId);
 
-            OneSignal.Debug.LogLevel = LogLevel.None;
+            OneSignal.Debug.LogLevel = LogLevel.Verbose;
 #if UNITY_ANDROID && !UNITY_EDITOR
             SetAndroidWebViewDebugging(false);
 #endif
