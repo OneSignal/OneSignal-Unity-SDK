@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
 using OneSignalSDK;
@@ -15,6 +19,13 @@ namespace OneSignalDemo
         private const string DefaultAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
         private const string PlaceholderAppId = "your-onesignal-app-id";
         private const string Tag = "AppBootstrapper";
+
+        private static readonly JsonSerializerSettings EventLogJsonSettings = new()
+        {
+            ContractResolver = new PropertiesOnlyCamelCaseContractResolver(),
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            NullValueHandling = NullValueHandling.Ignore,
+        };
 
         [SerializeField]
         private AppViewModel _viewModel;
@@ -179,16 +190,90 @@ namespace OneSignalDemo
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
             Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
 
-        private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
-            Debug.Log($"[{Tag}] Notification clicked: {e.Result.ActionId}");
+        private void OnNotificationClicked(object sender, NotificationClickEventArgs e)
+        {
+            Debug.Log($"[OneSignal] Notification click: {e.Notification.Title ?? string.Empty}");
+
+            // uncomment to see the full event object
+            // LogJson("[OneSignal] click event:", e);
+        }
 
         private void OnNotificationForegroundWillDisplay(
             object sender,
             NotificationWillDisplayEventArgs e
         )
         {
-            Debug.Log($"[{Tag}] Notification received in foreground");
-            e.Notification.Display();
+            Debug.Log(
+                $"[OneSignal] Notification foregroundWillDisplay: {e.Notification.Title ?? string.Empty}"
+            );
+
+            // uncomment to see the full notification object
+            // LogJson("[OneSignal] will display event:", e.Notification);
+
+            // uncomment to test preventing the default display behavior
+            // e.PreventDefault();
+
+            // call this after PreventDefault() (within about 25 seconds) to force display
+            // e.Notification.Display();
+
+            // example with a delay (assumes PreventDefault() was called)
+            // StartCoroutine(DisplayNotificationAfterDelay(e.Notification, 24));
+        }
+
+        private static IEnumerator DisplayNotificationAfterDelay(
+            IDisplayableNotification notification,
+            int seconds
+        )
+        {
+            Debug.Log($"[OneSignal] Forcing notification display in {seconds} seconds");
+
+            while (seconds > 0)
+            {
+                Debug.Log($"[OneSignal] Displaying notification in {seconds} seconds");
+                yield return new WaitForSecondsRealtime(1);
+                seconds--;
+            }
+
+            Debug.Log("[OneSignal] Displaying notification");
+            notification.Display();
+        }
+
+        private static void LogJson(string label, object value)
+        {
+            var json =
+                $"{label}\n"
+                + JsonConvert.SerializeObject(value, Formatting.Indented, EventLogJsonSettings);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            const int maxChunkLength = 3000;
+            using var androidLog = new AndroidJavaClass("android.util.Log");
+
+            for (var offset = 0; offset < json.Length; )
+            {
+                var length = System.Math.Min(maxChunkLength, json.Length - offset);
+                if (char.IsHighSurrogate(json[offset + length - 1]))
+                    length--;
+
+                androidLog.CallStatic<int>("i", "OneSignal", json.Substring(offset, length));
+                offset += length;
+            }
+#else
+            Debug.Log(json);
+#endif
+        }
+
+        private sealed class PropertiesOnlyCamelCaseContractResolver
+            : CamelCasePropertyNamesContractResolver
+        {
+            protected override JsonProperty CreateProperty(
+                MemberInfo member,
+                MemberSerialization memberSerialization
+            )
+            {
+                var property = base.CreateProperty(member, memberSerialization);
+                property.Ignored = member.MemberType != MemberTypes.Property;
+                return property;
+            }
         }
     }
 }

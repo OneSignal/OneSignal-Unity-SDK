@@ -38,11 +38,15 @@ namespace OneSignalSDK.Notifications.Internal
         public string Id => id;
         public string Text => text;
         public string Icon => icon;
+        public string TemplateIcon => templateIcon;
+        public string SystemIcon => systemIcon;
 
         #region Native Field Handling
         public string id;
         public string text;
         public string icon;
+        public string templateIcon;
+        public string systemIcon;
         #endregion
     }
 
@@ -121,12 +125,12 @@ namespace OneSignalSDK.Notifications.Internal
         /// <summary>
         /// List of action buttons on the notification
         /// </summary>
-        public List<IActionButton> ActionButtons => actionButtons.ToList<IActionButton>();
+        public List<IActionButton> ActionButtons => actionButtons?.ToList<IActionButton>();
 
         /// <summary>
-        /// Raw JSON payload string received from OneSignal
+        /// Raw payload received from OneSignal
         /// </summary>
-        public string RawPayload => rawPayload;
+        public IDictionary<string, object> RawPayload => rawPayload;
 
         #region Android
         /// <summary>
@@ -282,7 +286,7 @@ namespace OneSignalSDK.Notifications.Internal
         public string collapseId;
         public IDictionary<string, object> additionalData;
         public List<ActionButton> actionButtons;
-        public string rawPayload;
+        public IDictionary<string, object> rawPayload;
         public int androidNotificationId;
         public string smallIcon;
         public string largeIcon;
@@ -316,7 +320,7 @@ namespace OneSignalSDK.Notifications.Internal
         /// </summary>
         /// <remarks>Android only</remarks>
         public List<INotificationBase> GroupedNotifications =>
-            groupedNotifications.ToList<INotificationBase>();
+            groupedNotifications?.ToList<INotificationBase>();
 
         #region Native Field Handling
         public List<NotificationBase> groupedNotifications;

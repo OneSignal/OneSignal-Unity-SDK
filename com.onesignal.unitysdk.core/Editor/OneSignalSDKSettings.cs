@@ -104,8 +104,7 @@ namespace OneSignalSDK
             try
             {
                 var values =
-                    Json.Deserialize(File.ReadAllText(_settingsPath))
-                    as Dictionary<string, object>;
+                    Json.Deserialize(File.ReadAllText(_settingsPath)) as Dictionary<string, object>;
                 if (
                     values != null
                     && values.TryGetValue(nameof(Settings.disableLocation), out var value)

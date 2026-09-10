@@ -73,3 +73,14 @@ Then configure your play settings and set `Target SDK` to `Simulator SDK`
 Then click `Build and Run` and select a location for the Xcode project. Or click `Build` to use your own simulator.
 
 ![iOS Example 2](docs/ios-example-2.png)
+
+### iOS action button icons
+
+The generated Xcode project bundles shared action button icons in both the main app and `OneSignalNotificationServiceExtension` targets.
+
+Create an image notification in the OneSignal dashboard with these action buttons:
+
+- **Save Story** with icon `template-bookmark-icon`
+- **Share** with icon `template-share-icon`
+
+Enter the icon names without the `.png` extension. On an iOS 15 or newer physical device, expand the notification and verify that both icons render.

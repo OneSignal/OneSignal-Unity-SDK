@@ -46,6 +46,18 @@ namespace OneSignalSDK.Notifications.Models
         string Id { get; }
         string Text { get; }
         string Icon { get; }
+
+        /// <summary>
+        /// Template image name for the action button icon
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        string TemplateIcon { get; }
+
+        /// <summary>
+        /// SF Symbol name for the action button icon
+        /// </summary>
+        /// <remarks>iOS only</remarks>
+        string SystemIcon { get; }
     }
 
     /// <summary>
@@ -118,9 +130,9 @@ namespace OneSignalSDK.Notifications.Models
         List<IActionButton> ActionButtons { get; }
 
         /// <summary>
-        /// Raw JSON payload string received from OneSignal
+        /// Raw payload received from OneSignal
         /// </summary>
-        string RawPayload { get; }
+        IDictionary<string, object> RawPayload { get; }
 
         #region Android
         /// <summary>

@@ -256,8 +256,48 @@ namespace OneSignalSDK.Android.Notifications
         private static AndroidDisplayableNotification _getNotification(AndroidJavaObject notifJO)
         {
             var notification = notifJO.ToSerializable<AndroidDisplayableNotification>();
+            _fillNotificationDictionaries(notification, notifJO);
 
-            var dataJson = notifJO.Call<AndroidJavaObject>("getAdditionalData");
+            var groupedNotificationsJson = notifJO.Call<AndroidJavaObject>(
+                "getGroupedNotifications"
+            );
+            if (groupedNotificationsJson != null)
+                notification.groupedNotifications = _getGroupedNotifications(
+                    groupedNotificationsJson
+                );
+
+            // attach the Java-Object to the notifification just built.
+            notification.NotifJO = notifJO;
+
+            return notification;
+        }
+
+        private static List<NotificationBase> _getGroupedNotifications(
+            AndroidJavaObject groupedNotifications
+        )
+        {
+            var count = groupedNotifications.Call<int>("size");
+            var notifications = new List<NotificationBase>(count);
+            for (var index = 0; index < count; index++)
+            {
+                using var notificationJO = groupedNotifications.Call<AndroidJavaObject>(
+                    "get",
+                    index
+                );
+                var notification = notificationJO.ToSerializable<NotificationBase>();
+                _fillNotificationDictionaries(notification, notificationJO);
+                notifications.Add(notification);
+            }
+
+            return notifications;
+        }
+
+        private static void _fillNotificationDictionaries(
+            NotificationBase notification,
+            AndroidJavaObject notificationJO
+        )
+        {
+            var dataJson = notificationJO.Call<AndroidJavaObject>("getAdditionalData");
             if (dataJson != null)
             {
                 var dataJsonStr = dataJson.Call<string>("toString");
@@ -265,27 +305,13 @@ namespace OneSignalSDK.Android.Notifications
                     Json.Deserialize(dataJsonStr) as Dictionary<string, object>;
             }
 
-            var groupedNotificationsJson = notifJO.Call<AndroidJavaObject>(
-                "getGroupedNotifications"
-            );
-            if (groupedNotificationsJson != null)
-            {
-                var groupedNotificationsStr = groupedNotificationsJson.Call<string>("toString");
-                notification.groupedNotifications =
-                    Json.Deserialize(groupedNotificationsStr) as List<NotificationBase>;
-            }
-
-            var rawPayloadJson = notifJO.Call<AndroidJavaObject>("getRawPayload");
+            var rawPayloadJson = notificationJO.Call<AndroidJavaObject>("getRawPayload");
             if (rawPayloadJson != null)
             {
                 var rawPayloadJsonStr = rawPayloadJson.Call<string>("toString");
-                notification.rawPayload = rawPayloadJsonStr;
+                notification.rawPayload =
+                    Json.Deserialize(rawPayloadJsonStr) as Dictionary<string, object>;
             }
-
-            // attach the Java-Object to the notifification just built.
-            notification.NotifJO = notifJO;
-
-            return notification;
         }
     }
 }

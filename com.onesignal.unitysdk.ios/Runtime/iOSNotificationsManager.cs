@@ -263,7 +263,7 @@ namespace OneSignalSDK.iOS.Notifications
                 notifDict.ContainsKey("rawPayload")
                 && notifDict["rawPayload"] is Dictionary<string, object> payloadDict
             )
-                notif.rawPayload = Json.Serialize(payloadDict);
+                notif.rawPayload = payloadDict;
         }
 
         [AOT.MonoPInvokeCallback(typeof(BooleanResponseDelegate))]

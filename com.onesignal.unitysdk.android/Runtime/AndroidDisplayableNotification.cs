@@ -34,7 +34,7 @@ namespace OneSignalSDK.Android.Notifications.Models
 {
     public sealed class AndroidDisplayableNotification : Notification, IDisplayableNotification
     {
-        public AndroidJavaObject NotifJO { get; set; }
+        internal AndroidJavaObject NotifJO { get; set; }
 
         public void Display() => NotifJO?.Call("display");
     }
