@@ -194,6 +194,7 @@ jobs:
             CONTAINER_ARGS=(-project Unity-iPhone.xcodeproj)
           fi
           xcodebuild archive \
+            -jobs 1 \
             "${CONTAINER_ARGS[@]}" \
             -scheme Unity-iPhone \
             -configuration Release \
