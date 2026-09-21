@@ -104,7 +104,7 @@ onesignal_version = next(
 lines = [
     "source 'https://cdn.cocoapods.org/'",
     "install! 'cocoapods', :disable_input_output_paths => true",
-    "platform :ios, '13.0'",
+    "platform :ios, '15.0'",
     "use_frameworks! :linkage => :static",
     "",
 ]
