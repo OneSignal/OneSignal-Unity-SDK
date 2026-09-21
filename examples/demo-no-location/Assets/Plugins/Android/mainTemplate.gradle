@@ -8,9 +8,10 @@ apply from: '../shared/common.gradle'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.onesignal:core:5.9.5' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
-    implementation 'com.onesignal:notifications:5.9.5' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
-    implementation 'com.onesignal:in-app-messages:5.9.5' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+    implementation 'com.google.firebase:firebase-messaging:25.1.0' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+    implementation 'com.onesignal:core:5.11.0-rc' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+    implementation 'com.onesignal:in-app-messages:5.11.0-rc' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
+    implementation 'com.onesignal:notifications:5.11.0-rc' // Assets/OneSignal/Editor/OneSignalAndroidDependencies.xml
 // Android Resolver Dependencies End
 **DEPS**}
 

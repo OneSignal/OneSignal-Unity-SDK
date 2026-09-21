@@ -1,6 +1,7 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:OneSignal:5.10.2</package>
+    <package>com.google.firebase:firebase-messaging:25.1.0</package>
+    <package>com.onesignal:OneSignal:5.11.0-rc</package>
   </packages>
   <files />
   <settings>

@@ -8,6 +8,11 @@
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
   <application>
+    <meta-data
+      android:name="firebase_messaging_installation_id_enabled"
+      android:value="true"
+      tools:replace="android:value"
+    />
     <activity
       android:name="com.unity3d.player.UnityPlayerActivity"
       android:theme="@style/UnityThemeSelector"

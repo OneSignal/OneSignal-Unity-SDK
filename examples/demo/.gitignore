@@ -69,6 +69,9 @@ crashlytics-build.properties
 Assets/StreamingAssets/.env
 Assets/StreamingAssets/.env.meta
 
+# Firebase credentials
+/Assets/Plugins/Android/GoogleServices.androidlib/src/main/res/values/google-services.xml
+
 # Generated empty framework leftover (not part of the SDK)
 /Assets/StreamingAssets/SwiftPlugin.framework/
 /Assets/StreamingAssets/SwiftPlugin.framework.meta

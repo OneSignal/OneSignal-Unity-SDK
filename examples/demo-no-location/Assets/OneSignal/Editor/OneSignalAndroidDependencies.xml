@@ -3,8 +3,9 @@
     <repositories>
       <repository>https://repo.maven.apache.org/maven2</repository>
     </repositories>
-    <androidPackage spec="com.onesignal:core:5.9.5" />
-    <androidPackage spec="com.onesignal:notifications:5.9.5" />
-    <androidPackage spec="com.onesignal:in-app-messages:5.9.5" />
+    <androidPackage spec="com.onesignal:core:5.11.0-rc" />
+    <androidPackage spec="com.onesignal:notifications:5.11.0-rc" />
+    <androidPackage spec="com.onesignal:in-app-messages:5.11.0-rc" />
+    <androidPackage spec="com.google.firebase:firebase-messaging:25.1.0" />
   </androidPackages>
 </dependencies>

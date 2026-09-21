@@ -70,7 +70,8 @@ namespace OneSignalSDK
             }
         }
 
-        internal const string Version = "5.10.2";
+        internal const string Version = "5.11.0-rc";
+        internal const string FirebaseMessagingVersion = "25.1.0";
 
         private static readonly string _dependenciesPath = Path.Combine(
             "Assets",
@@ -86,6 +87,7 @@ namespace OneSignalSDK
       <repository>https://repo.maven.apache.org/maven2</repository>
     </repositories>
     <androidPackage spec=""com.onesignal:OneSignal:{Version}"" />
+    <androidPackage spec=""com.google.firebase:firebase-messaging:{FirebaseMessagingVersion}"" />
   </androidPackages>
 </dependencies>
 ";
@@ -99,6 +101,7 @@ namespace OneSignalSDK
     <androidPackage spec=""com.onesignal:core:{Version}"" />
     <androidPackage spec=""com.onesignal:notifications:{Version}"" />
     <androidPackage spec=""com.onesignal:in-app-messages:{Version}"" />
+    <androidPackage spec=""com.google.firebase:firebase-messaging:{FirebaseMessagingVersion}"" />
   </androidPackages>
 </dependencies>
 ";

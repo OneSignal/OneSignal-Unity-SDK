@@ -1,8 +1,9 @@
 <dependencies>
   <packages>
-    <package>com.onesignal:core:5.9.5</package>
-    <package>com.onesignal:notifications:5.9.5</package>
-    <package>com.onesignal:in-app-messages:5.9.5</package>
+    <package>com.google.firebase:firebase-messaging:25.1.0</package>
+    <package>com.onesignal:core:5.11.0-rc</package>
+    <package>com.onesignal:in-app-messages:5.11.0-rc</package>
+    <package>com.onesignal:notifications:5.11.0-rc</package>
   </packages>
   <files />
   <settings>
