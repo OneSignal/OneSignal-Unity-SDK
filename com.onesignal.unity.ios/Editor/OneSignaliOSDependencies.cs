@@ -70,7 +70,7 @@ namespace OneSignalSDK.iOS
             }
         }
 
-        internal const string Version = "5.6.3";
+        internal const string Version = "5.7.0";
 
         private static readonly string _dependenciesPath = Path.Combine(
             "Assets",
