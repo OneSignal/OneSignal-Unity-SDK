@@ -76,7 +76,12 @@ namespace OneSignalSDK.Android.User
         {
             set
             {
-                if (InputGuard.Missing(value, "setLanguage: language")) return;
+                // Empty string is the reset to the device language. Null is not.
+                if (value == null)
+                {
+                    Debug.LogError("OneSignal: setLanguage: language is required");
+                    return;
+                }
                 _user.Call("setLanguage", value);
             }
         }
