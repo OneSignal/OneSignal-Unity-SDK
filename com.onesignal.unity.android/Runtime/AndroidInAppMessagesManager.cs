@@ -59,7 +59,8 @@ namespace OneSignalSDK.Android.InAppMessages
 
         public void AddTrigger(string key, string value)
         {
-            if (InputGuard.Missing(key, "addTrigger: key")) return;
+            if (InputGuard.Missing(key, "addTrigger: key"))
+                return;
             if (value == null)
             {
                 UnityEngine.Debug.LogError("OneSignal: addTrigger: value is required");
@@ -70,19 +71,22 @@ namespace OneSignalSDK.Android.InAppMessages
 
         public void AddTriggers(Dictionary<string, string> triggers)
         {
-            if (InputGuard.MissingEntries(triggers, "addTriggers", true)) return;
+            if (InputGuard.MissingEntries(triggers, "addTriggers", true))
+                return;
             _inAppMessages.Call("addTriggers", triggers.ToMap());
         }
 
         public void RemoveTrigger(string key)
         {
-            if (InputGuard.Missing(key, "removeTrigger: key")) return;
+            if (InputGuard.Missing(key, "removeTrigger: key"))
+                return;
             _inAppMessages.Call("removeTrigger", key);
         }
 
         public void RemoveTriggers(params string[] keys)
         {
-            if (InputGuard.MissingAny(keys, "removeTriggers: key")) return;
+            if (InputGuard.MissingAny(keys, "removeTriggers: key"))
+                return;
             _inAppMessages.Call("removeTriggers", keys.ToArrayList());
         }
 

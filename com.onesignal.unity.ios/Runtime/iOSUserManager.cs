@@ -150,7 +150,8 @@ namespace OneSignalSDK.iOS.User
 
         public void AddTag(string key, string value)
         {
-            if (InputGuard.Missing(key, "addTag: key")) return;
+            if (InputGuard.Missing(key, "addTag: key"))
+                return;
             if (value == null)
             {
                 Debug.LogError("OneSignal: addTag: value is required");
@@ -161,73 +162,88 @@ namespace OneSignalSDK.iOS.User
 
         public void AddTags(Dictionary<string, string> tags)
         {
-            if (InputGuard.MissingEntries(tags, "addTags", true)) return;
+            if (InputGuard.MissingEntries(tags, "addTags", true))
+                return;
             _oneSignalUserAddTags(Json.Serialize(tags));
         }
 
         public void RemoveTag(string key)
         {
-            if (InputGuard.Missing(key, "removeTag: key")) return;
+            if (InputGuard.Missing(key, "removeTag: key"))
+                return;
             _oneSignalUserRemoveTag(key);
         }
 
         public void RemoveTags(params string[] keys)
         {
-            if (InputGuard.MissingAny(keys, "removeTags: key")) return;
+            if (InputGuard.MissingAny(keys, "removeTags: key"))
+                return;
             _oneSignalUserRemoveTags(Json.Serialize(keys));
         }
 
         public void AddAlias(string label, string id)
         {
-            if (InputGuard.Missing(label, "addAlias: label") || InputGuard.Missing(id, "addAlias: id")) return;
+            if (
+                InputGuard.Missing(label, "addAlias: label")
+                || InputGuard.Missing(id, "addAlias: id")
+            )
+                return;
             _oneSignalUserAddAlias(label, id);
         }
 
         public void AddAliases(Dictionary<string, string> aliases)
         {
-            if (InputGuard.MissingEntries(aliases, "addAliases", false)) return;
+            if (InputGuard.MissingEntries(aliases, "addAliases", false))
+                return;
             _oneSignalUserAddAliases(Json.Serialize(aliases));
         }
 
         public void RemoveAlias(string label)
         {
-            if (InputGuard.Missing(label, "removeAlias: label")) return;
+            if (InputGuard.Missing(label, "removeAlias: label"))
+                return;
             _oneSignalUserRemoveAlias(label);
         }
 
         public void RemoveAliases(params string[] labels)
         {
-            if (InputGuard.MissingAny(labels, "removeAliases: label")) return;
+            if (InputGuard.MissingAny(labels, "removeAliases: label"))
+                return;
             _oneSignalUserRemoveAliases(Json.Serialize(labels));
         }
 
         public void AddEmail(string email)
         {
-            if (InputGuard.Missing(email, "addEmail: email")) return;
+            if (InputGuard.Missing(email, "addEmail: email"))
+                return;
             _oneSignalUserAddEmail(email);
         }
 
         public void RemoveEmail(string email)
         {
-            if (InputGuard.Missing(email, "removeEmail: email")) return;
+            if (InputGuard.Missing(email, "removeEmail: email"))
+                return;
             _oneSignalUserRemoveEmail(email);
         }
 
         public void AddSms(string sms)
         {
-            if (InputGuard.Missing(sms, "addSms: sms")) return;
+            if (InputGuard.Missing(sms, "addSms: sms"))
+                return;
             _oneSignalUserAddSms(sms);
         }
 
         public void RemoveSms(string sms)
         {
-            if (InputGuard.Missing(sms, "removeSms: sms")) return;
+            if (InputGuard.Missing(sms, "removeSms: sms"))
+                return;
             _oneSignalUserRemoveSms(sms);
         }
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null)
         {
-            if (InputGuard.Missing(name, "trackEvent: name")) return;
+            if (InputGuard.Missing(name, "trackEvent: name"))
+                return;
             if (properties != null)
                 _oneSignalUserTrackEvent(name, Json.Serialize(properties));
             else
