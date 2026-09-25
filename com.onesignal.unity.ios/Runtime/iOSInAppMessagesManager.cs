@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using OneSignalSDK;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.InAppMessages.Internal;
 using OneSignalSDK.InAppMessages.Models;
@@ -105,16 +106,38 @@ namespace OneSignalSDK.iOS.InAppMessages
             set => _oneSignalInAppMessagesSetPaused(value);
         }
 
-        public void AddTrigger(string key, string value) =>
+        public void AddTrigger(string key, string value)
+        {
+            if (InputGuard.Missing(key, "addTrigger: key"))
+                return;
+            if (value == null)
+            {
+                Debug.LogError("OneSignal: addTrigger: value is required");
+                return;
+            }
             _oneSignalInAppMessagesAddTrigger(key, value.ToString());
+        }
 
-        public void AddTriggers(Dictionary<string, string> triggers) =>
+        public void AddTriggers(Dictionary<string, string> triggers)
+        {
+            if (InputGuard.MissingEntries(triggers, "addTriggers", true))
+                return;
             _oneSignalInAppMessagesAddTriggers(Json.Serialize(triggers));
+        }
 
-        public void RemoveTrigger(string key) => _oneSignalInAppMessagesRemoveTrigger(key);
+        public void RemoveTrigger(string key)
+        {
+            if (InputGuard.Missing(key, "removeTrigger: key"))
+                return;
+            _oneSignalInAppMessagesRemoveTrigger(key);
+        }
 
-        public void RemoveTriggers(params string[] keys) =>
+        public void RemoveTriggers(params string[] keys)
+        {
+            if (InputGuard.MissingAny(keys, "removeTriggers: key"))
+                return;
             _oneSignalInAppMessagesRemoveTriggers(Json.Serialize(keys));
+        }
 
         public void ClearTriggers() => _oneSignalInAppMessagesClearTriggers();
 
