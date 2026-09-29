@@ -145,7 +145,7 @@ namespace OneSignalSDK
         /// <param name="appId">Your application id from the OneSignal dashboard</param>
         public static void Initialize(string appId)
         {
-            if (InputGuard.Missing(appId, "initialize: appId"))
+            if (InputGuard.IsMissing(appId, "initialize: appId"))
                 return;
             OneSignal.Default.Initialize(appId);
         }
@@ -174,7 +174,7 @@ namespace OneSignalSDK
         /// </param>
         public static void Login(string externalId, string jwtBearerToken = null)
         {
-            if (InputGuard.Missing(externalId, "login: externalId"))
+            if (InputGuard.IsMissing(externalId, "login: externalId"))
                 return;
             OneSignal.Default.Login(externalId, jwtBearerToken);
         }

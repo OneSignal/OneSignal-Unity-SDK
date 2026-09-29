@@ -94,7 +94,7 @@ namespace OneSignalSDK.Android.User
 
         public void AddTag(string key, string value)
         {
-            if (InputGuard.Missing(key, "addTag: key"))
+            if (InputGuard.IsMissing(key, "addTag: key"))
                 return;
             if (value == null)
             {
@@ -106,21 +106,21 @@ namespace OneSignalSDK.Android.User
 
         public void AddTags(Dictionary<string, string> tags)
         {
-            if (InputGuard.MissingEntries(tags, "addTags", true))
+            if (InputGuard.HasMissingEntries(tags, "addTags", true))
                 return;
             _user.Call("addTags", tags.ToMap());
         }
 
         public void RemoveTag(string key)
         {
-            if (InputGuard.Missing(key, "removeTag: key"))
+            if (InputGuard.IsMissing(key, "removeTag: key"))
                 return;
             _user.Call("removeTag", key);
         }
 
         public void RemoveTags(params string[] keys)
         {
-            if (InputGuard.MissingAny(keys, "removeTags: key"))
+            if (InputGuard.IsMissingAny(keys, "removeTags: key"))
                 return;
             _user.Call("removeTags", keys.ToArrayList());
         }
@@ -128,8 +128,8 @@ namespace OneSignalSDK.Android.User
         public void AddAlias(string label, string id)
         {
             if (
-                InputGuard.Missing(label, "addAlias: label")
-                || InputGuard.Missing(id, "addAlias: id")
+                InputGuard.IsMissing(label, "addAlias: label")
+                || InputGuard.IsMissing(id, "addAlias: id")
             )
                 return;
             _user.Call("addAlias", label, id);
@@ -137,56 +137,56 @@ namespace OneSignalSDK.Android.User
 
         public void AddAliases(Dictionary<string, string> aliases)
         {
-            if (InputGuard.MissingEntries(aliases, "addAliases", false))
+            if (InputGuard.HasMissingEntries(aliases, "addAliases", false))
                 return;
             _user.Call("addAliases", aliases.ToMap());
         }
 
         public void RemoveAlias(string label)
         {
-            if (InputGuard.Missing(label, "removeAlias: label"))
+            if (InputGuard.IsMissing(label, "removeAlias: label"))
                 return;
             _user.Call("removeAlias", label);
         }
 
         public void RemoveAliases(params string[] labels)
         {
-            if (InputGuard.MissingAny(labels, "removeAliases: label"))
+            if (InputGuard.IsMissingAny(labels, "removeAliases: label"))
                 return;
             _user.Call("removeAliases", labels.ToArrayList());
         }
 
         public void AddEmail(string email)
         {
-            if (InputGuard.Missing(email, "addEmail: email"))
+            if (InputGuard.IsMissing(email, "addEmail: email"))
                 return;
             _user.Call("addEmail", email);
         }
 
         public void RemoveEmail(string email)
         {
-            if (InputGuard.Missing(email, "removeEmail: email"))
+            if (InputGuard.IsMissing(email, "removeEmail: email"))
                 return;
             _user.Call("removeEmail", email);
         }
 
         public void AddSms(string sms)
         {
-            if (InputGuard.Missing(sms, "addSms: sms"))
+            if (InputGuard.IsMissing(sms, "addSms: sms"))
                 return;
             _user.Call("addSms", sms);
         }
 
         public void RemoveSms(string sms)
         {
-            if (InputGuard.Missing(sms, "removeSms: sms"))
+            if (InputGuard.IsMissing(sms, "removeSms: sms"))
                 return;
             _user.Call("removeSms", sms);
         }
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null)
         {
-            if (InputGuard.Missing(name, "trackEvent: name"))
+            if (InputGuard.IsMissing(name, "trackEvent: name"))
                 return;
             _user.Call("trackEvent", name, properties?.ToMap());
         }
