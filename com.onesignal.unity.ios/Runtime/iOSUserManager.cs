@@ -245,7 +245,10 @@ namespace OneSignalSDK.iOS.User
             if (InputGuard.IsMissing(name, "trackEvent: name"))
                 return;
             if (properties != null)
-                _oneSignalUserTrackEvent(name, Json.Serialize(properties));
+                _oneSignalUserTrackEvent(
+                    name,
+                    Json.Serialize(InputGuard.ReplaceNonFiniteNumbers(properties))
+                );
             else
                 _oneSignalUserTrackEvent(name, null);
         }

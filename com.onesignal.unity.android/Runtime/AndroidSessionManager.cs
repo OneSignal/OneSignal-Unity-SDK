@@ -39,11 +39,28 @@ namespace OneSignalSDK.Android.Session
             _session = sdkClass.CallStatic<AndroidJavaObject>("getSession");
         }
 
-        public void AddOutcome(string name) => _session.Call("addOutcome", name);
+        public void AddOutcome(string name)
+        {
+            if (InputGuard.IsMissing(name, "addOutcome: name"))
+                return;
+            _session.Call("addOutcome", name);
+        }
 
-        public void AddUniqueOutcome(string name) => _session.Call("addUniqueOutcome", name);
+        public void AddUniqueOutcome(string name)
+        {
+            if (InputGuard.IsMissing(name, "addUniqueOutcome: name"))
+                return;
+            _session.Call("addUniqueOutcome", name);
+        }
 
-        public void AddOutcomeWithValue(string name, float value) =>
+        public void AddOutcomeWithValue(string name, float value)
+        {
+            if (
+                InputGuard.IsMissing(name, "addOutcomeWithValue: name")
+                || InputGuard.IsNotFinite(value, "addOutcomeWithValue: value")
+            )
+                return;
             _session.Call("addOutcomeWithValue", name, value);
+        }
     }
 }

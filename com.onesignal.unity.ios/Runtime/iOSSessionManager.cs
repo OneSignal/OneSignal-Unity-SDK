@@ -42,11 +42,28 @@ namespace OneSignalSDK.iOS.Session
         [DllImport("__Internal")]
         private static extern void _oneSignalSessionAddOutcomeWithValue(string name, float value);
 
-        public void AddOutcome(string name) => _oneSignalSessionAddOutcome(name);
+        public void AddOutcome(string name)
+        {
+            if (InputGuard.IsMissing(name, "addOutcome: name"))
+                return;
+            _oneSignalSessionAddOutcome(name);
+        }
 
-        public void AddUniqueOutcome(string name) => _oneSignalSessionAddUniqueOutcome(name);
+        public void AddUniqueOutcome(string name)
+        {
+            if (InputGuard.IsMissing(name, "addUniqueOutcome: name"))
+                return;
+            _oneSignalSessionAddUniqueOutcome(name);
+        }
 
-        public void AddOutcomeWithValue(string name, float value) =>
+        public void AddOutcomeWithValue(string name, float value)
+        {
+            if (
+                InputGuard.IsMissing(name, "addOutcomeWithValue: name")
+                || InputGuard.IsNotFinite(value, "addOutcomeWithValue: value")
+            )
+                return;
             _oneSignalSessionAddOutcomeWithValue(name, value);
+        }
     }
 }

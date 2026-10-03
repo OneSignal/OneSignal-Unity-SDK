@@ -188,7 +188,7 @@ namespace OneSignalSDK.Android.User
         {
             if (InputGuard.IsMissing(name, "trackEvent: name"))
                 return;
-            _user.Call("trackEvent", name, properties?.ToMap());
+            _user.Call("trackEvent", name, InputGuard.ReplaceNonFiniteNumbers(properties)?.ToMap());
         }
 
         public void Initialize()
