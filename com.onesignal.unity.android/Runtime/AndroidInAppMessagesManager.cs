@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using OneSignalSDK;
 using OneSignalSDK.Android.Utilities;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.InAppMessages.Internal;
@@ -56,16 +57,36 @@ namespace OneSignalSDK.Android.InAppMessages
             set => _inAppMessages.Call("setPaused", value);
         }
 
-        public void AddTrigger(string key, string value) =>
+        public void AddTrigger(string key, string value)
+        {
+            if (
+                InputGuard.IsMissing(key, "addTrigger: key")
+                || InputGuard.IsNull(value, "addTrigger: value")
+            )
+                return;
             _inAppMessages.Call("addTrigger", key, value);
+        }
 
-        public void AddTriggers(Dictionary<string, string> triggers) =>
+        public void AddTriggers(Dictionary<string, string> triggers)
+        {
+            if (InputGuard.HasMissingEntries(triggers, "addTriggers", true))
+                return;
             _inAppMessages.Call("addTriggers", triggers.ToMap());
+        }
 
-        public void RemoveTrigger(string key) => _inAppMessages.Call("removeTrigger", key);
+        public void RemoveTrigger(string key)
+        {
+            if (InputGuard.IsMissing(key, "removeTrigger: key"))
+                return;
+            _inAppMessages.Call("removeTrigger", key);
+        }
 
-        public void RemoveTriggers(params string[] keys) =>
+        public void RemoveTriggers(params string[] keys)
+        {
+            if (InputGuard.IsMissingAny(keys, "removeTriggers: key"))
+                return;
             _inAppMessages.Call("removeTriggers", keys.ToArrayList());
+        }
 
         public void ClearTriggers() => _inAppMessages.Call("clearTriggers");
 

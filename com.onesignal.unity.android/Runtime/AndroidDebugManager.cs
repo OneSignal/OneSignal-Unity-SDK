@@ -48,6 +48,8 @@ namespace OneSignalSDK.Android.Debug
             get => _logLevel;
             set
             {
+                if (InputGuard.IsInvalidLogLevel(value, "setLogLevel"))
+                    return;
                 _logLevel = value;
                 _debug.Call("setLogLevel", ToLogLevel(value));
             }
@@ -58,6 +60,8 @@ namespace OneSignalSDK.Android.Debug
             get => _alertLevel;
             set
             {
+                if (InputGuard.IsInvalidLogLevel(value, "setAlertLevel"))
+                    return;
                 _alertLevel = value;
                 _debug.Call("setAlertLevel", ToLogLevel(value));
             }

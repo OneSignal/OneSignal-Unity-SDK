@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using OneSignalSDK;
 using OneSignalSDK.Android.User.Models;
 using OneSignalSDK.Android.Utilities;
 using OneSignalSDK.User;
@@ -73,7 +74,13 @@ namespace OneSignalSDK.Android.User
 
         public string Language
         {
-            set => _user.Call("setLanguage", value);
+            set
+            {
+                // Empty string is the reset to the device language. Null is not.
+                if (InputGuard.IsNull(value, "setLanguage: language"))
+                    return;
+                _user.Call("setLanguage", value);
+            }
         }
 
         public Dictionary<string, string> GetTags()
@@ -82,35 +89,102 @@ namespace OneSignalSDK.Android.User
             return obj.MapToDictionary();
         }
 
-        public void AddTag(string key, string value) => _user.Call("addTag", key, value);
+        public void AddTag(string key, string value)
+        {
+            if (
+                InputGuard.IsMissing(key, "addTag: key")
+                || InputGuard.IsNull(value, "addTag: value")
+            )
+                return;
+            _user.Call("addTag", key, value);
+        }
 
-        public void AddTags(Dictionary<string, string> tags) => _user.Call("addTags", tags.ToMap());
+        public void AddTags(Dictionary<string, string> tags)
+        {
+            if (InputGuard.HasMissingEntries(tags, "addTags", true))
+                return;
+            _user.Call("addTags", tags.ToMap());
+        }
 
-        public void RemoveTag(string key) => _user.Call("removeTag", key);
+        public void RemoveTag(string key)
+        {
+            if (InputGuard.IsMissing(key, "removeTag: key"))
+                return;
+            _user.Call("removeTag", key);
+        }
 
-        public void RemoveTags(params string[] keys) =>
+        public void RemoveTags(params string[] keys)
+        {
+            if (InputGuard.IsMissingAny(keys, "removeTags: key"))
+                return;
             _user.Call("removeTags", keys.ToArrayList());
+        }
 
-        public void AddAlias(string label, string id) => _user.Call("addAlias", label, id);
+        public void AddAlias(string label, string id)
+        {
+            if (
+                InputGuard.IsMissing(label, "addAlias: label")
+                || InputGuard.IsMissing(id, "addAlias: id")
+            )
+                return;
+            _user.Call("addAlias", label, id);
+        }
 
-        public void AddAliases(Dictionary<string, string> aliases) =>
+        public void AddAliases(Dictionary<string, string> aliases)
+        {
+            if (InputGuard.HasMissingEntries(aliases, "addAliases", false))
+                return;
             _user.Call("addAliases", aliases.ToMap());
+        }
 
-        public void RemoveAlias(string label) => _user.Call("removeAlias", label);
+        public void RemoveAlias(string label)
+        {
+            if (InputGuard.IsMissing(label, "removeAlias: label"))
+                return;
+            _user.Call("removeAlias", label);
+        }
 
-        public void RemoveAliases(params string[] labels) =>
+        public void RemoveAliases(params string[] labels)
+        {
+            if (InputGuard.IsMissingAny(labels, "removeAliases: label"))
+                return;
             _user.Call("removeAliases", labels.ToArrayList());
+        }
 
-        public void AddEmail(string email) => _user.Call("addEmail", email);
+        public void AddEmail(string email)
+        {
+            if (InputGuard.IsMissing(email, "addEmail: email"))
+                return;
+            _user.Call("addEmail", email);
+        }
 
-        public void RemoveEmail(string email) => _user.Call("removeEmail", email);
+        public void RemoveEmail(string email)
+        {
+            if (InputGuard.IsMissing(email, "removeEmail: email"))
+                return;
+            _user.Call("removeEmail", email);
+        }
 
-        public void AddSms(string sms) => _user.Call("addSms", sms);
+        public void AddSms(string sms)
+        {
+            if (InputGuard.IsMissing(sms, "addSms: sms"))
+                return;
+            _user.Call("addSms", sms);
+        }
 
-        public void RemoveSms(string sms) => _user.Call("removeSms", sms);
+        public void RemoveSms(string sms)
+        {
+            if (InputGuard.IsMissing(sms, "removeSms: sms"))
+                return;
+            _user.Call("removeSms", sms);
+        }
 
-        public void TrackEvent(string name, Dictionary<string, object> properties = null) =>
-            _user.Call("trackEvent", name, properties?.ToMap());
+        public void TrackEvent(string name, Dictionary<string, object> properties = null)
+        {
+            if (InputGuard.IsMissing(name, "trackEvent: name"))
+                return;
+            _user.Call("trackEvent", name, InputGuard.ReplaceNonFiniteNumbers(properties)?.ToMap());
+        }
 
         public void Initialize()
         {

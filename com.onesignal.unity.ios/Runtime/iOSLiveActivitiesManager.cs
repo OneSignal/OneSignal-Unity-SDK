@@ -70,6 +70,11 @@ namespace OneSignalSDK.iOS.LiveActivities
 
         public async Task<bool> EnterAsync(string activityId, string token)
         {
+            if (
+                InputGuard.IsMissing(activityId, "enter: activityId")
+                || InputGuard.IsMissing(token, "enter: token")
+            )
+                return false;
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
             _oneSignalEnterLiveActivity(activityId, token, hashCode, BooleanCallbackProxy);
             return await proxy;
@@ -78,6 +83,8 @@ namespace OneSignalSDK.iOS.LiveActivities
         [System.Obsolete("Currently unsupported, avoid using this method.")]
         public async Task<bool> ExitAsync(string activityId)
         {
+            if (InputGuard.IsMissing(activityId, "exit: activityId"))
+                return false;
             var (proxy, hashCode) = WaitingProxy._setupProxy<bool>();
             _oneSignalExitLiveActivity(activityId, hashCode, BooleanCallbackProxy);
             return await proxy;
@@ -85,11 +92,18 @@ namespace OneSignalSDK.iOS.LiveActivities
 
         public void RemovePushToStartToken(string activityType)
         {
+            if (InputGuard.IsMissing(activityType, "removePushToStartToken: activityType"))
+                return;
             _oneSignalRemovePushToStartToken(activityType);
         }
 
         public void SetPushToStartToken(string activityType, string token)
         {
+            if (
+                InputGuard.IsMissing(activityType, "setPushToStartToken: activityType")
+                || InputGuard.IsMissing(token, "setPushToStartToken: token")
+            )
+                return;
             _oneSignalSetPushToStartToken(activityType, token);
         }
 
@@ -116,10 +130,16 @@ namespace OneSignalSDK.iOS.LiveActivities
             IDictionary<string, object> content
         )
         {
+            if (
+                InputGuard.IsMissing(activityId, "startDefault: activityId")
+                || InputGuard.IsNull(attributes, "startDefault: attributes")
+                || InputGuard.IsNull(content, "startDefault: content")
+            )
+                return;
             _oneSignalStartDefaultLiveActivity(
                 activityId,
-                Json.Serialize(attributes),
-                Json.Serialize(content)
+                Json.Serialize(InputGuard.ReplaceNonFiniteNumbers(attributes)),
+                Json.Serialize(InputGuard.ReplaceNonFiniteNumbers(content))
             );
         }
 

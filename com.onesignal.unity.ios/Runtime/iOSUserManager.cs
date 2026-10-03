@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using OneSignalSDK;
 using OneSignalSDK.iOS.User.Models;
 using OneSignalSDK.User;
 using OneSignalSDK.User.Internal;
@@ -125,7 +126,13 @@ namespace OneSignalSDK.iOS.User
 
         public string Language
         {
-            set => _oneSignalUserSetLanguage(value);
+            set
+            {
+                // Empty string is the reset to the device language. Null is not.
+                if (InputGuard.IsNull(value, "setLanguage: language"))
+                    return;
+                _oneSignalUserSetLanguage(value);
+            }
         }
 
         public Dictionary<string, string> GetTags()
@@ -138,38 +145,105 @@ namespace OneSignalSDK.iOS.User
             return dict;
         }
 
-        public void AddTag(string key, string value) => _oneSignalUserAddTag(key, value);
+        public void AddTag(string key, string value)
+        {
+            if (
+                InputGuard.IsMissing(key, "addTag: key")
+                || InputGuard.IsNull(value, "addTag: value")
+            )
+                return;
+            _oneSignalUserAddTag(key, value);
+        }
 
-        public void AddTags(Dictionary<string, string> tags) =>
+        public void AddTags(Dictionary<string, string> tags)
+        {
+            if (InputGuard.HasMissingEntries(tags, "addTags", true))
+                return;
             _oneSignalUserAddTags(Json.Serialize(tags));
+        }
 
-        public void RemoveTag(string key) => _oneSignalUserRemoveTag(key);
+        public void RemoveTag(string key)
+        {
+            if (InputGuard.IsMissing(key, "removeTag: key"))
+                return;
+            _oneSignalUserRemoveTag(key);
+        }
 
-        public void RemoveTags(params string[] keys) =>
+        public void RemoveTags(params string[] keys)
+        {
+            if (InputGuard.IsMissingAny(keys, "removeTags: key"))
+                return;
             _oneSignalUserRemoveTags(Json.Serialize(keys));
+        }
 
-        public void AddAlias(string label, string id) => _oneSignalUserAddAlias(label, id);
+        public void AddAlias(string label, string id)
+        {
+            if (
+                InputGuard.IsMissing(label, "addAlias: label")
+                || InputGuard.IsMissing(id, "addAlias: id")
+            )
+                return;
+            _oneSignalUserAddAlias(label, id);
+        }
 
-        public void AddAliases(Dictionary<string, string> aliases) =>
+        public void AddAliases(Dictionary<string, string> aliases)
+        {
+            if (InputGuard.HasMissingEntries(aliases, "addAliases", false))
+                return;
             _oneSignalUserAddAliases(Json.Serialize(aliases));
+        }
 
-        public void RemoveAlias(string label) => _oneSignalUserRemoveAlias(label);
+        public void RemoveAlias(string label)
+        {
+            if (InputGuard.IsMissing(label, "removeAlias: label"))
+                return;
+            _oneSignalUserRemoveAlias(label);
+        }
 
-        public void RemoveAliases(params string[] labels) =>
+        public void RemoveAliases(params string[] labels)
+        {
+            if (InputGuard.IsMissingAny(labels, "removeAliases: label"))
+                return;
             _oneSignalUserRemoveAliases(Json.Serialize(labels));
+        }
 
-        public void AddEmail(string email) => _oneSignalUserAddEmail(email);
+        public void AddEmail(string email)
+        {
+            if (InputGuard.IsMissing(email, "addEmail: email"))
+                return;
+            _oneSignalUserAddEmail(email);
+        }
 
-        public void RemoveEmail(string email) => _oneSignalUserRemoveEmail(email);
+        public void RemoveEmail(string email)
+        {
+            if (InputGuard.IsMissing(email, "removeEmail: email"))
+                return;
+            _oneSignalUserRemoveEmail(email);
+        }
 
-        public void AddSms(string sms) => _oneSignalUserAddSms(sms);
+        public void AddSms(string sms)
+        {
+            if (InputGuard.IsMissing(sms, "addSms: sms"))
+                return;
+            _oneSignalUserAddSms(sms);
+        }
 
-        public void RemoveSms(string sms) => _oneSignalUserRemoveSms(sms);
+        public void RemoveSms(string sms)
+        {
+            if (InputGuard.IsMissing(sms, "removeSms: sms"))
+                return;
+            _oneSignalUserRemoveSms(sms);
+        }
 
         public void TrackEvent(string name, Dictionary<string, object> properties = null)
         {
+            if (InputGuard.IsMissing(name, "trackEvent: name"))
+                return;
             if (properties != null)
-                _oneSignalUserTrackEvent(name, Json.Serialize(properties));
+                _oneSignalUserTrackEvent(
+                    name,
+                    Json.Serialize(InputGuard.ReplaceNonFiniteNumbers(properties))
+                );
             else
                 _oneSignalUserTrackEvent(name, null);
         }

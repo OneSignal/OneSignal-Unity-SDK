@@ -143,6 +143,8 @@ namespace OneSignalSDK.iOS
 
         public override void Initialize(string appId)
         {
+            if (InputGuard.IsMissing(appId, "initialize: appId"))
+                return;
             _oneSignalInitialize(appId);
 
             if (_inAppMessages == null)
@@ -183,7 +185,9 @@ namespace OneSignalSDK.iOS
 
         public override void Login(string externalId, string jwtBearerToken = null)
         {
-            if (jwtBearerToken == null)
+            if (InputGuard.IsMissing(externalId, "login: externalId"))
+                return;
+            if (string.IsNullOrWhiteSpace(jwtBearerToken))
             {
                 _oneSignalLogin(externalId);
             }
