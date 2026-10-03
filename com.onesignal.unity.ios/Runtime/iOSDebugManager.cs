@@ -48,6 +48,8 @@ namespace OneSignalSDK.iOS.Debug
             get => _logLevel;
             set
             {
+                if (InputGuard.IsInvalidLogLevel(value, "setLogLevel"))
+                    return;
                 _logLevel = value;
                 _oneSignalDebugSetLogLevel((int)value);
             }
@@ -58,6 +60,8 @@ namespace OneSignalSDK.iOS.Debug
             get => _alertLevel;
             set
             {
+                if (InputGuard.IsInvalidLogLevel(value, "setAlertLevel"))
+                    return;
                 _alertLevel = value;
                 _oneSignalDebugSetAlertLevel((int)value);
             }

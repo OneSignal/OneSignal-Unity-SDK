@@ -129,11 +129,8 @@ namespace OneSignalSDK.iOS.User
             set
             {
                 // Empty string is the reset to the device language. Null is not.
-                if (value == null)
-                {
-                    Debug.LogError("OneSignal: setLanguage: language is required");
+                if (InputGuard.IsNull(value, "setLanguage: language"))
                     return;
-                }
                 _oneSignalUserSetLanguage(value);
             }
         }
@@ -150,13 +147,11 @@ namespace OneSignalSDK.iOS.User
 
         public void AddTag(string key, string value)
         {
-            if (InputGuard.IsMissing(key, "addTag: key"))
+            if (
+                InputGuard.IsMissing(key, "addTag: key")
+                || InputGuard.IsNull(value, "addTag: value")
+            )
                 return;
-            if (value == null)
-            {
-                Debug.LogError("OneSignal: addTag: value is required");
-                return;
-            }
             _oneSignalUserAddTag(key, value);
         }
 

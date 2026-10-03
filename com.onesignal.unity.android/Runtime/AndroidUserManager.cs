@@ -77,11 +77,8 @@ namespace OneSignalSDK.Android.User
             set
             {
                 // Empty string is the reset to the device language. Null is not.
-                if (value == null)
-                {
-                    Debug.LogError("OneSignal: setLanguage: language is required");
+                if (InputGuard.IsNull(value, "setLanguage: language"))
                     return;
-                }
                 _user.Call("setLanguage", value);
             }
         }
@@ -94,13 +91,11 @@ namespace OneSignalSDK.Android.User
 
         public void AddTag(string key, string value)
         {
-            if (InputGuard.IsMissing(key, "addTag: key"))
+            if (
+                InputGuard.IsMissing(key, "addTag: key")
+                || InputGuard.IsNull(value, "addTag: value")
+            )
                 return;
-            if (value == null)
-            {
-                UnityEngine.Debug.LogError("OneSignal: addTag: value is required");
-                return;
-            }
             _user.Call("addTag", key, value);
         }
 

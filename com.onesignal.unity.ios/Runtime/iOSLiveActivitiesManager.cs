@@ -132,8 +132,8 @@ namespace OneSignalSDK.iOS.LiveActivities
         {
             if (
                 InputGuard.IsMissing(activityId, "startDefault: activityId")
-                || InputGuard.IsMissing(attributes, "startDefault: attributes")
-                || InputGuard.IsMissing(content, "startDefault: content")
+                || InputGuard.IsNull(attributes, "startDefault: attributes")
+                || InputGuard.IsNull(content, "startDefault: content")
             )
                 return;
             _oneSignalStartDefaultLiveActivity(

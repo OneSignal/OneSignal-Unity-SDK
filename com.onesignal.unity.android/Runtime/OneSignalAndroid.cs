@@ -130,6 +130,8 @@ namespace OneSignalSDK.Android
 
         public override void Initialize(string appId)
         {
+            if (InputGuard.IsMissing(appId, "initialize: appId"))
+                return;
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
@@ -199,6 +201,8 @@ namespace OneSignalSDK.Android
 
         public override void Login(string externalId, string jwtBearerToken = null)
         {
+            if (InputGuard.IsMissing(externalId, "login: externalId"))
+                return;
             _sdkClass.CallStatic("login", externalId, jwtBearerToken);
         }
 

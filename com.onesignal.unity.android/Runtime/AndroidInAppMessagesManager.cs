@@ -59,13 +59,11 @@ namespace OneSignalSDK.Android.InAppMessages
 
         public void AddTrigger(string key, string value)
         {
-            if (InputGuard.IsMissing(key, "addTrigger: key"))
+            if (
+                InputGuard.IsMissing(key, "addTrigger: key")
+                || InputGuard.IsNull(value, "addTrigger: value")
+            )
                 return;
-            if (value == null)
-            {
-                UnityEngine.Debug.LogError("OneSignal: addTrigger: value is required");
-                return;
-            }
             _inAppMessages.Call("addTrigger", key, value);
         }
 

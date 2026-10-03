@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using OneSignalSDK.Debug.Models;
+using OneSignalSDK.Debug.Utilities;
 
 namespace OneSignalSDK
 {
@@ -9,7 +11,7 @@ namespace OneSignalSDK
         {
             if (!string.IsNullOrEmpty(value))
                 return false;
-            Debug.LogError("OneSignal: " + api + " is required");
+            SDKDebug.Error(api + " is required");
             return true;
         }
 
@@ -25,11 +27,11 @@ namespace OneSignalSDK
             return false;
         }
 
-        public static bool IsMissing(object value, string api)
+        public static bool IsNull(object value, string api)
         {
             if (value != null)
                 return false;
-            Debug.LogError("OneSignal: " + api + " is required");
+            SDKDebug.Error(api + " is required");
             return true;
         }
 
@@ -37,7 +39,15 @@ namespace OneSignalSDK
         {
             if (!float.IsNaN(value) && !float.IsInfinity(value))
                 return false;
-            Debug.LogError("OneSignal: " + api + " must be a finite number");
+            SDKDebug.Error(api + " must be a finite number");
+            return true;
+        }
+
+        public static bool IsInvalidLogLevel(LogLevel value, string api)
+        {
+            if (Enum.IsDefined(typeof(LogLevel), value))
+                return false;
+            SDKDebug.Error(api + " is not a valid log level");
             return true;
         }
 
@@ -80,19 +90,16 @@ namespace OneSignalSDK
         )
         {
             if (values == null)
-                return IsMissing(null, api);
+                return IsNull(values, api);
             foreach (var pair in values)
             {
                 if (IsMissing(pair.Key, api + ": key"))
                     return true;
-                if (allowEmptyValue)
-                {
-                    if (pair.Value != null)
-                        continue;
-                    Debug.LogError("OneSignal: " + api + ": value is required");
-                    return true;
-                }
-                if (IsMissing(pair.Value, api + ": value"))
+                if (
+                    allowEmptyValue
+                        ? IsNull(pair.Value, api + ": value")
+                        : IsMissing(pair.Value, api + ": value")
+                )
                     return true;
             }
             return false;
