@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Laters;
+using OneSignalSDK.User;
 using UnityEngine;
 
 namespace OneSignalSDK.Android.Utilities
@@ -64,6 +65,67 @@ namespace OneSignalSDK.Android.Utilities
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Completes with the native OneSignalResult, whether it arrives through the continuation or
+    /// is returned synchronously by the suspend call. Completes exactly once and never throws.
+    /// </summary>
+    internal sealed class LoginResultContinuation : AndroidJavaProxy
+    {
+        private readonly TaskCompletionSource<LoginResult> _completion =
+            new TaskCompletionSource<LoginResult>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+
+        public Task<LoginResult> Result => _completion.Task;
+
+        public LoginResultContinuation()
+            : base("java.util.function.Consumer") { }
+
+        public AndroidJavaObject CreateProxy()
+        {
+            using var continuation = new AndroidJavaClass("com.onesignal.Continue");
+            return continuation.CallStatic<AndroidJavaObject>("with", this);
+        }
+
+        public void accept(AndroidJavaObject continueResult)
+        {
+            try
+            {
+                if (continueResult.Call<bool>("isSuccess"))
+                {
+                    using var result = continueResult.Call<AndroidJavaObject>("getData");
+                    Resolve(result);
+                }
+                else
+                {
+                    using var throwable = continueResult.Call<AndroidJavaObject>("getThrowable");
+                    Fail(throwable?.Call<string>("toString") ?? "loginWithProfile failed");
+                }
+            }
+            catch (Exception e)
+            {
+                Fail(e.Message);
+            }
+        }
+
+        public void Resolve(AndroidJavaObject oneSignalResult)
+        {
+            try
+            {
+                using var map = oneSignalResult.Call<AndroidJavaObject>("toMap");
+                using var json = new AndroidJavaObject("org.json.JSONObject", map);
+                _completion.TrySetResult(LoginResult.FromJson(json.Call<string>("toString")));
+            }
+            catch (Exception e)
+            {
+                Fail(e.Message);
+            }
+        }
+
+        public void Fail(string message) =>
+            _completion.TrySetResult(LoginResult.Failure("UNKNOWN", message));
     }
 
     public sealed class BoolContinuation
