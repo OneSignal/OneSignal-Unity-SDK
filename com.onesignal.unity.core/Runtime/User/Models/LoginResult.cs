@@ -5,7 +5,7 @@ namespace OneSignalSDK.User
 {
     public sealed class LoginData
     {
-        public string OnesignalId { get; }
+        public string OneSignalId { get; }
         public string ExternalId { get; }
         public string EmailSubscriptionId { get; }
         public string SmsSubscriptionId { get; }
@@ -17,7 +17,7 @@ namespace OneSignalSDK.User
             string smsSubscriptionId
         )
         {
-            OnesignalId = onesignalId;
+            OneSignalId = onesignalId;
             ExternalId = externalId;
             EmailSubscriptionId = emailSubscriptionId;
             SmsSubscriptionId = smsSubscriptionId;
@@ -124,7 +124,8 @@ namespace OneSignalSDK.User
             if (success)
             {
                 var data = _parseData(_get(root, "data"));
-                return data != null
+                var strayErrors = _get(root, "error") is List<object> stray && stray.Count > 0;
+                return data != null && !strayErrors
                     ? new LoginResult(true, data, Array.Empty<OneSignalError>())
                     : Failure("UNKNOWN", "Malformed loginWithProfile result data");
             }

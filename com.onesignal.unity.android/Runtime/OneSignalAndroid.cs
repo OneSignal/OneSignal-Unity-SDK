@@ -219,7 +219,17 @@ namespace OneSignalSDK.Android
             if (invalid != null)
                 return Task.FromResult(invalid);
 
-            var continuation = new LoginResultContinuation();
+            LoginResultContinuation continuation;
+            try
+            {
+                continuation = new LoginResultContinuation();
+            }
+            catch (Exception e)
+            {
+                SDKDebug.Error("loginWithProfile failed: " + e.Message);
+                return Task.FromResult(LoginResult.Failure("UNKNOWN", e.Message));
+            }
+
             try
             {
                 // Resolved before the call so nothing after it can fail and mask a native result.

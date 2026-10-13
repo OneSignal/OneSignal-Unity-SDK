@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Laters;
+using OneSignalSDK.Debug.Utilities;
 using OneSignalSDK.User;
 using UnityEngine;
 
@@ -101,7 +102,11 @@ namespace OneSignalSDK.Android.Utilities
                 else
                 {
                     using var throwable = continueResult.Call<AndroidJavaObject>("getThrowable");
-                    Fail(throwable?.Call<string>("toString") ?? "loginWithProfile failed");
+                    Fail(
+                        throwable?.Call<string>("getMessage")
+                            ?? throwable?.Call<string>("toString")
+                            ?? "loginWithProfile failed"
+                    );
                 }
             }
             catch (Exception e)
@@ -124,8 +129,11 @@ namespace OneSignalSDK.Android.Utilities
             }
         }
 
-        public void Fail(string message) =>
-            _completion.TrySetResult(LoginResult.Failure("UNKNOWN", message));
+        public void Fail(string message)
+        {
+            if (_completion.TrySetResult(LoginResult.Failure("UNKNOWN", message)))
+                SDKDebug.Error("loginWithProfile failed: " + message);
+        }
     }
 
     public sealed class BoolContinuation
