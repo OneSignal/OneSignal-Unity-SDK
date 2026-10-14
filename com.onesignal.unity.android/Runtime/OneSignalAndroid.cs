@@ -236,13 +236,15 @@ namespace OneSignalSDK.Android
                 using var resultClass = new AndroidJavaClass(SDKPackage + ".OneSignalResult");
                 using var tags = (profile.Tags ?? new Dictionary<string, string>()).ToMap();
                 using var aliases = (profile.Aliases ?? new Dictionary<string, string>()).ToMap();
-                using var nativeProfile = new AndroidJavaObject(
-                    SDKPackage + ".OneSignalUserProfile",
-                    profile.Email,
-                    profile.Sms,
-                    tags,
-                    aliases
-                );
+                using var profileClass = new AndroidJavaClass(SDKPackage + ".OneSignalUserProfile");
+                using var builder = profileClass.CallStatic<AndroidJavaObject>("builder");
+                if (profile.Email != null)
+                    builder.Call<AndroidJavaObject>("setEmail", profile.Email)?.Dispose();
+                if (profile.Sms != null)
+                    builder.Call<AndroidJavaObject>("setSms", profile.Sms)?.Dispose();
+                builder.Call<AndroidJavaObject>("setTags", tags)?.Dispose();
+                builder.Call<AndroidJavaObject>("setAliases", aliases)?.Dispose();
+                using var nativeProfile = builder.Call<AndroidJavaObject>("build");
                 using var proxy = continuation.CreateProxy();
                 using var returned = _sdkClass.CallStatic<AndroidJavaObject>(
                     "login",
