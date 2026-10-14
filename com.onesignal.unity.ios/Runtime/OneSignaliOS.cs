@@ -197,6 +197,12 @@ namespace OneSignalSDK.iOS
             }
         }
 
+        public override Task<LoginResult> LoginWithProfileAsync(
+            string externalId,
+            OneSignalUserProfile profile,
+            string jwtBearerToken = null
+        ) => Task.FromResult(LoginResult.Unsupported());
+
         public override void Logout()
         {
             _oneSignalLogout();

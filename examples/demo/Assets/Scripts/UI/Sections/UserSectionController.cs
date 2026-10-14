@@ -57,6 +57,16 @@ namespace OneSignalDemo.UI.Sections
             );
             section.Add(_loginButton);
 
+#if UNITY_ANDROID
+            section.Add(
+                SectionBuilder.CreateDestructiveButton(
+                    "LOGIN WITH PROFILE",
+                    "composite_login_button",
+                    ShowLoginWithProfileDialog
+                )
+            );
+#endif
+
             _logoutButton = SectionBuilder.CreateDestructiveButton(
                 "LOGOUT USER",
                 "logout_user_button",
@@ -75,6 +85,15 @@ namespace OneSignalDemo.UI.Sections
             var dialog = new LoginDialog(
                 externalId => _viewModel.LoginUser(externalId),
                 _viewModel.IsLoggedIn
+            );
+            dialog.Show(_dialogRoot);
+        }
+
+        private void ShowLoginWithProfileDialog()
+        {
+            var dialog = new LoginWithProfileDialog(
+                (externalId, email, sms, jwt) =>
+                    _viewModel.LoginUserWithProfile(externalId, email, sms, jwt)
             );
             dialog.Show(_dialogRoot);
         }
