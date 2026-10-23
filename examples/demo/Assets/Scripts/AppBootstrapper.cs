@@ -159,35 +159,39 @@ namespace OneSignalDemo
 #if UNITY_ANDROID && !UNITY_EDITOR
             SetAndroidWebViewDebugging(true);
 #endif
-            Debug.Log($"[{Tag}] IAM will display: {e.Message.MessageId}");
+            LogService.Show($"IAM willDisplay: {e.Message.MessageId}");
         }
 
         private void OnIamDidDisplay(object sender, InAppMessageDidDisplayEventArgs e) =>
-            Debug.Log($"[{Tag}] IAM did display: {e.Message.MessageId}");
+            LogService.Show($"IAM didDisplay: {e.Message.MessageId}");
 
         private void OnIamWillDismiss(object sender, InAppMessageWillDismissEventArgs e) =>
-            Debug.Log($"[{Tag}] IAM will dismiss: {e.Message.MessageId}");
+            LogService.Show($"IAM willDismiss: {e.Message.MessageId}");
 
         private void OnIamDidDismiss(object sender, InAppMessageDidDismissEventArgs e)
         {
-            Debug.Log($"[{Tag}] IAM did dismiss: {e.Message.MessageId}");
+            LogService.Show($"IAM didDismiss: {e.Message.MessageId}");
 #if UNITY_ANDROID && !UNITY_EDITOR
             SetAndroidWebViewDebugging(false);
 #endif
         }
 
         private void OnIamClicked(object sender, InAppMessageClickEventArgs e) =>
-            Debug.Log($"[{Tag}] IAM clicked: {e.Result.ActionId}");
+            LogService.Show($"IAM click: {e.Message.MessageId}");
 
         private void OnNotificationClicked(object sender, NotificationClickEventArgs e) =>
-            Debug.Log($"[{Tag}] Notification clicked: {e.Result.ActionId}");
+            LogService.Show(
+                $"Notification click: {e.Notification.NotificationId ?? "null"} {e.Notification.Title ?? ""}"
+            );
 
         private void OnNotificationForegroundWillDisplay(
             object sender,
             NotificationWillDisplayEventArgs e
         )
         {
-            Debug.Log($"[{Tag}] Notification received in foreground");
+            LogService.Show(
+                $"Notification foregroundWillDisplay: {e.Notification.NotificationId ?? "null"} {e.Notification.Title ?? ""}"
+            );
             e.Notification.Display();
         }
     }

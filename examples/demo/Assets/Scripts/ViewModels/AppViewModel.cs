@@ -606,6 +606,14 @@ namespace OneSignalDemo.ViewModels
 
         private void NotifyStateChanged() => OnStateChanged?.Invoke();
 
+        private static string NullIfEmpty(string value) =>
+            string.IsNullOrEmpty(value) ? "null" : value;
+
+        private static string FormatBool(bool value) => value ? "true" : "false";
+
+        private static string FormatToken(string value) =>
+            string.IsNullOrEmpty(value) ? "null" : $"{value.Substring(0, Math.Min(8, value.Length))}…";
+
         private static void MergePairs(
             List<KeyValuePair<string, string>> target,
             IDictionary<string, string> source
@@ -639,20 +647,27 @@ namespace OneSignalDemo.ViewModels
         {
             _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
             _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
-            Debug.Log($"[{Tag}] Push subscription changed: {_pushSubscriptionId}");
+            var previous = e.State.Previous;
+            var current = e.State.Current;
+            LogService.Show(
+                $"Push subscription changed: id={NullIfEmpty(previous.Id)} → {NullIfEmpty(current.Id)}, optedIn={FormatBool(previous.OptedIn)} → {FormatBool(current.OptedIn)}, token={FormatToken(previous.Token)} → {FormatToken(current.Token)}"
+            );
             NotifyStateChanged();
         }
 
         private void OnPermissionChanged(object sender, NotificationPermissionChangedEventArgs e)
         {
             _hasPermission = e.Permission;
-            Debug.Log($"[{Tag}] Permission changed: {e.Permission}");
+            LogService.Show($"Permission changed: {FormatBool(e.Permission)}");
             NotifyStateChanged();
         }
 
         private async void OnUserChanged(object sender, UserStateChangedEventArgs e)
         {
-            Debug.Log($"[{Tag}] User changed, fetching data...");
+            var current = e.State.Current;
+            LogService.Show(
+                $"User changed: onesignalId={NullIfEmpty(current.OneSignalId)}, externalId={NullIfEmpty(current.ExternalId)}"
+            );
             _oneSignalId = OneSignal.User.OneSignalId ?? "";
             NotifyStateChanged();
             await FetchUserDataFromApi();
