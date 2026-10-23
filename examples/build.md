@@ -69,6 +69,7 @@ using OneSignalSDK.Debug.Models;
 | Operation | SDK Call |
 |---|---|
 | LoginUser(externalUserId) | `OneSignal.Login(externalUserId)` |
+| LoginUserWithProfile(externalUserId, email, sms, jwt) | `await OneSignal.LoginWithProfileAsync(externalUserId, profile, jwt)` (Android only) |
 | LogoutUser() | `OneSignal.Logout()` |
 | AddAlias(label, id) | `OneSignal.User.AddAlias(label, id)` |
 | AddAliases(aliases) | `OneSignal.User.AddAliases(aliases)` |

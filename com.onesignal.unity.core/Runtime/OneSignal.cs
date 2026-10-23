@@ -26,6 +26,7 @@
  */
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OneSignalSDK.Debug;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.LiveActivities;
@@ -173,6 +174,19 @@ namespace OneSignalSDK
         public static void Login(string externalId, string jwtBearerToken = null)
         {
             OneSignal.Default.Login(externalId, jwtBearerToken);
+        }
+
+        /// <summary>
+        /// Logs in [externalId] and applies [profile] in one operation. Android only for now:
+        /// on other platforms the task completes with a failed result and the native SDK is not called.
+        /// </summary>
+        public static Task<LoginResult> LoginWithProfileAsync(
+            string externalId,
+            OneSignalUserProfile profile,
+            string jwtBearerToken = null
+        )
+        {
+            return OneSignal.Default.LoginWithProfileAsync(externalId, profile, jwtBearerToken);
         }
 
         /// <summary>

@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OneSignalSDK.Debug;
 using OneSignalSDK.InAppMessages;
 using OneSignalSDK.LiveActivities;
@@ -146,6 +147,16 @@ namespace OneSignalSDK
         /// [Identity Verification | OneSignal](https://documentation.onesignal.com/docs/identity-verification)
         /// </param>
         public abstract void Login(string externalId, string jwtBearerToken = null);
+
+        /// <summary>
+        /// Logs in [externalId] and applies [profile] in one operation. Android only for now:
+        /// on other platforms the task completes with a failed result and the native SDK is not called.
+        /// </summary>
+        public abstract Task<LoginResult> LoginWithProfileAsync(
+            string externalId,
+            OneSignalUserProfile profile,
+            string jwtBearerToken = null
+        );
 
         /// <summary>
         /// Logout the user previously logged in via [login]. The [user] property now references
