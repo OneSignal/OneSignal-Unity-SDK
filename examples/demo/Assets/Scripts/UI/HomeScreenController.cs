@@ -144,6 +144,8 @@ namespace OneSignalDemo.UI
 
             screenRoot.Add(appBar);
 
+            screenRoot.Add(new LogView().Root);
+
             var appBarShadow = new VisualElement();
             appBarShadow.AddToClassList("app-bar-shadow");
             screenRoot.Add(appBarShadow);
