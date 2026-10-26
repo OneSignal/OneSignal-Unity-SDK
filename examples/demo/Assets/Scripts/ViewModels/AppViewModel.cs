@@ -161,6 +161,58 @@ namespace OneSignalDemo.ViewModels
             NotifyStateChanged();
         }
 
+        public async void LoginUserWithProfile(
+            string externalUserId,
+            string email,
+            string sms,
+            string jwtBearerToken
+        )
+        {
+            externalUserId = externalUserId?.Trim();
+            if (string.IsNullOrEmpty(externalUserId))
+                return;
+
+            ClearUserData();
+            SetLoading(true);
+
+            try
+            {
+                var profile = new OneSignalUserProfile
+                {
+                    Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim(),
+                    Sms = string.IsNullOrWhiteSpace(sms) ? null : sms.Trim(),
+                };
+                var result = await OneSignal.LoginWithProfileAsync(
+                    externalUserId,
+                    profile,
+                    string.IsNullOrWhiteSpace(jwtBearerToken) ? null : jwtBearerToken.Trim()
+                );
+
+                if (!result.Success)
+                {
+                    foreach (var error in result.Errors)
+                        Debug.LogError(
+                            $"[{Tag}] Login with profile error: {error.Code} ({error.Source}) {error.Message}"
+                        );
+                    SetLoading(false);
+                    return;
+                }
+
+                _prefs.ExternalUserId = externalUserId;
+                _externalUserId = externalUserId;
+                Debug.Log($"[{Tag}] Logged in with profile as: {externalUserId}");
+                NotifyStateChanged();
+
+                // The user 'change' listener does not fire when the external id is unchanged.
+                await FetchUserDataFromApi();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[{Tag}] Login with profile error: {ex.Message}");
+                SetLoading(false);
+            }
+        }
+
         public void LogoutUser()
         {
             OneSignal.Logout();
