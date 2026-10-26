@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using OneSignalSDK;
 using UnityEngine;
 
 namespace OneSignalDemo.Services
@@ -41,18 +43,27 @@ namespace OneSignalDemo.Services
             AddToView(message);
         }
 
-        public static void Clear()
-        {
-            _entries.Clear();
-            Changed?.Invoke();
-        }
+        public static void Clear() =>
+            UnityMainThreadDispatch.Post(_ =>
+            {
+                _entries.Clear();
+                Changed?.Invoke();
+            });
 
+        // Deferred so a view rebuild can never throw into the SDK listener that logged.
         private static void AddToView(string message)
         {
-            _entries.Add(new LogEntry(DateTime.Now.ToString("HH:mm:ss"), message));
-            if (_entries.Count > MaxEntries)
-                _entries.RemoveRange(0, _entries.Count - MaxEntries);
-            Changed?.Invoke();
+            var entry = new LogEntry(
+                DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture),
+                message
+            );
+            UnityMainThreadDispatch.Post(_ =>
+            {
+                _entries.Add(entry);
+                if (_entries.Count > MaxEntries)
+                    _entries.RemoveRange(0, _entries.Count - MaxEntries);
+                Changed?.Invoke();
+            });
         }
     }
 }
