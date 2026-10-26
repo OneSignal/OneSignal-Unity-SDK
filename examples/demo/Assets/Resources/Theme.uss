@@ -13,6 +13,8 @@
     --os-text-primary: #202124;
     --os-text-secondary: #757575;
     --os-text-hint: #9E9E9E;
+    --os-log-background: #1E1E1E;
+    --os-log-text: #D4D4D4;
     --card-gap: 8px;
 }
 
@@ -164,10 +166,89 @@
     color: white;
 }
 
-.app-bar-shadow {
-    height: 4px;
-    background-color: #B33A3C;
+.log-view {
+    background-color: var(--os-log-background);
     flex-shrink: 0;
+}
+
+.log-header {
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+    padding: 0 16px;
+}
+
+.log-header-label {
+    flex-grow: 1;
+    padding: 0;
+    margin: 0;
+    font-size: 11px;
+    -unity-font-style: bold;
+    letter-spacing: 0.5px;
+    color: var(--os-grey-500);
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.log-header-button {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--os-grey-500);
+    -unity-font-definition: resource("MaterialIcons-Regular");
+    -unity-text-align: middle-center;
+}
+
+.log-clear-button {
+    font-size: 14px;
+}
+
+/* 24px hit boxes; margins keep glyphs 12px apart and flush with the 16px padding. */
+.log-toggle-button {
+    font-size: 18px;
+    margin: 0 -3px 0 4px;
+}
+
+.log-body {
+    height: 100px;
+}
+
+.log-body-content {
+    padding: 0 16px 6px 16px;
+}
+
+.log-entry {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.log-entry-time,
+.log-entry-message,
+.log-empty {
+    font-size: 8px;
+    padding: 0;
+    margin: 0;
+    -unity-font-definition: resource("DroidSansMono");
+}
+
+.log-entry-time,
+.log-empty {
+    color: var(--os-grey-600);
+}
+
+.log-entry-time {
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.log-entry-message {
+    flex-shrink: 1;
+    flex-grow: 1;
+    white-space: normal;
+    color: var(--os-log-text);
 }
 
 .section-container {

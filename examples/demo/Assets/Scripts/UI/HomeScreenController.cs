@@ -144,9 +144,7 @@ namespace OneSignalDemo.UI
 
             screenRoot.Add(appBar);
 
-            var appBarShadow = new VisualElement();
-            appBarShadow.AddToClassList("app-bar-shadow");
-            screenRoot.Add(appBarShadow);
+            screenRoot.Add(new LogView().Root);
 
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
             scrollView.name = "main_scroll_view";
