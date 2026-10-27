@@ -493,6 +493,35 @@
     color: #34A853;
 }
 
+.language-dropdown-icon {
+    font-size: 18px;
+    color: var(--os-grey-600);
+    margin-left: 4px;
+}
+
+.language-option-list {
+    max-height: 360px;
+}
+
+.language-option {
+    flex-direction: row;
+    align-items: center;
+    min-height: 44px;
+}
+
+.language-option-label {
+    flex-grow: 1;
+}
+
+.language-option--selected .language-option-label {
+    color: var(--os-primary);
+}
+
+.language-option-check {
+    font-size: 18px;
+    color: var(--os-primary);
+}
+
 .guidance-banner {
     background-color: var(--os-warning-background);
 }
