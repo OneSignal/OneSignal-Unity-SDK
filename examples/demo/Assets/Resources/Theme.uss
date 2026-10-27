@@ -500,7 +500,7 @@
 }
 
 .language-option-list {
-    max-height: 360px;
+    max-height: 320px;
 }
 
 .language-option {
