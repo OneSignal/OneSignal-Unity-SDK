@@ -154,6 +154,7 @@ namespace OneSignalDemo.ViewModels
                 OneSignal.Login(externalUserId);
                 _prefs.ExternalUserId = externalUserId;
                 _externalUserId = externalUserId;
+                ResetLanguagePicker();
 
                 Debug.Log($"[{Tag}] Logged in as: {externalUserId}");
                 // The user 'change' listener runs FetchUserDataFromApi once the new
@@ -175,10 +176,18 @@ namespace OneSignalDemo.ViewModels
             _externalUserId = "";
             _prefs.ExternalUserId = "";
             ClearUserData();
-            SetLanguage("");
+            ResetLanguagePicker();
 
             Debug.Log($"[{Tag}] Logged out");
             NotifyStateChanged();
+        }
+
+        // Clears only the cached choice. SetLanguage("") would send the device
+        // language and overwrite the user's backend value.
+        private void ResetLanguagePicker()
+        {
+            _language = "";
+            _prefs.Language = "";
         }
 
         // An empty code makes the native SDK fall back to the device language.
