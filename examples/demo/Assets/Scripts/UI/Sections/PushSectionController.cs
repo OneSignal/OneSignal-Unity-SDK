@@ -10,6 +10,7 @@ namespace OneSignalDemo.UI.Sections
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
         private Label _pushIdLabel;
+        private Label _statusLabel;
         private SwitchToggle _enabledToggle;
         private Button _promptButton;
 
@@ -43,8 +44,19 @@ namespace OneSignalDemo.UI.Sections
 
             card.Add(SectionBuilder.CreateDivider());
 
+            var statusRow = SectionBuilder.CreateInlineKeyValue(
+                "Status",
+                FormatStatus(_viewModel.IsPushSubscribed)
+            );
+            // The shared E2E ID names the status text itself, not the row.
+            _statusLabel = statusRow.Q<Label>(className: "key-value-inline-value");
+            _statusLabel.name = "push_subscription_status";
+            card.Add(statusRow);
+
+            card.Add(SectionBuilder.CreateDivider());
+
             var toggleRow = SectionBuilder.CreateToggleRow(
-                "Enabled",
+                "Opted In",
                 null,
                 "push_enabled_toggle",
                 _viewModel.PushOptedIn,
@@ -72,6 +84,7 @@ namespace OneSignalDemo.UI.Sections
         public void Refresh()
         {
             _pushIdLabel.text = FormatIdValue(_viewModel.PushSubscriptionId);
+            _statusLabel.text = FormatStatus(_viewModel.IsPushSubscribed);
             _enabledToggle.SetValueWithoutNotify(_viewModel.PushOptedIn);
             _enabledToggle.SetEnabled(_viewModel.HasPermission);
             _promptButton.style.display = _viewModel.HasPermission
@@ -81,6 +94,9 @@ namespace OneSignalDemo.UI.Sections
 
         private static string FormatIdValue(string value) =>
             string.IsNullOrEmpty(value) ? "—" : value;
+
+        private static string FormatStatus(bool subscribed) =>
+            subscribed ? "Subscribed" : "Unsubscribed";
 
         private void OnEnabledChanged(bool value) => _viewModel.SetPushEnabled(value);
     }

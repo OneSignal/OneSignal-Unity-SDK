@@ -27,9 +27,11 @@ namespace OneSignalDemo.ViewModels
         private string _externalUserId;
         private string _oneSignalId;
         private string _pushSubscriptionId;
+        private string _pushToken;
         private bool _pushOptedIn;
         private bool _hasPermission;
         private bool _isLoading;
+        private string _language;
 
         // Drops stale FetchUserDataFromApi responses (mirrors requestSequenceRef in RN useOneSignal).
         private int _requestSequence;
@@ -63,6 +65,9 @@ namespace OneSignalDemo.ViewModels
         public string PushSubscriptionId => _pushSubscriptionId;
         public bool PushOptedIn => _pushOptedIn;
         public bool HasPermission => _hasPermission;
+        public bool IsPushSubscribed =>
+            _pushOptedIn && _hasPermission && !string.IsNullOrEmpty(_pushToken);
+        public string Language => _language;
         public bool IsLoading => _isLoading;
         public bool IsLoggedIn => !string.IsNullOrEmpty(_externalUserId);
 
@@ -115,8 +120,10 @@ namespace OneSignalDemo.ViewModels
             _inAppMessagesPaused = _prefs.IamPaused;
             _locationShared = _prefs.LocationShared;
             _externalUserId = _prefs.ExternalUserId;
+            _language = _prefs.Language;
 
             _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
+            _pushToken = OneSignal.User.PushSubscription.Token ?? "";
             _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
             _hasPermission = OneSignal.Notifications.Permission;
             _oneSignalId = OneSignal.User.OneSignalId ?? "";
@@ -147,6 +154,7 @@ namespace OneSignalDemo.ViewModels
                 OneSignal.Login(externalUserId);
                 _prefs.ExternalUserId = externalUserId;
                 _externalUserId = externalUserId;
+                ResetLanguagePicker();
 
                 Debug.Log($"[{Tag}] Logged in as: {externalUserId}");
                 // The user 'change' listener runs FetchUserDataFromApi once the new
@@ -168,8 +176,30 @@ namespace OneSignalDemo.ViewModels
             _externalUserId = "";
             _prefs.ExternalUserId = "";
             ClearUserData();
+            ResetLanguagePicker();
 
             Debug.Log($"[{Tag}] Logged out");
+            NotifyStateChanged();
+        }
+
+        // Clears only the cached choice. SetLanguage("") would send the device
+        // language and overwrite the user's backend value.
+        private void ResetLanguagePicker()
+        {
+            _language = "";
+            _prefs.Language = "";
+        }
+
+        // An empty code makes the native SDK fall back to the device language.
+        public void SetLanguage(string language)
+        {
+            language ??= "";
+            OneSignal.User.Language = language;
+            _language = language;
+            _prefs.Language = language;
+            Debug.Log(
+                $"[{Tag}] Language set to: {(language.Length == 0 ? "device default" : language)}"
+            );
             NotifyStateChanged();
         }
 
@@ -572,6 +602,7 @@ namespace OneSignalDemo.ViewModels
                 }
 
                 _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
+                _pushToken = OneSignal.User.PushSubscription.Token ?? "";
                 _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
                 _hasPermission = OneSignal.Notifications.Permission;
 
@@ -646,6 +677,7 @@ namespace OneSignalDemo.ViewModels
         private void OnPushSubscriptionChanged(object sender, PushSubscriptionChangedEventArgs e)
         {
             _pushSubscriptionId = OneSignal.User.PushSubscription.Id ?? "";
+            _pushToken = OneSignal.User.PushSubscription.Token ?? "";
             _pushOptedIn = OneSignal.User.PushSubscription.OptedIn;
             var previous = e.State.Previous;
             var current = e.State.Current;

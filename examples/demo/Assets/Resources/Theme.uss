@@ -493,6 +493,39 @@
     color: #34A853;
 }
 
+.language-dropdown-icon {
+    font-size: 18px;
+    color: var(--os-grey-600);
+    margin-left: 4px;
+}
+
+.dialog-overlay.dropdown-overlay {
+    background-color: rgba(0, 0, 0, 0);
+    padding-top: 0;
+}
+
+.dialog-container.dropdown-menu {
+    position: absolute;
+    width: 240px;
+    margin: 0;
+    padding: 8px 0;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: var(--os-card-border);
+}
+
+.dropdown-item {
+    height: 48px;
+    padding: 0 16px;
+    -unity-text-align: middle-left;
+    font-size: 16px;
+}
+
+.dropdown-item--selected {
+    color: var(--os-primary);
+    -unity-font-style: bold;
+}
+
 .guidance-banner {
     background-color: var(--os-warning-background);
 }

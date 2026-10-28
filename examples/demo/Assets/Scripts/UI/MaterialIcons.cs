@@ -16,5 +16,6 @@ namespace OneSignalDemo.UI
         public const string Fullscreen = "\uE5D0";
         public const string ExpandMore = "\uE5CF";
         public const string ExpandLess = "\uE5CE";
+        public const string Check = "\uE5CA";
     }
 }

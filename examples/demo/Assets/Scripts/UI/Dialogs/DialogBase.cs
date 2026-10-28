@@ -22,6 +22,8 @@ namespace OneSignalDemo.UI.Dialogs
         protected VisualElement Container { get; private set; }
         private VisualElement _parent;
 
+        protected VisualElement Parent => _parent;
+
         public void Show(VisualElement parent)
         {
             if (parent?.Q(className: "dialog-overlay") != null)

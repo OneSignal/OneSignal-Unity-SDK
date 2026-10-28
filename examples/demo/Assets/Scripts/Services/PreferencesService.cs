@@ -9,6 +9,7 @@ namespace OneSignalDemo.Services
         private const string KeyExternalUserId = "external_user_id";
         private const string KeyLocationShared = "location_shared";
         private const string KeyIamPaused = "iam_paused";
+        private const string KeyLanguage = "language";
 
         public bool ConsentRequired
         {
@@ -38,6 +39,12 @@ namespace OneSignalDemo.Services
         {
             get => GetBool(KeyIamPaused, false);
             set => SetBool(KeyIamPaused, value);
+        }
+
+        public string Language
+        {
+            get => GetString(KeyLanguage, "");
+            set => SetString(KeyLanguage, value);
         }
 
         private bool GetBool(string key, bool defaultValue) =>
