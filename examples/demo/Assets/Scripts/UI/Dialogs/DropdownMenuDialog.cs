@@ -15,6 +15,7 @@ namespace OneSignalDemo.UI.Dialogs
         private const float ScreenMargin = 16f;
         private const float ItemHeight = 48f;
         private const float ListPadding = 8f;
+        private const float MouseDragThreshold = 8f;
 
         private readonly VisualElement _anchor;
         private readonly IReadOnlyList<KeyValuePair<string, string>> _options;
@@ -67,6 +68,7 @@ namespace OneSignalDemo.UI.Dialogs
                 list.Add(item);
             }
             container.Add(list);
+            EnableMouseDragScroll(list);
 
             if (selectedItem != null)
                 CenterOnceLaidOut(list, selectedItem);
@@ -103,6 +105,79 @@ namespace OneSignalDemo.UI.Dialogs
                 list.scrollOffset = new Vector2(0, Mathf.Clamp(offset, 0, maxOffset));
             }
             list.RegisterCallback<GeometryChangedEvent>(Center);
+        }
+
+        // ScrollView only drag-scrolls touch and pen, and Android emulators report clicks as mouse.
+        private static void EnableMouseDragScroll(ScrollView list)
+        {
+            int pointerId = PointerId.invalidPointerId;
+            float startY = 0;
+            float startOffset = 0;
+            bool dragging = false;
+
+            void Reset()
+            {
+                pointerId = PointerId.invalidPointerId;
+                dragging = false;
+            }
+
+            list.RegisterCallback<PointerDownEvent>(
+                e =>
+                {
+                    if (e.pointerType != UnityEngine.UIElements.PointerType.mouse || e.button != 0)
+                        return;
+                    pointerId = e.pointerId;
+                    startY = e.position.y;
+                    startOffset = list.scrollOffset.y;
+                    dragging = false;
+                },
+                TrickleDown.TrickleDown
+            );
+            list.RegisterCallback<PointerMoveEvent>(
+                e =>
+                {
+                    if (e.pointerId != pointerId)
+                        return;
+                    float delta = e.position.y - startY;
+                    if (!dragging)
+                    {
+                        if (Mathf.Abs(delta) < MouseDragThreshold)
+                            return;
+                        dragging = true;
+                        // Taking capture from the item's Clickable cancels its pending selection.
+                        list.CapturePointer(pointerId);
+                    }
+                    float maxOffset = Mathf.Max(
+                        0,
+                        list.contentContainer.layout.height - list.contentViewport.layout.height
+                    );
+                    list.scrollOffset = new Vector2(
+                        0,
+                        Mathf.Clamp(startOffset - delta, 0, maxOffset)
+                    );
+                    e.StopPropagation();
+                },
+                TrickleDown.TrickleDown
+            );
+            list.RegisterCallback<PointerUpEvent>(
+                e =>
+                {
+                    if (e.pointerId != pointerId)
+                        return;
+                    if (dragging)
+                    {
+                        list.ReleasePointer(pointerId);
+                        e.StopPropagation();
+                    }
+                    Reset();
+                },
+                TrickleDown.TrickleDown
+            );
+            list.RegisterCallback<PointerCaptureOutEvent>(e =>
+            {
+                if (e.target == list)
+                    Reset();
+            });
         }
 
         private void OnSelected(string value)
