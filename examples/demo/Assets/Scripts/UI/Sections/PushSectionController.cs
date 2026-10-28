@@ -46,10 +46,11 @@ namespace OneSignalDemo.UI.Sections
 
             var statusRow = SectionBuilder.CreateInlineKeyValue(
                 "Status",
-                FormatStatus(_viewModel.IsPushSubscribed),
-                "push_subscription_status"
+                FormatStatus(_viewModel.IsPushSubscribed)
             );
-            _statusLabel = statusRow.Q<Label>("push_subscription_status_value");
+            // The shared E2E ID names the status text itself, not the row.
+            _statusLabel = statusRow.Q<Label>(className: "key-value-inline-value");
+            _statusLabel.name = "push_subscription_status";
             card.Add(statusRow);
 
             card.Add(SectionBuilder.CreateDivider());
