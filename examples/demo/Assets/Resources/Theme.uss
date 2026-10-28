@@ -499,27 +499,31 @@
     margin-left: 4px;
 }
 
-.language-option-list {
-    max-height: 320px;
+.dialog-overlay.dropdown-overlay {
+    background-color: rgba(0, 0, 0, 0);
+    padding-top: 0;
 }
 
-.language-option {
-    flex-direction: row;
-    align-items: center;
-    min-height: 44px;
+.dialog-container.dropdown-menu {
+    position: absolute;
+    width: 240px;
+    margin: 0;
+    padding: 8px 0;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: var(--os-card-border);
 }
 
-.language-option-label {
-    flex-grow: 1;
+.dropdown-item {
+    height: 48px;
+    padding: 0 16px;
+    -unity-text-align: middle-left;
+    font-size: 16px;
 }
 
-.language-option--selected .language-option-label {
+.dropdown-item--selected {
     color: var(--os-primary);
-}
-
-.language-option-check {
-    font-size: 18px;
-    color: var(--os-primary);
+    -unity-font-style: bold;
 }
 
 .guidance-banner {

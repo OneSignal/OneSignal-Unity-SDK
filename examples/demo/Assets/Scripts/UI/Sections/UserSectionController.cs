@@ -63,6 +63,7 @@ namespace OneSignalDemo.UI.Sections
         private Label _statusValue;
         private Label _externalIdValue;
         private Label _languageValue;
+        private VisualElement _languageRow;
         private Button _loginButton;
         private Button _logoutButton;
 
@@ -102,23 +103,23 @@ namespace OneSignalDemo.UI.Sections
 
             statusCard.Add(SectionBuilder.CreateDivider());
 
-            var languageRow = SectionBuilder.CreateInlineKeyValue(
+            _languageRow = SectionBuilder.CreateInlineKeyValue(
                 "Language",
                 LanguageName(_viewModel.Language),
                 "user_language_dropdown"
             );
-            _languageValue = languageRow.Q<Label>("user_language_dropdown_value");
+            _languageValue = _languageRow.Q<Label>("user_language_dropdown_value");
             var chevron = new Label(MaterialIcons.ExpandMore);
             chevron.AddToClassList("material-icon");
             chevron.AddToClassList("language-dropdown-icon");
-            languageRow.Add(chevron);
-            languageRow.AddManipulator(new Clickable(ShowLanguagePicker));
+            _languageRow.Add(chevron);
+            _languageRow.AddManipulator(new Clickable(ShowLanguagePicker));
             AccessibilityBridge.RegisterE2ETapTarget(
-                languageRow,
-                () => languageRow.enabledInHierarchy,
+                _languageRow,
+                () => _languageRow.enabledInHierarchy,
                 ShowLanguagePicker
             );
-            statusCard.Add(languageRow);
+            statusCard.Add(_languageRow);
             section.Add(statusCard);
 
             _loginButton = SectionBuilder.CreatePrimaryButton(
@@ -152,12 +153,18 @@ namespace OneSignalDemo.UI.Sections
 
         private void ShowLanguagePicker()
         {
-            var dialog = new LanguagePickerDialog(
+            var menu = new DropdownMenuDialog(
+                _languageRow,
                 LanguageOptions,
                 _viewModel.Language,
-                code => _viewModel.SetLanguage(code)
+                "language_option",
+                code =>
+                {
+                    if (code != (_viewModel.Language ?? ""))
+                        _viewModel.SetLanguage(code);
+                }
             );
-            dialog.Show(_dialogRoot);
+            menu.Show(_dialogRoot);
         }
 
         private static string LanguageName(string code)
