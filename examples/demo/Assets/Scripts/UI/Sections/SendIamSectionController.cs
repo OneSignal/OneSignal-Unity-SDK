@@ -7,6 +7,18 @@ namespace OneSignalDemo.UI.Sections
 {
     public class SendIamSectionController
     {
+        private static readonly InAppMessageType[] Types =
+        {
+            InAppMessageType.TopBanner,
+            InAppMessageType.BottomBanner,
+            InAppMessageType.CenterModal,
+            InAppMessageType.Html,
+            InAppMessageType.FullScreen,
+            InAppMessageType.FullBleed,
+            InAppMessageType.Carousel,
+            InAppMessageType.CarouselBleed,
+        };
+
         private readonly AppViewModel _viewModel;
         private readonly VisualElement _root;
 
@@ -28,34 +40,28 @@ namespace OneSignalDemo.UI.Sections
                 () => OnInfoTap?.Invoke()
             );
 
-            section.Add(
-                SectionBuilder.CreatePrimaryButton(
-                    "TOP BANNER",
-                    "send_iam_top_banner_button",
-                    () => _viewModel.SendInAppMessage(InAppMessageType.TopBanner)
-                )
-            );
-            section.Add(
-                SectionBuilder.CreatePrimaryButton(
-                    "BOTTOM BANNER",
-                    "send_iam_bottom_banner_button",
-                    () => _viewModel.SendInAppMessage(InAppMessageType.BottomBanner)
-                )
-            );
-            section.Add(
-                SectionBuilder.CreatePrimaryButton(
-                    "CENTER MODAL",
-                    "send_iam_center_modal_button",
-                    () => _viewModel.SendInAppMessage(InAppMessageType.CenterModal)
-                )
-            );
-            section.Add(
-                SectionBuilder.CreatePrimaryButton(
-                    "FULL SCREEN",
-                    "send_iam_full_screen_button",
-                    () => _viewModel.SendInAppMessage(InAppMessageType.FullScreen)
-                )
-            );
+            VisualElement row = null;
+            for (int i = 0; i < Types.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    row = new VisualElement();
+                    row.AddToClassList("button-grid-row");
+                    section.Add(row);
+                }
+
+                var type = Types[i];
+                var btn = SectionBuilder.CreatePrimaryButton(
+                    type.DisplayName().ToUpperInvariant(),
+                    $"send_iam_{type.TriggerValue()}_button",
+                    () => _viewModel.SendInAppMessage(type)
+                );
+                btn.AddToClassList("button-grid-item");
+                btn.AddToClassList(
+                    i % 2 == 0 ? "button-grid-item--leading" : "button-grid-item--trailing"
+                );
+                row.Add(btn);
+            }
 
             return section;
         }

@@ -390,6 +390,25 @@
     color: #757575;
 }
 
+.button-grid-row {
+    flex-direction: row;
+}
+
+.button-grid-item {
+    flex-grow: 1;
+    flex-basis: 0;
+    padding: 0 8px;
+    white-space: nowrap;
+}
+
+.button-grid-item--leading {
+    margin-right: var(--card-gap);
+}
+
+.button-grid-item--trailing {
+    margin-left: 0;
+}
+
 .destructive-button {
     background-color: transparent;
     color: var(--os-primary);
