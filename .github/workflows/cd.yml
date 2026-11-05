@@ -53,6 +53,9 @@ jobs:
         run: |
           echo "Tag from output: [${{ steps.npm-tag.outputs.tag }}]"
 
+      - name: Validate Unity distribution layout
+        run: python3 .github/scripts/validate-unity-distribution.py
+
       - name: Publish packages
         run: |
           publish_pkg() {
