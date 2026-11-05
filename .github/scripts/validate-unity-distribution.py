@@ -2,6 +2,7 @@
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -10,6 +11,11 @@ ROOT = Path(__file__).resolve().parents[2]
 DEMO = ROOT / "examples/demo"
 BOOTSTRAP = ROOT / "examples/demo/Assets/OneSignal"
 SAMPLE = ROOT / "com.onesignal.unity.core/Samples~"
+PACKAGES = (
+    "com.onesignal.unity.android",
+    "com.onesignal.unity.core",
+    "com.onesignal.unity.ios",
+)
 INVENTORY = BOOTSTRAP / "Editor/Resources/OneSignalFileInventory.asset"
 
 EXCLUDED_PREFIXES = (
@@ -64,6 +70,37 @@ def validate_inventory() -> None:
         )
 
 
+def is_unity_hidden(part: str) -> bool:
+    return part.startswith(".") or part.endswith("~")
+
+
+def validate_package_metas() -> None:
+    # UPM packages are immutable, so Unity ignores any asset that ships without a .meta.
+    tracked = set(
+        subprocess.run(
+            ["git", "ls-files", "-z", "--", *PACKAGES],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.split("\0")
+    ) - {""}
+
+    assets = set()
+    for path in tracked:
+        if path.endswith(".meta"):
+            continue
+        parts = path.split("/")
+        if any(is_unity_hidden(part) for part in parts[1:]):
+            continue
+        assets.add(path)
+        assets.update("/".join(parts[:i]) for i in range(2, len(parts)))
+
+    missing = sorted(f"{asset}.meta" for asset in assets if f"{asset}.meta" not in tracked)
+    if missing:
+        fail(f"package assets are missing .meta files: {', '.join(missing)}")
+
+
 def validate_sample() -> None:
     for filename, expected_guid in REQUIRED_SAMPLE_GUIDS.items():
         path = SAMPLE / filename
@@ -111,6 +148,7 @@ def main() -> None:
     if not (BOOTSTRAP / "Documentation").is_dir():
         fail("exportable bootstrap documentation is missing")
     validate_inventory()
+    validate_package_metas()
     validate_sample()
     print("Unity distribution layout is valid.")
 
