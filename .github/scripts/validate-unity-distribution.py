@@ -74,31 +74,46 @@ def is_unity_hidden(part: str) -> bool:
     return part.startswith(".") or part.endswith("~")
 
 
+def packed_files(package: str) -> list[str]:
+    output = subprocess.run(
+        ["npm", "pack", "--dry-run", "--json", "--ignore-scripts"],
+        cwd=ROOT / package,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return [entry["path"] for entry in json.loads(output)[0]["files"]]
+
+
 def validate_package_metas() -> None:
-    # UPM packages are immutable, so Unity ignores any asset that ships without a .meta.
-    tracked = set(
-        subprocess.run(
-            ["git", "ls-files", "-z", "--", *PACKAGES],
-            cwd=ROOT,
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout.split("\0")
-    ) - {""}
+    # UPM packages are immutable, so Unity ignores any asset that ships without a valid .meta.
+    guids: dict[str, str] = {}
+    for package in PACKAGES:
+        packed = set(packed_files(package))
 
-    assets = set()
-    for path in tracked:
-        if path.endswith(".meta"):
-            continue
-        parts = path.split("/")
-        if any(is_unity_hidden(part) for part in parts[1:]):
-            continue
-        assets.add(path)
-        assets.update("/".join(parts[:i]) for i in range(2, len(parts)))
+        assets = set()
+        for path in packed:
+            if path.endswith(".meta"):
+                continue
+            parts = path.split("/")
+            if any(is_unity_hidden(part) for part in parts):
+                continue
+            assets.add(path)
+            assets.update("/".join(parts[:i]) for i in range(1, len(parts)))
 
-    missing = sorted(f"{asset}.meta" for asset in assets if f"{asset}.meta" not in tracked)
-    if missing:
-        fail(f"package assets are missing .meta files: {', '.join(missing)}")
+        missing = sorted(f"{package}/{asset}.meta" for asset in assets if f"{asset}.meta" not in packed)
+        if missing:
+            fail(f"packed assets are missing .meta files: {', '.join(missing)}")
+
+        for meta in sorted(f"{asset}.meta" for asset in assets):
+            path = f"{package}/{meta}"
+            match = re.search(r"^guid:\s*([0-9a-f]{32})\s*$", (ROOT / path).read_text(), re.MULTILINE)
+            if match is None:
+                fail(f"{path} has no valid guid")
+            guid = match.group(1)
+            if guid in guids:
+                fail(f"{path} reuses guid {guid} from {guids[guid]}")
+            guids[guid] = path
 
 
 def validate_sample() -> None:
