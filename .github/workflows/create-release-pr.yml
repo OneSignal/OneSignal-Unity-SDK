@@ -30,8 +30,8 @@ on:
   workflow_dispatch:
     inputs:
       unity_version:
-        description: "New Unity Version (e.g., 5.2.15 or 5.2.15-beta.1)"
-        required: true
+        description: "Override the auto-detected version (e.g., 5.2.15 or 5.2.15-beta.1). Leave blank to auto-detect."
+        required: false
         type: string
       android_version:
         description: "New Android SDK Version (e.g., 2.3.0). Leave blank to skip."
@@ -52,7 +52,25 @@ permissions:
   pull-requests: write
 
 jobs:
+  determine_version:
+    runs-on: ubuntu-latest
+    outputs:
+      unity_version: ${{ inputs.unity_version || steps.next_version.outputs.version }}
+      release_needed: ${{ inputs.unity_version != '' || steps.next_version.outputs.release-needed == 'true' }}
+
+    steps:
+      - name: Determine Unity SDK version
+        if: github.event_name == 'workflow_dispatch' && inputs.unity_version == ''
+        id: next_version
+        uses: OneSignal/sdk-shared/.github/actions/determine-next-version@main
+        with:
+          github-token: ${{ secrets.GH_PUSH_TOKEN || github.token }}
+          target-repo: OneSignal/OneSignal-Unity-SDK
+          target-branch: ${{ inputs.target_branch }}
+
   prep:
+    needs: determine_version
+    if: needs.determine_version.outputs.release_needed == 'true'
     uses: OneSignal/sdk-shared/.github/workflows/prep-release.yml@main
     secrets:
       # Need this cross-repo token (sdk-shared & this repo) to perform changes
@@ -60,11 +78,12 @@ jobs:
     with:
       # Need target_repo otherwise caller would set github.repository to the caller itself (e.g. sdk-shared)
       target_repo: OneSignal/OneSignal-Unity-SDK
-      version: ${{ inputs.unity_version }}
+      version: ${{ needs.determine_version.outputs.unity_version }}
+      target_branch: ${{ inputs.target_branch }}
 
   # Unity specific steps
   update_version:
-    needs: prep
+    needs: [determine_version, prep]
     runs-on: ubuntu-latest
     outputs:
       unity_from: ${{ steps.current_versions.outputs.unity_from }}
@@ -136,26 +155,28 @@ jobs:
           git commit -m "Update iOS SDK to ${VERSION}" && git push
 
       - name: Update Unity SDK version
+        env:
+          NEW_VERSION: ${{ needs.determine_version.outputs.unity_version }}
         run: |
-          PADDED_VERSION=$(echo "${{ inputs.unity_version }}" | awk -F. '{printf "%02d%02d%02d", $1, $2, $3}')
-          printf "%s" "${{ inputs.unity_version }}" > examples/demo/Assets/OneSignal/VERSION
+          PADDED_VERSION=$(echo "${NEW_VERSION}" | awk -F. '{printf "%02d%02d%02d", $1, $2, $3}')
+          printf "%s" "${NEW_VERSION}" > examples/demo/Assets/OneSignal/VERSION
           for file in com.onesignal.unity.core/package.json com.onesignal.unity.android/package.json com.onesignal.unity.ios/package.json; do
-            sed -i "s/\"version\": \".*\"/\"version\": \"${{ inputs.unity_version }}\"/" "$file"
-            sed -i "s/\"com.onesignal.unity.core\": \".*\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/" "$file"
+            sed -i "s/\"version\": \".*\"/\"version\": \"${NEW_VERSION}\"/" "$file"
+            sed -i "s/\"com.onesignal.unity.core\": \".*\"/\"com.onesignal.unity.core\": \"${NEW_VERSION}\"/" "$file"
           done
-          sed -i "s/public const string Version = \".*\"/public const string Version = \"${{ inputs.unity_version }}\"/" com.onesignal.unity.core/Runtime/OneSignal.cs
+          sed -i "s/public const string Version = \".*\"/public const string Version = \"${NEW_VERSION}\"/" com.onesignal.unity.core/Runtime/OneSignal.cs
           sed -i "s/public const string VersionHeader = \".*\"/public const string VersionHeader = \"${PADDED_VERSION}\"/" com.onesignal.unity.core/Runtime/OneSignalPlatform.cs
           for asm in examples/demo/Assets/OneSignal/Editor/OneSignal.UnityPackage.Editor.asmdef examples/demo/Assets/OneSignal/Attribution/OneSignal.UnityPackage.Attribution.asmdef com.onesignal.unity.core/Samples~/OneSignal.UnityPackage.Example.asmdef; do
-            sed -i "s/\"expression\": \".*\"/\"expression\": \"${{ inputs.unity_version }}\"/" "$asm"
+            sed -i "s/\"expression\": \".*\"/\"expression\": \"${NEW_VERSION}\"/" "$asm"
           done
-          sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${{ inputs.unity_version }}\"/g" examples/demo/Packages/packages-lock.json
-          sed -i "s/bundleVersion: .*/bundleVersion: ${{ inputs.unity_version }}/" examples/demo/ProjectSettings/ProjectSettings.asset
+          sed -i "s/\"com.onesignal.unity.core\": \"[0-9.]\+\"/\"com.onesignal.unity.core\": \"${NEW_VERSION}\"/g" examples/demo/Packages/packages-lock.json
+          sed -i "s/bundleVersion: .*/bundleVersion: ${NEW_VERSION}/" examples/demo/ProjectSettings/ProjectSettings.asset
           sed -i "s/setSdkVersion:@\"[0-9]*\"/setSdkVersion:@\"${PADDED_VERSION}\"/" com.onesignal.unity.ios/Runtime/Plugins/iOS/UIApplication+OneSignalUnity.mm
 
           # Only commit if there are changes
           git add -A 
           git diff --staged --quiet && exit 0
-          git commit -m "Release ${{ inputs.unity_version }}" && git push
+          git commit -m "Release ${NEW_VERSION}" && git push
 
   create_pr:
     needs: [prep, update_version]
