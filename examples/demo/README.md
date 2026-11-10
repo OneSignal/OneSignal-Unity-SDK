@@ -22,7 +22,7 @@ cp .env.example .env
 Set your OneSignal credentials in `.env`:
 
 ```sh
-ONESIGNAL_APP_ID=your-onesignal-app-id
+ONESIGNAL_APP_ID=
 ONESIGNAL_API_KEY=your_rest_api_key
 E2E_MODE=false
 ONESIGNAL_ANDROID_CHANNEL_ID=
