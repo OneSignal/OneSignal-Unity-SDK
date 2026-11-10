@@ -101,5 +101,5 @@ if [ "$INSTALL" = true ] && [ -n "$EMULATOR" ]; then
   "$ADB" -s "$EMULATOR" wait-for-device
   echo "Installing on $EMULATOR..."
   "$ADB" -s "$EMULATOR" install -r "$OUTPUT"
-  "$ADB" -s "$EMULATOR" shell am start -n com.onesignal.example/com.unity3d.player.UnityPlayerActivity
+  "$ADB" -s "$EMULATOR" shell am start -n com.onesignal.sdkdemo/com.unity3d.player.UnityPlayerActivity
 fi

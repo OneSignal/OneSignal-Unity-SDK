@@ -53,7 +53,13 @@ jobs:
           manifest["dependencies"]["com.unity.modules.accessibility"] = "1.0.0"
           path.write_text(json.dumps(manifest, indent=2) + "\n")
           PY
-          printf '%s\n' '-define:ONESIGNAL_E2E_ACCESSIBILITY' > examples/demo/Assets/csc.rsp
+          printf '%s\n' '-define:ONESIGNAL_E2E_ACCESSIBILITY' '-define:FIREBASE_INSTALLATION_ID_ENABLED' > examples/demo/Assets/csc.rsp
+
+      - name: Write google-services.json
+        uses: OneSignal/sdk-shared/.github/actions/setup-google-services@main
+        with:
+          google-services-json: ${{ secrets.APPIUM_GOOGLE_SERVICES_JSON }}
+          path: examples/demo/google-services.json
 
       - name: Cache Unity Library
         uses: actions/cache@v5
@@ -237,6 +243,7 @@ jobs:
       app-artifact: demo-apk
       app-filename: onesignal-demo.apk
       sdk-type: unity
+      bundle-id: com.onesignal.sdkdemo
       build-name: unity-android-${{ github.ref_name }}-${{ github.run_number }}
 
   e2e-ios:

@@ -64,6 +64,9 @@ crashlytics-build.properties
 # User-specific Unity Editor settings
 /[Uu]serSettings/
 
+# Firebase config
+/google-services.json
+
 # Environment files
 .env
 Assets/StreamingAssets/.env
