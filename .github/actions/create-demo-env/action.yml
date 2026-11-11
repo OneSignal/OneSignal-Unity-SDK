@@ -27,6 +27,10 @@ runs:
         ANDROID_CHANNEL_ID: ${{ inputs.onesignal-android-channel-id }}
         E2E_MODE: ${{ inputs.e2e-mode }}
       run: |
+        if [ -z "$APP_ID" ]; then
+          echo "::error::onesignal-app-id is empty"
+          exit 1
+        fi
         {
           echo "ONESIGNAL_APP_ID=$APP_ID"
           echo "ONESIGNAL_API_KEY=$API_KEY"

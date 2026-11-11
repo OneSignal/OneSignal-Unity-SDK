@@ -1,3 +1,4 @@
+using System;
 using OneSignalDemo.Services;
 using OneSignalDemo.ViewModels;
 using OneSignalSDK;
@@ -12,8 +13,6 @@ namespace OneSignalDemo
 {
     public class AppBootstrapper : MonoBehaviour
     {
-        private const string DefaultAppId = "77e32082-ea27-42e3-a898-c72e141824ef";
-        private const string PlaceholderAppId = "your-onesignal-app-id";
         private const string Tag = "AppBootstrapper";
 
         [SerializeField]
@@ -49,11 +48,13 @@ namespace OneSignalDemo
             _prefs = new PreferencesService();
             _apiService = new OneSignalApiService();
 
-            var envAppId = DotEnv.Get("ONESIGNAL_APP_ID");
-            var appId =
-                string.IsNullOrWhiteSpace(envAppId) || envAppId == PlaceholderAppId
-                    ? DefaultAppId
-                    : envAppId;
+            var appId = DotEnv.Get("ONESIGNAL_APP_ID").Trim();
+            if (string.IsNullOrEmpty(appId))
+            {
+                throw new InvalidOperationException(
+                    "ONESIGNAL_APP_ID is not set. Add it to examples/demo/.env."
+                );
+            }
 
             _apiService.SetAppId(appId);
 

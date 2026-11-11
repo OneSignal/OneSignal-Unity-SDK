@@ -1,5 +1,5 @@
 using System.IO;
-using UnityEditor;
+using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -8,6 +8,11 @@ namespace OneSignalDemo.Editor
 {
     public class CopyEnvPreBuild : IPreprocessBuildWithReport
     {
+        private static readonly Regex AppIdLine = new Regex(
+            @"^[ \t]*ONESIGNAL_APP_ID[ \t]*=[ \t]*[^\s#]",
+            RegexOptions.Multiline
+        );
+
         public int callbackOrder => 0;
 
         public void OnPreprocessBuild(BuildReport report)
@@ -16,21 +21,11 @@ namespace OneSignalDemo.Editor
             var source = Path.Combine(projectRoot, ".env");
             var dest = Path.Combine(Application.streamingAssetsPath, ".env");
 
-            if (!File.Exists(source))
+            if (!File.Exists(source) || !AppIdLine.IsMatch(File.ReadAllText(source)))
             {
-                Debug.LogWarning(
-                    "[OneSignalDemo] No .env file found at project root. "
-                        + "Live Activity API calls will be disabled. "
-                        + "Copy .env.example to .env and add your key."
+                throw new BuildFailedException(
+                    "ONESIGNAL_APP_ID is not set. Add it to examples/demo/.env."
                 );
-                if (File.Exists(dest))
-                {
-                    File.Delete(dest);
-                    var metaPath = dest + ".meta";
-                    if (File.Exists(metaPath))
-                        File.Delete(metaPath);
-                }
-                return;
             }
 
             Directory.CreateDirectory(Application.streamingAssetsPath);
