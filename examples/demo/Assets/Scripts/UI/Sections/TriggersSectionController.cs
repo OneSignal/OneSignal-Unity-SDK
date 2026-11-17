@@ -47,6 +47,9 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+
             var addButton = SectionBuilder.CreatePrimaryButton(
                 "ADD TRIGGER",
                 "add_trigger_button",
@@ -57,9 +60,9 @@ namespace OneSignalDemo.UI.Sections
                 addButton.style.minHeight = 40;
                 addButton.style.marginBottom = 4;
             }
-            section.Add(addButton);
+            buttonGrid.Add(addButton);
             var addMultipleButton = SectionBuilder.CreatePrimaryButton(
-                "ADD MULTIPLE TRIGGERS",
+                "ADD TRIGGERS",
                 "add_multiple_triggers_button",
                 ShowAddMultipleTriggersDialog
             );
@@ -68,21 +71,21 @@ namespace OneSignalDemo.UI.Sections
                 addMultipleButton.style.minHeight = 40;
                 addMultipleButton.style.marginBottom = 4;
             }
-            section.Add(addMultipleButton);
+            buttonGrid.Add(addMultipleButton);
 
             _removeSelectedButton = SectionBuilder.CreateDestructiveButton(
                 "REMOVE TRIGGERS",
                 "remove_triggers_button",
                 ShowRemoveSelectedTriggersDialog
             );
-            section.Add(_removeSelectedButton);
+            buttonGrid.Add(_removeSelectedButton);
 
             _clearAllButton = SectionBuilder.CreateDestructiveButton(
-                "CLEAR ALL TRIGGERS",
+                "CLEAR ALL",
                 "clear_triggers_button",
                 () => _viewModel.ClearAllTriggers()
             );
-            section.Add(_clearAllButton);
+            buttonGrid.Add(_clearAllButton);
 
             RefreshList();
             return section;

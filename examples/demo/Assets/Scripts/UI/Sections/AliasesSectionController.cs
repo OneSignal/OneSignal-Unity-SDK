@@ -37,16 +37,18 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "ADD ALIAS",
                     "add_alias_button",
                     ShowAddAliasDialog
                 )
             );
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE ALIASES",
+                    "ADD ALIASES",
                     "add_multiple_aliases_button",
                     ShowAddMultipleAliasesDialog
                 )

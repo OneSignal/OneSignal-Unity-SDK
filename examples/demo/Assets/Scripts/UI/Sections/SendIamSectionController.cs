@@ -40,27 +40,17 @@ namespace OneSignalDemo.UI.Sections
                 () => OnInfoTap?.Invoke()
             );
 
-            VisualElement row = null;
-            for (int i = 0; i < Types.Length; i++)
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+            foreach (var type in Types)
             {
-                if (i % 2 == 0)
-                {
-                    row = new VisualElement();
-                    row.AddToClassList("button-grid-row");
-                    section.Add(row);
-                }
-
-                var type = Types[i];
-                var btn = SectionBuilder.CreatePrimaryButton(
-                    type.DisplayName().ToUpperInvariant(),
-                    $"send_iam_{type.TriggerValue()}_button",
-                    () => _viewModel.SendInAppMessage(type)
+                buttonGrid.Add(
+                    SectionBuilder.CreatePrimaryButton(
+                        type.DisplayName().ToUpperInvariant(),
+                        $"send_iam_{type.TriggerValue()}_button",
+                        () => _viewModel.SendInAppMessage(type)
+                    )
                 );
-                btn.AddToClassList("button-grid-item");
-                btn.AddToClassList(
-                    i % 2 == 0 ? "button-grid-item--leading" : "button-grid-item--trailing"
-                );
-                row.Add(btn);
             }
 
             return section;

@@ -42,6 +42,7 @@ namespace OneSignalDemo.UI.Dialogs
         protected override void BuildContent(VisualElement container)
         {
             Overlay.AddToClassList("dropdown-overlay");
+            Overlay.style.paddingTop = 0;
             container.AddToClassList("dropdown-menu");
 
             var list = new ScrollView(ScrollViewMode.Vertical);
