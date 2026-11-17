@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'com.onesignal.example.icon'
+    namespace 'com.onesignal.sdkdemo.icon'
 
     def unityLib = project(':unityLibrary').extensions.getByName('android')
 

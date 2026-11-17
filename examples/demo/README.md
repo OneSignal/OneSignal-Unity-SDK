@@ -2,7 +2,7 @@
 
 A Unity app showcasing OneSignal Unity SDK features including push notifications, in-app messaging, user management, tags, triggers, outcomes, live activities, and more. It references the in-repo UPM packages (`com.onesignal.unity.core`, `.android`, `.ios`) through `file:` paths in `Packages/manifest.json`.
 
-The demo uses Android package `com.onesignal.sdkdemo` and iOS bundle ID `com.onesignal.example`. It is for repository development and testing. The user-facing sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`.
+The demo uses the app ID `com.onesignal.sdkdemo` on Android and iOS. It is for repository development and testing. The user-facing sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`.
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ ONESIGNAL_ANDROID_CHANNEL_ID=
 
 Play mode in the Editor reads `.env` from this directory, and each build copies it into `Assets/StreamingAssets` (gitignored). Without `ONESIGNAL_API_KEY`, live activity update/end is disabled. Rebuild after changing `.env`.
 
-The OneSignal app needs FCM credentials for Android and APNs credentials for the `com.onesignal.example` bundle ID on iOS.
+The OneSignal app needs FCM (Android) and APNs (iOS) credentials for `com.onesignal.sdkdemo`.
 
 ### Firebase Installation IDs (optional)
 

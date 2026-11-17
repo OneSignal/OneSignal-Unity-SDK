@@ -20,7 +20,7 @@ namespace App.Editor.iOS
     /// </summary>
     public class SigningPostProcessor : IPostprocessBuildWithReport
     {
-        private const string AppleTeamId = "99SW8E36CT";
+        private const string AppleTeamId = "DL8TF3X4K3";
         private const string ApsEnvironment = "development";
 
         private const string NseTargetName = "OneSignalNotificationServiceExtension";
@@ -30,8 +30,10 @@ namespace App.Editor.iOS
         private const string NseBundleSuffix = "NSE";
         private const string WidgetBundleSuffix = "LA";
 
-        // CI-only manual signing config. Profile names must match the
-        // OneSignal-owned provisioning profiles fetched by
+        // CI-only manual signing config: the in-house distribution cert and
+        // In House profiles, so BrowserStack can install the IPA without
+        // re-signing it. Profile names must match the OneSignal-owned
+        // provisioning profiles fetched by
         // .github/workflows/e2e.yml (`Download provisioning profiles`) and
         // referenced by examples/demo/iOS/ExportOptions.plist. Local devs
         // keep Xcode auto-signing because IsCiBuild only returns true when
@@ -39,7 +41,7 @@ namespace App.Editor.iOS
         private const string MainProfileName = "Appium Demo - Main";
         private const string NseProfileName = "Appium Demo - NSE";
         private const string WidgetProfileName = "Appium Demo - Live Activity";
-        private const string DevSignIdentity = "Apple Development";
+        private const string DistributionSignIdentity = "iPhone Distribution";
 
         // Run after both demo widget post-processor (45) and SDK
         // post-processor (45). 100 puts us after pod install (50) too.
@@ -150,11 +152,11 @@ namespace App.Editor.iOS
             // specifier but Unity still emits it on every target; clear it so
             // the specifier above wins instead of an empty UUID lookup.
             project.SetBuildProperty(targetGuid, "PROVISIONING_PROFILE", "");
-            project.SetBuildProperty(targetGuid, "CODE_SIGN_IDENTITY", DevSignIdentity);
+            project.SetBuildProperty(targetGuid, "CODE_SIGN_IDENTITY", DistributionSignIdentity);
             project.SetBuildProperty(
                 targetGuid,
                 "CODE_SIGN_IDENTITY[sdk=iphoneos*]",
-                DevSignIdentity
+                DistributionSignIdentity
             );
 
             Debug.Log(

@@ -229,7 +229,7 @@ In `AppViewModel.LoadInitialState()` (`AppViewModel.cs` lines ~110-122), UI stat
 - `AppBootstrapper.Start()` calls `DotEnv.Load()` BEFORE `OneSignal.Initialize`. There is no default App ID: `CopyEnvPreBuild` fails the build when `ONESIGNAL_APP_ID` is missing from `.env`, and `AppBootstrapper` throws if it is empty at runtime.
 
 ### Android package and Firebase
-- Android package is `com.onesignal.sdkdemo`; iOS bundle ID stays `com.onesignal.example`.
+- Android package and iOS bundle ID are `com.onesignal.sdkdemo`.
 - `mainTemplate.gradle` depends on `com.google.firebase:firebase-messaging:25.1.3`.
 - `google-services.json` lives in the project root and is gitignored. `FirebaseInstallationIdBuild` copies it into the generated `launcher/` module, where `launcherTemplate.gradle` applies the Google Services plugin only when the file exists (`baseProjectTemplate.gradle` declares the plugin version).
 - The `firebase_messaging_installation_id_enabled` meta-data in `Assets/Plugins/Android/AndroidManifest.xml` defaults to `false`. The `FIREBASE_INSTALLATION_ID_ENABLED` scripting define (set in `Assets/csc.rsp` by E2E) flips it to `true` and fails the build if `google-services.json` is missing.
