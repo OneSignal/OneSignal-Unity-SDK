@@ -13,15 +13,15 @@ namespace App.Editor.iOS
     /// <summary>
     /// Final iOS post-processor for the demo app. Runs AFTER the OneSignal
     /// SDK and demo widget post-processors so it can correct things they set:
-    /// flips aps-environment to "development", normalizes extension bundle
+    /// sets aps-environment (production for CI's In House profiles, development
+    /// otherwise), normalizes extension bundle
     /// IDs, pins DEVELOPMENT_TEAM on every target, and (in CI only) switches
     /// signing to Manual with the OneSignal-owned Appium provisioning
     /// profiles so xcodebuild archive can sign the IPA unattended.
     /// </summary>
     public class SigningPostProcessor : IPostprocessBuildWithReport
     {
-        private const string AppleTeamId = "99SW8E36CT";
-        private const string ApsEnvironment = "development";
+        private const string AppleTeamId = "DL8TF3X4K3";
 
         private const string NseTargetName = "OneSignalNotificationServiceExtension";
         private const string WidgetTargetName = "OneSignalWidgetExtension";
@@ -30,8 +30,10 @@ namespace App.Editor.iOS
         private const string NseBundleSuffix = "NSE";
         private const string WidgetBundleSuffix = "LA";
 
-        // CI-only manual signing config. Profile names must match the
-        // OneSignal-owned provisioning profiles fetched by
+        // CI-only manual signing config: the in-house distribution cert and
+        // In House profiles, so BrowserStack can install the IPA without
+        // re-signing it. Profile names must match the OneSignal-owned
+        // provisioning profiles fetched by
         // .github/workflows/e2e.yml (`Download provisioning profiles`) and
         // referenced by examples/demo/iOS/ExportOptions.plist. Local devs
         // keep Xcode auto-signing because IsCiBuild only returns true when
@@ -39,7 +41,7 @@ namespace App.Editor.iOS
         private const string MainProfileName = "Appium Demo - Main";
         private const string NseProfileName = "Appium Demo - NSE";
         private const string WidgetProfileName = "Appium Demo - Live Activity";
-        private const string DevSignIdentity = "Apple Development";
+        private const string DistributionSignIdentity = "iPhone Distribution";
 
         // Run after both demo widget post-processor (45) and SDK
         // post-processor (45). 100 puts us after pod install (50) too.
@@ -87,11 +89,13 @@ namespace App.Editor.iOS
 
             var plist = new PlistDocument();
             plist.ReadFromFile(fullPath);
-            plist.root.SetString("aps-environment", ApsEnvironment);
+            // In House profiles only grant production APNs.
+            var apsEnvironment = IsCiBuild() ? "production" : "development";
+            plist.root.SetString("aps-environment", apsEnvironment);
             plist.WriteToFile(fullPath);
 
             Debug.Log(
-                $"[SigningPostProcessor] Set aps-environment=\"{ApsEnvironment}\" in {relPath}"
+                $"[SigningPostProcessor] Set aps-environment=\"{apsEnvironment}\" in {relPath}"
             );
         }
 
@@ -150,11 +154,11 @@ namespace App.Editor.iOS
             // specifier but Unity still emits it on every target; clear it so
             // the specifier above wins instead of an empty UUID lookup.
             project.SetBuildProperty(targetGuid, "PROVISIONING_PROFILE", "");
-            project.SetBuildProperty(targetGuid, "CODE_SIGN_IDENTITY", DevSignIdentity);
+            project.SetBuildProperty(targetGuid, "CODE_SIGN_IDENTITY", DistributionSignIdentity);
             project.SetBuildProperty(
                 targetGuid,
                 "CODE_SIGN_IDENTITY[sdk=iphoneos*]",
-                DevSignIdentity
+                DistributionSignIdentity
             );
 
             Debug.Log(

@@ -41,7 +41,9 @@ namespace OneSignalDemo.UI.Sections
             card.Add(toggleRow);
             section.Add(card);
 
-            section.Add(
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "PROMPT LOCATION",
                     "prompt_location_button",
@@ -49,9 +51,9 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "CHECK LOCATION SHARED",
+                    "CHECK LOCATION",
                     "check_location_button",
                     () =>
                     {

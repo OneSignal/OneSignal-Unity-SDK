@@ -56,26 +56,29 @@ namespace OneSignalDemo.UI.Sections
 
             section.Add(inputCard);
 
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+
             _startButton = SectionBuilder.CreatePrimaryButton(
-                "START LIVE ACTIVITY",
+                "START ACTIVITY",
                 "start_live_activity_button",
                 OnStartTap
             );
-            section.Add(_startButton);
+            buttonGrid.Add(_startButton);
 
             _updateButton = SectionBuilder.CreatePrimaryButton(
                 $"UPDATE \u2192 {_viewModel.NextStatusLabel}",
                 "update_live_activity_button",
                 OnUpdateTap
             );
-            section.Add(_updateButton);
+            buttonGrid.Add(_updateButton);
 
             _endButton = SectionBuilder.CreateDestructiveButton(
-                "END LIVE ACTIVITY",
+                "END ACTIVITY",
                 "end_live_activity_button",
                 OnEndTap
             );
-            section.Add(_endButton);
+            buttonGrid.Add(_endButton);
 
             _apiKeyHint = new Label("Set ONESIGNAL_API_KEY in .env to enable update & end");
             _apiKeyHint.name = "live_activity_api_key_hint";

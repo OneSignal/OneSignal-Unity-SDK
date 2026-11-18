@@ -75,7 +75,7 @@ cat > "$LIB_DIR/build.gradle" << 'GRADLE'
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'com.onesignal.example.icon'
+    namespace 'com.onesignal.sdkdemo.icon'
 
     def unityLib = project(':unityLibrary').extensions.getByName('android')
 
@@ -91,7 +91,7 @@ GRADLE
 
 cat > "$LIB_DIR/AndroidManifest.xml" << 'MANIFEST'
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.onesignal.example.icon">
+    package="com.onesignal.sdkdemo.icon">
 </manifest>
 MANIFEST
 

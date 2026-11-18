@@ -106,6 +106,18 @@ namespace OneSignalDemo.UI.Sections
             return row;
         }
 
+        /// <summary>
+        /// Container that lays buttons out two per row. An odd last button
+        /// spans the row, and buttons hidden with display: none drop out so
+        /// the rest reflow.
+        /// </summary>
+        public static VisualElement CreateButtonGrid()
+        {
+            var grid = new VisualElement();
+            grid.AddToClassList("button-grid");
+            return grid;
+        }
+
         public static Button CreatePrimaryButton(string text, string name, Action onClick)
         {
             var btn = new Button(onClick);

@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using OneSignalDemo.Services;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OneSignalDemo.UI.Dialogs
@@ -33,6 +34,7 @@ namespace OneSignalDemo.UI.Dialogs
 
             Overlay = new VisualElement();
             Overlay.AddToClassList("dialog-overlay");
+            Overlay.style.paddingTop = SafeAreaTop(parent);
             Overlay.RegisterCallback<ClickEvent>(e =>
             {
                 if (e.target == Overlay)
@@ -82,6 +84,19 @@ namespace OneSignalDemo.UI.Dialogs
                 AccessibilityBridge.RequestImmediateResync();
             }
             Overlay = null;
+        }
+
+        /// <summary>
+        /// Top safe-area inset in panel units. Dialogs anchor below it (the
+        /// container adds the 24px inset) and stay put while open: a dialog
+        /// that moves desyncs XCUITest frame reporting from the layout.
+        /// </summary>
+        private static float SafeAreaTop(VisualElement parent)
+        {
+            float height = parent.resolvedStyle.height;
+            if (float.IsNaN(height) || height <= 0 || Screen.height <= 0)
+                return 0;
+            return (Screen.height - Screen.safeArea.yMax) * height / Screen.height;
         }
 
         protected abstract void BuildContent(VisualElement container);

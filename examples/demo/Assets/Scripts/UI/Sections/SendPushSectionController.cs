@@ -31,7 +31,9 @@ namespace OneSignalDemo.UI.Sections
                 () => OnInfoTap?.Invoke()
             );
 
-            section.Add(
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "SIMPLE",
                     "send_simple_button",
@@ -39,7 +41,7 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "WITH IMAGE",
                     "send_image_button",
@@ -47,7 +49,7 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "WITH SOUND",
                     "send_sound_button",
@@ -55,7 +57,7 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "CUSTOM",
                     "send_custom_button",
@@ -63,7 +65,7 @@ namespace OneSignalDemo.UI.Sections
                 )
             );
 
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreateDestructiveButton(
                     "CLEAR ALL",
                     "clear_all_button",

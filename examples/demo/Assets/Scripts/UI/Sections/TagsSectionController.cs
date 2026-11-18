@@ -39,16 +39,18 @@ namespace OneSignalDemo.UI.Sections
             card.Add(_listContainer);
             section.Add(card);
 
-            section.Add(
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
                     "ADD TAG",
                     "add_tag_button",
                     ShowAddTagDialog
                 )
             );
-            section.Add(
+            buttonGrid.Add(
                 SectionBuilder.CreatePrimaryButton(
-                    "ADD MULTIPLE TAGS",
+                    "ADD TAGS",
                     "add_multiple_tags_button",
                     ShowAddMultipleTagsDialog
                 )
@@ -59,7 +61,7 @@ namespace OneSignalDemo.UI.Sections
                 "remove_tags_button",
                 ShowRemoveSelectedTagsDialog
             );
-            section.Add(_removeSelectedButton);
+            buttonGrid.Add(_removeSelectedButton);
 
             RefreshList();
             return section;

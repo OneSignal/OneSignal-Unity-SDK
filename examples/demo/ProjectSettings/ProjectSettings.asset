@@ -165,7 +165,7 @@ PlayerSettings:
   androidMinAspectRatio: 1
   applicationIdentifier:
     Android: com.onesignal.sdkdemo
-    iPhone: com.onesignal.example
+    iPhone: com.onesignal.sdkdemo
   buildNumber:
     Standalone: 0
     VisionOS: 0

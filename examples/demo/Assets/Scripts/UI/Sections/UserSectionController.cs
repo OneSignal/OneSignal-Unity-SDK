@@ -127,7 +127,9 @@ namespace OneSignalDemo.UI.Sections
                 "login_user_button",
                 ShowLoginDialog
             );
-            section.Add(_loginButton);
+            var buttonGrid = SectionBuilder.CreateButtonGrid();
+            section.Add(buttonGrid);
+            buttonGrid.Add(_loginButton);
 
             _logoutButton = SectionBuilder.CreateDestructiveButton(
                 "LOGOUT USER",
@@ -137,7 +139,7 @@ namespace OneSignalDemo.UI.Sections
             _logoutButton.style.display = _viewModel.IsLoggedIn
                 ? DisplayStyle.Flex
                 : DisplayStyle.None;
-            section.Add(_logoutButton);
+            buttonGrid.Add(_logoutButton);
 
             return section;
         }

@@ -374,6 +374,8 @@
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
+    margin-left: 0;
+    margin-right: 0;
     margin-bottom: var(--card-gap);
 }
 
@@ -390,23 +392,23 @@
     color: #757575;
 }
 
-.button-grid-row {
+/* Two per row via flex-wrap; an odd last button grows to span the row.
+   The negative margins cancel the outer half of each button's gutter. */
+.button-grid {
     flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: -4px;
+    margin-right: -4px;
 }
 
-.button-grid-item {
+.button-grid > .primary-button,
+.button-grid > .destructive-button {
     flex-grow: 1;
-    flex-basis: 0;
+    flex-basis: 40%;
+    margin-left: 4px;
+    margin-right: 4px;
     padding: 0 8px;
     white-space: nowrap;
-}
-
-.button-grid-item--leading {
-    margin-right: var(--card-gap);
-}
-
-.button-grid-item--trailing {
-    margin-left: 0;
 }
 
 .destructive-button {
@@ -420,6 +422,8 @@
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
+    margin-left: 0;
+    margin-right: 0;
     margin-bottom: var(--card-gap);
 }
 
@@ -607,7 +611,6 @@
     background-color: var(--os-backdrop);
     justify-content: flex-start;
     align-items: center;
-    padding-top: 80px;
 }
 
 .dialog-container {
