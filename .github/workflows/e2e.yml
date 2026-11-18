@@ -187,7 +187,9 @@ jobs:
         # `pod install` an Unity-iPhone.xcworkspace exists and must be used;
         # without CocoaPods we fall back to the .xcodeproj. The
         # SigningPostProcessor already pinned DEVELOPMENT_TEAM and the NSE /
-        # Live Activity bundle IDs to match ExportOptions.plist.
+        # Live Activity bundle IDs to match ExportOptions.plist. CI only has the
+        # in-house distribution cert, so the identity and team are also pinned
+        # here for targets the post-processor skips (UnityFramework, Pods).
         run: |
           if [ -d Unity-iPhone.xcworkspace ]; then
             CONTAINER_ARGS=(-workspace Unity-iPhone.xcworkspace)
@@ -206,6 +208,8 @@ jobs:
             -quiet \
             -hideShellScriptEnvironment \
             CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            DEVELOPMENT_TEAM=DL8TF3X4K3 \
             COMPILER_INDEX_STORE_ENABLE=NO
           xcodebuild -exportArchive \
             -archivePath build/App.xcarchive \
@@ -231,8 +235,8 @@ jobs:
           unzip -oq demo.ipa -d /tmp/ipa
           APP=$(ls -d /tmp/ipa/Payload/*.app | head -n1)
           codesign -d --entitlements - "$APP" 2>&1 | tee /tmp/entitlements.txt
-          if ! grep -q 'aps-environment' /tmp/entitlements.txt; then
-            echo "::error::Built IPA is missing aps-environment entitlement; push subscription will not work"
+          if ! grep -A2 'aps-environment' /tmp/entitlements.txt | grep -q 'production'; then
+            echo "::error::Built IPA needs aps-environment=production for the In House profile"
             exit 1
           fi
 

@@ -13,7 +13,8 @@ namespace App.Editor.iOS
     /// <summary>
     /// Final iOS post-processor for the demo app. Runs AFTER the OneSignal
     /// SDK and demo widget post-processors so it can correct things they set:
-    /// flips aps-environment to "development", normalizes extension bundle
+    /// sets aps-environment (production for CI's In House profiles, development
+    /// otherwise), normalizes extension bundle
     /// IDs, pins DEVELOPMENT_TEAM on every target, and (in CI only) switches
     /// signing to Manual with the OneSignal-owned Appium provisioning
     /// profiles so xcodebuild archive can sign the IPA unattended.
@@ -21,7 +22,6 @@ namespace App.Editor.iOS
     public class SigningPostProcessor : IPostprocessBuildWithReport
     {
         private const string AppleTeamId = "DL8TF3X4K3";
-        private const string ApsEnvironment = "development";
 
         private const string NseTargetName = "OneSignalNotificationServiceExtension";
         private const string WidgetTargetName = "OneSignalWidgetExtension";
@@ -89,11 +89,13 @@ namespace App.Editor.iOS
 
             var plist = new PlistDocument();
             plist.ReadFromFile(fullPath);
-            plist.root.SetString("aps-environment", ApsEnvironment);
+            // In House profiles only grant production APNs.
+            var apsEnvironment = IsCiBuild() ? "production" : "development";
+            plist.root.SetString("aps-environment", apsEnvironment);
             plist.WriteToFile(fullPath);
 
             Debug.Log(
-                $"[SigningPostProcessor] Set aps-environment=\"{ApsEnvironment}\" in {relPath}"
+                $"[SigningPostProcessor] Set aps-environment=\"{apsEnvironment}\" in {relPath}"
             );
         }
 

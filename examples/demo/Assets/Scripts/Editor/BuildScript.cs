@@ -113,8 +113,8 @@ public static class BuildScript
     /// Builds an Xcode project targeting physical iOS devices, used by CI to
     /// produce a signed IPA for BrowserStack. The OneSignal SDK and demo
     /// post-processors add push capabilities, the NSE / Live Activity widget
-    /// targets, and pin DEVELOPMENT_TEAM + aps-environment=development so the
-    /// archive step can sign with the Appium provisioning profiles in
+    /// targets, and pin DEVELOPMENT_TEAM + aps-environment=production so the
+    /// archive step can sign with the In House Appium provisioning profiles in
     /// ExportOptions.plist.
     /// </summary>
     public static void BuildiOSDevice()

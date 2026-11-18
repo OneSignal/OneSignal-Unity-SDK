@@ -2,7 +2,7 @@
 
 A Unity app showcasing OneSignal Unity SDK features including push notifications, in-app messaging, user management, tags, triggers, outcomes, live activities, and more. It references the in-repo UPM packages (`com.onesignal.unity.core`, `.android`, `.ios`) through `file:` paths in `Packages/manifest.json`.
 
-The demo uses the app ID `com.onesignal.sdkdemo` on Android and iOS. It is for repository development and testing. The user-facing sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`.
+The demo uses the bundle ID `com.onesignal.sdkdemo` on Android and iOS. It is for repository development and testing. The user-facing sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`.
 
 ## Prerequisites
 
