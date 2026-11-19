@@ -129,15 +129,11 @@ namespace OneSignalSDK
         protected override void _runStep()
         {
             const string msg = "Downloading Google External Dependency Manager";
-            UnityPackageInstaller.DownloadAndInstall(
-                _edm4UPackageDownloadUrl,
-                msg,
-                result =>
-                {
-                    if (result)
-                        _shouldCheckForCompletion = true;
-                }
-            );
+            UnityPackageInstaller.DownloadAndInstall(_edm4UPackageDownloadUrl, msg, result =>
+            {
+                if (result)
+                    _shouldCheckForCompletion = true;
+            });
         }
 
         private const string _edm4UVersion = "1.2.177";
