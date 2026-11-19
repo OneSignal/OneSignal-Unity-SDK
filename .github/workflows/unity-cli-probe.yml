@@ -37,39 +37,30 @@ jobs:
           brew install --cask unity-cli
           unity --version
 
-      - name: Inspect CLI auth, license and build options
+      - name: Inspect CLI auth and license state
         continue-on-error: true
         run: |
           set -x
           unity auth status || true
-          unity license --help || true
-          unity license list || true
-          unity build --help || true
-          unity run --help || true
+          unity license status || true
+          unity license activate --help || true
 
       - name: Install Unity Editor with iOS module
         run: unity install "$UNITY_VERSION" -m ios
 
-      - name: Show licenses after Editor install
+      - name: License state after Editor install
         continue-on-error: true
-        run: unity license list || true
+        run: unity license status || true
 
       - name: Build iOS Xcode project
-        working-directory: examples/demo
         run: |
-          set -x
-          unity run --project-path . -- \
-            -buildTarget iOS \
-            -executeMethod BuildScript.BuildiOSDevice \
-            -logFile - \
-            || {
-              echo "::warning::unity run failed, falling back to the Editor binary"
-              editor="$(unity editors --format json | python3 -c 'import json,sys,os; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get("editors",d); print(next(e.get("path") for e in d if os.environ["UNITY_VERSION"] in json.dumps(e)))')"
-              echo "Editor: $editor"
-              "${editor%/}/Contents/MacOS/Unity" -batchmode -nographics -quit \
-                -projectPath "$PWD" \
-                -buildTarget iOS \
-                -executeMethod BuildScript.BuildiOSDevice \
-                -logFile -
-            }
-          ls -la Build/iOS
+          unity build examples/demo \
+            --target iOS \
+            --execute-method BuildScript.BuildiOSDevice \
+            --allow-dirty-build
+          ls -la examples/demo/Build/iOS
+
+      - name: License state after build
+        if: always()
+        continue-on-error: true
+        run: unity license status || true
