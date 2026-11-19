@@ -1,0 +1,75 @@
+name: Unity CLI license probe
+
+on:
+  push:
+    branches:
+      - fadi/sdk-5790
+    paths:
+      - .github/workflows/unity-cli-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe-ios:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      UNITY_SERVICE_ACCOUNT_ID: ${{ secrets.UNITY_SERVICE_ACCOUNT_ID }}
+      UNITY_SERVICE_ACCOUNT_SECRET: ${{ secrets.UNITY_SERVICE_ACCOUNT_SECRET }}
+      UNITY_NON_INTERACTIVE: "1"
+      UNITY_NO_UPDATE_CHECK: "1"
+      UNITY_VERSION: 6000.4.11f1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Create demo .env
+        uses: ./.github/actions/create-demo-env
+        with:
+          onesignal-app-id: ${{ vars.APPIUM_ONESIGNAL_APP_ID }}
+          onesignal-api-key: ${{ secrets.APPIUM_ONESIGNAL_API_KEY }}
+
+      - name: Install Unity CLI
+        run: |
+          brew install --cask unity-cli
+          unity --version
+
+      - name: Inspect CLI auth, license and build options
+        continue-on-error: true
+        run: |
+          set -x
+          unity auth status || true
+          unity license --help || true
+          unity license list || true
+          unity build --help || true
+          unity run --help || true
+
+      - name: Install Unity Editor with iOS module
+        run: unity install "$UNITY_VERSION" -m ios
+
+      - name: Show licenses after Editor install
+        continue-on-error: true
+        run: unity license list || true
+
+      - name: Build iOS Xcode project
+        working-directory: examples/demo
+        run: |
+          set -x
+          unity run --project-path . -- \
+            -buildTarget iOS \
+            -executeMethod BuildScript.BuildiOSDevice \
+            -logFile - \
+            || {
+              echo "::warning::unity run failed, falling back to the Editor binary"
+              editor="$(unity editors --format json | python3 -c 'import json,sys,os; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get("editors",d); print(next(e.get("path") for e in d if os.environ["UNITY_VERSION"] in json.dumps(e)))')"
+              echo "Editor: $editor"
+              "${editor%/}/Contents/MacOS/Unity" -batchmode -nographics -quit \
+                -projectPath "$PWD" \
+                -buildTarget iOS \
+                -executeMethod BuildScript.BuildiOSDevice \
+                -logFile -
+            }
+          ls -la Build/iOS
