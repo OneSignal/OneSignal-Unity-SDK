@@ -143,8 +143,8 @@ namespace OneSignalSDK.iOS
 
         public override void Initialize(string appId)
         {
-            // The iOS bridge forwards straight to [OneSignal initialize:], whose externalId
-            // counterpart reaches a non-optional Swift parameter. Null has to stop here.
+            // Native initialize: does handle nil, but it rejects "" without falling back to the
+            // cached app id, so an empty value still has to stop here.
             if (InputGuard.IsMissing(appId, "initialize: appId"))
                 return;
             _oneSignalInitialize(appId);
