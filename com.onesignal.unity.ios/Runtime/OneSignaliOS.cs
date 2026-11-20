@@ -143,6 +143,8 @@ namespace OneSignalSDK.iOS
 
         public override void Initialize(string appId)
         {
+            // The iOS bridge forwards straight to [OneSignal initialize:], whose externalId
+            // counterpart reaches a non-optional Swift parameter. Null has to stop here.
             if (InputGuard.IsMissing(appId, "initialize: appId"))
                 return;
             _oneSignalInitialize(appId);
@@ -185,6 +187,8 @@ namespace OneSignalSDK.iOS
 
         public override void Login(string externalId, string jwtBearerToken = null)
         {
+            // Native iOS login forwards externalId into a non-optional Swift parameter with no
+            // nil handling, so this guard is what keeps a null from reaching it.
             if (InputGuard.IsMissing(externalId, "login: externalId"))
                 return;
             if (string.IsNullOrWhiteSpace(jwtBearerToken))
