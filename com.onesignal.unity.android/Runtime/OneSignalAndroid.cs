@@ -173,7 +173,12 @@ namespace OneSignalSDK.Android
                 _liveActivities = new AndroidLiveActivitiesManager();
             }
 
-            _completedInit(appId);
+            // Native may have resolved a cached app id instead of the one passed in, so publishing
+            // a missing value here would hand OnInitialize an AppId the SDK is not using.
+            if (!string.IsNullOrEmpty(appId))
+            {
+                _completedInit(appId);
+            }
         }
 
         /// <summary>
