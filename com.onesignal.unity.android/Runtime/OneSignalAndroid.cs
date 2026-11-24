@@ -130,8 +130,6 @@ namespace OneSignalSDK.Android
 
         public override void Initialize(string appId)
         {
-            if (InputGuard.IsMissing(appId, "initialize: appId"))
-                return;
             var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
@@ -175,7 +173,12 @@ namespace OneSignalSDK.Android
                 _liveActivities = new AndroidLiveActivitiesManager();
             }
 
-            _completedInit(appId);
+            // Native may have resolved a cached app id instead of the one passed in, so publishing
+            // a missing value here would hand OnInitialize an AppId the SDK is not using.
+            if (!string.IsNullOrEmpty(appId))
+            {
+                _completedInit(appId);
+            }
         }
 
         /// <summary>
@@ -201,8 +204,6 @@ namespace OneSignalSDK.Android
 
         public override void Login(string externalId, string jwtBearerToken = null)
         {
-            if (InputGuard.IsMissing(externalId, "login: externalId"))
-                return;
             _sdkClass.CallStatic("login", externalId, jwtBearerToken);
         }
 
