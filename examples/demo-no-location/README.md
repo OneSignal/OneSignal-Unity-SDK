@@ -37,7 +37,7 @@ For Play Mode in the Unity Editor:
 2. Select the `OneSignal No Location Demo` GameObject.
 3. Set `One Signal App Id` on the `NoLocationDemo` component.
 
-If the value is left as `YOUR-ONESIGNAL-APP-ID`, the app starts but does not initialize OneSignal.
+The scene ships with the shared example app `1154c350-e715-4b71-a58b-1b84b6745baa`, so the app initializes OneSignal without any setup.
 
 ## Run On Android
 

@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e1e7c96909144afa42b3fb595db18f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _oneSignalAppId: YOUR-ONESIGNAL-APP-ID
+  _oneSignalAppId: 1154c350-e715-4b71-a58b-1b84b6745baa
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

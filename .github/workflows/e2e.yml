@@ -89,6 +89,7 @@ jobs:
           unityVersion: 6000.4.11f1
           targetPlatform: Android
           buildMethod: BuildScript.BuildAndroidEmulator
+          customParameters: -demoBundleId com.onesignal.sdkdemo
           allowDirtyBuild: true
           # Run the Docker build as the runner's host user so the Library
           # folder is owned by the runner and actions/cache can tar it in
@@ -164,6 +165,7 @@ jobs:
           unityVersion: 6000.4.11f1
           targetPlatform: iOS
           buildMethod: BuildScript.BuildiOSDevice
+          customParameters: -demoBundleId com.onesignal.sdkdemo -demoTeamId DL8TF3X4K3
           allowDirtyBuild: true
           cacheUnityInstallationOnMac: true
 

@@ -2,7 +2,7 @@
 
 A Unity app showcasing OneSignal Unity SDK features including push notifications, in-app messaging, user management, tags, triggers, outcomes, live activities, and more. It references the in-repo UPM packages (`com.onesignal.unity.core`, `.android`, `.ios`) through `file:` paths in `Packages/manifest.json`.
 
-The demo uses the bundle ID `com.onesignal.sdkdemo` on Android and iOS. It is for repository development and testing. The user-facing sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`.
+The demo uses the bundle ID `com.onesignal.example` on Android and iOS, with Apple team `99SW8E36CT`. E2E builds pass `-demoBundleId com.onesignal.sdkdemo -demoTeamId DL8TF3X4K3` to `BuildScript`, which applies them for that build only. It is for repository development and testing. The user-facing sample is the **Full Usage** sample in `com.onesignal.unity.core/Samples~`.
 
 ## Prerequisites
 
@@ -28,20 +28,20 @@ E2E_MODE=false
 ONESIGNAL_ANDROID_CHANNEL_ID=
 ```
 
-- `ONESIGNAL_APP_ID`: required. The build fails without it.
+- `ONESIGNAL_APP_ID`: optional. Without it (or without `.env`), the demo uses the shared example app `1154c350-e715-4b71-a58b-1b84b6745baa`.
 - `ONESIGNAL_API_KEY`: REST API key, used to update and end live activities. Sending notifications from the demo doesn't need it.
 - `E2E_MODE`: leave `false`. CI sets it for the Appium E2E tests.
 - `ONESIGNAL_ANDROID_CHANNEL_ID`: optional Android notification channel for the sound test notification. Falls back to a built-in default channel.
 
 Play mode in the Editor reads `.env` from this directory, and each build copies it into `Assets/StreamingAssets` (gitignored). Without `ONESIGNAL_API_KEY`, live activity update/end is disabled. Rebuild after changing `.env`.
 
-The OneSignal app needs FCM (Android) and APNs (iOS) credentials for `com.onesignal.sdkdemo`.
+The OneSignal app needs FCM (Android) and APNs (iOS) credentials for `com.onesignal.example`.
 
 ### Firebase Installation IDs (optional)
 
 Firebase Installation IDs are off by default. To turn them on:
 
-1. Add a Firebase Android app for `com.onesignal.sdkdemo` and save its `google-services.json` in this directory. The file is gitignored.
+1. Add a Firebase Android app for `com.onesignal.example` and save its `google-services.json` in this directory. The file is gitignored.
 2. Add `-define:FIREBASE_INSTALLATION_ID_ENABLED` to `Assets/csc.rsp`.
 
 When `google-services.json` exists, the Android build applies the Google Services plugin. With the define set and no `google-services.json`, the Android build fails.

@@ -14,6 +14,7 @@ namespace OneSignalDemo
     public class AppBootstrapper : MonoBehaviour
     {
         private const string Tag = "AppBootstrapper";
+        private const string DefaultAppId = "1154c350-e715-4b71-a58b-1b84b6745baa";
 
         [SerializeField]
         private AppViewModel _viewModel;
@@ -50,11 +51,7 @@ namespace OneSignalDemo
 
             var appId = DotEnv.Get("ONESIGNAL_APP_ID").Trim();
             if (string.IsNullOrEmpty(appId))
-            {
-                throw new InvalidOperationException(
-                    "ONESIGNAL_APP_ID is not set. Add it to examples/demo/.env."
-                );
-            }
+                appId = DefaultAppId;
 
             _apiService.SetAppId(appId);
 
