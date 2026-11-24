@@ -12,6 +12,47 @@ public static class BuildScript
     private const string IOSOutputDir = "Build/iOS";
 
     /// <summary>
+    /// Builds with the given bundle ID and Apple team instead of the defaults in
+    /// ProjectSettings (com.onesignal.example / 99SW8E36CT), then restores them so
+    /// the override never lands in ProjectSettings.asset. E2E passes
+    /// <c>-demoBundleId com.onesignal.sdkdemo -demoTeamId DL8TF3X4K3</c>.
+    /// </summary>
+    private static BuildReport BuildWithDemoIdentity(BuildPlayerOptions options)
+    {
+        var target = options.target == BuildTarget.iOS ? NamedBuildTarget.iOS : NamedBuildTarget.Android;
+        var originalBundleId = PlayerSettings.GetApplicationIdentifier(target);
+        var originalTeamId = PlayerSettings.iOS.appleDeveloperTeamID;
+
+        var bundleId = GetArg("-demoBundleId");
+        if (!string.IsNullOrEmpty(bundleId))
+            PlayerSettings.SetApplicationIdentifier(target, bundleId);
+        var teamId = GetArg("-demoTeamId");
+        if (!string.IsNullOrEmpty(teamId))
+            PlayerSettings.iOS.appleDeveloperTeamID = teamId;
+
+        Debug.Log(
+            $"[BuildScript] bundleId={PlayerSettings.GetApplicationIdentifier(target)} teamId={PlayerSettings.iOS.appleDeveloperTeamID}"
+        );
+
+        try
+        {
+            return BuildPipeline.BuildPlayer(options);
+        }
+        finally
+        {
+            PlayerSettings.SetApplicationIdentifier(target, originalBundleId);
+            PlayerSettings.iOS.appleDeveloperTeamID = originalTeamId;
+        }
+    }
+
+    private static string GetArg(string name)
+    {
+        var args = Environment.GetCommandLineArgs();
+        var index = Array.IndexOf(args, name);
+        return index >= 0 && index + 1 < args.Length ? args[index + 1].Trim() : null;
+    }
+
+    /// <summary>
     /// Builds an Android APK using the architecture and scripting backend
     /// pre-configured in ProjectSettings.asset by run-android.sh.
     ///
@@ -61,7 +102,7 @@ public static class BuildScript
             options = BuildOptions.None,
         };
 
-        var report = BuildPipeline.BuildPlayer(options);
+        var report = BuildWithDemoIdentity(options);
         HandleReport(report, outputPath);
     }
 
@@ -105,7 +146,7 @@ public static class BuildScript
             options = BuildOptions.None,
         };
 
-        var report = BuildPipeline.BuildPlayer(options);
+        var report = BuildWithDemoIdentity(options);
         HandleReport(report, IOSOutputDir);
     }
 
@@ -148,7 +189,7 @@ public static class BuildScript
             options = BuildOptions.None,
         };
 
-        var report = BuildPipeline.BuildPlayer(options);
+        var report = BuildWithDemoIdentity(options);
         HandleReport(report, IOSOutputDir);
     }
 

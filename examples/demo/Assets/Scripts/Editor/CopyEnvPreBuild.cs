@@ -1,5 +1,4 @@
 using System.IO;
-using System.Text.RegularExpressions;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -8,11 +7,6 @@ namespace OneSignalDemo.Editor
 {
     public class CopyEnvPreBuild : IPreprocessBuildWithReport
     {
-        private static readonly Regex AppIdLine = new Regex(
-            @"^[ \t]*ONESIGNAL_APP_ID[ \t]*=[ \t]*[^\s#]",
-            RegexOptions.Multiline
-        );
-
         public int callbackOrder => 0;
 
         public void OnPreprocessBuild(BuildReport report)
@@ -21,11 +15,15 @@ namespace OneSignalDemo.Editor
             var source = Path.Combine(projectRoot, ".env");
             var dest = Path.Combine(Application.streamingAssetsPath, ".env");
 
-            if (!File.Exists(source) || !AppIdLine.IsMatch(File.ReadAllText(source)))
+            // Without a .env the app falls back to the shared example app; drop any
+            // copy left by an earlier build so it doesn't keep stale values.
+            if (!File.Exists(source))
             {
-                throw new BuildFailedException(
-                    "ONESIGNAL_APP_ID is not set. Add it to examples/demo/.env."
-                );
+                foreach (var path in new[] { dest, dest + ".meta" })
+                    if (File.Exists(path))
+                        File.Delete(path);
+                Debug.Log("[OneSignalDemo] No .env; using the default app ID");
+                return;
             }
 
             Directory.CreateDirectory(Application.streamingAssetsPath);

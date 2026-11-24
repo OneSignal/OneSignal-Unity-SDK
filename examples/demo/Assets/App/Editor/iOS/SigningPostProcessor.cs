@@ -21,8 +21,6 @@ namespace App.Editor.iOS
     /// </summary>
     public class SigningPostProcessor : IPostprocessBuildWithReport
     {
-        private const string AppleTeamId = "DL8TF3X4K3";
-
         private const string NseTargetName = "OneSignalNotificationServiceExtension";
         private const string WidgetTargetName = "OneSignalWidgetExtension";
 
@@ -106,10 +104,11 @@ namespace App.Editor.iOS
             project.ReadFromString(File.ReadAllText(projectPath));
 
             var appId = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.iOS);
+            var teamId = PlayerSettings.iOS.appleDeveloperTeamID;
             var manualSigning = IsCiBuild();
 
             var mainGuid = project.GetUnityMainTargetGuid();
-            ApplyTeamId(project, mainGuid, "Unity-iPhone");
+            ApplyTeamId(project, mainGuid, teamId, "Unity-iPhone");
             if (manualSigning)
                 ApplyManualSigning(project, mainGuid, MainProfileName, "Unity-iPhone");
 
@@ -117,25 +116,32 @@ namespace App.Editor.iOS
                 project,
                 NseTargetName,
                 $"{appId}.{NseBundleSuffix}",
+                teamId,
                 manualSigning ? NseProfileName : null
             );
             ApplyExtensionFixup(
                 project,
                 WidgetTargetName,
                 $"{appId}.{WidgetBundleSuffix}",
+                teamId,
                 manualSigning ? WidgetProfileName : null
             );
 
             File.WriteAllText(projectPath, project.WriteToString());
         }
 
-        private static void ApplyTeamId(PBXProject project, string targetGuid, string label)
+        private static void ApplyTeamId(
+            PBXProject project,
+            string targetGuid,
+            string teamId,
+            string label
+        )
         {
             if (string.IsNullOrEmpty(targetGuid))
                 return;
 
-            project.SetBuildProperty(targetGuid, "DEVELOPMENT_TEAM", AppleTeamId);
-            Debug.Log($"[SigningPostProcessor] Pinned DEVELOPMENT_TEAM={AppleTeamId} on {label}");
+            project.SetBuildProperty(targetGuid, "DEVELOPMENT_TEAM", teamId);
+            Debug.Log($"[SigningPostProcessor] Pinned DEVELOPMENT_TEAM={teamId} on {label}");
         }
 
         private static void ApplyManualSigning(
@@ -170,6 +176,7 @@ namespace App.Editor.iOS
             PBXProject project,
             string targetName,
             string bundleId,
+            string teamId,
             string profileName
         )
         {
@@ -183,7 +190,7 @@ namespace App.Editor.iOS
             }
 
             project.SetBuildProperty(guid, "PRODUCT_BUNDLE_IDENTIFIER", bundleId);
-            ApplyTeamId(project, guid, targetName);
+            ApplyTeamId(project, guid, teamId, targetName);
             if (!string.IsNullOrEmpty(profileName))
                 ApplyManualSigning(project, guid, profileName, targetName);
             Debug.Log(

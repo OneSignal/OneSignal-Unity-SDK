@@ -226,10 +226,10 @@ In `AppViewModel.LoadInitialState()` (`AppViewModel.cs` lines ~110-122), UI stat
 ### Environment / secrets
 - `Assets/StreamingAssets/.env` is loaded at startup via `DotEnv.Load()` (`Assets/Scripts/Services/DotEnv.cs`). In the Editor, `DotEnv` reads `<project>/.env` directly; on Android it reads via `AssetManager.open(".env")`.
 - Recognized keys: `ONESIGNAL_APP_ID`, `ONESIGNAL_API_KEY`, `ONESIGNAL_ANDROID_CHANNEL_ID`, `E2E_MODE`.
-- `AppBootstrapper.Start()` calls `DotEnv.Load()` BEFORE `OneSignal.Initialize`. There is no default App ID: `CopyEnvPreBuild` fails the build when `ONESIGNAL_APP_ID` is missing from `.env`, and `AppBootstrapper` throws if it is empty at runtime.
+- `AppBootstrapper.Start()` calls `DotEnv.Load()` BEFORE `OneSignal.Initialize`. `CopyEnvPreBuild` copies `.env` into StreamingAssets when it exists. When `ONESIGNAL_APP_ID` is missing or empty, `AppBootstrapper` uses the shared example app `1154c350-e715-4b71-a58b-1b84b6745baa`.
 
 ### Android package and Firebase
-- Android package and iOS bundle ID are `com.onesignal.sdkdemo`.
+- Android package and iOS bundle ID default to `com.onesignal.example` (Apple team `99SW8E36CT`) in `ProjectSettings.asset`. `BuildScript` accepts `-demoBundleId` / `-demoTeamId` to override them for one build and restores the originals afterwards; E2E passes `com.onesignal.sdkdemo` / `DL8TF3X4K3`. `SigningPostProcessor` uses the resulting team for every target and suffixes the NSE / widget bundle IDs with `.NSE` / `.LA`.
 - `mainTemplate.gradle` depends on `com.google.firebase:firebase-messaging:25.1.3`.
 - `google-services.json` lives in the project root and is gitignored. `FirebaseInstallationIdBuild` copies it into the generated `launcher/` module, where `launcherTemplate.gradle` applies the Google Services plugin only when the file exists (`baseProjectTemplate.gradle` declares the plugin version).
 - The `firebase_messaging_installation_id_enabled` meta-data in `Assets/Plugins/Android/AndroidManifest.xml` defaults to `false`. The `FIREBASE_INSTALLATION_ID_ENABLED` scripting define (set in `Assets/csc.rsp` by E2E) flips it to `true` and fails the build if `google-services.json` is missing.

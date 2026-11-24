@@ -164,8 +164,8 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.onesignal.sdkdemo
-    iPhone: com.onesignal.sdkdemo
+    Android: com.onesignal.example
+    iPhone: com.onesignal.example
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -241,7 +241,7 @@ PlayerSettings:
   metalCompileShaderBinary: 0
   iOSRenderExtraFrameOnPause: 1
   iosCopyPluginsCodeInsteadOfSymlink: 0
-  appleDeveloperTeamID: 
+  appleDeveloperTeamID: 99SW8E36CT
   iOSManualSigningProvisioningProfileID: 
   tvOSManualSigningProvisioningProfileID: 
   VisionOSManualSigningProvisioningProfileID: 

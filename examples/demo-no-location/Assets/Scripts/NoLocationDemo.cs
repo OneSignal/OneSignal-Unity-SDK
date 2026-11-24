@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 public sealed class NoLocationDemo : MonoBehaviour
 {
     [SerializeField]
-    private string _oneSignalAppId = "YOUR-ONESIGNAL-APP-ID";
+    private string _oneSignalAppId = "1154c350-e715-4b71-a58b-1b84b6745baa";
 
     private const float ReferenceWidth = 393f;
     private const string DemoAndroidGroup = "demo-group";
